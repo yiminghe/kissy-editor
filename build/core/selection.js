@@ -357,7 +357,7 @@ KISSY.Editor.add("selection", function(KE) {
                                 var startContainer = range.startContainer,
                                     startOffset = range.startOffset;
                                 // Limit the fix only to non-block elements.(#3950)
-                                if (startOffset == ( startContainer[0].nodeType===KEN.NODE_ELEMENT ?
+                                if (startOffset == ( startContainer[0].nodeType === KEN.NODE_ELEMENT ?
                                     startContainer[0].childNodes.length : startContainer[0].nodeValue.length )
                                     && !startContainer._4e_isBlockBoundary())
                                     range.setStartAfter(startContainer);
@@ -524,17 +524,19 @@ KISSY.Editor.add("selection", function(KE) {
             return bookmarks;
         },
         createBookmarks : function(serializable) {
-            var retval = [],
-                ranges = this.getRanges(),
+            var self = this,
+                retval = [],
+                ranges = self.getRanges(),
                 length = ranges.length,
+                doc = self.document,
                 bookmark;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
-
+                debugger
                 serializable = bookmark.serializable;
 
-                var bookmarkStart = serializable ? S.one("#" + bookmark.startNode) : bookmark.startNode,
-                    bookmarkEnd = serializable ? S.one("#" + bookmark.endNode) : bookmark.endNode;
+                var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
+                    bookmarkEnd = serializable ? S.one("#" + bookmark.endNode, doc) : bookmark.endNode;
 
                 // Updating the offset values for rest of ranges which have been mangled(#3256).
                 for (var j = i + 1; j < length; j++) {

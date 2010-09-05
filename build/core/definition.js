@@ -299,7 +299,7 @@ KISSY.Editor.add("definition", function(KE) {
             this._monitor();
         },
 
-        insertElement:function(element) {
+        insertElement:function(element, init) {
             var self = this;
             self.focus();
 
@@ -321,6 +321,7 @@ KISSY.Editor.add("definition", function(KE) {
                 // Remove the original contents.
                 range.deleteContents();
                 clone = !i && element || element._4e_clone(true);
+                init && init(clone);
                 // If we're inserting a block at dtd-violated position, split
                 // the parent blocks until we reach blockLimit.
                 if (isBlock) {
@@ -351,21 +352,29 @@ KISSY.Editor.add("definition", function(KE) {
                     lastElement = clone;
             }
 
-            var next = lastElement._4e_nextSourceNode(true),p;
-            //末尾�?ie 不会自动产生br，手动产�?
-            if (!next) {
-                p = new Node("<p>&nbsp;</p>", null, self.document);
-                p.insertAfter(lastElement);
-                next = p;
-            }
-            //firefox,replace br with p，和编辑器整体换行保持一�?
-            else if (next._4e_name() == "br") {
-                p = new Node("<p>&nbsp;</p>", null, self.document);
-                next[0].parentNode.replaceChild(p[0], next[0]);
-                next = p;
+            var next = lastElement._4e_nextSourceNode(true),p,
+                dtd = KE.XHTML_DTD;
+            //行内元素不用加换�?
+            if (!dtd.$inline[clone._4e_name()]) {
+                //末尾�?ie 不会自动产生br，手动产�?
+                if (!next) {
+                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p.insertAfter(lastElement);
+                    next = p;
+                }
+                //firefox,replace br with p，和编辑器整体换行保持一�?
+                else if (next._4e_name() == "br"
+                    &&
+                    //必须符合嵌套规则
+                    dtd[next.parent()._4e_name()]["p"]
+                    ) {
+                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    next[0].parentNode.replaceChild(p[0], next[0]);
+                    next = p;
+                }
             }
             range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
-            if (next[0].nodeType == KEN.NODE_ELEMENT)
+            if (next && next[0].nodeType == KEN.NODE_ELEMENT)
                 range.moveToElementEditablePosition(next);
 
             selection.selectRanges([ range ]);

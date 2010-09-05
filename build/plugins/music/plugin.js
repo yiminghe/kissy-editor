@@ -102,11 +102,11 @@ KISSY.Editor.add("music", function(editor) {
                     editor._toolbars["music"] = self;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
-                    self._title = "编辑music";
+                    self._title = "音乐属�?";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
-                    self._tip = "Music";
+                    self._tip = "插入音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
                 },

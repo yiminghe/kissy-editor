@@ -778,7 +778,7 @@ KISSY.Editor.add("definition", function(KE) {
             this._monitor();
         },
 
-        insertElement:function(element) {
+        insertElement:function(element, init) {
             var self = this;
             self.focus();
 
@@ -800,6 +800,7 @@ KISSY.Editor.add("definition", function(KE) {
                 // Remove the original contents.
                 range.deleteContents();
                 clone = !i && element || element._4e_clone(true);
+                init && init(clone);
                 // If we're inserting a block at dtd-violated position, split
                 // the parent blocks until we reach blockLimit.
                 if (isBlock) {
@@ -830,21 +831,29 @@ KISSY.Editor.add("definition", function(KE) {
                     lastElement = clone;
             }
 
-            var next = lastElement._4e_nextSourceNode(true),p;
-            //末尾�?ie 不会自动产生br，手动产�?
-            if (!next) {
-                p = new Node("<p>&nbsp;</p>", null, self.document);
-                p.insertAfter(lastElement);
-                next = p;
-            }
-            //firefox,replace br with p，和编辑器整体换行保持一�?
-            else if (next._4e_name() == "br") {
-                p = new Node("<p>&nbsp;</p>", null, self.document);
-                next[0].parentNode.replaceChild(p[0], next[0]);
-                next = p;
+            var next = lastElement._4e_nextSourceNode(true),p,
+                dtd = KE.XHTML_DTD;
+            //行内元素不用加换�?
+            if (!dtd.$inline[clone._4e_name()]) {
+                //末尾�?ie 不会自动产生br，手动产�?
+                if (!next) {
+                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p.insertAfter(lastElement);
+                    next = p;
+                }
+                //firefox,replace br with p，和编辑器整体换行保持一�?
+                else if (next._4e_name() == "br"
+                    &&
+                    //必须符合嵌套规则
+                    dtd[next.parent()._4e_name()]["p"]
+                    ) {
+                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    next[0].parentNode.replaceChild(p[0], next[0]);
+                    next = p;
+                }
             }
             range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
-            if (next[0].nodeType == KEN.NODE_ELEMENT)
+            if (next && next[0].nodeType == KEN.NODE_ELEMENT)
                 range.moveToElementEditablePosition(next);
 
             selection.selectRanges([ range ]);
@@ -5103,7 +5112,7 @@ KISSY.Editor.add("selection", function(KE) {
                                 var startContainer = range.startContainer,
                                     startOffset = range.startOffset;
                                 // Limit the fix only to non-block elements.(#3950)
-                                if (startOffset == ( startContainer[0].nodeType===KEN.NODE_ELEMENT ?
+                                if (startOffset == ( startContainer[0].nodeType === KEN.NODE_ELEMENT ?
                                     startContainer[0].childNodes.length : startContainer[0].nodeValue.length )
                                     && !startContainer._4e_isBlockBoundary())
                                     range.setStartAfter(startContainer);
@@ -5270,17 +5279,19 @@ KISSY.Editor.add("selection", function(KE) {
             return bookmarks;
         },
         createBookmarks : function(serializable) {
-            var retval = [],
-                ranges = this.getRanges(),
+            var self = this,
+                retval = [],
+                ranges = self.getRanges(),
                 length = ranges.length,
+                doc = self.document,
                 bookmark;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
-
+                debugger
                 serializable = bookmark.serializable;
 
-                var bookmarkStart = serializable ? S.one("#" + bookmark.startNode) : bookmark.startNode,
-                    bookmarkEnd = serializable ? S.one("#" + bookmark.endNode) : bookmark.endNode;
+                var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
+                    bookmarkEnd = serializable ? S.one("#" + bookmark.endNode, doc) : bookmark.endNode;
 
                 // Updating the offset values for rest of ranges which have been mangled(#3256).
                 for (var j = i + 1; j < length; j++) {
@@ -8244,7 +8255,7 @@ KISSY.Editor.add("flash", function(editor) {
 
 
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-              
+
                 bodyHtml = "<div><p><label>地址： " +
                     "<input class='ke-flash-url' style='width:280px' /></label></p>" +
                     "<p style='margin:5px 0'><label>宽度： " +
@@ -8278,11 +8289,11 @@ KISSY.Editor.add("flash", function(editor) {
                     editor._toolbars["flash"] = self;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
-                    self._title = "编辑flash";
+                    self._title = "Flash属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
-                    self._tip = "Flash";
+                    self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
                 },
@@ -11332,7 +11343,7 @@ KISSY.Editor.add("image", function(editor) {
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div>" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址：" +
+                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址： " +
                     "</span><input class='ke-img-url' style='width:230px' value='http://'/></label>" +
                     "</p>" +
                     "</div>",
@@ -11348,7 +11359,7 @@ KISSY.Editor.add("image", function(editor) {
                     this.el = new TripleButton({
                         contentCls:"ke-toolbar-image",
                         //text:"img",
-                        title:"图像",
+                        title:"插入图片",
                         container:toolBarDiv
                     });
                     this.el.on("offClick", this.show, this);
@@ -11357,7 +11368,7 @@ KISSY.Editor.add("image", function(editor) {
                 _prepare:function() {
                     var self = this,editor = self.get("editor");
                     self.d = new Overlay({
-                        title:"插入图片",
+                        title:"图片属性",
                         mask:true,
                         width:"350px"
                     });
@@ -11392,8 +11403,16 @@ KISSY.Editor.add("image", function(editor) {
                     var editor = this.get("editor");
                     var url = this.imgUrl.val();
                     if (!url) return;
-                    var img = new Node("<img src='" + url + "'/>", null, editor.document);
-                    editor.insertElement(img);
+                    var img = new Node("<img src='" + url + "' alt='' />", null, editor.document);
+                    editor.insertElement(img, function(el) {
+                        el.on("load", function() {
+                            el.detach();
+                            el.css({
+                                width:el.width() + "px",
+                                height:el.height() + "px"
+                            });
+                        });
+                    });
                     this.d.hide();
                 },
                 show:function() {
@@ -11411,8 +11430,7 @@ KISSY.Editor.add("image", function(editor) {
 
     });
 
-});
-/**
+});/**
  * indent formatting,modified from ckeditor
  * @modifier: yiminghe@gmail.com
  */
@@ -12956,11 +12974,11 @@ KISSY.Editor.add("music", function(editor) {
                     editor._toolbars["music"] = self;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
-                    self._title = "编辑music";
+                    self._title = "音乐属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
-                    self._tip = "Music";
+                    self._tip = "插入音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
                 },
@@ -13562,7 +13580,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     self.el = new TripleButton({
                         //text:"table",
                         contentCls:"ke-toolbar-table",
-                        title:"表格",
+                        title:"插入表格",
                         container:toolBarDiv
                     });
                     var el = self.el;
@@ -13592,7 +13610,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d = new Overlay({
                             width:"350px",
                             mask:true,
-                            title:"编辑表格"
+                            title:"表格属性"
                         }),
                         body = d.body;
                     d.body.html(TABLE_HTML);

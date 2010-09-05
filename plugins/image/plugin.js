@@ -19,7 +19,7 @@ KISSY.Editor.add("image", function(editor) {
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div>" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址：" +
+                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址： " +
                     "</span><input class='ke-img-url' style='width:230px' value='http://'/></label>" +
                     "</p>" +
                     "</div>",
@@ -35,7 +35,7 @@ KISSY.Editor.add("image", function(editor) {
                     this.el = new TripleButton({
                         contentCls:"ke-toolbar-image",
                         //text:"img",
-                        title:"图像",
+                        title:"插入图片",
                         container:toolBarDiv
                     });
                     this.el.on("offClick", this.show, this);
@@ -44,7 +44,7 @@ KISSY.Editor.add("image", function(editor) {
                 _prepare:function() {
                     var self = this,editor = self.get("editor");
                     self.d = new Overlay({
-                        title:"插入图片",
+                        title:"图片属性",
                         mask:true,
                         width:"350px"
                     });
@@ -79,8 +79,16 @@ KISSY.Editor.add("image", function(editor) {
                     var editor = this.get("editor");
                     var url = this.imgUrl.val();
                     if (!url) return;
-                    var img = new Node("<img src='" + url + "'/>", null, editor.document);
-                    editor.insertElement(img);
+                    var img = new Node("<img src='" + url + "' alt='' />", null, editor.document);
+                    editor.insertElement(img, function(el) {
+                        el.on("load", function() {
+                            el.detach();
+                            el.css({
+                                width:el.width() + "px",
+                                height:el.height() + "px"
+                            });
+                        });
+                    });
                     this.d.hide();
                 },
                 show:function() {

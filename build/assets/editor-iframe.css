@@ -3,9 +3,10 @@ for kissy editor iframe
 @author:玉伯(lifesinger@gmail.com),yiminghe@gmail.com
 @from:resource://gre/res/html.css
 **/
-html{
-    _overflow-y:scroll;
+html {
+    _overflow-y: scroll;
 }
+
 /*
 iframe body no need to reset
 body,*/
@@ -93,7 +94,7 @@ hr {
     color: gray;
 }
 
-/* 将斜体扶正 */
+/* 将斜体扶�?*/
 code, kbd, pre, samp {
     font-family: courier new, courier, monospace;
 }
@@ -107,7 +108,7 @@ sup {
     vertical-align: text-top;
 }
 
-/* 重置，减少对行高的影响 */
+/* 重置，减少对行高的影�?*/
 sub {
     vertical-align: text-bottom;
 }
@@ -191,4 +192,11 @@ img.ke_music {
     border: 1px solid #A9A9A9;
     height: 80px;
     width: 80px;
+}
+
+/*firefox 破碎图片手动定义才出�?/
+img:-moz-broken {
+    -moz-force-broken-image-icon: 1;
+    height: 24px;
+    width: 24px;
 }

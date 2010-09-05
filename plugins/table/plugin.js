@@ -173,7 +173,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     self.el = new TripleButton({
                         //text:"table",
                         contentCls:"ke-toolbar-table",
-                        title:"表格",
+                        title:"插入表格",
                         container:toolBarDiv
                     });
                     var el = self.el;
@@ -203,7 +203,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d = new Overlay({
                             width:"350px",
                             mask:true,
-                            title:"编辑表格"
+                            title:"表格属性"
                         }),
                         body = d.body;
                     d.body.html(TABLE_HTML);

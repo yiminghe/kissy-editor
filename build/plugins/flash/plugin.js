@@ -25,7 +25,7 @@ KISSY.Editor.add("flash", function(editor) {
 
 
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-              
+
                 bodyHtml = "<div><p><label>地址�?" +
                     "<input class='ke-flash-url' style='width:280px' /></label></p>" +
                     "<p style='margin:5px 0'><label>宽度�?" +
@@ -59,11 +59,11 @@ KISSY.Editor.add("flash", function(editor) {
                     editor._toolbars["flash"] = self;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
-                    self._title = "编辑flash";
+                    self._title = "Flash属�?";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
-                    self._tip = "Flash";
+                    self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
                 },
