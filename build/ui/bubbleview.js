@@ -10,7 +10,7 @@ KISSY.Editor.add("bubbleview", function() {
         Node = S.Node,
         markup = '<div class="ke-bubbleview-bubble" onmousedown="return false;"></div>';
 
-
+    if (KE.BubbleView) return;
     function BubbleView(cfg) {
         BubbleView.superclass.constructor.apply(this, arguments);
         if (cfg.init)

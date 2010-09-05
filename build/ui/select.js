@@ -15,7 +15,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span></a></span>",
         menu_markup = "<div class='ke-menu' onmousedown='return false;'></div>";
 
-
+    if (KE.Select) return;
     function Select(cfg) {
         var self = this;
         Select.superclass.constructor.call(self, cfg);

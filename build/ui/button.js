@@ -3,13 +3,13 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("button", function(editor) {
-    var KE=KISSY.Editor,
+    var KE = KISSY.Editor,
         S = KISSY,
         ON = "on",
         OFF = "off",
         DISABLED = "disabled",
-        Node = S.Node;
-    var BUTTON_CLASS = "ke-triplebutton",
+        Node = S.Node,
+        BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
         OFF_CLASS = "ke-triplebutton-off",
         DISABLED_CLASS = "ke-triplebutton-disabled",
@@ -23,6 +23,7 @@ KISSY.Editor.add("button", function(editor) {
             //' onblur="this.style.cssText = this.style.cssText;"' +
             //' onfocus="event&&event.preventBubble();return false;"' +
             "></a>";
+    if (KE.TripleButton) return;
 
     function TripleButton(cfg) {
         TripleButton.superclass.constructor.call(this, cfg);

@@ -6720,7 +6720,7 @@ KISSY.Editor.add("bubbleview", function() {
         Node = S.Node,
         markup = '<div class="ke-bubbleview-bubble" onmousedown="return false;"></div>';
 
-
+    if (KE.BubbleView) return;
     function BubbleView(cfg) {
         BubbleView.superclass.constructor.apply(this, arguments);
         if (cfg.init)
@@ -6820,13 +6820,13 @@ KISSY.Editor.add("bubbleview", function() {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("button", function(editor) {
-    var KE=KISSY.Editor,
+    var KE = KISSY.Editor,
         S = KISSY,
         ON = "on",
         OFF = "off",
         DISABLED = "disabled",
-        Node = S.Node;
-    var BUTTON_CLASS = "ke-triplebutton",
+        Node = S.Node,
+        BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
         OFF_CLASS = "ke-triplebutton-off",
         DISABLED_CLASS = "ke-triplebutton-disabled",
@@ -6840,6 +6840,7 @@ KISSY.Editor.add("button", function(editor) {
             //' onblur="this.style.cssText = this.style.cssText;"' +
             //' onfocus="event&&event.preventBubble();return false;"' +
             "></a>";
+    if (KE.TripleButton) return;
 
     function TripleButton(cfg) {
         TripleButton.superclass.constructor.call(this, cfg);
@@ -6917,9 +6918,9 @@ KISSY.Editor.add("contextmenu", function() {
         S = KISSY,
         Node = S.Node,
         DOM = S.DOM,
-        Event = S.Event;
-    var HTML = "<div class='ke-menu' onmousedown='return false;'></div>";
-
+        Event = S.Event,
+        HTML = "<div class='ke-menu' onmousedown='return false;'></div>";
+    if (KE.ContextMenu) return;
 
     function ContextMenu(config) {
         this.cfg = S.clone(config);
@@ -7048,7 +7049,8 @@ KISSY.Editor.add("contextmenu", function() {
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
 KISSY.Editor.add("overlay", function() {
-
+    // 每次实例都要载入!
+    //console.log("overlay loaded!");
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -7059,6 +7061,8 @@ KISSY.Editor.add("overlay", function() {
         mask ,
         mask_iframe,
         d_iframe;
+    //全局的不要重写
+    if (KE.SimpleOverlay) return;
 
     function Overlay() {
         var self = this;
@@ -7339,7 +7343,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span></a></span>",
         menu_markup = "<div class='ke-menu' onmousedown='return false;'></div>";
 
-
+    if (KE.Select) return;
     function Select(cfg) {
         var self = this;
         Select.superclass.constructor.call(self, cfg);

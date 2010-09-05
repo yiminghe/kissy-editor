@@ -4,7 +4,8 @@
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
 KISSY.Editor.add("overlay", function() {
-
+    // 每次实例都要载入!
+    //console.log("overlay loaded!");
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -15,6 +16,8 @@ KISSY.Editor.add("overlay", function() {
         mask ,
         mask_iframe,
         d_iframe;
+    //全局的不要重写
+    if (KE.SimpleOverlay) return;
 
     function Overlay() {
         var self = this;
