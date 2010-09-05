@@ -5287,7 +5287,6 @@ KISSY.Editor.add("selection", function(KE) {
                 bookmark;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
-                debugger
                 serializable = bookmark.serializable;
 
                 var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
@@ -7334,9 +7333,10 @@ KISSY.Editor.add("select", function() {
         DOM = S.DOM,
         KE = S.Editor,
         TITLE = "title",
+        ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
-        markup = "<a href='#' class='ke-select'><span class='ke-select-text'></span>" +
-            "<span class='ke-select-drop'></span></a>",
+        markup = "<span class='ke-select-wrap'><a onclick='return false;' class='ke-select'><span class='ke-select-text'></span>" +
+            "<span class='ke-select-drop'></span></a></span>",
         menu_markup = "<div class='ke-menu' onmousedown='return false;'></div>";
 
 
@@ -7372,6 +7372,7 @@ KISSY.Editor.add("select", function() {
             el.on("click", self._click, self);
             self.el = el;
             self.title = text;
+            self._focusA = el.one("a.ke-select");
             KE.Utils.lazyRun(this, "_prepare", "_real");
             self.on("afterValueChange", self._valueChange, self);
         },
@@ -7397,6 +7398,7 @@ KISSY.Editor.add("select", function() {
         _prepare:function() {
             var self = this,
                 el = self.el,
+                focusA = self._focusA,
                 menuNode = new Node(menu_markup),
                 menu = new KE.SimpleOverlay({
                     el:menuNode,
@@ -7426,10 +7428,10 @@ KISSY.Editor.add("select", function() {
 
             self.menu = menu;
             menu.on("show", function() {
-                el.addClass("ke-select-active");
+                focusA.addClass(ke_select_active);
             });
             menu.on("hide", function() {
-                el.removeClass("ke-select-active");
+                focusA.removeClass(ke_select_active);
             });
             Event.on([document,self.get("doc")], "click", function(ev) {
                 if (el._4e_contains(ev.target)) return;
@@ -7468,7 +7470,7 @@ KISSY.Editor.add("select", function() {
         },
         _real:function() {
             var self = this,xy = self.el.offset();
-            xy.top += self.el.height() + 8;
+            xy.top += self.el.height();
             xy.left += 1;
             if (xy.left + self.menu.el.width() > DOM.viewportWidth() - 60) {
                 xy.left = DOM.viewportWidth() - self.menu.el.width() - 60;
@@ -7479,10 +7481,9 @@ KISSY.Editor.add("select", function() {
             ev.preventDefault();
 
             var self = this,
-                v = self.get("value"),
-                el = self.el;
+                v = self.get("value");
 
-            if (el.hasClass("ke-select-active")) {
+            if (self._focusA.hasClass(ke_select_active)) {
                 self.menu.hide();
                 return;
             }

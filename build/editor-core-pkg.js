@@ -5287,7 +5287,6 @@ KISSY.Editor.add("selection", function(KE) {
                 bookmark;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
-                debugger
                 serializable = bookmark.serializable;
 
                 var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
