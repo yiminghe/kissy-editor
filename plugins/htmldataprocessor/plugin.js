@@ -7,7 +7,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
-        //KEN = KE.NODE,
+        KEN = KE.NODE,
         HtmlParser = KE.HtmlParser,
         htmlFilter = new HtmlParser.Filter(),
         dataFilter = new HtmlParser.Filter(),
@@ -433,6 +433,18 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         el.attributes['class'] = "ke_show_border";
                     }
                 },
+                td:function(el) {
+                    if (!UA.ie) return;
+                    var c = el.children,t = new KE.HtmlParser.Text("&nbsp;");
+                    //ie td结尾加个空白，便于定位到结尾
+                    if (c.length) {
+                        if (c[c.length - 1].type != KEN.NODE_TEXT) {
+                            c.push(t);
+                        }
+                    } else {
+                        c.push(t);
+                    }
+                },
                 /**
                  * ul,li 从 ms word 重建
                  * @param element
@@ -535,6 +547,23 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     if (!( element.children.length ||
                         element.attributes.name )) {
                         return false;
+                    }
+                },
+                //对应 table plugin , _genTable method
+                td:function(element) {
+                    var c = element.children;
+
+                    //firefox 添加的 br 去掉
+                    for (var i = 0; i < c.length; i++) {
+                        if (c[i].name == "br") {
+                            c.splice(i, 1);
+                            --i;
+                        }
+                    }
+                    //ie预览完美需要 &nbsp;
+                    if (!element.children.length) {
+                        var t = new KE.HtmlParser.Text("&nbsp;");
+                        element.children.push(t);
                     }
                 },
                 span:function(element) {

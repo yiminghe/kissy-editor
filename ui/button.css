@@ -9,7 +9,6 @@ link
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
-    padding: 3px 4px;
     margin: 0 2px;
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;

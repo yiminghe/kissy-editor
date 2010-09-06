@@ -41,7 +41,7 @@ KISSY.Editor.add("smiley", function(editor) {
                 },
                 _hidePanel:function(ev) {
                     var self = this,t = ev.target;
-                    //多窗口管理
+                    //多窗口管�?
                     if (DOM._4e_ascendant(ev.target, function(node) {
                         return  node[0] === self.el.el[0];
                     }))return;
@@ -53,7 +53,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,editor = self.editor;
                     var t = ev.target,icon;
                     if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img src='" + icon + "'/>", null, editor.document);
+                        var img = new Node("<img alt='' style='width:48px;height:52px;' src='" + icon + "'/>", null, editor.document);
                         editor.insertElement(img);
                         this.smileyWin.hide();
                     }

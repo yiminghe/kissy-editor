@@ -7,7 +7,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
-        //KEN = KE.NODE,
+        KEN = KE.NODE,
         HtmlParser = KE.HtmlParser,
         htmlFilter = new HtmlParser.Filter(),
         dataFilter = new HtmlParser.Filter(),
@@ -402,7 +402,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     var tagName = el.name || "";
                     //ms world <o:p> 保留内容
                     if (tagName.indexOf(':') != -1 && tagName.indexOf("ke") == -1) {
-                        //先处理子孙节点，防止delete el.name后，子孙得不到处理?
+                        //先处理子孙节点，防止delete el.name后，子孙得不到处�?
                         //el.filterChildren();
                         delete el.name;
                     }
@@ -410,7 +410,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     /*
                      太激进，只做span*/
                     var style = el.attributes.style;
-                    //没有属性的inline去掉了
+                    //没有属�?的inline去掉�?
                     if (//tagName in dtd.$inline 
                         tagName == "span"
                             && (!style || !filterStyle(style))
@@ -433,8 +433,20 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         el.attributes['class'] = "ke_show_border";
                     }
                 },
+                td:function(el) {
+                    if (!UA.ie) return;
+                    var c = el.children,t = new KE.HtmlParser.Text("&nbsp;");
+                    //ie td结尾加个空白，便于定位到结尾
+                    if (c.length) {
+                        if (c[c.length - 1].type != KEN.NODE_TEXT) {
+                            c.push(t);
+                        }
+                    } else {
+                        c.push(t);
+                    }
+                },
                 /**
-                 * ul,li 从 ms word 重建
+                 * ul,li �?ms word 重建
                  * @param element
                  */
                 span:function(element) {
@@ -483,7 +495,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 return false;
             },
             attributes :  {
-                //防止word的垃圾class，全部杀掉算了，除了以ke_开头的编辑器内置class
+                //防止word的垃圾class，全部杀掉算了，除了以ke_�?��的编辑器内置class
                 'class' : function(value
                     // , element
                     ) {
@@ -504,7 +516,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [/^lang$/,'']
             ]
         },
-        //将编辑区生成html最终化
+        //将编辑区生成html�?���?
         defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -535,6 +547,23 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     if (!( element.children.length ||
                         element.attributes.name )) {
                         return false;
+                    }
+                },
+                //对应 table plugin , _genTable method
+                td:function(element) {
+                    var c = element.children;
+
+                    //firefox 添加�?br 去掉
+                    for (var i = 0; i < c.length; i++) {
+                        if (c[i].name == "br") {
+                            c.splice(i, 1);
+                            --i;
+                        }
+                    }
+                    //ie预览完美�?�� &nbsp;
+                    if (!element.children.length) {
+                        var t = new KE.HtmlParser.Text("&nbsp;");
+                        element.children.push(t);
                     }
                 },
                 span:function(element) {
@@ -642,13 +671,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
-            //使用htmlwriter界面美观，加入额外文字节点\n,\t空白等
+            //使用htmlwriter界面美观，加入额外文字节点\n,\t空白�?
             var writer = new HtmlParser.HtmlWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
             fragment.writeHtml(writer, htmlFilter);
             return writer.getHtml(true);
         },
-        //外部html进入编辑器
+        //外部html进入编辑�?
         toDataFormat : function(html, fixForBody) {
 
             // Firefox will be confused by those downlevel-revealed IE conditional
@@ -660,7 +689,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // </span></span></span>
             // <!--[endif]-->
 
-            //变成：
+            //变成�?
 
             //<!--[if !supportLists]
             // <span style=\"font-family: Wingdings;\" lang=\"EN-US\">
@@ -675,7 +704,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // them by prefixing 'ke' namespace. (#3591)
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
             //fixForBody = fixForBody || "p";
-            //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白等
+            //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白�?
             var writer = new HtmlParser.BasicWriter(),fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
             writer.reset();

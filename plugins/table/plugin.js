@@ -289,7 +289,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         i,
                         cols = parseInt(d.tcols.val()) || 1,
                         rows = parseInt(d.trows.val()) || 1,
-                        cellpad = UA.ie ? "&nbsp;" : "<br/>",
+                        //firefox 需要 br 才能得以放置焦点
+                        cellpad = UA.ie ? "" : "<br/>",
                         editor = self.editor;
 
                     if (S.trim(d.talign.val()).length != 0)

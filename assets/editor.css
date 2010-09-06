@@ -60,6 +60,7 @@ textarea,iframe包装
     text-indent: -999999px;
     vertical-align: middle;
     width: 15px;
+    margin: 3px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
 }
 
 .ke-toolbar-separator {

@@ -60,6 +60,7 @@ textarea,iframe包装
     text-indent: -999999px;
     vertical-align: middle;
     width: 15px;
+    margin: 3px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
 }
 
 .ke-toolbar-separator {
@@ -485,7 +486,6 @@ link
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
-    padding: 3px 4px;
     margin: 0 2px;
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;

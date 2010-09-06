@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-06 13:51:46
+ * @buildtime: 2010-09-06 18:00:01
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -291,7 +291,7 @@ KISSY.Editor.add("utils", function(KE) {
         }
         ,
         /**
-         * 懒惰一下
+         * 懒惰�?��
          * @param obj
          * @param before
          * @param after
@@ -538,16 +538,16 @@ KISSY.Editor.add("definition", function(KE) {
             + "' rel='stylesheet'/>"
             + "</head>"
             + "<body class='ke-editor'>"
-            //firefox 必须里面有东西，否则编辑前不能删除!
+            //firefox 必须里面有东西，否则编辑前不能删�?
             + "&nbsp;"
-            //使用 setData 加强安全性
+            //使用 setData 加强安全�?
             // + (textarea.value || "")
             + "</body>"
             + "<html>" +
             (id ?
                 // The script that launches the bootstrap logic on 'domReady', so the document
                 // is fully editable even before the editing iframe is fully loaded (#4455).
-                //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
+                //确保iframe确实载入成功,过早的话 document.domain 会出现无法访�?
                 '<script id="ke_actscrpt" type="text/javascript">' +
                     ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
                     'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
@@ -582,13 +582,13 @@ KISSY.Editor.add("definition", function(KE) {
             "<div class='" + ke_editor_status.substring(1) + "'></div>" +
             "</div>";
 
-    //所有link,flash,music的悬浮小提示
+    //�?��link,flash,music的悬浮小提示
     //KE.Tips = {};
     S.augment(KE, {
         init:function(textarea) {
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
-            //!!编辑器内焦点不失去,firefox?
+            //!!编辑器内焦点不失�?firefox?
             editorWrap.on("mousedown", function(ev) {
                 if (UA.webkit) {
                     //chrome select 弹不出来
@@ -607,7 +607,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv = editorWrap.one(ke_editor_tools);
             self.textarea = textarea;
             self.statusDiv = editorWrap.one(ke_editor_status);
-            //ie 点击按钮不丢失焦点
+            //ie 点击按钮不丢失焦�?
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
@@ -725,7 +725,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.document && self.document.body.blur();
             //self.notifySelectionChange();
 
-            //firefox 焦点相关，强制 mousedown 刷新光标
+            //firefox 焦点相关，强�?mousedown 刷新光标
             //this.iframeFocus = false;
         },
         _setUpIFrame:function() {
@@ -797,7 +797,7 @@ KISSY.Editor.add("definition", function(KE) {
         }
         ,
         /**
-         * 强制通知插件更新状态，防止插件修改编辑器内容，自己反而得不到通知
+         * 强制通知插件更新状�?，防止插件修改编辑器内容，自己反而得不到通知
          */
         notifySelectionChange:function() {
             this.previousPath = null;
@@ -858,25 +858,31 @@ KISSY.Editor.add("definition", function(KE) {
             }
 
             var next = lastElement._4e_nextSourceNode(true),p,
+                doc = self.document,
                 dtd = KE.XHTML_DTD;
-            //行内元素不用加换行
+
+            //行内元素不用加换�?
             if (!dtd.$inline[clone._4e_name()]) {
-                //末尾时 ie 不会自动产生br，手动产生
+                //末尾�?ie 不会自动产生br，手动产�?
                 if (!next) {
-                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p = new Node("<p>&nbsp;</p>", null, doc);
                     p.insertAfter(lastElement);
                     next = p;
                 }
-                //firefox,replace br with p，和编辑器整体换行保持一致
+                //firefox,replace br with p，和编辑器整体换行保持一�?
                 else if (next._4e_name() == "br"
                     &&
                     //必须符合嵌套规则
                     dtd[next.parent()._4e_name()]["p"]
                     ) {
-                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p = new Node("<p>&nbsp;</p>", null, doc);
                     next[0].parentNode.replaceChild(p[0], next[0]);
                     next = p;
                 }
+            } else {
+                //qc #3803 ，插入行内后给个位置放置光标
+                next = new Node(doc.createTextNode(" "));
+                next.insertAfter(lastElement);
             }
             range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
             if (next && next[0].nodeType == KEN.NODE_ELEMENT)
@@ -1013,7 +1019,7 @@ KISSY.Editor.add("definition", function(KE) {
             tryThese(
                 function() {
                     doc.designMode = 'on';
-                    //异步引起时序问题，尽可能小间隔
+                    //异步引起时序问题，尽可能小间�?
                     setTimeout(function () {
                         doc.designMode = 'off';
                         //console.log("path1");
@@ -1081,7 +1087,7 @@ KISSY.Editor.add("definition", function(KE) {
             //console.log(" i am  focus inner");
             /**
              * yiminghe特别注意：firefox光标丢失bug
-             * blink后光标出现在最后，这就需要实现保存range
+             * blink后光标出现在�?��，这就需要实现保存range
              * focus后再恢复range
              */
             if (UA.gecko)
@@ -1089,14 +1095,14 @@ KISSY.Editor.add("definition", function(KE) {
             else if (UA.opera)
                 body.focus();
 
-            // focus 后强制刷新自己状态
+            // focus 后强制刷新自己状�?
             self.notifySelectionChange();
         });
 
 
         if (UA.gecko) {
             /**
-             * firefox 焦点丢失后，再点编辑器区域焦点会移不过来，要点两下
+             * firefox 焦点丢失后，再点编辑器区域焦点会移不过来，要点两�?
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
@@ -1133,7 +1139,7 @@ KISSY.Editor.add("definition", function(KE) {
 
             // PageUp/PageDown scrolling is broken in document
             // with standard doctype, manually fix it. (#4736)
-            //ie8 主窗口滚动？？
+            //ie8 主窗口滚动？�?
             if (doc.compatMode == 'CSS1Compat') {
                 var pageUpDownKeys = { 33 : 1, 34 : 1 };
                 Event.on(doc, 'keydown', function(evt) {
@@ -1171,12 +1177,12 @@ KISSY.Editor.add("definition", function(KE) {
         setTimeout(function() {
             self.fire("dataReady");
         }, 10);
-        //注意：必须放在这个位置，等iframe加载好再开始运行
+        //注意：必须放在这个位置，等iframe加载好再�?��运行
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);
     };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
-    //不知道为什么
+    //不知道为�?��
     if (UA.gecko) {
         ( function () {
             var body = document.body;

@@ -353,12 +353,14 @@ KISSY.Editor.add("definition", function(KE) {
             }
 
             var next = lastElement._4e_nextSourceNode(true),p,
+                doc = self.document,
                 dtd = KE.XHTML_DTD;
+
             //行内元素不用加换行
             if (!dtd.$inline[clone._4e_name()]) {
                 //末尾时 ie 不会自动产生br，手动产生
                 if (!next) {
-                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p = new Node("<p>&nbsp;</p>", null, doc);
                     p.insertAfter(lastElement);
                     next = p;
                 }
@@ -368,10 +370,14 @@ KISSY.Editor.add("definition", function(KE) {
                     //必须符合嵌套规则
                     dtd[next.parent()._4e_name()]["p"]
                     ) {
-                    p = new Node("<p>&nbsp;</p>", null, self.document);
+                    p = new Node("<p>&nbsp;</p>", null, doc);
                     next[0].parentNode.replaceChild(p[0], next[0]);
                     next = p;
                 }
+            } else {
+                //qc #3803 ，插入行内后给个位置放置光标
+                next = new Node(doc.createTextNode(" "));
+                next.insertAfter(lastElement);
             }
             range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
             if (next && next[0].nodeType == KEN.NODE_ELEMENT)
