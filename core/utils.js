@@ -7,7 +7,7 @@ KISSY.Editor.add("utils", function(KE) {
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
         getFlashUrl: function (r) {
-            var url = "",KEN=KE.NODE;
+            var url = "",KEN = KE.NODE;
             if (r._4e_name() == "object") {
                 var params = r[0].childNodes;
                 for (var i = 0; i < params.length; i++) {
@@ -175,7 +175,10 @@ KISSY.Editor.add("utils", function(KE) {
 
             return domain != hostname &&
                 domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
+        },
+
+        addSeparator:function(bar) {
+            new S.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(bar);
         }
     };
-})
-    ;
+});

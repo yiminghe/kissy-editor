@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-03 21:44:11
+ * @buildtime: 2010-09-06 10:54:40
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -21,11 +21,30 @@ KISSY.add("editor", function(S, undefined) {
 
         S.app(self, S.EventTarget);
         self.use = function(mods) {
-            S.use.call(self, mods, function() {
+            if (S.isString(mods)) {
+                mods = mods.split(",");
+            }
+            var left = mods,current = [],index;
+            index = S.indexOf("separator", left);
+            var sep = index != -1;
+            current = left.splice(0, sep ? index + 1 : left.length);
+            if (sep)current.pop();
+            if (current.length != 0) {
+                S.use.call(self, current.join(","), function() {
+                    if (sep) {
+                        self.addPlugin(function() {
+                            Editor.Utils.addSeparator(self.toolBarDiv);
+                        });
+                    }
+                    //继续加载剩余插件
+                    self.use(left);
+                }, { order:  true, global:  Editor });
+            } else {
                 self.on("dataReady", function() {
                     self.setData(textarea.val());
                 });
-            }, { order:  true, global:  Editor });
+            }
+            return self;
         };
         self.init(textarea);
         return undefined;
@@ -241,7 +260,7 @@ KISSY.Editor.add("utils", function(KE) {
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
         getFlashUrl: function (r) {
-            var url = "",KEN=KE.NODE;
+            var url = "",KEN = KE.NODE;
             if (r._4e_name() == "object") {
                 var params = r[0].childNodes;
                 for (var i = 0; i < params.length; i++) {
@@ -409,10 +428,13 @@ KISSY.Editor.add("utils", function(KE) {
 
             return domain != hostname &&
                 domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
+        },
+
+        addSeparator:function(bar) {
+            new S.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(bar);
         }
     };
-})
-    ;
+});
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
  * 1.firefox 焦点失去 bug，记录当前状�?

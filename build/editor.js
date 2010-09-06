@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-03 21:44:11
+ * @buildtime: 2010-09-06 10:54:40
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -21,11 +21,30 @@ KISSY.add("editor", function(S, undefined) {
 
         S.app(self, S.EventTarget);
         self.use = function(mods) {
-            S.use.call(self, mods, function() {
+            if (S.isString(mods)) {
+                mods = mods.split(",");
+            }
+            var left = mods,current = [],index;
+            index = S.indexOf("separator", left);
+            var sep = index != -1;
+            current = left.splice(0, sep ? index + 1 : left.length);
+            if (sep)current.pop();
+            if (current.length != 0) {
+                S.use.call(self, current.join(","), function() {
+                    if (sep) {
+                        self.addPlugin(function() {
+                            Editor.Utils.addSeparator(self.toolBarDiv);
+                        });
+                    }
+                    //继续加载剩余插件
+                    self.use(left);
+                }, { order:  true, global:  Editor });
+            } else {
                 self.on("dataReady", function() {
                     self.setData(textarea.val());
                 });
-            }, { order:  true, global:  Editor });
+            }
+            return self;
         };
         self.init(textarea);
         return undefined;

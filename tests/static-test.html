@@ -163,6 +163,7 @@
 
 <script src="../plugins/fakeobjects/plugin.js"></script>
 
+
 <!--源码--->
 <script src="../plugins/sourcearea/plugin.js"></script>
 <!--预览-->
@@ -215,7 +216,7 @@
         KE.Config.base = base;
 
 
-        KE("#editor", {
+        window.editor=KE("#editor", {
             pluginConfig: {
                 "templates": [
                     {
@@ -231,12 +232,12 @@
                 //,"font-family":["song"]
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,undo,removeformat,font,format,color," +
-                "list,indent,justify,link,image,flash,music," +
-                "table,smiley,maximize"
+                "templates,separator,undo,separator,removeformat,font,format,color,separator," +
+                "list,indent,justify,separator,link,image,flash,music,smiley," +
+                "separator,table,maximize"
                 );
-
-        KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font,link");
+        
+        //KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font,link");
     });
 
 </script>

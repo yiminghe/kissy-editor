@@ -3,6 +3,7 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("table", function(editor, undefined) {
+    //console.log("table attached!");
     var KE = KISSY.Editor,
         S = KISSY,
         Node = S.Node,
