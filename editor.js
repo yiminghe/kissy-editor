@@ -85,7 +85,11 @@ KISSY.add("editor", function(S, undefined) {
             "enterkey",
             "fakeobjects",
             {
-                name: "flash",
+                name:"flash",
+                requires:["flashsupport"]
+            },
+            {
+                name: "flashsupport",
                 requires: ["contextmenu","fakeobjects","overlay"]
             },
             {

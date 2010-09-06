@@ -402,7 +402,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     var tagName = el.name || "";
                     //ms world <o:p> 保留内容
                     if (tagName.indexOf(':') != -1 && tagName.indexOf("ke") == -1) {
-                        //先处理子孙节点，防止delete el.name后，子孙得不到处�?
+                        //先处理子孙节点，防止delete el.name后，子孙得不到处理?
                         //el.filterChildren();
                         delete el.name;
                     }
@@ -410,7 +410,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     /*
                      太激进，只做span*/
                     var style = el.attributes.style;
-                    //没有属�?的inline去掉�?
+                    //没有属性的inline去掉了
                     if (//tagName in dtd.$inline 
                         tagName == "span"
                             && (!style || !filterStyle(style))
@@ -434,7 +434,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 /**
-                 * ul,li �?ms word 重建
+                 * ul,li 从 ms word 重建
                  * @param element
                  */
                 span:function(element) {
@@ -483,7 +483,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 return false;
             },
             attributes :  {
-                //防止word的垃圾class，全部杀掉算了，除了以ke_�?��的编辑器内置class
+                //防止word的垃圾class，全部杀掉算了，除了以ke_开头的编辑器内置class
                 'class' : function(value
                     // , element
                     ) {
@@ -504,7 +504,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [/^lang$/,'']
             ]
         },
-        //将编辑区生成html�?���?
+        //将编辑区生成html最终化
         defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -642,13 +642,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
-            //使用htmlwriter界面美观，加入额外文字节点\n,\t空白�?
+            //使用htmlwriter界面美观，加入额外文字节点\n,\t空白等
             var writer = new HtmlParser.HtmlWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
             fragment.writeHtml(writer, htmlFilter);
             return writer.getHtml(true);
         },
-        //外部html进入编辑�?
+        //外部html进入编辑器
         toDataFormat : function(html, fixForBody) {
 
             // Firefox will be confused by those downlevel-revealed IE conditional
@@ -660,7 +660,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // </span></span></span>
             // <!--[endif]-->
 
-            //变成�?
+            //变成：
 
             //<!--[if !supportLists]
             // <span style=\"font-family: Wingdings;\" lang=\"EN-US\">
@@ -675,7 +675,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // them by prefixing 'ke' namespace. (#3591)
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
             //fixForBody = fixForBody || "p";
-            //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白�?
+            //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白等
             var writer = new HtmlParser.BasicWriter(),fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
             writer.reset();

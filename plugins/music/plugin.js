@@ -6,13 +6,11 @@ KISSY.Editor.add("music", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
         Flash = KE.Flash,
-        dataProcessor = editor.htmlDataProcessor,
-        CLS_FLASH = 'ke_flash',
-        CLS_MUSIC = 'ke_music',
-        TYPE_FLASH = 'flash',
+        CLS_MUSIC = "ke_music",
         TYPE_MUSIC = 'music',
         MUSIC_PLAYER = "niftyplayer.swf",
         getFlashUrl = KE.Utils.getFlashUrl,
+        dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter;
 
 
@@ -24,8 +22,8 @@ KISSY.Editor.add("music", function(editor) {
         elements : {
             'object' : function(element) {
                 var attributes = element.attributes,i,
-                    classId = attributes.classid && String(attributes.classid).toLowerCase(),
-                    cls = CLS_FLASH,type = TYPE_FLASH;
+                    classId = attributes['classid'] &&
+                        String(attributes['classid']).toLowerCase();
                 if (!classId) {
                     // Look for the inner <embed>
                     for (i = 0; i < element.children.length; i++) {
@@ -33,10 +31,9 @@ KISSY.Editor.add("music", function(editor) {
                             if (!Flash.isFlashEmbed(element.children[ i ]))
                                 return null;
                             if (music(element.children[ i ].attributes.src)) {
-                                cls = CLS_MUSIC;
-                                type = TYPE_MUSIC;
+                                return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
                             }
-                            return dataProcessor.createFakeParserElement(element, cls, type, true);
+
                         }
                     }
                     return null;
@@ -46,24 +43,20 @@ KISSY.Editor.add("music", function(editor) {
                     var c = element.children[ i ];
                     if (c.name == 'param' && c.attributes.name == "movie") {
                         if (music(c.attributes.value)) {
-                            cls = CLS_MUSIC;
-                            type = TYPE_MUSIC;
-                            break;
+                            return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
                         }
                     }
                 }
-                return dataProcessor.createFakeParserElement(element, cls, type, true);
+
             },
 
             'embed' : function(element) {
                 if (!Flash.isFlashEmbed(element))
                     return null;
-                var cls = CLS_FLASH,type = TYPE_FLASH;
                 if (music(element.attributes.src)) {
-                    cls = CLS_MUSIC;
-                    type = TYPE_MUSIC;
+                    return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
                 }
-                return dataProcessor.createFakeParserElement(element, cls, type, true);
+
             }
             //4 比 flash 的优先级 5 高！
         }}, 4);

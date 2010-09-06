@@ -133,7 +133,7 @@ KISSY.Editor.add("color", function(editor) {
                 },
                 _hidePanel:function(ev) {
                     var self = this;
-                    //多窗口管�?
+                    //多窗口管理
                     if (DOM._4e_ascendant(ev.target, function(node) {
                         return node[0] === self.el.el[0];
                     }, true))return;

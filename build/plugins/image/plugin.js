@@ -19,7 +19,7 @@ KISSY.Editor.add("image", function(editor) {
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div>" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址�?" +
+                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址： " +
                     "</span><input class='ke-img-url' style='width:230px' value='http://'/></label>" +
                     "</p>" +
                     "</div>",
@@ -44,7 +44,7 @@ KISSY.Editor.add("image", function(editor) {
                 _prepare:function() {
                     var self = this,editor = self.get("editor");
                     self.d = new Overlay({
-                        title:"图片属�?",
+                        title:"图片属性",
                         mask:true,
                         width:"350px"
                     });

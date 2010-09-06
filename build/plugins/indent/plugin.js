@@ -220,7 +220,7 @@ KISSY.Editor.add("indent", function(editor) {
             var TripleButton = KE.TripleButton;
 
             /**
-             * 用到了按钮三状�?的两个状态：off可点击，disabled:不可点击
+             * 用到了按钮三状态的两个状态：off可点击，disabled:不可点击
              * @param cfg
              */
             function Indent(cfg) {
@@ -252,7 +252,7 @@ KISSY.Editor.add("indent", function(editor) {
                     var editor = this.get("editor"),toolBarDiv = editor.toolBarDiv,
                         el = this.el;
                     var self = this;
-                    //off状�?下触发捕获，注意没有on状�?
+                    //off状态下触发捕获，注意没有on状态
                     el.on("offClick", this.exec, this);
                     if (this.get("type") == "outdent")
                         editor.on("selectionChange", this._selectionChange, this);
@@ -298,13 +298,13 @@ KISSY.Editor.add("indent", function(editor) {
     editor.addPlugin(function() {
         editor.addCommand("outdent", new KE.Indent({
             editor:editor,
-            title:"减少缩进�?",
+            title:"减少缩进量 ",
             contentCls:"ke-toolbar-outdent",
             type:"outdent"
         }));
         editor.addCommand("indent", new KE.Indent({
             editor:editor,
-            title:"增加缩进�?",
+            title:"增加缩进量 ",
             contentCls:"ke-toolbar-indent",
             type:"indent"
         }));

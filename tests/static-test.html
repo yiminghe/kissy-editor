@@ -40,7 +40,13 @@
 
         <p> 1 2 3 4 5 6 7 78 <a href="http://www.g.cn">我是google</a> 1 1 1 12234 3 45</p>
         <p>我是段落 <span style="background-color: red;"> 我是段落 我是段落 </span> 我是段落 <img src="http://img05.taobaocdn.com/tps/i5/T117hGXndsXXXXXXXX-15-13.gif"> 我是段落 我是段落 </p>  <p> 我是段落 我是段落 <br></p>
+        <p>我是视频优酷</p>
+        <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" height="400" width="480">
+            <param name="quality" value="high"/>
+            <param name="movie" value="http://player.youku.com/player.php/sid/XMjA0MTgwMjIw/v.swf"/>
+            <embed height="400" pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://player.youku.com/player.php/sid/XMjA0MTgwMjIw/v.swf" type="application/x-shockwave-flash" width="480"/>
 
+        </object>
         <p>我是表格，支持右键</p>
         <table style="width: 200px;" border="1" cellpadding="1" cellspacing="1">
             <tbody>
@@ -191,6 +197,7 @@
 <!--图像-->
 <script src="../plugins/image/plugin.js"></script>
 <!--flash-->
+<script src="../plugins/flashsupport/plugin.js"></script>
 <script src="../plugins/flash/plugin.js"></script>
 <!--音乐-->
 <script src="../plugins/music/plugin.js"></script>
@@ -207,6 +214,8 @@
 <!--捕获 enter ,shift enter-->
 <script src="../plugins/enterkey/plugin.js"></script>
 
+
+<script src="../biz/bangpai/plugins/video/plugin.js"></script>
 <script>
 
     KISSY.use('editor', function(S) {
@@ -215,13 +224,12 @@
 
         KE.Config.base = base;
 
-
-        window.editor=KE("#editor", {
+        window.editor = KE("#editor", {
             pluginConfig: {
                 "templates": [
                     {
                         demo: "模板1效果演示html"  ,
-                        html: "<div style='border:1px solid red'>模板1效果演示html</div><p>fine?</p>"
+                        html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
                     },
                     {
                         demo: "模板2效果演示html",
@@ -233,10 +241,10 @@
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "templates,separator,undo,separator,removeformat,font,format,color,separator," +
-                "list,indent,justify,separator,link,image,flash,music,smiley," +
+                "list,indent,justify,separator,link,image,flash,bangpai-video,music,smiley," +
                 "separator,table,maximize"
                 );
-        
+
         //KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font,link");
     });
 

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-06 10:54:40
+ * @buildtime: 2010-09-06 13:51:46
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -85,7 +85,11 @@ KISSY.add("editor", function(S, undefined) {
             "enterkey",
             "fakeobjects",
             {
-                name: "flash",
+                name:"flash",
+                requires:["flashsupport"]
+            },
+            {
+                name: "flashsupport",
                 requires: ["contextmenu","fakeobjects","overlay"]
             },
             {
@@ -287,7 +291,7 @@ KISSY.Editor.add("utils", function(KE) {
         }
         ,
         /**
-         * 懒惰�?��
+         * 懒惰一下
          * @param obj
          * @param before
          * @param after
@@ -437,8 +441,8 @@ KISSY.Editor.add("utils", function(KE) {
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
- * 1.firefox 焦点失去 bug，记录当前状�?
- * 2.窗口隐藏后能够恢复焦�?
+ * 1.firefox 焦点失去 bug，记录当前状态
+ * 2.窗口隐藏后能够恢复焦点
  * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("focusmanager", function(KE) {
@@ -447,7 +451,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         Event = S.Event,
         focusManager = {},
         INSTANCES = {},
-        //当前焦点�?���?
+        //当前焦点所在处
         currentInstance,
         focusManager = {
             refreshAll:function() {
@@ -534,16 +538,16 @@ KISSY.Editor.add("definition", function(KE) {
             + "' rel='stylesheet'/>"
             + "</head>"
             + "<body class='ke-editor'>"
-            //firefox 必须里面有东西，否则编辑前不能删�?
+            //firefox 必须里面有东西，否则编辑前不能删除!
             + "&nbsp;"
-            //使用 setData 加强安全�?
+            //使用 setData 加强安全性
             // + (textarea.value || "")
             + "</body>"
             + "<html>" +
             (id ?
                 // The script that launches the bootstrap logic on 'domReady', so the document
                 // is fully editable even before the editing iframe is fully loaded (#4455).
-                //确保iframe确实载入成功,过早的话 document.domain 会出现无法访�?
+                //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
                 '<script id="ke_actscrpt" type="text/javascript">' +
                     ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
                     'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
@@ -578,13 +582,13 @@ KISSY.Editor.add("definition", function(KE) {
             "<div class='" + ke_editor_status.substring(1) + "'></div>" +
             "</div>";
 
-    //�?��link,flash,music的悬浮小提示
+    //所有link,flash,music的悬浮小提示
     //KE.Tips = {};
     S.augment(KE, {
         init:function(textarea) {
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
-            //!!编辑器内焦点不失�?firefox?
+            //!!编辑器内焦点不失去,firefox?
             editorWrap.on("mousedown", function(ev) {
                 if (UA.webkit) {
                     //chrome select 弹不出来
@@ -603,7 +607,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv = editorWrap.one(ke_editor_tools);
             self.textarea = textarea;
             self.statusDiv = editorWrap.one(ke_editor_status);
-            //ie 点击按钮不丢失焦�?
+            //ie 点击按钮不丢失焦点
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
@@ -721,7 +725,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.document && self.document.body.blur();
             //self.notifySelectionChange();
 
-            //firefox 焦点相关，强�?mousedown 刷新光标
+            //firefox 焦点相关，强制 mousedown 刷新光标
             //this.iframeFocus = false;
         },
         _setUpIFrame:function() {
@@ -793,7 +797,7 @@ KISSY.Editor.add("definition", function(KE) {
         }
         ,
         /**
-         * 强制通知插件更新状�?，防止插件修改编辑器内容，自己反而得不到通知
+         * 强制通知插件更新状态，防止插件修改编辑器内容，自己反而得不到通知
          */
         notifySelectionChange:function() {
             this.previousPath = null;
@@ -855,15 +859,15 @@ KISSY.Editor.add("definition", function(KE) {
 
             var next = lastElement._4e_nextSourceNode(true),p,
                 dtd = KE.XHTML_DTD;
-            //行内元素不用加换�?
+            //行内元素不用加换行
             if (!dtd.$inline[clone._4e_name()]) {
-                //末尾�?ie 不会自动产生br，手动产�?
+                //末尾时 ie 不会自动产生br，手动产生
                 if (!next) {
                     p = new Node("<p>&nbsp;</p>", null, self.document);
                     p.insertAfter(lastElement);
                     next = p;
                 }
-                //firefox,replace br with p，和编辑器整体换行保持一�?
+                //firefox,replace br with p，和编辑器整体换行保持一致
                 else if (next._4e_name() == "br"
                     &&
                     //必须符合嵌套规则
@@ -1009,7 +1013,7 @@ KISSY.Editor.add("definition", function(KE) {
             tryThese(
                 function() {
                     doc.designMode = 'on';
-                    //异步引起时序问题，尽可能小间�?
+                    //异步引起时序问题，尽可能小间隔
                     setTimeout(function () {
                         doc.designMode = 'off';
                         //console.log("path1");
@@ -1077,7 +1081,7 @@ KISSY.Editor.add("definition", function(KE) {
             //console.log(" i am  focus inner");
             /**
              * yiminghe特别注意：firefox光标丢失bug
-             * blink后光标出现在�?��，这就需要实现保存range
+             * blink后光标出现在最后，这就需要实现保存range
              * focus后再恢复range
              */
             if (UA.gecko)
@@ -1085,14 +1089,14 @@ KISSY.Editor.add("definition", function(KE) {
             else if (UA.opera)
                 body.focus();
 
-            // focus 后强制刷新自己状�?
+            // focus 后强制刷新自己状态
             self.notifySelectionChange();
         });
 
 
         if (UA.gecko) {
             /**
-             * firefox 焦点丢失后，再点编辑器区域焦点会移不过来，要点两�?
+             * firefox 焦点丢失后，再点编辑器区域焦点会移不过来，要点两下
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
@@ -1129,7 +1133,7 @@ KISSY.Editor.add("definition", function(KE) {
 
             // PageUp/PageDown scrolling is broken in document
             // with standard doctype, manually fix it. (#4736)
-            //ie8 主窗口滚动？�?
+            //ie8 主窗口滚动？？
             if (doc.compatMode == 'CSS1Compat') {
                 var pageUpDownKeys = { 33 : 1, 34 : 1 };
                 Event.on(doc, 'keydown', function(evt) {
@@ -1167,12 +1171,12 @@ KISSY.Editor.add("definition", function(KE) {
         setTimeout(function() {
             self.fire("dataReady");
         }, 10);
-        //注意：必须放在这个位置，等iframe加载好再�?��运行
+        //注意：必须放在这个位置，等iframe加载好再开始运行
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);
     };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
-    //不知道为�?��
+    //不知道为什么
     if (UA.gecko) {
         ( function () {
             var body = document.body;
@@ -1478,7 +1482,7 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
-                //�?��为空，一个不为空
+                //一个为空，一个不为空
                 if (!e1 || !e2)return false;
                 e1 = normalElDom(e1);
                 e2 = normalElDom(e2);
@@ -1698,7 +1702,7 @@ KISSY.Editor.add("dom", function(KE) {
                 if (elem[GET_BOUNDING_CLIENT_RECT]) {
                     if (elem !== currentDoc.body && currentDocElem !== elem) {
                         box = elem[GET_BOUNDING_CLIENT_RECT]();
-                        //相对于refDocument，里层iframe的滚动不�?
+                        //相对于refDocument，里层iframe的滚动不计
                         x = box.left + (refDocument === currentDoc ? DOM["scrollLeft"](currentWindow) : 0);
                         y = box.top + (refDocument === currentDoc ? DOM["scrollTop"](currentWindow) : 0);
                     }
@@ -1939,7 +1943,7 @@ KISSY.Editor.add("dom", function(KE) {
                         return node._4e_name() == n;
                     };
                 }
-                //到document就完�?
+                //到document就完了
                 while ($ && $.nodeType != 9) {
                     if (!name || name(new Node($)) === true)
                         return new Node($);
@@ -1989,7 +1993,7 @@ KISSY.Editor.add("dom", function(KE) {
                 :
                 function(el) {
                     el = normalElDom(el);
-                    //删除firefox自己添加的标�?
+                    //删除firefox自己添加的标志
                     UA.gecko && el.removeAttribute("_moz_dirty");
                     var attributes = el.attributes;
                     return ( attributes.length > 1 || ( attributes.length == 1 && attributes[0].nodeName != '_ke_expando' ) );
@@ -2296,7 +2300,7 @@ KISSY.Editor.add("dom", function(KE) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando');
                 expandoNumber && delete customData[ expandoNumber ];
-                //ie inner html 会把属�?带上，删掉！
+                //ie inner html 会把属性带上，删掉！
                 expandoNumber && el.removeAttribute("_ke_expando");
             },
             _4e_getUniqueId : function(el) {
@@ -2353,7 +2357,7 @@ KISSY.Editor.add("dom", function(KE) {
                 return ( dtd && dtd['#'] );
             },
             /**
-             * 修正scrollIntoView在可视区域内不需要滚�?
+             * 修正scrollIntoView在可视区域内不需要滚动
              * @param elem
              */
             _4e_scrollIntoView:function(elem) {
@@ -4971,7 +4975,7 @@ KISSY.Editor.add("selection", function(KE) {
                                     comparisonEnd = testRange.compareEndPoints('EndToStart', range);
 
                                 testRange.collapse();
-                                //中间有其他标�?
+                                //中间有其他标签
                                 if (comparisonStart > 0)
                                     break;
                                 // When selection stay at the side of certain self-closing elements, e.g. BR,
@@ -5002,7 +5006,7 @@ KISSY.Editor.add("selection", function(KE) {
                             while (distance > 0)
                                 //bug? 可能不是文本节点 nodeValue undefined
                                 //永远不会出现 textnode<img/>textnode
-                                //停止时，前面�?��为textnode
+                                //停止时，前面一定为textnode
                                 distance -= siblings[ --i ].nodeValue.length;
                         }
                             // Measurement in IE could be somtimes wrong because of <select> element. (#4611)
@@ -5225,8 +5229,8 @@ KISSY.Editor.add("selection", function(KE) {
         selectElement : function(element) {
             var range,self = this;
             if (UA.ie) {
-                //do not use empty()，滚动条重置�?
-                //选择�?img 内容前后莫名被清�?
+                //do not use empty()，滚动条重置了
+                //选择的 img 内容前后莫名被清除
                 //self.getNative().clear();
                 try {
                     // Try to select the node as a control.
@@ -5367,7 +5371,7 @@ KISSY.Editor.add("selection", function(KE) {
             var self = this,
                 collapsed = self.collapsed,isStartMarkerAlone,dummySpan;
             //选的是元素，直接使用selectElement
-            //还是有差异的，特别是img选择框问�?
+            //还是有差异的，特别是img选择框问题
             if (self.startContainer[0] === self.endContainer[0] && self.endOffset - self.startOffset == 1) {
                 var selEl = self.startContainer[0].childNodes[self.startOffset];
                 if (selEl.nodeType == KEN.NODE_ELEMENT) {
@@ -5521,12 +5525,12 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //wokao,ie 焦点管理不行�?
+            //wokao,ie 焦点管理不行啊
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
-            //终于和ck同步了，我也发现了这个bug，哈�?ck3.3.2解决
+            //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
             if (UA.ie < 8 ||
-                //ie8 �?7 兼容模式
+                //ie8 的 7 兼容模式
                 document.documentMode == 7) {
                 // The 'click' event is not fired when clicking the
                 // scrollbars, so we can use it to check whether
@@ -5613,7 +5617,7 @@ KISSY.Editor.add("selection", function(KE) {
 
             // IE is the only to provide the "selectionchange"
             // event.
-            // 注意：ie右键短暂点击并不能改变�?择范�?
+            // 注意：ie右键短暂点击并不能改变选择范围
             Event.on(doc, 'selectionchange', saveSelection);
 
             function disableSave() {
@@ -5741,7 +5745,7 @@ KISSY.Editor.add("styles", function(KE) {
         document.body.focus();
         var selection = new KESelection(document),ranges = selection.getRanges();
         for (var i = 0; i < ranges.length; i++)
-            //格式化后，range进入格式标签�?
+            //格式化后，range进入格式标签内
             func.call(self, ranges[ i ]);
         // Select the ranges again.
         selection.selectRanges(ranges);
@@ -6264,7 +6268,7 @@ KISSY.Editor.add("styles", function(KE) {
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
-                        //下一次格式xxx�?0px
+                        //下一次格式xxx为70px
                         //var exit = false;
                         for (var styleName in def.styles) {
                             if (styleNode._4e_style(styleName) == parent._4e_style(styleName)) {

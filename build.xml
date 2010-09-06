@@ -33,7 +33,7 @@ build file for kissy editor
             </fileset>
         </copy>
         <copy todir="${build.dir}">
-            <fileset dir="." includes="assets/*.js,assets/*.css,core/**,plugins/**,ui/**,editor.js">
+            <fileset dir="." includes="assets/*.js,assets/*.css,core/**,plugins/**,ui/**,biz/**,editor.js">
             </fileset>
             <filterset>
                 <filter token="TIMESTAMP" value="${timestamp.isoformat}"/>
@@ -107,10 +107,22 @@ build file for kissy editor
                      includes="**/*.js"/>
         </concat>
 
+        <!--
+        bangpai build
+        -->
+        <concat destfile="${build.dir}/biz/bangpai/editor-plugin-bangpai-pkg.js"
+                encoding="${charset}"
+                outputencoding="${charset}">
+            <fileset dir="biz/bangpai/plugins"
+                     includes="**/*.js"/>
+        </concat>
 
+        <!--
+        full css build
+        -->
         <concat destfile="${build.dir}/assets/editor-pkg.css" encoding="${charset}" outputencoding="${charset}">
-            <filelist dir="${build.dir}" files="assets/editor.css"/>
-            <fileset dir="${build.dir}"
+            <filelist dir="assets" files="editor.css"/>
+            <fileset dir="."
                      includes="plugins/**/*.css,ui/**/*.css"/>
         </concat>
 

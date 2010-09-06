@@ -16,7 +16,7 @@ KISSY.Editor.add("overlay", function() {
         mask ,
         mask_iframe,
         d_iframe;
-    //全局的不要重�?
+    //全局的不要重写
     if (KE.SimpleOverlay) return;
 
     function Overlay() {
@@ -116,7 +116,7 @@ KISSY.Editor.add("overlay", function() {
                 self._initFocusNotice();
                 self.on("beforeVisibleChange", self._editorFocusMg, self);
             }
-            //初始状�?隐藏
+            //初始状态隐藏
             el.css({"left":"-9999px",top:"-9999px"});
         },
 
@@ -212,7 +212,7 @@ KISSY.Editor.add("overlay", function() {
                 self._focusEditor = focusManager.currentInstance();
                 editor = self._focusEditor;
                 /*
-                 //ie 6,7 在窗口a focus后会丢掉已�?择，再�?�?
+                 //ie 6,7 在窗口a focus后会丢掉已选择，再选择
                  if (UA.ie && UA.ie < 8 && editor) {
                  var sel = editor.getSelection(),range = sel.getRanges()[0];
                  if (!range.collapsed && sel.getType() != KE.Selection.SELECTION_ELEMENT) {
@@ -223,18 +223,18 @@ KISSY.Editor.add("overlay", function() {
                  }*/
 
                 //console.log("give up focus : " + editor);
-                //聚焦到当前窗�?
+                //聚焦到当前窗口
                 self._getFocusEl()[0].focus();
                 var input = self.el.one("input");
                 if (input) {
                     setTimeout(function() {
-                        //ie 不可聚焦会错�?disabled ?
+                        //ie 不可聚焦会错哦 disabled ?
                         try {
                             input[0].focus();
                             input[0].select();
                         } catch(e) {
                         }
-                        //必须延迟！�?中第�?��input
+                        //必须延迟！选中第一个input
                     }, 0);
                 } else {
                     /*
@@ -246,7 +246,7 @@ KISSY.Editor.add("overlay", function() {
                             $range = $selection.createRange();
                         if ($range) {
                             if (
-                            //修改ckeditor，如果单纯�?择文字就不用管了
+                            //修改ckeditor，如果单纯选择文字就不用管了
                             //$range.parentElement && $range.parentElement().ownerDocument == editor.document
                             //||
                             //缩放图片那个框在ie下会突出浮动层来
