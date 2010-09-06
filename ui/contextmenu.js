@@ -26,7 +26,7 @@ KISSY.Editor.add("contextmenu", function() {
 
         global_rules.push({
             doc:doc,
-            rules:cfg.rules,
+            rules:cfg.rules||[],
             instance:cm
         });
 

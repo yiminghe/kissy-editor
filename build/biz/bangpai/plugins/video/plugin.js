@@ -126,10 +126,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
             S.extend(BangPaiVideo, Flash, {
                 _config:function() {
-                    var self = this,
-                        editor = self.editor;
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars["bangpai-video"] = self;
+                    var self = this;
                     self._cls = CLS_VIDEO;
                     self._type = TYPE_VIDEO;
                     self._title = "视频属�?";
@@ -196,7 +193,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkVideo(startElement),
-                        flashUI = editor._toolbars["bangpai-video"];
+                        flashUI = editor._toolbars[TYPE_VIDEO];
                     if (flash) {
                         flashUI.selectedFlash = flash;
                         flashUI.show();

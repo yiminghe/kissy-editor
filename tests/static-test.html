@@ -47,6 +47,16 @@
             <embed height="400" pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://player.youku.com/player.php/sid/XMjA0MTgwMjIw/v.swf" type="application/x-shockwave-flash" width="480"/>
 
         </object>
+
+        <p>
+            我是虾米音乐
+        </p>
+
+        <embed height="33" width="257" allowscriptaccess="never"
+               src="http://www.xiami.com/widget/300122_1806480/singlePlayer.swf"
+               title="Can't+Compare"
+               type="application/x-shockwave-flash"
+               wmode="transparent"/>
         <p>我是表格，支持右键</p>
         <table style="width: 200px;" border="1" cellpadding="1" cellspacing="1">
             <tbody>
@@ -214,8 +224,15 @@
 <!--捕获 enter ,shift enter-->
 <script src="../plugins/enterkey/plugin.js"></script>
 
-
+<!--
+youku,ku6,tudou视频
+-->
 <script src="../biz/bangpai/plugins/video/plugin.js"></script>
+<!--
+xiami 音乐
+-->
+<script src="../biz/bangpai/plugins/music/plugin.js"></script>
+
 <script>
 
     KISSY.use('editor', function(S) {
@@ -240,9 +257,9 @@
                 //,"font-family":["song"]
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,separator,undo,separator,removeformat,font,format,color,separator," +
-                "list,indent,justify,separator,link,image,flash,bangpai-video,music,smiley," +
-                "separator,table,maximize"
+                "maximize,templates,separator,undo,separator,removeformat,font,format,color,separator," +
+                "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+                "separator,table"
                 );
 
         //KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font,link");

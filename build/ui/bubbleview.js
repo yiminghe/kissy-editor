@@ -21,15 +21,16 @@ KISSY.Editor.add("bubbleview", function() {
 
 
     /**
-     * 延迟化创建实例
+     * 延迟化创建实�?
      * @param cfg
      */
     BubbleView.attach = function(cfg) {
         var pluginInstance = cfg.pluginInstance,
             pluginName = cfg.pluginName,
             editor = pluginInstance.editor,
-            h = holder[pluginName],
-            func = h.cfg.func,
+            h = holder[pluginName];
+        if (!h) return;
+        var func = h.cfg.func,
             bubble = holder[pluginName].bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {

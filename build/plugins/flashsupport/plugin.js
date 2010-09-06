@@ -12,7 +12,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
         TYPE_FLASH = 'flash',
         getFlashUrl = KE.Utils.getFlashUrl,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        flashRules = ["img." + CLS_FLASH];
+        flashRules = ["img." + CLS_FLASH],
+        TIP = "请输入如 http://www.xxx.com/xxx.swf";
 
 
     if (!KE.Flash) {
@@ -21,7 +22,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
                 bodyHtml = "<div><p><label>地址�?" +
-                    "<input class='ke-flash-url' style='width:280px' /></label></p>" +
+                    "<input class='ke-flash-url' style='width:280px' value='"
+                    + TIP
+                    + "'/></label></p>" +
                     "<p style='margin:5px 0'><label>宽度�?" +
                     "<input class='ke-flash-width' style='width:110px' /></label>" +
                     "&nbsp;&nbsp;<label>高度�?input class='ke-flash-height' " +
@@ -47,10 +50,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
             S.augment(Flash, {
                 _config:function() {
-                    var self = this,
-                        editor = self.editor;
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars["flash"] = self;
+                    var self = this;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
                     self._title = "Flash属�?";
@@ -62,26 +62,29 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._flashRules = flashRules;
                 },
                 _init:function() {
+                    this._config();
                     var self = this,
                         editor = self.editor,
                         myContexts = {},
                         contextMenu = self._contextMenu;
-                    self._config();
+                    editor._toolbars = editor._toolbars || {};
+                    editor._toolbars[self._type] = self;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:self._contentCls,
                         title:self._tip
                     });
                     self.el.on("click", self.show, this);
-
-                    for (var f in contextMenu) {
-                        (function(f) {
-                            myContexts[f] = function() {
-                                editor.fire("save");
-                                contextMenu[f](editor);
-                                editor.fire("save");
-                            }
-                        })(f);
+                    if (contextMenu) {
+                        for (var f in contextMenu) {
+                            (function(f) {
+                                myContexts[f] = function() {
+                                    editor.fire("save");
+                                    contextMenu[f](editor);
+                                    editor.fire("save");
+                                }
+                            })(f);
+                        }
                     }
                     ContextMenu.register(editor.document, {
                         rules:self._flashRules,
@@ -151,7 +154,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         self.dUrl.val(getFlashUrl(r));
 
                     } else {
-                        self.dUrl.val("");
+                        self.dUrl.val(TIP);
                         self.dWidth.val("");
                         self.dHeight.val("");
                     }
@@ -289,7 +292,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkFlash(startElement),
-                        flashUI = editor._toolbars["flash"];
+                        flashUI = editor._toolbars[TYPE_FLASH];
                     if (flash) {
                         flashUI.selectedFlash = flash;
                         flashUI.show();

@@ -11,7 +11,8 @@ KISSY.Editor.add("music", function(editor) {
         MUSIC_PLAYER = "niftyplayer.swf",
         getFlashUrl = KE.Utils.getFlashUrl,
         dataProcessor = editor.htmlDataProcessor,
-        dataFilter = dataProcessor && dataProcessor.dataFilter;
+        dataFilter = dataProcessor && dataProcessor.dataFilter,
+        TIP = "请输入如 http://xxx.com/xx.mp3";
 
 
     function music(src) {
@@ -68,7 +69,10 @@ KISSY.Editor.add("music", function(editor) {
                 bodyHtml = "<div>" +
                     "<p>" +
                     "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
-                    "</span><input class='ke-music-url' style='width:230px' value='http://'/></label>" +
+                    "</span><input class='ke-music-url' style='width:230px' " +
+                    "value='"
+                    + TIP
+                    + "'/></label>" +
                     "</p>" +
                     "</div>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
@@ -91,8 +95,6 @@ KISSY.Editor.add("music", function(editor) {
                 _config:function() {
                     var self = this,
                         editor = self.editor;
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars["music"] = self;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
                     self._title = "音乐属性";
@@ -135,7 +137,7 @@ KISSY.Editor.add("music", function(editor) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
                     } else {
-                        self.dUrl.val("");
+                        self.dUrl.val(TIP);
                     }
                 }
             });
@@ -150,7 +152,7 @@ KISSY.Editor.add("music", function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkMusic(startElement),
-                        flashUI = editor._toolbars["music"];
+                        flashUI = editor._toolbars[TYPE_MUSIC];
                     if (flash) {
                         flashUI.selectedFlash = flash;
                         flashUI.show();
