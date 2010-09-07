@@ -895,6 +895,7 @@ KISSY.Editor.add("definition", function(KE) {
             setTimeout(function() {
                 self.fire("save");
             }, 10);
+            return clone;
         },
 
         insertHtml:function(data) {

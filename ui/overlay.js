@@ -11,7 +11,7 @@ KISSY.Editor.add("overlay", function() {
         UA = S.UA,
         focusManager = KE.focusManager,
         Node = S.Node,
-        //Event = S.Event,
+        Event = S.Event,
         DOM = S.DOM,
         mask ,
         mask_iframe,
@@ -25,7 +25,6 @@ KISSY.Editor.add("overlay", function() {
         self._init();
 
         if (S.UA.ie === 6) {
-
             self.on("show", function() {
                 var el = self.get("el");
                 var bw = parseInt(el.css("width")),
@@ -44,6 +43,7 @@ KISSY.Editor.add("overlay", function() {
                 });
             });
         }
+
         if (self.get("mask")) {
             self.on("show", function() {
                 mask && mask.css({"left":"0px","top":"0px"});
@@ -54,13 +54,13 @@ KISSY.Editor.add("overlay", function() {
                 mask_iframe && mask_iframe.css({"left":"-9999px",top:"-9999px"});
             });
         }
-        self.hide();
     }
 
 
     Overlay.init = function() {
 
         var body = document.body;
+
         mask = new Node("<div class=\"ke-mask\">&nbsp;</div>");
         mask.css({"left":"-9999px",top:"-9999px"});
         mask.css({
@@ -118,8 +118,33 @@ KISSY.Editor.add("overlay", function() {
             }
             //初始状态隐藏
             el.css({"left":"-9999px",top:"-9999px"});
-        },
 
+            self.on("afterVisibleChange", function(ev) {
+                var v = ev.newVal;
+                if (v) {
+                    self._register();
+                } else {
+                    self._unregister();
+                }
+            });
+
+        },
+        _register:function() {
+            var self = this;
+            Event.on(document, "keydown", self._keydown, self);
+            //mask click support
+            mask.on("click", self.hide, self);
+        },
+        //esc keydown support
+        _keydown:function(ev) {
+            //esc
+            if (ev.keyCode == 27) this.hide();
+        },
+        _unregister:function() {
+            var self = this;
+            Event.remove(document, "keydown", self._keydown, self);
+            mask.detach("click", self.hide, self);
+        },
         _initEl:function() {
             //just manage container
             var self = this,el = self.get("el");
@@ -138,7 +163,6 @@ KISSY.Editor.add("overlay", function() {
                     "<div class='ke-bd'></div>" +
                     "<div class='ke-ft'>" +
                     "</div>" +
-
                     "</div>");
                 document.body.appendChild(el[0]);
                 self.set("el", el);

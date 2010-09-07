@@ -166,7 +166,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     return p && p.height;
                 },
                 _getFlashUrl:function(r) {
-                    return   getFlashUrl(r);
+                    return getFlashUrl(r);
                 },
                 _updateD:function() {
                     var self = this,
@@ -189,14 +189,13 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             Flash.registerBubble("bangpai-video", "视频链接�?", checkVideo);
             KE.BangPaiVideo = BangPaiVideo;
             var contextMenu = {
-                "编辑视频":function(editor) {
+                "视频属�?":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkVideo(startElement),
                         flashUI = editor._toolbars[TYPE_VIDEO];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null, flash);
                     }
                 }
             };

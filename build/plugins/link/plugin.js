@@ -22,9 +22,9 @@ KISSY.Editor.add("link", function(editor) {
                     }
                 },
                 /**
-                 * bubbleview/tip 初始化，所有共享一个 tip
+                 * bubbleview/tip 初始化，�?��共享�?�� tip
                  */
-                tipHtml = '前往链接： '
+                tipHtml = '前往链接�?'
                     + ' <a ' +
                     'href="" '
                     + ' target="_blank" ' +
@@ -43,7 +43,7 @@ KISSY.Editor.add("link", function(editor) {
                     "<label>" +
                     "<span " +
                     "style='color:#0066CC;font-weight:bold;'>" +
-                    "网址： " +
+                    "网址�?" +
                     "</span>" +
                     "<input " +
                     "class='ke-link-url' " +
@@ -73,12 +73,12 @@ KISSY.Editor.add("link", function(editor) {
 
 
             /**
-             * 所有编辑器实例共享同一功能窗口
+             * �?��编辑器实例共享同�?��能窗�?
              */
             Link.init = function() {
                 var self = this,
                     d = new Overlay({
-                        title:"修改链接",
+                        title:"链接属�?",
                         mask:true,
                         width:"300px"
                     });
@@ -147,7 +147,7 @@ KISSY.Editor.add("link", function(editor) {
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:"ke-toolbar-link",
-                        title:"编辑超链接 "
+                        title:"编辑超链�?"
                     });
                     self.el.on("click", self.show, self);
                     BubbleView.attach({
@@ -172,11 +172,11 @@ KISSY.Editor.add("link", function(editor) {
                 },
 
 
-                //得到当前选中的 link a
+                //得到当前选中�?link a
                 _getSelectedLink:function() {
                     var self = this,
                         editor = this.editor,
-                        //ie焦点很容易丢失,tipwin没了
+                        //ie焦点很容易丢�?tipwin没了
                         selection = editor.getSelection(),
                         common = selection && selection.getStartElement();
                     if (common) {
@@ -200,7 +200,7 @@ KISSY.Editor.add("link", function(editor) {
                     }
                     d.hide();
                     link = self._getSelectedLink();
-                    //是修改行为
+                    //是修改行�?
                     if (link) {
                         range = new KERange(editor.document);
                         range.selectNodeContents(link);
@@ -217,7 +217,7 @@ KISSY.Editor.add("link", function(editor) {
                     }
 
                     range = editor.getSelection().getRanges()[0];
-                    //没有选择区域时直接插入链接地址
+                    //没有选择区域时直接插入链接地�?
                     if (range.collapsed) {
                         a = new Node("<a href='" + url +
                             "' target='" + attr.target + "'>" + url + "</a>", null, editor.document);
@@ -239,7 +239,7 @@ KISSY.Editor.add("link", function(editor) {
                         d = Link.dialog,
                         link = self._getSelectedLink();
                     d.link = this;
-                    //是修改行为
+                    //是修改行�?
                     if (link) {
                         d.urlEl.val(link.attr("href"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");

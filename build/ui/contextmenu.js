@@ -26,7 +26,7 @@ KISSY.Editor.add("contextmenu", function() {
 
         global_rules.push({
             doc:doc,
-            rules:cfg.rules||[],
+            rules:cfg.rules || [],
             instance:cm
         });
 
@@ -70,7 +70,11 @@ KISSY.Editor.add("contextmenu", function() {
     function applyRules(elem, rules) {
         for (var i = 0; i < rules.length; i++) {
             var rule = rules[i];
-            if (DOM.test(elem, rule))return true;
+            //增加函数判断
+            if (S.isFunction(rule)) {
+                if (rule(new Node(elem))) return true;
+            }
+            else if (DOM.test(elem, rule))return true;
         }
         return false;
     }

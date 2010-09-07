@@ -895,6 +895,7 @@ KISSY.Editor.add("definition", function(KE) {
             setTimeout(function() {
                 self.fire("save");
             }, 10);
+            return clone;
         },
 
         insertHtml:function(data) {
@@ -6970,7 +6971,7 @@ KISSY.Editor.add("contextmenu", function() {
 
         global_rules.push({
             doc:doc,
-            rules:cfg.rules||[],
+            rules:cfg.rules || [],
             instance:cm
         });
 
@@ -7014,7 +7015,11 @@ KISSY.Editor.add("contextmenu", function() {
     function applyRules(elem, rules) {
         for (var i = 0; i < rules.length; i++) {
             var rule = rules[i];
-            if (DOM.test(elem, rule))return true;
+            //增加函数判断
+            if (S.isFunction(rule)) {
+                if (rule(new Node(elem))) return true;
+            }
+            else if (DOM.test(elem, rule))return true;
         }
         return false;
     }
@@ -7089,7 +7094,7 @@ KISSY.Editor.add("overlay", function() {
         UA = S.UA,
         focusManager = KE.focusManager,
         Node = S.Node,
-        //Event = S.Event,
+        Event = S.Event,
         DOM = S.DOM,
         mask ,
         mask_iframe,
@@ -7103,7 +7108,6 @@ KISSY.Editor.add("overlay", function() {
         self._init();
 
         if (S.UA.ie === 6) {
-
             self.on("show", function() {
                 var el = self.get("el");
                 var bw = parseInt(el.css("width")),
@@ -7122,6 +7126,7 @@ KISSY.Editor.add("overlay", function() {
                 });
             });
         }
+
         if (self.get("mask")) {
             self.on("show", function() {
                 mask && mask.css({"left":"0px","top":"0px"});
@@ -7132,13 +7137,13 @@ KISSY.Editor.add("overlay", function() {
                 mask_iframe && mask_iframe.css({"left":"-9999px",top:"-9999px"});
             });
         }
-        self.hide();
     }
 
 
     Overlay.init = function() {
 
         var body = document.body;
+
         mask = new Node("<div class=\"ke-mask\">&nbsp;</div>");
         mask.css({"left":"-9999px",top:"-9999px"});
         mask.css({
@@ -7196,8 +7201,33 @@ KISSY.Editor.add("overlay", function() {
             }
             //初始状态隐藏
             el.css({"left":"-9999px",top:"-9999px"});
-        },
 
+            self.on("afterVisibleChange", function(ev) {
+                var v = ev.newVal;
+                if (v) {
+                    self._register();
+                } else {
+                    self._unregister();
+                }
+            });
+
+        },
+        _register:function() {
+            var self = this;
+            Event.on(document, "keydown", self._keydown, self);
+            //mask click support
+            mask.on("click", self.hide, self);
+        },
+        //esc keydown support
+        _keydown:function(ev) {
+            //esc
+            if (ev.keyCode == 27) this.hide();
+        },
+        _unregister:function() {
+            var self = this;
+            Event.remove(document, "keydown", self._keydown, self);
+            mask.detach("click", self.hide, self);
+        },
         _initEl:function() {
             //just manage container
             var self = this,el = self.get("el");
@@ -7216,7 +7246,6 @@ KISSY.Editor.add("overlay", function() {
                     "<div class='ke-bd'></div>" +
                     "<div class='ke-ft'>" +
                     "</div>" +
-
                     "</div>");
                 document.body.appendChild(el[0]);
                 self.set("el", el);
@@ -8352,9 +8381,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         for (var f in contextMenu) {
                             (function(f) {
                                 myContexts[f] = function() {
-                                    editor.fire("save");
                                     contextMenu[f](editor);
-                                    editor.fire("save");
                                 }
                             })(f);
                         }
@@ -8374,38 +8401,33 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
                 },
                 _getFlashUrl:function(r) {
-                    return   getFlashUrl(r);
+                    return getFlashUrl(r);
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
-                        editor = self.editor;
-                    var r = editor.restoreRealElement(selectedFlash);
+                        editor = self.editor,
+                        r = editor.restoreRealElement(selectedFlash);
                     tipurl.html(self._getFlashUrl(r));
                     tipurl.attr("href", self._getFlashUrl(r));
-                }
-                ,
+                },
                 _dbclick:function(ev) {
                     var self = this,t = new Node(ev.target);
                     if (t._4e_name() === "img" && t.hasClass(self._cls)) {
-                        self.selectedFlash = t;
-                        self.show();
+                        self.show(null, t);
                         ev.halt();
                     }
                 },
 
                 _prepareShow:function() {
-                    var self = this;
-                    self.d = new Overlay({
-                        title:self._title,
-                        width:"350px",
-                        mask:true
-                    });
-                    self.d.on("hide", function() {
-                        //清空
-                        self.selectedFlash = null;
-                    });
-                    self.d.body.html(self._bodyHtml);
-                    self.d.foot.html(self._footHtml);
+                    var self = this,
+                        d = new Overlay({
+                            title:self._title,
+                            width:"350px",
+                            mask:true
+                        });
+                    d.body.html(self._bodyHtml);
+                    d.foot.html(self._footHtml);
+                    self.d = d;
                     self._initD();
                 }
                 ,
@@ -8432,12 +8454,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         self.dHeight.val("");
                     }
                 },
-                show:function() {
-                    var self = this,
-                        editor = self.editor,
-                        d = self.d,
-                        f = self.selectedFlash;
+                show:function(ev, _selectedEl) {
+                    var self = this;
                     self._prepareShow();
+                    self.selectedFlash = _selectedEl;
                     self._updateD();
                 }
                 ,
@@ -8492,7 +8512,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var substitute = editor.createFakeElement ?
                         editor.createFakeElement(real, self._cls, self._type, true, outerHTML) :
                         real;
-                    editor.insertElement(substitute);
+                    substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
                     if (self.selectedFlash) {
                         editor.getSelection().selectElement(substitute);
@@ -8535,8 +8555,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         tipurl._4e_unselectable();
                         tipremove._4e_unselectable();
                         tipchange.on("click", function(ev) {
-                            bubble._plugin.selectedFlash = bubble._selectedEl;
-                            bubble._plugin.show();
+                            bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
                         });
                         tipremove.on("click", function(ev) {
@@ -8561,14 +8580,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
             Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
             Flash.checkFlash = checkFlash;
             var contextMenu = {
-                "编辑Flash":function(editor) {
+                "Flash属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkFlash(startElement),
                         flashUI = editor._toolbars[TYPE_FLASH];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null, flash);
                     }
                 }
             };
@@ -11403,9 +11421,20 @@ KISSY.Editor.add("image", function(editor) {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
+        TYPE_IMG = 'image',
+        BubbleView = KE.BubbleView,
         Overlay = KE.SimpleOverlay;
+    //!TODO 需要重构，flashsupport ,image 类似，再抽离？
     if (!KE.ImageInserter) {
         (function() {
+
+            var checkImg = function (lastElement) {
+                return lastElement._4e_ascendant(function(node) {
+                    return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className));
+                }, true);
+            },
+                labelStyle = "<label><span style='color:#0066CC;font-weight:bold;'>";
+
             function ImageInserter(cfg) {
                 ImageInserter.superclass.constructor.call(this, cfg);
                 this._init();
@@ -11414,27 +11443,85 @@ KISSY.Editor.add("image", function(editor) {
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div>" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>图片网址： " +
+                    labelStyle + "图片网址： " +
                     "</span><input class='ke-img-url' style='width:230px' value='http://'/></label>" +
                     "</p>" +
+                    "<p style='margin:5px 0'>" +
+                    labelStyle + "高度： " +
+                    "</span><input class='ke-img-height' style='width:90px' value='自动'/>px</label> &nbsp;" +
+                    labelStyle + "宽度： " +
+                    "</span><input class='ke-img-width' style='width:90px' value='自动'/>px</label>" +
+                    "</p>" +
+                    "<p>" +
+                    labelStyle + "对齐： " +
+                    "</span><select class='ke-img-align'>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
+                    "</select></label>" +
+                    "</p>" +
                     "</div>",
-                footHtml = "<button class='ke-img-insert'>插入</button> <button class='ke-img-cancel'>取消</button>";
+                footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
 
             ImageInserter.ATTRS = {
                 editor:{}
             };
-
+            var contextMenu = {
+                "图片属性":function(editor) {
+                    var selection = editor.getSelection(),
+                        startElement = selection && selection.getStartElement(),
+                        flash = checkImg(startElement),
+                        flashUI = editor._toolbars[TYPE_IMG];
+                    if (flash) {
+                        flashUI.show(null, flash);
+                    }
+                }
+            };
             S.extend(ImageInserter, S.Base, {
                 _init:function() {
-                    var editor = this.get("editor"),toolBarDiv = editor.toolBarDiv;
-                    this.el = new TripleButton({
+                    var self = this,
+                        editor = self.get("editor"),
+                        toolBarDiv = editor.toolBarDiv,
+                        myContexts = {};
+                    self.editor = editor;
+                    self.el = new TripleButton({
                         contentCls:"ke-toolbar-image",
-                        //text:"img",
-                        title:"插入图片",
+                        title:"图片属性",
                         container:toolBarDiv
                     });
-                    this.el.on("offClick", this.show, this);
-                    KE.Utils.lazyRun(this, "_prepare", "_real");
+                    self.el.on("offClick", self.show, self);
+                    Event.on(editor.document, "dblclick", self._dblclick, self);
+                    KE.Utils.lazyRun(self, "_prepare", "_real");
+                    editor._toolbars = editor._toolbars || {};
+                    editor._toolbars[TYPE_IMG] = self;
+                    if (contextMenu) {
+                        for (var f in contextMenu) {
+                            (function(f) {
+                                myContexts[f] = function() {
+                                    contextMenu[f](editor);
+                                }
+                            })(f);
+                        }
+                    }
+                    KE.ContextMenu.register(editor.document, {
+                        rules:[checkImg],
+                        width:"120px",
+                        funcs:myContexts
+                    });
+
+
+                    BubbleView.attach({
+                        pluginName:TYPE_IMG,
+                        pluginInstance:self
+                    });
+
+                },
+                _dblclick:function(ev) {
+                    var self = this,t = new Node(ev.target);
+                    if (checkImg(t)) {
+                        self.show(null, t);
+                        ev.halt();
+                    }
                 },
                 _prepare:function() {
                     var self = this,editor = self.get("editor");
@@ -11450,32 +11537,52 @@ KISSY.Editor.add("image", function(editor) {
                     var content = self.content;
                     var cancel = content.one(".ke-img-cancel"),ok = content.one(".ke-img-insert");
                     self.imgUrl = content.one(".ke-img-url");
+                    self.imgHeight = content.one(".ke-img-height");
+                    self.imgWidth = content.one(".ke-img-width");
+                    self.imgAlign = content.one(".ke-img-align");
                     cancel.on("click", function(ev) {
                         self.d.hide();
                         ev.halt();
                     });
-                    Event.on(document, "click", self.hide, self);
-                    Event.on(editor.document, "click", self.hide, self);
+
                     ok.on("click", function() {
                         self._insert();
                     });
                 },
-                hide:function(ev) {
-                    var self = this;
-                    if (DOM._4e_ascendant(ev.target, function(node) {
-                        return node[0] === self.content[0] || node[0] === self.el.el[0];
-                    }, true))return;
-                    this.d.hide();
+                _updateTip:function(tipurl, a) {
+                    tipurl.html(a.attr("src"));
+                    tipurl.attr("href", a.attr("src"));
                 },
+
                 _real:function() {
                     this.d.show();
                 },
                 _insert:function() {
-                    var editor = this.get("editor");
-                    var url = this.imgUrl.val();
+                    var self = this,
+                        editor = self.get("editor"),
+                        url = self.imgUrl.val();
                     if (!url) return;
-                    var img = new Node("<img src='" + url + "' alt='' />", null, editor.document);
-                    editor.insertElement(img, function(el) {
+                    var height = parseInt(self.imgHeight.val()),
+                        width = parseInt(self.imgWidth.val()),
+                        align = self.imgAlign.val(),
+                        style = '';
+
+                    if (height) {
+                        style += "height:" + height + "px;";
+                    }
+                    if (width) {
+                        style += "width:" + width + "px;";
+                    }
+                    if (align) {
+                        style += "float:" + align + ";";
+                    }
+                    if (style) {
+                        style = " style='" + style + "' ";
+                    }
+                    var img = new Node("<img " +
+                        style +
+                        "src='" + url + "' alt='' />", null, editor.document);
+                    img = editor.insertElement(img, (height || width) ? null : function(el) {
                         el.on("load", function() {
                             el.detach();
                             el.css({
@@ -11484,13 +11591,75 @@ KISSY.Editor.add("image", function(editor) {
                             });
                         });
                     });
-                    this.d.hide();
+                    if (self._selectedEl) {
+                        editor.getSelection().selectElement(img);
+                    }
+                    self.d.hide();
+                    editor.notifySelectionChange();
                 },
-                show:function() {
-                    this._prepare();
+                _updateD:function(_selectedEl) {
+                    var self = this;
+                    self._selectedEl = _selectedEl;
+                    if (_selectedEl) {
+                        self.imgUrl.val(_selectedEl.attr("src"));
+                        self.imgHeight.val(_selectedEl.height());
+                        self.imgWidth.val(_selectedEl.width());
+                        self.imgAlign.val(_selectedEl.css("float"))
+                    }
+                },
+                show:function(ev, _selectedEl) {
+                    var self = this;
+                    self._prepare();
+                    self._updateD(_selectedEl);
                 }
             });
             KE.ImageInserter = ImageInserter;
+
+
+            var tipHtml = ' '
+                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+                + '';
+
+            (function(pluginName, label, checkFlash) {
+
+                BubbleView.register({
+                    pluginName:pluginName,
+                    func:checkFlash,
+                    init:function() {
+                        var bubble = this,
+                            el = bubble.el;
+                        el.html(label + tipHtml);
+                        var tipurl = el.one(".ke-bubbleview-url"),
+                            tipchange = el.one(".ke-bubbleview-change"),
+                            tipremove = el.one(".ke-bubbleview-remove");
+                        //ie focus not lose
+                        tipchange._4e_unselectable();
+                        tipurl._4e_unselectable();
+                        tipremove._4e_unselectable();
+                        tipchange.on("click", function(ev) {
+                            bubble._plugin.show(null, bubble._selectedEl);
+                            ev.halt();
+                        });
+                        tipremove.on("click", function(ev) {
+                            var flash = bubble._plugin;
+                            bubble._selectedEl._4e_remove();
+                            flash.editor.notifySelectionChange();
+                            ev.halt();
+                        });
+                        /*
+                         位置变化
+                         */
+                        bubble.on("afterVisibleChange", function(ev) {
+                            var v = ev.newVal,a = bubble._selectedEl,
+                                flash = bubble._plugin;
+                            if (!v || !a)return;
+                            flash._updateTip(tipurl, a);
+                        });
+                    }
+                });
+            })(TYPE_IMG, "图片网址： ", checkImg);
         })();
     }
 
@@ -11977,7 +12146,7 @@ KISSY.Editor.add("link", function(editor) {
             Link.init = function() {
                 var self = this,
                     d = new Overlay({
-                        title:"修改链接",
+                        title:"链接属性",
                         mask:true,
                         width:"300px"
                     });
@@ -13091,14 +13260,13 @@ KISSY.Editor.add("music", function(editor) {
             Flash.registerBubble("music", "音乐网址： ", checkMusic);
             KE.MusicInserter = MusicInserter;
             var contextMenu = {
-                "编辑音乐":function(editor) {
+                "音乐属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkMusic(startElement),
                         flashUI = editor._toolbars[TYPE_MUSIC];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null,flash);
                     }
                 }
             };
@@ -13365,7 +13533,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,editor = self.editor;
                     var t = ev.target,icon;
                     if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img alt='' style='width:48px;height:52px;' src='" + icon + "'/>", null, editor.document);
+                        var img = new Node("<img alt='' style='width:52px;height:48px;' src='" + icon + "'/>", null, editor.document);
                         editor.insertElement(img);
                         this.smileyWin.hide();
                     }

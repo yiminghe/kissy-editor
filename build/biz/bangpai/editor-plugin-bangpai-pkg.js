@@ -95,8 +95,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         editor = self.editor,
                         d = self.d,
                         action = d.el.one("button"),
-                        input = d.el.one(".ke-xiami-url")
-                        ;
+                        input = d.el.one(".ke-xiami-url");
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._url = "http://www.xiami.com/app/nineteen/search/key/${key}/page/1?random=${random}&callback=bangpai_xiami";
                     action.on("click", function() {
@@ -114,7 +113,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 _listSearch:function(data) {
                     var self = this,
                         re = data.results,
-                        html = "<ul>"
+                        html = "<ul>";
                     for (var i in re) {
                         var r = re[i];
                         html += "<li>" + decodeURIComponent(r.song_name) + "</li>"
@@ -155,9 +154,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
     requires
         :
         ["flashsupport"]
-}
-    )
-    ;KISSY.Editor.add("bangpai-video", function(editor) {
+});KISSY.Editor.add("bangpai-video", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         CLS_VIDEO = "ke_video",
@@ -325,7 +322,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     return p && p.height;
                 },
                 _getFlashUrl:function(r) {
-                    return   getFlashUrl(r);
+                    return getFlashUrl(r);
                 },
                 _updateD:function() {
                     var self = this,
@@ -348,14 +345,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             Flash.registerBubble("bangpai-video", "视频链接： ", checkVideo);
             KE.BangPaiVideo = BangPaiVideo;
             var contextMenu = {
-                "编辑视频":function(editor) {
+                "视频属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkVideo(startElement),
                         flashUI = editor._toolbars[TYPE_VIDEO];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null, flash);
                     }
                 }
             };

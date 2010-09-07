@@ -79,9 +79,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         for (var f in contextMenu) {
                             (function(f) {
                                 myContexts[f] = function() {
-                                    editor.fire("save");
                                     contextMenu[f](editor);
-                                    editor.fire("save");
                                 }
                             })(f);
                         }
@@ -101,38 +99,33 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
                 },
                 _getFlashUrl:function(r) {
-                    return   getFlashUrl(r);
+                    return getFlashUrl(r);
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
-                        editor = self.editor;
-                    var r = editor.restoreRealElement(selectedFlash);
+                        editor = self.editor,
+                        r = editor.restoreRealElement(selectedFlash);
                     tipurl.html(self._getFlashUrl(r));
                     tipurl.attr("href", self._getFlashUrl(r));
-                }
-                ,
+                },
                 _dbclick:function(ev) {
                     var self = this,t = new Node(ev.target);
                     if (t._4e_name() === "img" && t.hasClass(self._cls)) {
-                        self.selectedFlash = t;
-                        self.show();
+                        self.show(null, t);
                         ev.halt();
                     }
                 },
 
                 _prepareShow:function() {
-                    var self = this;
-                    self.d = new Overlay({
-                        title:self._title,
-                        width:"350px",
-                        mask:true
-                    });
-                    self.d.on("hide", function() {
-                        //清空
-                        self.selectedFlash = null;
-                    });
-                    self.d.body.html(self._bodyHtml);
-                    self.d.foot.html(self._footHtml);
+                    var self = this,
+                        d = new Overlay({
+                            title:self._title,
+                            width:"350px",
+                            mask:true
+                        });
+                    d.body.html(self._bodyHtml);
+                    d.foot.html(self._footHtml);
+                    self.d = d;
                     self._initD();
                 }
                 ,
@@ -159,12 +152,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         self.dHeight.val("");
                     }
                 },
-                show:function() {
-                    var self = this,
-                        editor = self.editor,
-                        d = self.d,
-                        f = self.selectedFlash;
+                show:function(ev, _selectedEl) {
+                    var self = this;
                     self._prepareShow();
+                    self.selectedFlash = _selectedEl;
                     self._updateD();
                 }
                 ,
@@ -219,7 +210,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var substitute = editor.createFakeElement ?
                         editor.createFakeElement(real, self._cls, self._type, true, outerHTML) :
                         real;
-                    editor.insertElement(substitute);
+                    substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
                     if (self.selectedFlash) {
                         editor.getSelection().selectElement(substitute);
@@ -262,8 +253,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         tipurl._4e_unselectable();
                         tipremove._4e_unselectable();
                         tipchange.on("click", function(ev) {
-                            bubble._plugin.selectedFlash = bubble._selectedEl;
-                            bubble._plugin.show();
+                            bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
                         });
                         tipremove.on("click", function(ev) {
@@ -288,14 +278,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
             Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
             Flash.checkFlash = checkFlash;
             var contextMenu = {
-                "编辑Flash":function(editor) {
+                "Flash属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkFlash(startElement),
                         flashUI = editor._toolbars[TYPE_FLASH];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null, flash);
                     }
                 }
             };

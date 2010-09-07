@@ -95,8 +95,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         editor = self.editor,
                         d = self.d,
                         action = d.el.one("button"),
-                        input = d.el.one(".ke-xiami-url")
-                        ;
+                        input = d.el.one(".ke-xiami-url");
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._url = "http://www.xiami.com/app/nineteen/search/key/${key}/page/1?random=${random}&callback=bangpai_xiami";
                     action.on("click", function() {
@@ -114,7 +113,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 _listSearch:function(data) {
                     var self = this,
                         re = data.results,
-                        html = "<ul>"
+                        html = "<ul>";
                     for (var i in re) {
                         var r = re[i];
                         html += "<li>" + decodeURIComponent(r.song_name) + "</li>"
@@ -155,6 +154,4 @@ KISSY.Editor.add("bangpai-music", function(editor) {
     requires
         :
         ["flashsupport"]
-}
-    )
-    ;
+});

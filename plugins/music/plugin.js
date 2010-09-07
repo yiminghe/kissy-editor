@@ -148,14 +148,13 @@ KISSY.Editor.add("music", function(editor) {
             Flash.registerBubble("music", "音乐网址： ", checkMusic);
             KE.MusicInserter = MusicInserter;
             var contextMenu = {
-                "编辑音乐":function(editor) {
+                "音乐属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkMusic(startElement),
                         flashUI = editor._toolbars[TYPE_MUSIC];
                     if (flash) {
-                        flashUI.selectedFlash = flash;
-                        flashUI.show();
+                        flashUI.show(null,flash);
                     }
                 }
             };

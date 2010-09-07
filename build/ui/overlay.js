@@ -11,12 +11,12 @@ KISSY.Editor.add("overlay", function() {
         UA = S.UA,
         focusManager = KE.focusManager,
         Node = S.Node,
-        //Event = S.Event,
+        Event = S.Event,
         DOM = S.DOM,
         mask ,
         mask_iframe,
         d_iframe;
-    //全局的不要重写
+    //全局的不要重�?
     if (KE.SimpleOverlay) return;
 
     function Overlay() {
@@ -25,7 +25,6 @@ KISSY.Editor.add("overlay", function() {
         self._init();
 
         if (S.UA.ie === 6) {
-
             self.on("show", function() {
                 var el = self.get("el");
                 var bw = parseInt(el.css("width")),
@@ -44,6 +43,7 @@ KISSY.Editor.add("overlay", function() {
                 });
             });
         }
+
         if (self.get("mask")) {
             self.on("show", function() {
                 mask && mask.css({"left":"0px","top":"0px"});
@@ -54,13 +54,13 @@ KISSY.Editor.add("overlay", function() {
                 mask_iframe && mask_iframe.css({"left":"-9999px",top:"-9999px"});
             });
         }
-        self.hide();
     }
 
 
     Overlay.init = function() {
 
         var body = document.body;
+
         mask = new Node("<div class=\"ke-mask\">&nbsp;</div>");
         mask.css({"left":"-9999px",top:"-9999px"});
         mask.css({
@@ -116,10 +116,35 @@ KISSY.Editor.add("overlay", function() {
                 self._initFocusNotice();
                 self.on("beforeVisibleChange", self._editorFocusMg, self);
             }
-            //初始状态隐藏
+            //初始状�?隐藏
             el.css({"left":"-9999px",top:"-9999px"});
-        },
 
+            self.on("afterVisibleChange", function(ev) {
+                var v = ev.newVal;
+                if (v) {
+                    self._register();
+                } else {
+                    self._unregister();
+                }
+            });
+
+        },
+        _register:function() {
+            var self = this;
+            Event.on(document, "keydown", self._keydown, self);
+            //mask click support
+            mask.on("click", self.hide, self);
+        },
+        //esc keydown support
+        _keydown:function(ev) {
+            //esc
+            if (ev.keyCode == 27) this.hide();
+        },
+        _unregister:function() {
+            var self = this;
+            Event.remove(document, "keydown", self._keydown, self);
+            mask.detach("click", self.hide, self);
+        },
         _initEl:function() {
             //just manage container
             var self = this,el = self.get("el");
@@ -138,7 +163,6 @@ KISSY.Editor.add("overlay", function() {
                     "<div class='ke-bd'></div>" +
                     "<div class='ke-ft'>" +
                     "</div>" +
-
                     "</div>");
                 document.body.appendChild(el[0]);
                 self.set("el", el);
@@ -212,7 +236,7 @@ KISSY.Editor.add("overlay", function() {
                 self._focusEditor = focusManager.currentInstance();
                 editor = self._focusEditor;
                 /*
-                 //ie 6,7 在窗口a focus后会丢掉已选择，再选择
+                 //ie 6,7 在窗口a focus后会丢掉已�?择，再�?�?
                  if (UA.ie && UA.ie < 8 && editor) {
                  var sel = editor.getSelection(),range = sel.getRanges()[0];
                  if (!range.collapsed && sel.getType() != KE.Selection.SELECTION_ELEMENT) {
@@ -223,18 +247,18 @@ KISSY.Editor.add("overlay", function() {
                  }*/
 
                 //console.log("give up focus : " + editor);
-                //聚焦到当前窗口
+                //聚焦到当前窗�?
                 self._getFocusEl()[0].focus();
                 var input = self.el.one("input");
                 if (input) {
                     setTimeout(function() {
-                        //ie 不可聚焦会错哦 disabled ?
+                        //ie 不可聚焦会错�?disabled ?
                         try {
                             input[0].focus();
                             input[0].select();
                         } catch(e) {
                         }
-                        //必须延迟！选中第一个input
+                        //必须延迟！�?中第�?��input
                     }, 0);
                 } else {
                     /*
@@ -246,7 +270,7 @@ KISSY.Editor.add("overlay", function() {
                             $range = $selection.createRange();
                         if ($range) {
                             if (
-                            //修改ckeditor，如果单纯选择文字就不用管了
+                            //修改ckeditor，如果单纯�?择文字就不用管了
                             //$range.parentElement && $range.parentElement().ownerDocument == editor.document
                             //||
                             //缩放图片那个框在ie下会突出浮动层来

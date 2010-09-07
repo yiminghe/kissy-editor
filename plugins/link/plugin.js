@@ -78,7 +78,7 @@ KISSY.Editor.add("link", function(editor) {
             Link.init = function() {
                 var self = this,
                     d = new Overlay({
-                        title:"修改链接",
+                        title:"链接属性",
                         mask:true,
                         width:"300px"
                     });
