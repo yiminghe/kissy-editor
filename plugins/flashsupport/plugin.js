@@ -278,7 +278,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
             Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
             Flash.checkFlash = checkFlash;
             var contextMenu = {
-                "Flash属性git ":function(editor) {
+                "Flash属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkFlash(startElement),
