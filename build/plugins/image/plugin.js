@@ -35,9 +35,9 @@ KISSY.Editor.add("image", function(editor) {
                     "</p>" +
                     "<p style='margin:5px 0'>" +
                     labelStyle + "高度�?" +
-                    "</span><input class='ke-img-height' style='width:90px' value='自动'/>px</label> &nbsp;" +
+                    "</span><input class='ke-img-height' style='width:90px' value='自动'/> px </label> &nbsp;" +
                     labelStyle + "宽度�?" +
-                    "</span><input class='ke-img-width' style='width:90px' value='自动'/>px</label>" +
+                    "</span><input class='ke-img-width' style='width:90px' value='自动'/> px </label>" +
                     "</p>" +
                     "<p>" +
                     labelStyle + "对齐�?" +

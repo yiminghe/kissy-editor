@@ -7106,7 +7106,6 @@ KISSY.Editor.add("overlay", function() {
         var self = this;
         Overlay.superclass.constructor.apply(self, arguments);
         self._init();
-
         if (S.UA.ie === 6) {
             self.on("show", function() {
                 var el = self.get("el");
@@ -7154,9 +7153,11 @@ KISSY.Editor.add("overlay", function() {
         mask.appendTo(body);
 
         if (UA.ie && UA.ie == 6) {
-            d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'></iframe>");
+            d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'" +
+                "></iframe>");
             d_iframe.appendTo(body);
-            mask_iframe = new Node("<" + "iframe class='ke-mask'></iframe>");
+            mask_iframe = new Node("<" + "iframe class='ke-mask'" +
+                "></iframe>");
             mask_iframe.css({"left":"-9999px",top:"-9999px"});
             mask_iframe.css({
                 "width": "100%",
@@ -7262,6 +7263,7 @@ KISSY.Editor.add("overlay", function() {
         },
 
         center:function() {
+
             var el = this.get("el"),
                 bw = parseInt(el.css("width")),
                 bh = el[0].offsetHeight,
@@ -7375,6 +7377,7 @@ KISSY.Editor.add("overlay", function() {
         },
         _realShow : function(v) {
             var el = this.get("el");
+
             this.set("visible", v || true);
         } ,
         show:function(v) {
@@ -11448,9 +11451,9 @@ KISSY.Editor.add("image", function(editor) {
                     "</p>" +
                     "<p style='margin:5px 0'>" +
                     labelStyle + "高度： " +
-                    "</span><input class='ke-img-height' style='width:90px' value='自动'/>px</label> &nbsp;" +
+                    "</span><input class='ke-img-height' style='width:90px' value='自动'/> px </label> &nbsp;" +
                     labelStyle + "宽度： " +
-                    "</span><input class='ke-img-width' style='width:90px' value='自动'/>px</label>" +
+                    "</span><input class='ke-img-width' style='width:90px' value='自动'/> px </label>" +
                     "</p>" +
                     "<p>" +
                     labelStyle + "对齐： " +
