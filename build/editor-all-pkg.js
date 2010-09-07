@@ -11426,7 +11426,9 @@ KISSY.Editor.add("image", function(editor) {
         Event = S.Event,
         TYPE_IMG = 'image',
         BubbleView = KE.BubbleView,
-        Overlay = KE.SimpleOverlay;
+        Overlay = KE.SimpleOverlay,
+        TIP = "http://",
+        DTIP = "自动";
     //!TODO 需要重构，flashsupport ,image 类似，再抽离？
     if (!KE.ImageInserter) {
         (function() {
@@ -11447,13 +11449,13 @@ KISSY.Editor.add("image", function(editor) {
                 bodyHtml = "<div>" +
                     "<p>" +
                     labelStyle + "图片网址： " +
-                    "</span><input class='ke-img-url' style='width:230px' value='http://'/></label>" +
+                    "</span><input class='ke-img-url' style='width:230px' value='" + TIP + "'/></label>" +
                     "</p>" +
                     "<p style='margin:5px 0'>" +
                     labelStyle + "高度： " +
-                    "</span><input class='ke-img-height' style='width:90px' value='自动'/> px </label> &nbsp;" +
+                    "</span><input class='ke-img-height' style='width:90px' value='" + DTIP + "'/> px </label> &nbsp;" +
                     labelStyle + "宽度： " +
-                    "</span><input class='ke-img-width' style='width:90px' value='自动'/> px </label>" +
+                    "</span><input class='ke-img-width' style='width:90px' value='" + DTIP + "'/> px </label>" +
                     "</p>" +
                     "<p>" +
                     labelStyle + "对齐： " +
@@ -11608,6 +11610,11 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
                         self.imgAlign.val(_selectedEl.css("float"))
+                    } else {
+                        self.imgUrl.val(TIP);
+                        self.imgHeight.val(DTIP);
+                        self.imgWidth.val(DTIP);
+                        self.imgAlign.val()
                     }
                 },
                 show:function(ev, _selectedEl) {
@@ -12118,7 +12125,7 @@ KISSY.Editor.add("link", function(editor) {
                     "</span>" +
                     "<input " +
                     "class='ke-link-url' " +
-                    "style='width:230px' " +
+                    "style='width:220px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +

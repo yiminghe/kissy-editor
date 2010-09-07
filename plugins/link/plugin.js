@@ -47,7 +47,7 @@ KISSY.Editor.add("link", function(editor) {
                     "</span>" +
                     "<input " +
                     "class='ke-link-url' " +
-                    "style='width:230px' " +
+                    "style='width:220px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
