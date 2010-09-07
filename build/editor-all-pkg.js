@@ -11491,7 +11491,7 @@ KISSY.Editor.add("image", function(editor) {
                     self.editor = editor;
                     self.el = new TripleButton({
                         contentCls:"ke-toolbar-image",
-                        title:"图片属性",
+                        title:"插入图片",
                         container:toolBarDiv
                     });
                     self.el.on("offClick", self.show, self);
@@ -12225,7 +12225,7 @@ KISSY.Editor.add("link", function(editor) {
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:"ke-toolbar-link",
-                        title:"编辑超链接 "
+                        title:"插入链接 "
                     });
                     self.el.on("click", self.show, self);
                     BubbleView.attach({

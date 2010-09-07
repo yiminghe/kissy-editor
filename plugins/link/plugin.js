@@ -147,7 +147,7 @@ KISSY.Editor.add("link", function(editor) {
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:"ke-toolbar-link",
-                        title:"编辑超链接 "
+                        title:"插入链接 "
                     });
                     self.el.on("click", self.show, self);
                     BubbleView.attach({

@@ -75,7 +75,7 @@ KISSY.Editor.add("image", function(editor) {
                     self.editor = editor;
                     self.el = new TripleButton({
                         contentCls:"ke-toolbar-image",
-                        title:"图片属性",
+                        title:"插入图片",
                         container:toolBarDiv
                     });
                     self.el.on("offClick", self.show, self);
