@@ -161,7 +161,7 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align + ";";
+                        style += "float:" + align + ";margin:0 5px;";
                     }
                     if (style) {
                         style = " style='" + style + "' ";
