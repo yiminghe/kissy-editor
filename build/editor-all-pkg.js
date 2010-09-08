@@ -8477,7 +8477,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:"350px",
+                            width:self._config_dwidth||"350px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);

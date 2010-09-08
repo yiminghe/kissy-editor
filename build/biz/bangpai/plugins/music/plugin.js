@@ -133,11 +133,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             }
 
             var bodyHtml = "" +
-                "<p>" +
-                "<input class='ke-xiami-url' style='width:250px' value='"
+                "<form action='#' class='ke-xiami-form'><p>" +
+                "<input class='ke-xiami-url' style='width:300px' value='"
                 + TIP
                 + "'/> &nbsp; " +
-                " <button style='vertical-align:middle;'>" + BTIP + "</button>" +
+                " <input type='submit' " +
+                "style='vertical-align:middle;' value='" + BTIP + "' />" +
                 "</p>" +
                 "<p style='margin:5px 0'><label>�?齐： " +
                 "<select class='ke-xiami-align'>" +
@@ -145,7 +146,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='left'>左对�?/option>" +
                 "<option value='right'>右对�?/option>" +
                 "</select>" +
-                "<p>" +
+                "</p>" +
+                "</form>" +
                 "<div class='ke-xiami-list'>" +
                 "</div>" +
                 "",
@@ -177,6 +179,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._tip = "插入虾米音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_XIAMI];
+                    self._config_dwidth = "400px";
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
@@ -189,13 +192,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = self.d,
-                        action = d.el.one("button"),
+                        action = d.el.one(".ke-xiami-form"),
                         input = d.el.one(".ke-xiami-url");
                     self.dAlign = d.el.one(".ke-xiami-align")
                     self._xiami_input = input;
                     self._xiamia_list = d.el.one(".ke-xiami-list");
-                    self._action = action;
-
 
                     function loadRecordsByPage(page) {
                         var params = {
@@ -206,8 +207,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         var req = getXiamiUrl(params);
                         bangpai_xiami.instance = self;
                         bangpai_xiami.page = page;
-                        action.html(BLOADING);
-                        action[0].disabled = true;
                         self._xiamia_list.html("<img style='" +
                             "display:block;" +
                             "width:108px;" +
@@ -216,8 +215,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         S.getScript(req);
                     }
 
-                    action.on("click", function() {
+                    action.on("submit", function(ev) {
                         loadRecordsByPage(1);
+                        ev.halt();
                     }, self);
 
 
@@ -248,57 +248,62 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 },
                 _listSearch:function(data) {
                     var self = this,i,
-                        re = data.results,html,
-                        action = self._action;
-                    action.html(BTIP);
-                    action[0].disabled = false;
-                    if (re && re.length) {
-                        html = "<ul>";
-                        for (i = 0; i < re.length; i++) {
-                            var r = re[i];
-                            html += "<li " +
-                                "title='" + decodeURIComponent(r.song_name) + "'>" +
-                                "<span class='ke-xiami-song'>"
-                                + limit(decodeURIComponent(r.song_name), 25) +
-                                "</span>" +
-                                "" +
-                                "" +
-                                //album_id_song_id
-                                "<a href='#' " +
-                                "title='" + decodeURIComponent(r.song_name) + "' " +
-                                "class='ke-xiami-add' data-value='" +
-                                (
-                                    r.album_id
-                                        + "_"
-                                        + r.song_id
-                                    )
-                                + "'>选择</a>" +
-                                "</li>"
-                        }
-                        html += "</ul>";
-                        
-                        var page = data.page,totalpage = Math.floor(data.total / 8),start = page - 3,end = page + 3;
-                        if (totalpage > 1) {
-                            html += "<p class='ke-xiami-paging'>" +
-                                getXiamiPaging(page, 1, "1...");
-                            if (start <= 2) {
-                                end = Math.min(2 - start + end, totalpage - 1);
-                                start = 2;
+                        re = data.results,html;
+                    if (data.key == self._xiami_input.val()) {
+                        if (re && re.length) {
+                            html = "<ul>";
+                            for (i = 0; i < re.length; i++) {
+                                var r = re[i];
+                                html += "<li " +
+                                    "title='" + decodeURIComponent(r.song_name) + "'>" +
+                                    "<span class='ke-xiami-song'>"
+                                    + limit(decodeURIComponent(r.song_name), 25) +
+                                    "</span>" +
+                                    "" +
+                                    "" +
+                                    //album_id_song_id
+                                    "<a href='#' " +
+                                    "title='" + decodeURIComponent(r.song_name) + "' " +
+                                    "class='ke-xiami-add' data-value='" +
+                                    (
+                                        r.album_id
+                                            + "_"
+                                            + r.song_id
+                                        )
+                                    + "'>选择</a>" +
+                                    "</li>"
                             }
-                            end = Math.min(end, totalpage - 1);
-                            for (i = start; i <= end; i++) {
-                                html += getXiamiPaging(page, i);
-                            }
-                            if (end != totalpage) {
-                                html += getXiamiPaging(page, totalpage, totalpage + "...");
-                            }
-                            html += "</p>";
-                        }
+                            html += "</ul>";
 
-                    } else {
-                        html = "<p style='text-align:center;margin:10px 0;'>不好意�?，没有找到结果！</p>";
+                            var page = data.page,
+                                totalpage = Math.floor(data.total / 8),
+                                start = page - 3,end = page + 3;
+                            if (totalpage > 1) {
+                                if (start <= 2) {
+                                    end = Math.min(2 - start + end, totalpage - 1);
+                                    start = 2;
+                                }
+                                end = Math.min(end, totalpage - 1);
+                                if (end == totalpage - 1) {
+                                    start = Math.max(2, end - 6);
+                                }
+
+                                html += "<p class='ke-xiami-paging'>" +
+                                    getXiamiPaging(page, 1, "1" + (start != 2 ? "..." : ""));
+                                for (i = start; i <= end; i++) {
+                                    html += getXiamiPaging(page, i);
+                                }
+                                if (end != totalpage) {
+                                    html += getXiamiPaging(page, totalpage, (end != totalpage - 1 ? "..." : "") + totalpage);
+                                }
+                                html += "</p>";
+                            }
+
+                        } else {
+                            html = "<p style='text-align:center;margin:10px 0;'>不好意�?，没有找到结果！</p>";
+                        }
+                        self._xiamia_list.html(html);
                     }
-                    self._xiamia_list.html(html);
                 },
                 _updateD : function() {
                     var self = this,

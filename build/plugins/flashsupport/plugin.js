@@ -23,19 +23,19 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
         (function() {
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<p><label>地址： " +
+                bodyHtml = "<p><label>地址�?" +
                     "<input class='ke-flash-url' style='width:280px' value='"
                     + TIP
                     + "'/></label></p>" +
-                    "<p style='margin:5px 0'><label>宽度： " +
+                    "<p style='margin:5px 0'><label>宽度�?" +
                     "<input class='ke-flash-width' style='width:110px' /></label>" +
-                    "&nbsp;&nbsp;<label>高度：<input class='ke-flash-height' " +
+                    "&nbsp;&nbsp;<label>高度�?input class='ke-flash-height' " +
                     "style='width:110px' /></label></p>" +
-                    "<p style='margin:5px 0'><label>对齐： " +
+                    "<p style='margin:5px 0'><label>对齐�?" +
                     "<select class='ke-flash-align'>" +
-                    "<option value=''>无</option>" +
-                    "<option value='left'>左对齐</option>" +
-                    "<option value='right'>右对齐</option>" +
+                    "<option value=''>�?/option>" +
+                    "<option value='left'>左对�?/option>" +
+                    "<option value='right'>右对�?/option>" +
                     "</select>" +
                     "<p>",
 
@@ -43,7 +43,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<button class='ke-flash-cancel'>取消</button>";
 
             /**
-             * 所有基于 flash 的插件基类，使用 template 模式抽象
+             * �?��基于 flash 的插件基类，使用 template 模式抽象
              * @param editor
              */
             function Flash(editor) {
@@ -64,14 +64,14 @@ KISSY.Editor.add("flashsupport", function(editor) {
             S.augment(Flash, {
 
                 /**
-                 * 配置信息，用于子类覆盖
+                 * 配置信息，用于子类覆�?
                  * @override
                  */
                 _config:function() {
                     var self = this;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
-                    self._title = "Flash属性";
+                    self._title = "Flash属�?";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
@@ -90,7 +90,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     editor._toolbars = editor._toolbars || {};
                     editor._toolbars[self._type] = self;
 
-                    //生成编辑器工具按钮
+                    //生成编辑器工具按�?
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:self._contentCls,
@@ -109,7 +109,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                             })(f);
                         }
                     }
-                    //注册右键，contextmenu时检测
+                    //注册右键，contextmenu时检�?
                     ContextMenu.register(editor.document, {
                         rules:self._flashRules,
                         width:"120px",
@@ -117,19 +117,19 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     });
 
 
-                    //注册泡泡，selectionChange时检测
+                    //注册泡泡，selectionChange时检�?
                     BubbleView.attach({
                         pluginName:self._type,
                         pluginInstance:self
                     });
 
-                    //注册双击，双击时检测
+                    //注册双击，双击时�?��
                     Event.on(editor.document, "dblclick", self._dbclick, self);
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
                 },
 
                 /**
-                 * 子类覆盖，如何从flash url得到合适的应用表示地址
+                 * 子类覆盖，如何从flash url得到合�?的应用表示地�?
                  * @override
                  * @param r flash 元素
                  */
@@ -150,7 +150,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     tipurl.attr("href", self._getFlashUrl(r));
                 },
 
-                //根据图片标志触发本插件应用
+                //根据图片标志触发本插件应�?
                 _dbclick:function(ev) {
                     var self = this,t = new Node(ev.target);
                     if (t._4e_name() === "img" && t.hasClass(self._cls)) {
@@ -164,7 +164,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:"350px",
+                            width:self._config_dwidth||"350px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);
@@ -173,13 +173,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._initD();
                 },
                 _realShow:function() {
-                    //显示前就要内容搞好
+                    //显示前就要内容搞�?
                     this._updateD();
                     this.d.show();
                 },
 
                 /**
-                 * 触发前初始化窗口 field，子类覆盖
+                 * 触发前初始化窗口 field，子类覆�?
                  * @override
                  */
                 _updateD:function() {
@@ -211,7 +211,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
 
                 /**
-                 * 映射窗口field，子类覆盖
+                 * 映射窗口field，子类覆�?
                  * @override
                  */
                 _initD:function() {
@@ -229,7 +229,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 },
 
                 /**
-                 * 应用子类覆盖，提供 flash 元素的相关信息
+                 * 应用子类覆盖，提�?flash 元素的相关信�?
                  * @override
                  */
                 _getDInfo:function() {
@@ -288,7 +288,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
             KE.Flash = Flash;
 
             /**
-             * tip初始化，所有共享一个tip
+             * tip初始化，�?��共享�?��tip
              */
             var tipHtml = ' '
                 + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
@@ -307,7 +307,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
             }
 
             /**
-             * 注册一个泡泡
+             * 注册�?��泡泡
              * @param pluginName
              * @param label
              * @param checkFlash
@@ -331,7 +331,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
 
                         tipchange.on("click", function(ev) {
-                            //回调show，传入选中元素
+                            //回调show，传入�?中元�?
                             bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
                         });
@@ -356,12 +356,12 @@ KISSY.Editor.add("flashsupport", function(editor) {
             };
 
 
-            Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
+            Flash.registerBubble("flash", "Flash 网址�?", checkFlash);
             Flash.checkFlash = checkFlash;
 
             //右键功能列表
             var contextMenu = {
-                "Flash属性":function(editor) {
+                "Flash属�?":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkFlash(startElement),
