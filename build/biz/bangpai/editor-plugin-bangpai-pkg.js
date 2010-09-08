@@ -1,8 +1,13 @@
+/**
+ * biz plugin , xiami music intergration for bangpai
+ * @author:yiminghe@gmail.com
+ */
 KISSY.Editor.add("bangpai-music", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         DOM = S.DOM,
         Node = S.Node,
+        loading = KE.Config.base + "assets/loading.gif",
         Flash = KE.Flash,
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "bangpai-music",
@@ -127,16 +132,23 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return str;
             }
 
-            var bodyHtml = "<div>" +
-                "<p class='ks-clear'>" +
+            var bodyHtml = "" +
+                "<p>" +
                 "<input class='ke-xiami-url' style='width:250px' value='"
                 + TIP
                 + "'/> &nbsp; " +
                 " <button style='vertical-align:middle;'>" + BTIP + "</button>" +
                 "</p>" +
+                "<p style='margin:5px 0'><label>对 齐： " +
+                "<select class='ke-xiami-align'>" +
+                "<option value=''>无</option>" +
+                "<option value='left'>左对齐</option>" +
+                "<option value='right'>右对齐</option>" +
+                "</select>" +
+                "<p>" +
                 "<div class='ke-xiami-list'>" +
                 "</div>" +
-                "</div>",
+                "",
                 footHtml = "";
 
 
@@ -179,9 +191,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         d = self.d,
                         action = d.el.one("button"),
                         input = d.el.one(".ke-xiami-url");
+                    self.dAlign = d.el.one(".ke-xiami-align")
                     self._xiami_input = input;
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._action = action;
+
 
                     function loadRecordsByPage(page) {
                         var params = {
@@ -192,9 +206,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         var req = getXiamiUrl(params);
                         bangpai_xiami.instance = self;
                         bangpai_xiami.page = page;
-
                         action.html(BLOADING);
                         action[0].disabled = true;
+                        self._xiamia_list.html("<img style='" +
+                            "display:block;" +
+                            "width:108px;" +
+                            "margin:5px auto 0 auto;" +
+                            "'src='" + loading + "'/>");
                         S.getScript(req);
                     }
 
@@ -218,7 +236,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                     add.attr("data-value")
                                     + "/singlePlayer.swf"),
                                 attrs:{
-                                    title:add.attr("title")
+                                    title:add.attr("title"),
+                                    align:self.dAlign.val()
                                 }
                             };
                             self._gen();
@@ -285,8 +304,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         self._xiami_input.val(f.attr("title"));
+                        self.dAlign.val(f.attr("align"));
                     } else {
                         self._xiami_input.val(TIP);
+                        self.dAlign.val("");
                     }
                     self._xiamia_list.html("");
                 },
@@ -336,7 +357,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 {
     attach:false,
     requires : ["flashsupport"]
-});KISSY.Editor.add("bangpai-video", function(editor) {
+});/**
+ * biz plugin , video about ku6,youku,tudou for bangpai
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("bangpai-video", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         CLS_VIDEO = "ke_video",
@@ -445,7 +470,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
     if (!KE.BangPaiVideo) {
         (function() {
-            var bodyHtml = "<div>" +
+            var bodyHtml = "" +
                 "<p style='margin-bottom:5px'>" +
                 "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
                 "</p>" +
@@ -455,7 +480,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 + TIP
                 + "'/></label>" +
                 "</p>" +
-                "</div>",
+                "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                "<select class='ke-video-align'>" +
+                "<option value=''>无</option>" +
+                "<option value='left'>左对齐</option>" +
+                "<option value='right'>右对齐</option>" +
+                "</select>" +
+                "<p>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
                     "<button class='ke-video-cancel'>取消</button>",
                 flashRules = ["img." + CLS_VIDEO];
@@ -483,6 +514,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         editor = self.editor,
                         d = self.d;
                     self.dUrl = d.el.one(".ke-video-url");
+                    self.dAlign = d.el.one(".ke-video-align");
                     var action = d.el.one(".ke-video-ok"),
                         cancel = d.el.one(".ke-video-cancel");
                     action.on("click", self._gen, self);
@@ -505,7 +537,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             url:re,
                             attrs:{
                                 height:p.height,
-                                width:p.width
+                                width:p.width,
+                                align: self.dAlign.val()
                             }
                         };
                     }
@@ -520,8 +553,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
+                        self.dAlign.val(r.attr("align"));
                     } else {
                         self.dUrl.val(TIP);
+                        self.dAlign.val("");
                     }
                 }
             });

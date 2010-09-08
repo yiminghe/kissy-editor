@@ -1,3 +1,7 @@
+/**
+ * biz plugin , video about ku6,youku,tudou for bangpai
+ * @author:yiminghe@gmail.com
+ */
 KISSY.Editor.add("bangpai-video", function(editor) {
     var S = KISSY,
         KE = S.Editor,
@@ -107,7 +111,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
     if (!KE.BangPaiVideo) {
         (function() {
-            var bodyHtml = "<div>" +
+            var bodyHtml = "" +
                 "<p style='margin-bottom:5px'>" +
                 "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
                 "</p>" +
@@ -117,7 +121,13 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 + TIP
                 + "'/></label>" +
                 "</p>" +
-                "</div>",
+                "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                "<select class='ke-video-align'>" +
+                "<option value=''>无</option>" +
+                "<option value='left'>左对齐</option>" +
+                "<option value='right'>右对齐</option>" +
+                "</select>" +
+                "<p>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
                     "<button class='ke-video-cancel'>取消</button>",
                 flashRules = ["img." + CLS_VIDEO];
@@ -145,6 +155,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         editor = self.editor,
                         d = self.d;
                     self.dUrl = d.el.one(".ke-video-url");
+                    self.dAlign = d.el.one(".ke-video-align");
                     var action = d.el.one(".ke-video-ok"),
                         cancel = d.el.one(".ke-video-cancel");
                     action.on("click", self._gen, self);
@@ -167,7 +178,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                             url:re,
                             attrs:{
                                 height:p.height,
-                                width:p.width
+                                width:p.width,
+                                align: self.dAlign.val()
                             }
                         };
                     }
@@ -182,8 +194,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
+                        self.dAlign.val(r.attr("align"));
                     } else {
                         self.dUrl.val(TIP);
+                        self.dAlign.val("");
                     }
                 }
             });

@@ -8311,6 +8311,10 @@ KISSY.Editor.add("flash", function(editor) {
         new KISSY.Editor.Flash(editor);
     });
 });
+/**
+ * flash base for all flash-based plugin
+ * @author:yiminghe@gmail.com
+ */
 KISSY.Editor.add("flashsupport", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
@@ -8325,27 +8329,36 @@ KISSY.Editor.add("flashsupport", function(editor) {
         TYPE_FLASH = 'flash',
         getFlashUrl = KE.Utils.getFlashUrl,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        flashRules = ["img." + CLS_FLASH],
         TIP = "请输入如 http://www.xxx.com/xxx.swf";
 
 
     if (!KE.Flash) {
 
         (function() {
-
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<div><p><label>地址： " +
+                bodyHtml = "<p><label>地址： " +
                     "<input class='ke-flash-url' style='width:280px' value='"
                     + TIP
                     + "'/></label></p>" +
                     "<p style='margin:5px 0'><label>宽度： " +
                     "<input class='ke-flash-width' style='width:110px' /></label>" +
                     "&nbsp;&nbsp;<label>高度：<input class='ke-flash-height' " +
-                    "style='width:110px' /></label></p>" ,
+                    "style='width:110px' /></label></p>" +
+                    "<p style='margin:5px 0'><label>对齐： " +
+                    "<select class='ke-flash-align'>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
+                    "</select>" +
+                    "<p>",
 
                 footHtml = "<button class='ke-flash-ok'>确定</button> " +
-                    "<button class='ke-flash-cancel'>取消</button></div>";
+                    "<button class='ke-flash-cancel'>取消</button>";
 
+            /**
+             * 所有基于 flash 的插件基类，使用 template 模式抽象
+             * @param editor
+             */
             function Flash(editor) {
                 var self = this;
                 self.editor = editor;
@@ -8362,6 +8375,11 @@ KISSY.Editor.add("flashsupport", function(editor) {
             };
 
             S.augment(Flash, {
+
+                /**
+                 * 配置信息，用于子类覆盖
+                 * @override
+                 */
                 _config:function() {
                     var self = this;
                     self._cls = CLS_FLASH;
@@ -8372,7 +8390,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._contentCls = "ke-toolbar-flash";
                     self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
-                    self._flashRules = flashRules;
+                    self._flashRules = ["img." + CLS_FLASH];
                 },
                 _init:function() {
                     this._config();
@@ -8380,14 +8398,21 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         editor = self.editor,
                         myContexts = {},
                         contextMenu = self._contextMenu;
+
+                    //注册属于编辑器的功能实例
                     editor._toolbars = editor._toolbars || {};
                     editor._toolbars[self._type] = self;
+
+                    //生成编辑器工具按钮
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
                         contentCls:self._contentCls,
                         title:self._tip
                     });
                     self.el.on("click", self.show, this);
+
+
+                    //右键功能关联到编辑器实例
                     if (contextMenu) {
                         for (var f in contextMenu) {
                             (function(f) {
@@ -8397,6 +8422,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                             })(f);
                         }
                     }
+                    //注册右键，contextmenu时检测
                     ContextMenu.register(editor.document, {
                         rules:self._flashRules,
                         width:"120px",
@@ -8404,16 +8430,31 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     });
 
 
+                    //注册泡泡，selectionChange时检测
                     BubbleView.attach({
                         pluginName:self._type,
                         pluginInstance:self
                     });
+
+                    //注册双击，双击时检测
                     Event.on(editor.document, "dblclick", self._dbclick, self);
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
                 },
+
+                /**
+                 * 子类覆盖，如何从flash url得到合适的应用表示地址
+                 * @override
+                 * @param r flash 元素
+                 */
                 _getFlashUrl:function(r) {
                     return getFlashUrl(r);
                 },
+                /**
+                 * 更新泡泡弹出的界面，子类覆盖
+                 * @override
+                 * @param tipurl
+                 * @param selectedFlash
+                 */
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
                         editor = self.editor,
@@ -8421,6 +8462,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     tipurl.html(self._getFlashUrl(r));
                     tipurl.attr("href", self._getFlashUrl(r));
                 },
+
+                //根据图片标志触发本插件应用
                 _dbclick:function(ev) {
                     var self = this,t = new Node(ev.target);
                     if (t._4e_name() === "img" && t.hasClass(self._cls)) {
@@ -8429,6 +8472,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     }
                 },
 
+                //建立弹出窗口
                 _prepareShow:function() {
                     var self = this,
                         d = new Overlay({
@@ -8440,13 +8484,17 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     d.foot.html(self._footHtml);
                     self.d = d;
                     self._initD();
-                }
-                ,
+                },
                 _realShow:function() {
                     //显示前就要内容搞好
                     this._updateD();
                     this.d.show();
                 },
+
+                /**
+                 * 触发前初始化窗口 field，子类覆盖
+                 * @override
+                 */
                 _updateD:function() {
                     var self = this,
                         editor = self.editor,
@@ -8459,45 +8507,58 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         if (r.attr("height")) {
                             self.dHeight.val(parseInt(r.attr("height")));
                         }
+                        self.dAlign.val(r.attr("align"));
                         self.dUrl.val(getFlashUrl(r));
-
                     } else {
                         self.dUrl.val(TIP);
                         self.dWidth.val("");
                         self.dHeight.val("");
+                        self.dAlign.val("");
                     }
                 },
                 show:function(ev, _selectedEl) {
                     var self = this;
                     self.selectedFlash = _selectedEl;
                     self._prepareShow();
-                }
-                ,
+                },
+
+
+                /**
+                 * 映射窗口field，子类覆盖
+                 * @override
+                 */
                 _initD:function() {
                     var self = this,editor = self.editor,d = self.d;
                     self.dHeight = d.el.one(".ke-flash-height");
                     self.dWidth = d.el.one(".ke-flash-width");
                     self.dUrl = d.el.one(".ke-flash-url");
+                    self.dAlign = d.el.one(".ke-flash-align");
                     var action = d.el.one(".ke-flash-ok"),
                         cancel = d.el.one(".ke-flash-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
                         self.d.hide();
                     });
-                }
-                ,
+                },
 
+                /**
+                 * 应用子类覆盖，提供 flash 元素的相关信息
+                 * @override
+                 */
                 _getDInfo:function() {
                     var self = this;
                     return {
                         url:  self.dUrl.val(),
                         attrs:{
                             width:self.dWidth.val(),
-                            height:self.dHeight.val()
+                            height:self.dHeight.val(),
+                            align:self.dAlign.val()
                         }
                     };
                 },
-
+                /**
+                 * 真正产生 flash 元素
+                 */
                 _gen: function() {
                     var self = this,
                         editor = self.editor,
@@ -8524,10 +8585,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         ' src="' + url + '" ' +
                         ' type="application/x-shockwave-flash"/>' +
                         '</object>',
-                        real = new Node(outerHTML, null, editor.document);
-                    var substitute = editor.createFakeElement ?
-                        editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
-                        real;
+                        real = new Node(outerHTML, null, editor.document),
+                        substitute = editor.createFakeElement ?
+                            editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
+                            real;
                     substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
                     if (self.selectedFlash) {
@@ -8548,12 +8609,22 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
                 + '';
 
+            /**
+             * 泡泡判断是否选择元素符合
+             * @param lastElement
+             */
             function checkFlash(lastElement) {
                 return lastElement._4e_ascendant(function(node) {
                     return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH));
                 }, true);
             }
 
+            /**
+             * 注册一个泡泡
+             * @param pluginName
+             * @param label
+             * @param checkFlash
+             */
             Flash.registerBubble = function(pluginName, label, checkFlash) {
 
                 BubbleView.register({
@@ -8570,7 +8641,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         tipchange._4e_unselectable();
                         tipurl._4e_unselectable();
                         tipremove._4e_unselectable();
+
+
                         tipchange.on("click", function(ev) {
+                            //回调show，传入选中元素
                             bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
                         });
@@ -8593,8 +8667,12 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     }
                 });
             };
+
+
             Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
             Flash.checkFlash = checkFlash;
+
+            //右键功能列表
             var contextMenu = {
                 "Flash属性":function(editor) {
                     var selection = editor.getSelection(),
@@ -13201,7 +13279,7 @@ KISSY.Editor.add("music", function(editor) {
     if (!KE.MusicInserter) {
         (function() {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)"',
-                bodyHtml = "<div>" +
+                bodyHtml = "" +
                     "<p>" +
                     "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
                     "</span><input class='ke-music-url' style='width:230px' " +
@@ -13209,7 +13287,13 @@ KISSY.Editor.add("music", function(editor) {
                     + TIP
                     + "'/></label>" +
                     "</p>" +
-                    "</div>",
+                    "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                    "<select class='ke-music-align'>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
+                    "</select>" +
+                    "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
                     "<button class='ke-music-cancel'>取消</button>",
                 music_reg = /#\(music\)/g,
@@ -13245,6 +13329,7 @@ KISSY.Editor.add("music", function(editor) {
                         editor = self.editor,
                         d = self.d;
                     self.dUrl = d.el.one(".ke-music-url");
+                    self.dAlign = d.el.one(".ke-music-align");
                     var action = d.el.one(".ke-music-ok"),
                         cancel = d.el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
@@ -13259,7 +13344,8 @@ KISSY.Editor.add("music", function(editor) {
                         url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
                         attrs:{
                             width:165,
-                            height:37
+                            height:37,
+                            align:self.dAlign.val()
                         }
                     };
                 },
@@ -13274,8 +13360,10 @@ KISSY.Editor.add("music", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
+                        self.dAlign.val(f.attr("align"));
                     } else {
                         self.dUrl.val(TIP);
+                        self.dAlign.val("");
                     }
                 }
             });

@@ -66,7 +66,7 @@ KISSY.Editor.add("music", function(editor) {
     if (!KE.MusicInserter) {
         (function() {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)"',
-                bodyHtml = "<div>" +
+                bodyHtml = "" +
                     "<p>" +
                     "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
                     "</span><input class='ke-music-url' style='width:230px' " +
@@ -74,7 +74,13 @@ KISSY.Editor.add("music", function(editor) {
                     + TIP
                     + "'/></label>" +
                     "</p>" +
-                    "</div>",
+                    "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                    "<select class='ke-music-align'>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
+                    "</select>" +
+                    "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
                     "<button class='ke-music-cancel'>取消</button>",
                 music_reg = /#\(music\)/g,
@@ -110,6 +116,7 @@ KISSY.Editor.add("music", function(editor) {
                         editor = self.editor,
                         d = self.d;
                     self.dUrl = d.el.one(".ke-music-url");
+                    self.dAlign = d.el.one(".ke-music-align");
                     var action = d.el.one(".ke-music-ok"),
                         cancel = d.el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
@@ -124,7 +131,8 @@ KISSY.Editor.add("music", function(editor) {
                         url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
                         attrs:{
                             width:165,
-                            height:37
+                            height:37,
+                            align:self.dAlign.val()
                         }
                     };
                 },
@@ -139,8 +147,10 @@ KISSY.Editor.add("music", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
+                        self.dAlign.val(f.attr("align"));
                     } else {
                         self.dUrl.val(TIP);
+                        self.dAlign.val("");
                     }
                 }
             });
