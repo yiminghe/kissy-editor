@@ -276,7 +276,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                 "</li>"
                         }
                         html += "</ul>";
-                        //debugger
+                        
                         var page = data.page,totalpage = Math.floor(data.total / 8),start = page - 3,end = page + 3;
                         if (totalpage > 1) {
                             html += "<p class='ke-xiami-paging'>" +
@@ -285,6 +285,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                 end = Math.min(2 - start + end, totalpage - 1);
                                 start = 2;
                             }
+                            end = Math.min(end, totalpage - 1);
                             for (i = start; i <= end; i++) {
                                 html += getXiamiPaging(page, i);
                             }
