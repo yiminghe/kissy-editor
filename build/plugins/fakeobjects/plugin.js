@@ -10,13 +10,12 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         HtmlParser = KE.HtmlParser,
         Editor = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
-        htmlFilter = dataProcessor && dataProcessor.htmlFilter,
-        dataFilter = dataProcessor && dataProcessor.dataFilter;
+        htmlFilter = dataProcessor && dataProcessor.htmlFilter;
 
     var htmlFilterRules = {
         elements : {
             /**
-             * 生成最终html时，从编辑器html转化把fake替换为真实，并将style的width,height搞到属性上去
+             * 生成�?��html时，从编辑器html转化把fake替换为真实，并将style的width,height搞到属�?上去
              * @param element
              */
             $ : function(element) {
@@ -64,7 +63,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
              * @param realElementType
              * @param isResizable
              */
-            createFakeParserElement:function(realElement, className, realElementType, isResizable) {
+            createFakeParserElement:function(realElement, className, realElementType, isResizable, attrs) {
                 var html;
 
                 var writer = new HtmlParser.BasicWriter();
@@ -85,6 +84,10 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                     style:style,
                     align : realElement.attributes.align || ''
                 };
+                attrs && delete attrs.width;
+                attrs && delete attrs.height;
+
+                attrs && S.mix(attributes, attrs, false);
 
                 if (realElementType)
                     attributes._ke_real_element_type = realElementType;
@@ -99,7 +102,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
 
     S.augment(Editor, {
         //ie6 ,object outHTML error
-        createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML) {
+        createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML, attrs) {
             var style = realElement.attr("style") || '';
             if (realElement.attr("width")) {
                 style = "width:" + realElement.attr("width") + "px;" + style;
@@ -115,8 +118,10 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 align : realElement.attr("align") || '',
                 style:style
             };
+            attrs && delete attrs.width;
+            attrs && delete attrs.height;
 
-
+            attrs && S.mix(attributes, attrs, false);
             if (realElementType)
                 attributes._ke_real_element_type = realElementType;
 
@@ -133,10 +138,9 @@ KISSY.Editor.add("fakeobjects", function(editor) {
             var temp = new Node('<div>', null, this.document);
             temp.html(html);
             // When returning the node, remove it from its parent to detach it.
-            var n = temp._4e_first(function(n) {
+            return temp._4e_first(function(n) {
                 return n[0].nodeType == KEN.NODE_ELEMENT;
             })._4e_remove();
-            return n;
         }
     });
 

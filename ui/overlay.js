@@ -24,19 +24,19 @@ KISSY.Editor.add("overlay", function() {
         Overlay.superclass.constructor.apply(self, arguments);
         self._init();
         if (S.UA.ie === 6) {
-            self.on("show", function() {
-                var el = self.get("el");
-                var bw = parseInt(el.css("width")),
-                    bh = el[0].offsetHeight;
-                d_iframe && d_iframe.css({
+            //将要显示前就更新状态,不能改为show，防止连续出现，没有change?，不触发
+            self.on("show", function(ev) {
+                var el = self.get("el"),
+                    bw = el.width(),
+                    bh = el.height();
+                d_iframe.css({
                     width: bw + "px",
                     height: bh + "px"
                 });
-                d_iframe && d_iframe.offset(self.get("el").offset());
-
+                d_iframe.offset(el.offset());
             });
             self.on("hide", function() {
-                d_iframe && d_iframe.offset({
+                d_iframe.offset({
                     left:-999,
                     top:-999
                 });
@@ -139,7 +139,11 @@ KISSY.Editor.add("overlay", function() {
         //esc keydown support
         _keydown:function(ev) {
             //esc
-            if (ev.keyCode == 27) this.hide();
+            if (ev.keyCode == 27) {
+                this.hide();
+                //停止默认行为，例如取消对象选中
+                ev.halt();
+            }
         },
         _unregister:function() {
             var self = this;

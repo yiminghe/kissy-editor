@@ -117,15 +117,18 @@ KISSY.Editor.add("music", function(editor) {
                         self.d.hide();
                     });
                 },
-                _getDWidth:function() {
-                    return "165";
+
+                _getDInfo:function() {
+                    var self = this;
+                    return {
+                        url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
+                        attrs:{
+                            width:165,
+                            height:37
+                        }
+                    };
                 },
-                _getDURl:function() {
-                    return MUSIC_PLAYER_CODE.replace(music_reg, this.dUrl.val());
-                },
-                _getDHeight:function() {
-                    return "37";
-                },
+
                 _getFlashUrl:function(r) {
                     return   getMusicUrl(getFlashUrl(r));
                 },
@@ -154,7 +157,7 @@ KISSY.Editor.add("music", function(editor) {
                         flash = startElement && checkMusic(startElement),
                         flashUI = editor._toolbars[TYPE_MUSIC];
                     if (flash) {
-                        flashUI.show(null,flash);
+                        flashUI.show(null, flash);
                     }
                 }
             };

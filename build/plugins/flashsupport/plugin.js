@@ -130,6 +130,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 }
                 ,
                 _realShow:function() {
+                    //显示前就要内容搞�?
+                    this._updateD();
                     this.d.show();
                 },
                 _updateD:function() {
@@ -154,9 +156,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 },
                 show:function(ev, _selectedEl) {
                     var self = this;
-                    self._prepareShow();
                     self.selectedFlash = _selectedEl;
-                    self._updateD();
+                    self._prepareShow();
                 }
                 ,
                 _initD:function() {
@@ -172,35 +173,39 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     });
                 }
                 ,
-                _getDURl:function() {
-                    return this.dUrl.val();
-                }
-                ,
-                _getDWidth:function() {
-                    return this.dWidth.val();
-                }
-                ,
-                _getDHeight:function() {
-                    return this.dHeight.val();
-                }
-                ,
+
+                _getDInfo:function() {
+                    var self = this;
+                    return {
+                        url:  self.dUrl.val(),
+                        attrs:{
+                            width:self.dWidth.val(),
+                            height:self.dHeight.val()
+                        }
+                    };
+                },
+
                 _gen: function() {
                     var self = this,
                         editor = self.editor,
-                        url = self._getDURl(),
-                        width = self._getDWidth(),
-                        height = self._getDHeight();
+                        dinfo = self._getDInfo(),
+                        url = dinfo && dinfo.url,
+                        attrs = dinfo && dinfo.attrs,
+                        attrs_str = " ";
                     if (!S.trim(url)) return;
+                    if (attrs) {
+                        for (var a in attrs) {
+                            attrs_str += a + "='" + attrs[a] + "' ";
+                        }
+                    }
                     var outerHTML = '<object ' +
-                        (width ? (" width='" + width + "' ") : ' ') +
-                        (height ? " height='" + height + "' " : ' ') +
+                        attrs_str +
                         ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
                         ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0">' +
                         '<param name="quality" value="high" />' +
                         '<param name="movie" value="' + url + '" />' +
                         '<embed ' +
-                        (width ? " width='" + width + "' " : ' ') +
-                        (height ? " height='" + height + "' " : ' ') +
+                        attrs_str +
                         'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
                         'quality="high" ' +
                         ' src="' + url + '" ' +
@@ -208,7 +213,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         '</object>',
                         real = new Node(outerHTML, null, editor.document);
                     var substitute = editor.createFakeElement ?
-                        editor.createFakeElement(real, self._cls, self._type, true, outerHTML) :
+                        editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
                         real;
                     substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
@@ -264,9 +269,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         });
 
                         /*
-                         位置变化
+                         位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                          */
-                        bubble.on("afterVisibleChange", function(ev) {
+                        bubble.on("beforeVisibleChange", function(ev) {
                             var v = ev.newVal,a = bubble._selectedEl,
                                 flash = bubble._plugin;
                             if (!v || !a)return;

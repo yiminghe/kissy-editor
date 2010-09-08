@@ -152,12 +152,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         self.d.hide();
                     });
                 },
-                _getDWidth:function() {
-                    var url = this.dUrl.val(),p = getProvider(url);
-                    return p && p.width;
-                },
-                _getDURl:function() {
-                    var url = this.dUrl.val(),p = getProvider(url);
+
+                _getDInfo:function() {
+                    var self = this,
+                        url = self.dUrl.val(),p = getProvider(url);
                     if (!p) {
                         alert("不支持该链接来源!");
                     } else {
@@ -165,12 +163,14 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         if (!re) {
                             alert(TIP);
                         }
-                        return re;
+                        return {
+                            url:re,
+                            attrs:{
+                                height:p.height,
+                                width:p.width
+                            }
+                        };
                     }
-                },
-                _getDHeight:function() {
-                    var url = this.dUrl.val(),p = getProvider(url);
-                    return p && p.height;
                 },
                 _getFlashUrl:function(r) {
                     return getFlashUrl(r);

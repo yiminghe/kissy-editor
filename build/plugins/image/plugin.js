@@ -193,7 +193,7 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl.css("float"))
+                        self.imgAlign.val(_selectedEl._4e_style("float"))
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);

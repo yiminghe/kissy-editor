@@ -20,17 +20,23 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         elements : {
             'object' : function(element) {
                 var attributes = element.attributes,
+                    //增加音乐名字提示
+                    title = element.attributes.title,
                     i,
+                    c,
                     classId = attributes['classid']
                         && String(attributes['classid']).toLowerCase();
                 if (!classId) {
                     // Look for the inner <embed>
                     for (i = 0; i < element.children.length; i++) {
-                        if (element.children[ i ].name == 'embed') {
-                            if (!Flash.isFlashEmbed(element.children[ i ]))
+                        c = element.children[ i ];
+                        if (c.name == 'embed') {
+                            if (!Flash.isFlashEmbed(c))
                                 return null;
-                            if (checkXiami(element.children[ i ].attributes.src)) {
-                                return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true);
+                            if (checkXiami(c.attributes.src)) {
+                                return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true, {
+                                    title:title
+                                });
                             }
                         }
                     }
@@ -40,7 +46,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var c = element.children[ i ];
                     if (c.name == 'param' && c.attributes.name == "movie") {
                         if (checkXiami(c.attributes.value)) {
-                            return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true);
+                            return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true, {
+                                title:title
+                            });
                         }
                     }
                 }
@@ -50,7 +58,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 if (!Flash.isFlashEmbed(element))
                     return null;
                 if (checkXiami(element.attributes.src)) {
-                    return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true);
+                    return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true, {
+                        title:element.attributes.title
+                    });
                 }
             }
             //4 比 flash 的优先级 5 高！
@@ -153,8 +163,15 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
                     self._tip = "插入虾米音乐";
-                    self._contextMenu = null;
-                    self._flashRules = null;
+                    self._contextMenu = contextMenu;
+                    self._flashRules = ["img." + CLS_XIAMI];
+                },
+                _updateTip:function(tipurl, selectedFlash) {
+                    var self = this,
+                        editor = self.editor,
+                        r = editor.restoreRealElement(selectedFlash);
+                    tipurl.html(selectedFlash.attr("title"));
+                    tipurl.attr("href", self._getFlashUrl(r));
                 },
                 _initD:function() {
                     var self = this,
@@ -196,9 +213,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                 return self._xiamia_list._4e_contains(node) && node.hasClass("ke-xiami-page-item");
                             }, true);
                         if (add) {
-                            self._durl = "http://www.xiami.com/widget/" +
-                                add.attr("data-value")
-                                + "/singlePlayer.swf";
+                            self._dinfo = {
+                                url:("http://www.xiami.com/widget/" +
+                                    add.attr("data-value")
+                                    + "/singlePlayer.swf"),
+                                attrs:{
+                                    title:add.attr("title")
+                                }
+                            };
                             self._gen();
                         } else if (paging) {
                             loadRecordsByPage(parseInt(paging.attr("data-value")));
@@ -206,14 +228,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     });
                 },
                 _listSearch:function(data) {
-                    var self = this,
+                    var self = this,i,
                         re = data.results,html,
                         action = self._action;
                     action.html(BTIP);
                     action[0].disabled = false;
                     if (re && re.length) {
                         html = "<ul>";
-                        for (var i = 0; i < re.length; i++) {
+                        for (i = 0; i < re.length; i++) {
                             var r = re[i];
                             html += "<li " +
                                 "title='" + decodeURIComponent(r.song_name) + "'>" +
@@ -223,13 +245,15 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                 "" +
                                 "" +
                                 //album_id_song_id
-                                "<a href='#' class='ke-xiami-add' data-value='" +
+                                "<a href='#' " +
+                                "title='" + decodeURIComponent(r.song_name) + "' " +
+                                "class='ke-xiami-add' data-value='" +
                                 (
                                     r.album_id
                                         + "_"
                                         + r.song_id
                                     )
-                                + "'>添加</a>" +
+                                + "'>选择</a>" +
                                 "</li>"
                         }
                         html += "</ul>";
@@ -242,7 +266,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                 end = Math.min(2 - start + end, totalpage - 1);
                                 start = 2;
                             }
-                            for (var i = start; i <= end; i++) {
+                            for (i = start; i <= end; i++) {
                                 html += getXiamiPaging(page, i);
                             }
                             if (end != totalpage) {
@@ -251,33 +275,29 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             html += "</p>";
                         }
 
-
                     } else {
                         html = "<p style='text-align:center;margin:10px 0;'>不好意思，没有找到结果！</p>";
                     }
-
                     self._xiamia_list.html(html);
                 },
                 _updateD : function() {
-                    var self = this;
-                    self._xiami_input.val(TIP);
+                    var self = this,
+                        f = self.selectedFlash;
+                    if (f) {
+                        self._xiami_input.val(f.attr("title"));
+                    } else {
+                        self._xiami_input.val(TIP);
+                    }
                     self._xiamia_list.html("");
                 },
-                //双击不能修改
-                _dbclick:function() {
 
-                }
-                ,
-                _getDWidth:function() {
-                    return 257;
-                }
-                ,
-                _getDURl:function() {
-                    return this._durl;
-                }
-                ,
-                _getDHeight:function() {
-                    return 33;
+                _getDInfo:function() {
+                    var self = this;
+                    S.mix(self._dinfo.attrs, {
+                        width:165,
+                        height:37
+                    });
+                    return self._dinfo;
                 }
             });
             function getXiamiPaging(page, i, s) {
@@ -285,6 +305,26 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     ((page == i) ? " ke-xiami-curpage" : "") +
                     "' data-value='" + i + "' href='#'>" + (s || i) + "</a>";
             }
+
+            function checkXiami(lastElement) {
+                return lastElement._4e_ascendant(function(node) {
+                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI));
+                }, true);
+            }
+
+            var contextMenu = {
+                "虾米属性":function(editor) {
+                    var selection = editor.getSelection(),
+                        startElement = selection && selection.getStartElement(),
+                        flash = checkXiami(startElement),
+                        flashUI = editor._toolbars[TYPE_XIAMI];
+                    if (flash) {
+                        flashUI.show(null, flash);
+                    }
+                }
+            };
+
+            Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
 
             KE.BangPaiMusic = BangPaiMusic;
         })();

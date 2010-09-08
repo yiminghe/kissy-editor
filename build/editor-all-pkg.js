@@ -7107,19 +7107,19 @@ KISSY.Editor.add("overlay", function() {
         Overlay.superclass.constructor.apply(self, arguments);
         self._init();
         if (S.UA.ie === 6) {
-            self.on("show", function() {
-                var el = self.get("el");
-                var bw = parseInt(el.css("width")),
-                    bh = el[0].offsetHeight;
-                d_iframe && d_iframe.css({
+            //将要显示前就更新状态,不能改为show，防止连续出现，没有change?，不触发
+            self.on("show", function(ev) {
+                var el = self.get("el"),
+                    bw = el.width(),
+                    bh = el.height();
+                d_iframe.css({
                     width: bw + "px",
                     height: bh + "px"
                 });
-                d_iframe && d_iframe.offset(self.get("el").offset());
-
+                d_iframe.offset(el.offset());
             });
             self.on("hide", function() {
-                d_iframe && d_iframe.offset({
+                d_iframe.offset({
                     left:-999,
                     top:-999
                 });
@@ -7222,7 +7222,11 @@ KISSY.Editor.add("overlay", function() {
         //esc keydown support
         _keydown:function(ev) {
             //esc
-            if (ev.keyCode == 27) this.hide();
+            if (ev.keyCode == 27) {
+                this.hide();
+                //停止默认行为，例如取消对象选中
+                ev.halt();
+            }
         },
         _unregister:function() {
             var self = this;
@@ -8167,8 +8171,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         HtmlParser = KE.HtmlParser,
         Editor = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
-        htmlFilter = dataProcessor && dataProcessor.htmlFilter,
-        dataFilter = dataProcessor && dataProcessor.dataFilter;
+        htmlFilter = dataProcessor && dataProcessor.htmlFilter;
 
     var htmlFilterRules = {
         elements : {
@@ -8221,7 +8224,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
              * @param realElementType
              * @param isResizable
              */
-            createFakeParserElement:function(realElement, className, realElementType, isResizable) {
+            createFakeParserElement:function(realElement, className, realElementType, isResizable, attrs) {
                 var html;
 
                 var writer = new HtmlParser.BasicWriter();
@@ -8242,6 +8245,10 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                     style:style,
                     align : realElement.attributes.align || ''
                 };
+                attrs && delete attrs.width;
+                attrs && delete attrs.height;
+
+                attrs && S.mix(attributes, attrs, false);
 
                 if (realElementType)
                     attributes._ke_real_element_type = realElementType;
@@ -8256,7 +8263,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
 
     S.augment(Editor, {
         //ie6 ,object outHTML error
-        createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML) {
+        createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML, attrs) {
             var style = realElement.attr("style") || '';
             if (realElement.attr("width")) {
                 style = "width:" + realElement.attr("width") + "px;" + style;
@@ -8272,8 +8279,10 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 align : realElement.attr("align") || '',
                 style:style
             };
+            attrs && delete attrs.width;
+            attrs && delete attrs.height;
 
-
+            attrs && S.mix(attributes, attrs, false);
             if (realElementType)
                 attributes._ke_real_element_type = realElementType;
 
@@ -8290,10 +8299,9 @@ KISSY.Editor.add("fakeobjects", function(editor) {
             var temp = new Node('<div>', null, this.document);
             temp.html(html);
             // When returning the node, remove it from its parent to detach it.
-            var n = temp._4e_first(function(n) {
+            return temp._4e_first(function(n) {
                 return n[0].nodeType == KEN.NODE_ELEMENT;
             })._4e_remove();
-            return n;
         }
     });
 
@@ -8435,6 +8443,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 }
                 ,
                 _realShow:function() {
+                    //显示前就要内容搞好
+                    this._updateD();
                     this.d.show();
                 },
                 _updateD:function() {
@@ -8459,9 +8469,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 },
                 show:function(ev, _selectedEl) {
                     var self = this;
-                    self._prepareShow();
                     self.selectedFlash = _selectedEl;
-                    self._updateD();
+                    self._prepareShow();
                 }
                 ,
                 _initD:function() {
@@ -8477,35 +8486,39 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     });
                 }
                 ,
-                _getDURl:function() {
-                    return this.dUrl.val();
-                }
-                ,
-                _getDWidth:function() {
-                    return this.dWidth.val();
-                }
-                ,
-                _getDHeight:function() {
-                    return this.dHeight.val();
-                }
-                ,
+
+                _getDInfo:function() {
+                    var self = this;
+                    return {
+                        url:  self.dUrl.val(),
+                        attrs:{
+                            width:self.dWidth.val(),
+                            height:self.dHeight.val()
+                        }
+                    };
+                },
+
                 _gen: function() {
                     var self = this,
                         editor = self.editor,
-                        url = self._getDURl(),
-                        width = self._getDWidth(),
-                        height = self._getDHeight();
+                        dinfo = self._getDInfo(),
+                        url = dinfo && dinfo.url,
+                        attrs = dinfo && dinfo.attrs,
+                        attrs_str = " ";
                     if (!S.trim(url)) return;
+                    if (attrs) {
+                        for (var a in attrs) {
+                            attrs_str += a + "='" + attrs[a] + "' ";
+                        }
+                    }
                     var outerHTML = '<object ' +
-                        (width ? (" width='" + width + "' ") : ' ') +
-                        (height ? " height='" + height + "' " : ' ') +
+                        attrs_str +
                         ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
                         ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0">' +
                         '<param name="quality" value="high" />' +
                         '<param name="movie" value="' + url + '" />' +
                         '<embed ' +
-                        (width ? " width='" + width + "' " : ' ') +
-                        (height ? " height='" + height + "' " : ' ') +
+                        attrs_str +
                         'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
                         'quality="high" ' +
                         ' src="' + url + '" ' +
@@ -8513,7 +8526,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         '</object>',
                         real = new Node(outerHTML, null, editor.document);
                     var substitute = editor.createFakeElement ?
-                        editor.createFakeElement(real, self._cls, self._type, true, outerHTML) :
+                        editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
                         real;
                     substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
@@ -8569,9 +8582,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         });
 
                         /*
-                         位置变化
+                         位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                          */
-                        bubble.on("afterVisibleChange", function(ev) {
+                        bubble.on("beforeVisibleChange", function(ev) {
                             var v = ev.newVal,a = bubble._selectedEl,
                                 flash = bubble._plugin;
                             if (!v || !a)return;
@@ -11609,7 +11622,7 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl.css("float"))
+                        self.imgAlign.val(_selectedEl._4e_style("float"))
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
@@ -13239,15 +13252,18 @@ KISSY.Editor.add("music", function(editor) {
                         self.d.hide();
                     });
                 },
-                _getDWidth:function() {
-                    return "165";
+
+                _getDInfo:function() {
+                    var self = this;
+                    return {
+                        url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
+                        attrs:{
+                            width:165,
+                            height:37
+                        }
+                    };
                 },
-                _getDURl:function() {
-                    return MUSIC_PLAYER_CODE.replace(music_reg, this.dUrl.val());
-                },
-                _getDHeight:function() {
-                    return "37";
-                },
+
                 _getFlashUrl:function(r) {
                     return   getMusicUrl(getFlashUrl(r));
                 },
@@ -13276,7 +13292,7 @@ KISSY.Editor.add("music", function(editor) {
                         flash = startElement && checkMusic(startElement),
                         flashUI = editor._toolbars[TYPE_MUSIC];
                     if (flash) {
-                        flashUI.show(null,flash);
+                        flashUI.show(null, flash);
                     }
                 }
             };
