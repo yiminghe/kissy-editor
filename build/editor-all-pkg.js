@@ -801,8 +801,9 @@ KISSY.Editor.add("definition", function(KE) {
          * 强制通知插件更新状态，防止插件修改编辑器内容，自己反而得不到通知
          */
         notifySelectionChange:function() {
-            this.previousPath = null;
-            this._monitor();
+            var self = this;
+            self.previousPath = null;
+            self._monitor();
         },
 
         insertElement:function(element, init) {
@@ -8319,6 +8320,7 @@ KISSY.Editor.add("flash", function(editor) {
 KISSY.Editor.add("flashsupport", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        UA = S.UA,
         Event = S.Event,
         ContextMenu = KE.ContextMenu,
         Node = S.Node,
@@ -8615,7 +8617,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
              * @param node
              */
             function checkFlash(node) {
-                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH))&&node;
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH)) && node;
             }
 
             /**
@@ -8649,7 +8651,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         });
                         tipremove.on("click", function(ev) {
                             var flash = bubble._plugin;
+                            //chrome remove 后会没有焦点
+                            if (UA.webkit) {
+                                var r = flash.editor.getSelection().getRanges();
+                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                            }
                             bubble._selectedEl._4e_remove();
+                            bubble.hide();
                             flash.editor.notifySelectionChange();
                             ev.halt();
                         });
@@ -11511,8 +11519,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 KISSY.Editor.add("image", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        UA = S.UA,
         Node = S.Node,
-        DOM = S.DOM,
         Event = S.Event,
         TYPE_IMG = 'image',
         BubbleView = KE.BubbleView,
@@ -11742,7 +11750,12 @@ KISSY.Editor.add("image", function(editor) {
                         });
                         tipremove.on("click", function(ev) {
                             var flash = bubble._plugin;
+                            if (UA.webkit) {
+                                var r = flash.editor.getSelection().getRanges();
+                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                            }
                             bubble._selectedEl._4e_remove();
+                            bubble.hide();
                             flash.editor.notifySelectionChange();
                             ev.halt();
                         });
@@ -12293,6 +12306,7 @@ KISSY.Editor.add("link", function(editor) {
                     tipremove.on("click", function(ev) {
                         var link = bubble._plugin;
                         link._removeLink(bubble._selectedEl);
+                        link.editor.notifySelectionChange();
                         ev.halt();
                     });
 
@@ -12334,7 +12348,6 @@ KISSY.Editor.add("link", function(editor) {
                     editor.fire("save");
                     linkStyle.remove(editor.document);
                     editor.fire("save");
-                    editor.notifySelectionChange();
                 },
 
 

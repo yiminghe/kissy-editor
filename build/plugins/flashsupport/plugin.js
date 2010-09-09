@@ -5,6 +5,7 @@
 KISSY.Editor.add("flashsupport", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        UA = S.UA,
         Event = S.Event,
         ContextMenu = KE.ContextMenu,
         Node = S.Node,
@@ -301,7 +302,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
              * @param node
              */
             function checkFlash(node) {
-                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH))&&node;
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH)) && node;
             }
 
             /**
@@ -335,7 +336,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         });
                         tipremove.on("click", function(ev) {
                             var flash = bubble._plugin;
+                            //chrome remove 后会没有焦点
+                            if (UA.webkit) {
+                                var r = flash.editor.getSelection().getRanges();
+                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                            }
                             bubble._selectedEl._4e_remove();
+                            bubble.hide();
                             flash.editor.notifySelectionChange();
                             ev.halt();
                         });

@@ -127,6 +127,7 @@ KISSY.Editor.add("link", function(editor) {
                     tipremove.on("click", function(ev) {
                         var link = bubble._plugin;
                         link._removeLink(bubble._selectedEl);
+                        link.editor.notifySelectionChange();
                         ev.halt();
                     });
 
@@ -168,7 +169,6 @@ KISSY.Editor.add("link", function(editor) {
                     editor.fire("save");
                     linkStyle.remove(editor.document);
                     editor.fire("save");
-                    editor.notifySelectionChange();
                 },
 
 

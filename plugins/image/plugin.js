@@ -5,8 +5,8 @@
 KISSY.Editor.add("image", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        UA = S.UA,
         Node = S.Node,
-        DOM = S.DOM,
         Event = S.Event,
         TYPE_IMG = 'image',
         BubbleView = KE.BubbleView,
@@ -236,7 +236,12 @@ KISSY.Editor.add("image", function(editor) {
                         });
                         tipremove.on("click", function(ev) {
                             var flash = bubble._plugin;
+                            if (UA.webkit) {
+                                var r = flash.editor.getSelection().getRanges();
+                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                            }
                             bubble._selectedEl._4e_remove();
+                            bubble.hide();
                             flash.editor.notifySelectionChange();
                             ev.halt();
                         });

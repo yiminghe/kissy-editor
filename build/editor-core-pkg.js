@@ -801,8 +801,9 @@ KISSY.Editor.add("definition", function(KE) {
          * 强制通知插件更新状态，防止插件修改编辑器内容，自己反而得不到通知
          */
         notifySelectionChange:function() {
-            this.previousPath = null;
-            this._monitor();
+            var self = this;
+            self.previousPath = null;
+            self._monitor();
         },
 
         insertElement:function(element, init) {
