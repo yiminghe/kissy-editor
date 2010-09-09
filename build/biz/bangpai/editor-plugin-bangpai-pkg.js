@@ -1,3 +1,13 @@
+KISSY.Editor.add("bangpai-music",function(r){function s(e){return/xiami\.com/i.test(e)}var k=KISSY,m=k.Editor,v=k.DOM,w=k.Node,x=m.Config.base+"assets/loading.gif",p=m.Flash,l="ke_xiami",n=r.htmlDataProcessor,t=n&&n.dataFilter;t&&t.addRules({elements:{object:function(e){var f=e.attributes,q=e.attributes.title,g;if(!(f.classid&&String(f.classid).toLowerCase())){for(f=0;f<e.children.length;f++){g=e.children[f];if(g.name=="embed"){if(!p.isFlashEmbed(g))return null;if(s(g.attributes.src))return n.createFakeParserElement(e,
+l,"bangpai-music",true,{title:q})}}return null}for(f=0;f<e.children.length;f++){g=e.children[f];if(g.name=="param"&&g.attributes.name=="movie")if(s(g.attributes.value))return n.createFakeParserElement(e,l,"bangpai-music",true,{title:q})}},embed:function(e){if(!p.isFlashEmbed(e))return null;if(s(e.attributes.src))return n.createFakeParserElement(e,l,"bangpai-music",true,{title:e.attributes.title})}}},4);m.BangPaiMusic||function(){function e(b,a){if(b.length>a)b=b.substring(0,a)+"...";return b}function f(){f.superclass.constructor.apply(this,
+arguments)}function q(b){return y.replace(/\${([^}]+)}/g,function(a,c){return b[c]})}function g(b,a,c){return"<a class='ke-xiami-page-item"+(b==a?" ke-xiami-curpage":"")+"' data-value='"+a+"' href='#'>"+(c||a)+"</a>"}function u(b){return b._4e_ascendant(function(a){return a._4e_name()==="img"&&!!a.hasClass(l)},true)}v.addStyleSheet(".ke-xiami-list {margin-top:10px;}.ke-xiami-list li{border:1px dotted gray;border-width:0 0 1px 0;overflow:hidden;zoom:1;padding:2px;}\n.ke-xiami-list .ke-xiami-add {float:right;}\n.ke-xiami-list .ke-xiami-song {float:left;}\n.ke-xiami-paging a{display: inline-block; zoom: 1;  *display: inline; border:1px solid gray;padding:0 5px;margin:0 2px;}\n.ke-xiami-paging a:hover,.ke-xiami-paging a.ke-xiami-curpage {background-color:orange;}\n.ke-xiami-paging {text-align:center;margin-top:10px;}\n",
+"BangPaiMusic");window.bangpai_xiami=function(b){var a=bangpai_xiami.instance;b.page=bangpai_xiami.page;a._listSearch(b)};var y="http://www.xiami.com/app/nineteen/search/key/${key}/page/${page}?random=${random}&callback=bangpai_xiami";k.extend(f,p,{_config:function(){this._cls=l;this._type="bangpai-music";this._title="\u641c\u7d22\u97f3\u4e50";this._bodyHtml="<form action='#' class='ke-xiami-form'><p><input class='ke-xiami-url' style='width:300px' value='\u8f93\u5165\u60f3\u8981\u6dfb\u52a0\u7684\u6b4c\u66f2\u540d\u3001\u4e13\u8f91\u540d\u3001\u827a\u4eba\u540d'/> &nbsp;  <input type='submit' style='vertical-align:middle;' value='\u641c \u7d22 ' /></p><p style='margin:5px 0'><label>\u5bf9 \u9f50\uff1a <select class='ke-xiami-align'><option value=''>\u65e0</option><option value='left'>\u5de6\u5bf9\u9f50</option><option value='right'>\u53f3\u5bf9\u9f50</option></select></p></form><div class='ke-xiami-list'></div>";
+this._footHtml="";this._contentCls="ke-toolbar-music";this._tip="\u63d2\u5165\u867e\u7c73\u97f3\u4e50";this._contextMenu=z;this._flashRules=["img."+l];this._config_dwidth="400px"},_updateTip:function(b,a){var c=this.editor.restoreRealElement(a);b.html(a.attr("title"));b.attr("href",this._getFlashUrl(c))},_initD:function(){function b(h){var j={key:encodeURIComponent(d.val()),page:h,random:(new Date).valueOf()};j=q(j);bangpai_xiami.instance=a;bangpai_xiami.page=h;a._xiamia_list.html("<img style='display:block;width:108px;margin:5px auto 0 auto;'src='"+
+x+"'/>");k.getScript(j)}var a=this,c=a.d,i=c.el.one(".ke-xiami-form"),d=c.el.one(".ke-xiami-url");a.dAlign=c.el.one(".ke-xiami-align");a._xiami_input=d;a._xiamia_list=c.el.one(".ke-xiami-list");i.on("submit",function(h){b(1);h.halt()},a);a._xiamia_list.on("click",function(h){h.preventDefault();var j=new w(h.target);h=j._4e_ascendant(function(o){return a._xiamia_list._4e_contains(o)&&o.hasClass("ke-xiami-add")},true);j=j._4e_ascendant(function(o){return a._xiamia_list._4e_contains(o)&&o.hasClass("ke-xiami-page-item")},
+true);if(h){a._dinfo={url:"http://www.xiami.com/widget/"+h.attr("data-value")+"/singlePlayer.swf",attrs:{title:h.attr("title"),align:a.dAlign.val()}};a._gen()}else j&&b(parseInt(j.attr("data-value")))})},_listSearch:function(b){var a,c=b.results,i;if(b.key==this._xiami_input.val()){if(c&&c.length){i="<ul>";for(a=0;a<c.length;a++){var d=c[a];i+="<li title='"+decodeURIComponent(d.song_name)+"'><span class='ke-xiami-song'>"+e(decodeURIComponent(d.song_name),25)+"</span><a href='#' title='"+decodeURIComponent(d.song_name)+
+"' class='ke-xiami-add' data-value='"+(d.album_id+"_"+d.song_id)+"'>\u9009\u62e9</a></li>"}i+="</ul>";c=b.page;b=Math.floor(b.total/8);a=c-3;d=c+3;if(b>1){if(a<=2){d=Math.min(2-a+d,b-1);a=2}d=Math.min(d,b-1);if(d==b-1)a=Math.max(2,d-6);i+="<p class='ke-xiami-paging'>"+g(c,1,"1"+(a!=2?"...":""));for(a=a;a<=d;a++)i+=g(c,a);if(d!=b)i+=g(c,b,(d!=b-1?"...":"")+b);i+="</p>"}}else i="<p style='text-align:center;margin:10px 0;'>\u4e0d\u597d\u610f\u601d\uff0c\u6ca1\u6709\u627e\u5230\u7ed3\u679c\uff01</p>";
+this._xiamia_list.html(i)}},_updateD:function(){var b=this.selectedFlash;if(b){this._xiami_input.val(b.attr("title"));this.dAlign.val(b.attr("align"))}else{this._xiami_input.val("\u8f93\u5165\u60f3\u8981\u6dfb\u52a0\u7684\u6b4c\u66f2\u540d\u3001\u4e13\u8f91\u540d\u3001\u827a\u4eba\u540d");this.dAlign.val("")}this._xiamia_list.html("")},_getDInfo:function(){k.mix(this._dinfo.attrs,{width:165,height:37});return this._dinfo}});var z={"\u867e\u7c73\u5c5e\u6027":function(b){var a=b.getSelection();a=a&&
+a.getStartElement();a=u(a);b=b._toolbars["bangpai-music"];a&&b.show(null,a)}};p.registerBubble("bangpai-music","\u867e\u7c73\u97f3\u4e50\uff1a ",u);m.BangPaiMusic=f}();r.addPlugin(function(){new m.BangPaiMusic(r)})},{attach:false,requires:["flashsupport"]});
 /**
  * biz plugin , xiami music intergration for bangpai
  * @author:yiminghe@gmail.com
@@ -253,17 +263,17 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         if (re && re.length) {
                             html = "<ul>";
                             for (i = 0; i < re.length; i++) {
-                                var r = re[i];
+                                var r = re[i],d = getDisplayName(r);
                                 html += "<li " +
-                                    "title='" + decodeURIComponent(r.song_name) + "'>" +
+                                    "title='" + d + "'>" +
                                     "<span class='ke-xiami-song'>"
-                                    + limit(decodeURIComponent(r.song_name), 25) +
+                                    + limit(d, 35) +
                                     "</span>" +
                                     "" +
                                     "" +
                                     //album_id_song_id
                                     "<a href='#' " +
-                                    "title='" + decodeURIComponent(r.song_name) + "' " +
+                                    "title='" + d + "' " +
                                     "class='ke-xiami-add' data-value='" +
                                     (
                                         r.album_id
@@ -333,6 +343,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     "' data-value='" + i + "' href='#'>" + (s || i) + "</a>";
             }
 
+            function getDisplayName(r) {
+                return decodeURIComponent(r.song_name) + " - " + decodeURIComponent(r.artist_name);
+            }
+
             function checkXiami(lastElement) {
                 return lastElement._4e_ascendant(function(node) {
                     return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI));
@@ -363,7 +377,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 {
     attach:false,
     requires : ["flashsupport"]
-});/**
+});KISSY.Editor.add("bangpai-video",function(k){function i(a){for(var d=0;d<l.length;d++){var e=l[d];if(e.reg.test(a))return e}}var m=KISSY,g=m.Editor,f="ke_video",o=g.Utils.getFlashUrl,j=g.Flash,h=k.htmlDataProcessor,n=h&&h.dataFilter;n&&n.addRules({elements:{object:function(a){var d=a.attributes;if(!(d.classid&&String(d.classid).toLowerCase())){for(d=0;d<a.children.length;d++)if(a.children[d].name=="embed"){if(!j.isFlashEmbed(a.children[d]))return null;if(i(a.children[d].attributes.src))return h.createFakeParserElement(a,
+f,"bangpai-video",true)}return null}for(d=0;d<a.children.length;d++){var e=a.children[d];if(e.name=="param"&&e.attributes.name=="movie")if(i(e.attributes.value))return h.createFakeParserElement(a,f,"bangpai-video",true)}},embed:function(a){if(!j.isFlashEmbed(a))return null;if(i(a.attributes.src))return h.createFakeParserElement(a,f,"bangpai-video",true)}}},4);var l=[{reg:/youku\.com/i,width:480,height:400,detect:function(a){if(/\.swf$/.test(a))return a}},{reg:/tudou\.com/i,width:480,height:400,detect:function(a){if(/\.swf$/.test(a))return a}},
+{reg:/ku6\.com/i,width:480,height:400,detect:function(a){if(/\.swf$/.test(a))return a}}];g.BangPaiVideo||function(){function a(){a.superclass.constructor.apply(this,arguments)}function d(b){return b._4e_ascendant(function(c){return c._4e_name()==="img"&&!!c.hasClass(f)},true)}var e=["img."+f];m.extend(a,j,{_config:function(){this._cls=f;this._type="bangpai-video";this._title="\u89c6\u9891\u5c5e\u6027";this._bodyHtml="<p style='margin-bottom:5px'>\u9700\u8981\u5206\u4eab\u7684\u89c6\u9891\u94fe\u63a5\uff1a\u652f\u6301 \u571f\u8c46\uff0c\u4f18\u9177\uff0cku6 \u89c6\u9891\u5206\u4eab</p><p><label><span style='color:#0066CC;font-weight:bold;'>\u89c6\u9891\u94fe\u63a5\uff1a </span><input class='ke-video-url' style='width:230px' value='\u8bf7\u8f93\u5165\u5982 http://www.xxx.com/xxx.swf'/></label></p><p style='margin:5px 0'><label>\u5bf9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\u9f50\uff1a <select class='ke-video-align'><option value=''>\u65e0</option><option value='left'>\u5de6\u5bf9\u9f50</option><option value='right'>\u53f3\u5bf9\u9f50</option></select><p>";
+this._footHtml="<button class='ke-video-ok'>\u786e\u5b9a</button> <button class='ke-video-cancel'>\u53d6\u6d88</button>";this._contentCls="ke-toolbar-flash";this._tip="\u63d2\u5165\u89c6\u9891";this._contextMenu=p;this._flashRules=e},_initD:function(){var b=this,c=b.d;b.dUrl=c.el.one(".ke-video-url");b.dAlign=c.el.one(".ke-video-align");var q=c.el.one(".ke-video-ok");c=c.el.one(".ke-video-cancel");q.on("click",b._gen,b);c.on("click",function(){b.d.hide()})},_getDInfo:function(){var b=this.dUrl.val(),
+c=i(b);if(c){(b=c.detect(b))||alert("\u8bf7\u8f93\u5165\u5982 http://www.xxx.com/xxx.swf");return{url:b,attrs:{height:c.height,width:c.width,align:this.dAlign.val()}}}else alert("\u4e0d\u652f\u6301\u8be5\u94fe\u63a5\u6765\u6e90!")},_getFlashUrl:function(b){return o(b)},_updateD:function(){var b=this.editor,c=this.selectedFlash;if(c){b=b.restoreRealElement(c);this.dUrl.val(this._getFlashUrl(b));this.dAlign.val(b.attr("align"))}else{this.dUrl.val("\u8bf7\u8f93\u5165\u5982 http://www.xxx.com/xxx.swf");
+this.dAlign.val("")}}});j.registerBubble("bangpai-video","\u89c6\u9891\u94fe\u63a5\uff1a ",d);g.BangPaiVideo=a;var p={"\u89c6\u9891\u5c5e\u6027":function(b){var c=b.getSelection();c=(c=c&&c.getStartElement())&&d(c);b=b._toolbars["bangpai-video"];c&&b.show(null,c)}}}();k.addPlugin(function(){new g.BangPaiVideo(k)})},{attach:false,requires:["flashsupport"]});
+/**
  * biz plugin , video about ku6,youku,tudou for bangpai
  * @author:yiminghe@gmail.com
  */

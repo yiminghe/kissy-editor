@@ -253,17 +253,17 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         if (re && re.length) {
                             html = "<ul>";
                             for (i = 0; i < re.length; i++) {
-                                var r = re[i];
+                                var r = re[i],d = getDisplayName(r);
                                 html += "<li " +
-                                    "title='" + decodeURIComponent(r.song_name) + "'>" +
+                                    "title='" + d + "'>" +
                                     "<span class='ke-xiami-song'>"
-                                    + limit(decodeURIComponent(r.song_name), 25) +
+                                    + limit(d, 35) +
                                     "</span>" +
                                     "" +
                                     "" +
                                     //album_id_song_id
                                     "<a href='#' " +
-                                    "title='" + decodeURIComponent(r.song_name) + "' " +
+                                    "title='" + d + "' " +
                                     "class='ke-xiami-add' data-value='" +
                                     (
                                         r.album_id
@@ -331,6 +331,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return "<a class='ke-xiami-page-item" +
                     ((page == i) ? " ke-xiami-curpage" : "") +
                     "' data-value='" + i + "' href='#'>" + (s || i) + "</a>";
+            }
+
+            function getDisplayName(r) {
+                return decodeURIComponent(r.song_name) + " - " + decodeURIComponent(r.artist_name);
             }
 
             function checkXiami(lastElement) {
