@@ -27,7 +27,7 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     self.el.on("offClick", self._show, self);
                     self.el.on("onClick", self._hide, self);
 
-                    //不被父容器阻止默认，可点击
+                    //不被父容器阻止默认，可点�?
                     editor.textarea.on("mousedown", function(ev) {
                         ev.stopPropagation();
                     });
@@ -50,7 +50,7 @@ KISSY.Editor.add("sourcearea", function(editor) {
                         el = self.el;
                     editor._hideSource();
                     editor.setData(textarea.val());
-                    //firefox 光标激活，强迫刷新
+                    //firefox 光标�?��，强迫刷�?
                     if (UA.gecko && editor.iframeFocus) {
                         el.el[0].focus();
                         editor.focus();

@@ -4,9 +4,11 @@ build file for kissy editor
 @author:yiminghe@gmail.com
 -->
 <project name="kissy-editor-build"
-         default="run">
+         default="run"
+         xmlns:ac="antlib:net.sf.antcontrib"
+        >
     <description>Kissy Editor Build File</description>
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
     <dirname property="current.dir" file="${ant.file.kissy-editor-build}"/>
     <property name="root.dir" location="${current.dir}/../"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
@@ -34,10 +36,15 @@ build file for kissy editor
              includes="assets/*.js,assets/*.css,core/**,plugins/**,ui/**,biz/**,editor.js"
              id="full_source">
     </fileset>
+    <dirset dir="${build.dir}/biz/"
+            includes="*"
+            id="biz_build_source">
+    </dirset>
     <tstamp>
         <format property="timestamp.isoformat"
                 pattern="yyyy-MM-dd' 'HH:mm:ss" locale="en"/>
     </tstamp>
+
     <!--
     create dir necessarily
     -->
@@ -71,38 +78,48 @@ build file for kissy editor
         </condition>
     </target>
 
-    <target name="git"
+    <target name="git" depends="minify">
 
-            depends="minify,get-commit-message"
-            if="git.commit.message.set">
+        <input addproperty="git.commit.message">
+            git commit message :
+        </input>
+        <ac:if>
+            <not>
+                <equals arg1="${git.commit.message}" arg2="">
+                </equals>
+            </not>
+            <ac:then>
+                <exec executable="cmd"
+                      failonerror="true">
+                    <arg line="/c git add ."/>
+                </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git commit -am '${git.commit.message}'"/>
+                </exec>
 
-        <exec executable="cmd"
-              failonerror="true">
-            <arg line="/c git add ."/>
-        </exec>
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git commit -am '${git.commit.message}'"/>
-        </exec>
 
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git push ${git.origin} ${git.master}"/>
-        </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git push ${git.origin} ${git.master}"/>
+                </exec>
 
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git checkout ${git.gh-pages}"/>
-        </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git checkout ${git.gh-pages}"/>
+                </exec>
 
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git merge ${git.master}"/>
-        </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git merge ${git.master}"/>
+                </exec>
 
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git push ${git.origin} ${git.gh-pages}"/>
-        </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git push ${git.origin} ${git.gh-pages}"/>
+                </exec>
 
-        <exec executable="cmd" failonerror="true">
-            <arg line="/c git checkout ${git.master}"/>
-        </exec>
+                <exec executable="cmd" failonerror="true">
+                    <arg line="/c git checkout ${git.master}"/>
+                </exec>
+
+            </ac:then>
+        </ac:if>
 
     </target>
 
@@ -188,14 +205,36 @@ build file for kissy editor
         </concat>
 
         <!--
-        bangpai build
+        biz build ,iteratively
         -->
-        <concat destfile="${build.dir}/biz/bangpai/editor-plugin-bangpai-pkg.js"
-                encoding="${charset}"
-                outputencoding="${charset}">
-            <fileset dir="biz/bangpai/plugins"
-                     includes="**/*.js"/>
-        </concat>
+        <ac:for param="biz">
+            <path>
+                <dirset refid="biz_build_source"></dirset>
+            </path>
+            <sequential>
+                <!--
+                get folder name 
+                -->
+                <ac:var name="var.biz.dirname" unset="true"/>
+                <basename property="var.biz.dirname" file="@{biz}"/>
+                <echo>
+                    build ${var.biz.dirname} for @{biz}
+                </echo>
+                <ac:if>
+                    <available file="@{biz}/plugins"></available>
+                    <ac:then>
+                        <concat destfile="@{biz}/editor-plugin-${var.biz.dirname}-pkg.js"
+                                encoding="${charset}"
+                                outputencoding="${charset}">
+                            <fileset dir="@{biz}/plugins"
+                                     includes="**/*.js"/>
+                        </concat>
+                    </ac:then>
+                </ac:if>
+
+            </sequential>
+        </ac:for>
+
 
         <!--
         full css build

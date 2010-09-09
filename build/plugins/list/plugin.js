@@ -25,7 +25,7 @@ KISSY.Editor.add("list", function(editor) {
                  * manipulate. This operation should be non-intrusive in the sense that it
                  * does not change the DOM tree, with the exception that it may add some
                  * markers to the list item nodes when database is specified.
-                 * 扁平化处理，深度遍历，利用 indent 和顺序来表示一棵树
+                 * 扁平化处理，深度遍历，利�?indent 和顺序来表示�?���?
                  */
                 listToArray : function(listNode, database, baseArray, baseIndentLevel, grandparentNode) {
                     if (!listNodeNames[ listNode._4e_name() ])
@@ -71,7 +71,7 @@ KISSY.Editor.add("list", function(editor) {
                 },
 
                 // Convert our internal representation of a list back to a DOM forest.
-                //根据包含indent属性的元素数组来生成树
+                //根据包含indent属�?的元素数组来生成�?
                 arrayToList : function(listArray, database, baseIndex, paragraphMode) {
                     if (!baseIndex)
                         baseIndex = 0;
@@ -100,7 +100,7 @@ KISSY.Editor.add("list", function(editor) {
                                 currentListItem.appendChild(item.contents[i]._4e_clone(true, true)[0]);
                             currentIndex++;
                         } else if (item.indent == Math.max(indentLevel, 0) + 1) {
-                            //进入一个li里面，里面的嵌套li递归构造父亲ul/ol
+                            //进入�?��li里面，里面的嵌套li递归构�?父亲ul/ol
                             var listData = list.arrayToList(listArray, null, currentIndex, paragraphMode);
                             currentListItem.appendChild(listData.listNode);
                             currentIndex = listData.nextIndex;
@@ -472,7 +472,7 @@ KISSY.Editor.add("list", function(editor) {
             var TripleButton = KE.TripleButton;
 
             /**
-             * 用到了按钮三状态的两个状态：off:点击后格式化，on:点击后清除格式化
+             * 用到了按钮三状�?的两个状态：off:点击后格式化，on:点击后清除格式化
              * @param cfg
              */
             function List(cfg) {
@@ -535,7 +535,7 @@ KISSY.Editor.add("list", function(editor) {
                         for (var i = 0; i < elements.length && ( element = elements[ i ] )
                             && element[0] !== blockLimit[0]; i++) {
                             var ind = S.indexOf(elements[i]._4e_name(), listNodeNames_arr);
-                            //ul,ol一个生效后，另一个就失效
+                            //ul,ol�?��生效后，另一个就失效
                             if (ind !== -1) {
                                 if (listNodeNames_arr[ind] === type) {
                                     el.set("state", TripleButton.ON);

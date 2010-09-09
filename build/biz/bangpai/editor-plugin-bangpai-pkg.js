@@ -13,8 +13,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         TYPE_XIAMI = "bangpai-music",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        BTIP = "搜 索 ",
-        BLOADING = "载入中 ",
+        BTIP = "�?�?",
+        BLOADING = "载入�?",
         TIP = "输入想要添加的歌曲名、专辑名、艺人名";
 
     function checkXiami(url) {
@@ -68,7 +68,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     });
                 }
             }
-            //4 比 flash 的优先级 5 高！
+            //4 �?flash 的优先级 5 高！
         }}, 4);
 
     if (!KE.BangPaiMusic) {
@@ -140,11 +140,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 " <input type='submit' " +
                 "style='vertical-align:middle;' value='" + BTIP + "' />" +
                 "</p>" +
-                "<p style='margin:5px 0'><label>对 齐： " +
+                "<p style='margin:5px 0'><label>�?齐： " +
                 "<select class='ke-xiami-align'>" +
-                "<option value=''>无</option>" +
-                "<option value='left'>左对齐</option>" +
-                "<option value='right'>右对齐</option>" +
+                "<option value=''>�?/option>" +
+                "<option value='left'>左对�?/option>" +
+                "<option value='right'>右对�?/option>" +
                 "</select>" +
                 "</p>" +
                 "</form>" +
@@ -300,7 +300,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             }
 
                         } else {
-                            html = "<p style='text-align:center;margin:10px 0;'>不好意思，没有找到结果！</p>";
+                            html = "<p style='text-align:center;margin:10px 0;'>不好意�?，没有找到结果！</p>";
                         }
                         self._xiamia_list.html(html);
                     }
@@ -340,7 +340,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             }
 
             var contextMenu = {
-                "虾米属性":function(editor) {
+                "虾米属�?":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkXiami(startElement),
@@ -351,7 +351,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 }
             };
 
-            Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
+            Flash.registerBubble(TYPE_XIAMI, "虾米音乐�?", checkXiami);
 
             KE.BangPaiMusic = BangPaiMusic;
         })();
@@ -416,7 +416,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }
 
             }
-            //4 比 flash 的优先级 5 高！
+            //4 �?flash 的优先级 5 高！
         }}, 4);
 
     function getProvider(url) {
@@ -478,19 +478,19 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         (function() {
             var bodyHtml = "" +
                 "<p style='margin-bottom:5px'>" +
-                "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
+                "�?��分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
                 "</p>" +
                 "<p>" +
-                "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
+                "<label><span style='color:#0066CC;font-weight:bold;'>视频链接�?" +
                 "</span><input class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
                 "</p>" +
-                "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                "<p style='margin:5px 0'><label>�?nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
                 "<select class='ke-video-align'>" +
-                "<option value=''>无</option>" +
-                "<option value='left'>左对齐</option>" +
-                "<option value='right'>右对齐</option>" +
+                "<option value=''>�?/option>" +
+                "<option value='left'>左对�?/option>" +
+                "<option value='right'>右对�?/option>" +
                 "</select>" +
                 "<p>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
@@ -507,7 +507,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     var self = this;
                     self._cls = CLS_VIDEO;
                     self._type = TYPE_VIDEO;
-                    self._title = "视频属性";
+                    self._title = "视频属�?";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
@@ -572,10 +572,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }, true);
             }
 
-            Flash.registerBubble("bangpai-video", "视频链接： ", checkVideo);
+            Flash.registerBubble("bangpai-video", "视频链接�?", checkVideo);
             KE.BangPaiVideo = BangPaiVideo;
             var contextMenu = {
-                "视频属性":function(editor) {
+                "视频属�?":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkVideo(startElement),

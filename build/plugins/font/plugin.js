@@ -263,7 +263,7 @@ KISSY.Editor.add("font", function(editor) {
 
         new KE.Font.SingleFont({
             contentCls:"ke-toolbar-underline",
-            title:"下划线 ",
+            title:"下划�?",
             editor:editor,
             style:new KEStyle({
                 element        : 'u',
@@ -276,7 +276,7 @@ KISSY.Editor.add("font", function(editor) {
 
         new KE.Font.SingleFont({
             contentCls:"ke-toolbar-strikeThrough",
-            title:"删除线 ",
+            title:"删除�?",
             editor:editor,
             style:new KEStyle({
                 element        : 'del',

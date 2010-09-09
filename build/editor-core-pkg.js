@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-06 18:00:01
+ * @buildtime: 2010-09-09 10:26:02
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -441,8 +441,8 @@ KISSY.Editor.add("utils", function(KE) {
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
- * 1.firefox 焦点失去 bug，记录当前状态
- * 2.窗口隐藏后能够恢复焦点
+ * 1.firefox 焦点失去 bug，记录当前状�?
+ * 2.窗口隐藏后能够恢复焦�?
  * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("focusmanager", function(KE) {
@@ -451,7 +451,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         Event = S.Event,
         focusManager = {},
         INSTANCES = {},
-        //当前焦点所在处
+        //当前焦点�?���?
         currentInstance,
         focusManager = {
             refreshAll:function() {
@@ -1489,7 +1489,7 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
-                //一个为空，一个不为空
+                //�?��为空，一个不为空
                 if (!e1 || !e2)return false;
                 e1 = normalElDom(e1);
                 e2 = normalElDom(e2);
@@ -1709,7 +1709,7 @@ KISSY.Editor.add("dom", function(KE) {
                 if (elem[GET_BOUNDING_CLIENT_RECT]) {
                     if (elem !== currentDoc.body && currentDocElem !== elem) {
                         box = elem[GET_BOUNDING_CLIENT_RECT]();
-                        //相对于refDocument，里层iframe的滚动不计
+                        //相对于refDocument，里层iframe的滚动不�?
                         x = box.left + (refDocument === currentDoc ? DOM["scrollLeft"](currentWindow) : 0);
                         y = box.top + (refDocument === currentDoc ? DOM["scrollTop"](currentWindow) : 0);
                     }
@@ -1950,7 +1950,7 @@ KISSY.Editor.add("dom", function(KE) {
                         return node._4e_name() == n;
                     };
                 }
-                //到document就完了
+                //到document就完�?
                 while ($ && $.nodeType != 9) {
                     if (!name || name(new Node($)) === true)
                         return new Node($);
@@ -2000,7 +2000,7 @@ KISSY.Editor.add("dom", function(KE) {
                 :
                 function(el) {
                     el = normalElDom(el);
-                    //删除firefox自己添加的标志
+                    //删除firefox自己添加的标�?
                     UA.gecko && el.removeAttribute("_moz_dirty");
                     var attributes = el.attributes;
                     return ( attributes.length > 1 || ( attributes.length == 1 && attributes[0].nodeName != '_ke_expando' ) );
@@ -2307,7 +2307,7 @@ KISSY.Editor.add("dom", function(KE) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando');
                 expandoNumber && delete customData[ expandoNumber ];
-                //ie inner html 会把属性带上，删掉！
+                //ie inner html 会把属�?带上，删掉！
                 expandoNumber && el.removeAttribute("_ke_expando");
             },
             _4e_getUniqueId : function(el) {
@@ -2364,7 +2364,7 @@ KISSY.Editor.add("dom", function(KE) {
                 return ( dtd && dtd['#'] );
             },
             /**
-             * 修正scrollIntoView在可视区域内不需要滚动
+             * 修正scrollIntoView在可视区域内不需要滚�?
              * @param elem
              */
             _4e_scrollIntoView:function(elem) {
@@ -2567,7 +2567,7 @@ KISSY.Editor.add("walker", function(KE) {
             // Gets the node that stops the walker when going LTR.
             var limitLTR = range.endContainer,
                 blockerLTR = new Node(limitLTR[0].childNodes[range.endOffset]);
-            //从左到右保证在 range 区间内获取 nextSourceNode
+            //从左到右保证�?range 区间内获�?nextSourceNode
             this._.guardLTR = function(node, movingOut) {
                 //从endContainer移出去，失败返回false
                 return (
@@ -2578,7 +2578,7 @@ KISSY.Editor.add("walker", function(KE) {
                         //到达深度遍历的最后一个节点，结束
                         && ( !blockerLTR[0] || node[0] !== (blockerLTR[0]) )
 
-                        //从body移出也结束
+                        //从body移出也结�?
                         && ( node[0].nodeType != KEN.NODE_ELEMENT
                         || !movingOut
                         || node._4e_name() != 'body' ) );
@@ -2744,7 +2744,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Check all nodes at left, executing the evaluation fuction.
-         * 是不是 (不能后退了)
+         * 是不�?(不能后�?�?
          * @returns {Boolean} "false" if the evaluator function returned
          *        "false" for any of the matched nodes. Otherwise "true".
          */
@@ -3191,7 +3191,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     currentNode = currentSibling;
                 }
-                //ckeditor这里错了，当前节点的路径所在父节点不能clone(true)，要在后面深入子节点处理
+                //ckeditor这里错了，当前节点的路径�?��父节点不能clone(true)，要在后面深入子节点处理
                 if (levelClone)
                     clone = levelClone;
             }
@@ -4395,12 +4395,12 @@ KISSY.Editor.add("range", function(KE) {
     function elementBoundaryEval(node) {
         // Reject any text node unless it's being bookmark
         // OR it's spaces. (#3883)
-        //如果不是文本节点并且是空的，可以继续取下一个判断边界
+        //如果不是文本节点并且是空的，可以继续取下�?��判断边界
         var c1 = node[0].nodeType != KEN.NODE_TEXT
             && node._4e_name() in dtd.$removeEmpty,
-            //文本为空，可以继续取下一个判断边界
+            //文本为空，可以继续取下一个判断边�?
             c2 = !S.trim(node[0].nodeValue),
-            //恩，进去了书签，可以继续取下一个判断边界
+            //恩，进去了书签，可以继续取下�?��判断边界
             c3 = !!node.parent().attr('_ke_bookmark');
         return c1 || c2 || c3;
     }
@@ -4498,7 +4498,7 @@ KISSY.Editor.add("domiterator", function(KE) {
         this._ || ( this._ = {} );
     }
 
-    var beginWhitespaceRegex = /^[\r\n\t ]*$/,///^[\r\n\t ]+$/,//+:*??不匹配空串
+    var beginWhitespaceRegex = /^[\r\n\t ]*$/,///^[\r\n\t ]+$/,//+:*??不匹配空�?
         isBookmark = Walker.bookmark();
 
     S.augment(Iterator, {
@@ -4982,7 +4982,7 @@ KISSY.Editor.add("selection", function(KE) {
                                     comparisonEnd = testRange.compareEndPoints('EndToStart', range);
 
                                 testRange.collapse();
-                                //中间有其他标签
+                                //中间有其他标�?
                                 if (comparisonStart > 0)
                                     break;
                                 // When selection stay at the side of certain self-closing elements, e.g. BR,
@@ -5013,7 +5013,7 @@ KISSY.Editor.add("selection", function(KE) {
                             while (distance > 0)
                                 //bug? 可能不是文本节点 nodeValue undefined
                                 //永远不会出现 textnode<img/>textnode
-                                //停止时，前面一定为textnode
+                                //停止时，前面�?��为textnode
                                 distance -= siblings[ --i ].nodeValue.length;
                         }
                             // Measurement in IE could be somtimes wrong because of <select> element. (#4611)
@@ -5236,8 +5236,8 @@ KISSY.Editor.add("selection", function(KE) {
         selectElement : function(element) {
             var range,self = this;
             if (UA.ie) {
-                //do not use empty()，滚动条重置了
-                //选择的 img 内容前后莫名被清除
+                //do not use empty()，滚动条重置�?
+                //选择�?img 内容前后莫名被清�?
                 //self.getNative().clear();
                 try {
                     // Try to select the node as a control.
@@ -5378,7 +5378,7 @@ KISSY.Editor.add("selection", function(KE) {
             var self = this,
                 collapsed = self.collapsed,isStartMarkerAlone,dummySpan;
             //选的是元素，直接使用selectElement
-            //还是有差异的，特别是img选择框问题
+            //还是有差异的，特别是img选择框问�?
             if (self.startContainer[0] === self.endContainer[0] && self.endOffset - self.startOffset == 1) {
                 var selEl = self.startContainer[0].childNodes[self.startOffset];
                 if (selEl.nodeType == KEN.NODE_ELEMENT) {
@@ -5532,12 +5532,12 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //wokao,ie 焦点管理不行啊
+            //wokao,ie 焦点管理不行�?
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
-            //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
+            //终于和ck同步了，我也发现了这个bug，哈�?ck3.3.2解决
             if (UA.ie < 8 ||
-                //ie8 的 7 兼容模式
+                //ie8 �?7 兼容模式
                 document.documentMode == 7) {
                 // The 'click' event is not fired when clicking the
                 // scrollbars, so we can use it to check whether
@@ -5624,7 +5624,7 @@ KISSY.Editor.add("selection", function(KE) {
 
             // IE is the only to provide the "selectionchange"
             // event.
-            // 注意：ie右键短暂点击并不能改变选择范围
+            // 注意：ie右键短暂点击并不能改变�?择范�?
             Event.on(doc, 'selectionchange', saveSelection);
 
             function disableSave() {
@@ -5752,7 +5752,7 @@ KISSY.Editor.add("styles", function(KE) {
         document.body.focus();
         var selection = new KESelection(document),ranges = selection.getRanges();
         for (var i = 0; i < ranges.length; i++)
-            //格式化后，range进入格式标签内
+            //格式化后，range进入格式标签�?
             func.call(self, ranges[ i ]);
         // Select the ranges again.
         selection.selectRanges(ranges);
@@ -6275,7 +6275,7 @@ KISSY.Editor.add("styles", function(KE) {
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
-                        //下一次格式xxx为70px
+                        //下一次格式xxx�?0px
                         //var exit = false;
                         for (var styleName in def.styles) {
                             if (styleNode._4e_style(styleName) == parent._4e_style(styleName)) {

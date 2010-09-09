@@ -65,7 +65,7 @@ KISSY.Editor.add("styles", function(KE) {
         document.body.focus();
         var selection = new KESelection(document),ranges = selection.getRanges();
         for (var i = 0; i < ranges.length; i++)
-            //格式化后，range进入格式标签内
+            //格式化后，range进入格式标签�?
             func.call(self, ranges[ i ]);
         // Select the ranges again.
         selection.selectRanges(ranges);
@@ -588,7 +588,7 @@ KISSY.Editor.add("styles", function(KE) {
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
-                        //下一次格式xxx为70px
+                        //下一次格式xxx�?0px
                         //var exit = false;
                         for (var styleName in def.styles) {
                             if (styleNode._4e_style(styleName) == parent._4e_style(styleName)) {
