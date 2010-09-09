@@ -13,8 +13,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         TYPE_XIAMI = "bangpai-music",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        BTIP = "�?�?",
-        BLOADING = "载入�?",
+        BTIP = "搜 索 ",
+        BLOADING = "载入中 ",
         TIP = "输入想要添加的歌曲名、专辑名、艺人名";
 
     function checkXiami(url) {
@@ -68,7 +68,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     });
                 }
             }
-            //4 �?flash 的优先级 5 高！
+            //4 比 flash 的优先级 5 高！
         }}, 4);
 
     if (!KE.BangPaiMusic) {
@@ -140,11 +140,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 " <input type='submit' " +
                 "style='vertical-align:middle;' value='" + BTIP + "' />" +
                 "</p>" +
-                "<p style='margin:5px 0'><label>�?齐： " +
+                "<p style='margin:5px 0'><label>对 齐： " +
                 "<select class='ke-xiami-align'>" +
-                "<option value=''>�?/option>" +
-                "<option value='left'>左对�?/option>" +
-                "<option value='right'>右对�?/option>" +
+                "<option value=''>无</option>" +
+                "<option value='left'>左对齐</option>" +
+                "<option value='right'>右对齐</option>" +
                 "</select>" +
                 "</p>" +
                 "</form>" +
@@ -300,7 +300,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             }
 
                         } else {
-                            html = "<p style='text-align:center;margin:10px 0;'>不好意�?，没有找到结果！</p>";
+                            html = "<p style='text-align:center;margin:10px 0;'>不好意思，没有找到结果！</p>";
                         }
                         self._xiamia_list.html(html);
                     }
@@ -340,7 +340,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             }
 
             var contextMenu = {
-                "虾米属�?":function(editor) {
+                "虾米属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkXiami(startElement),
@@ -351,7 +351,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 }
             };
 
-            Flash.registerBubble(TYPE_XIAMI, "虾米音乐�?", checkXiami);
+            Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
 
             KE.BangPaiMusic = BangPaiMusic;
         })();

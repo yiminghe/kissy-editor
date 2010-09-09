@@ -37,7 +37,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                 if (range.checkStartOfBlock() && range.checkEndOfBlock()) {
                     var path = new ElementPath(range.startContainer),
                         block = path.block;
-                    //只有两层�?
+                    //只有两层？
                     if (block && ( block._4e_name() == 'li' || block.parent()._4e_name() == 'li' )) {
                         editor.execCommand('outdent');
                         return;

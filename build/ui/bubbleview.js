@@ -21,7 +21,7 @@ KISSY.Editor.add("bubbleview", function() {
 
 
     /**
-     * 延迟化创建实�?
+     * 延迟化创建实例
      * @param cfg
      */
     BubbleView.attach = function(cfg) {

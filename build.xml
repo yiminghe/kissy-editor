@@ -53,7 +53,7 @@ build file for kissy editor
         <copy todir="${build.dir}">
             <fileset refid="assets_img"/>
         </copy>
-        <copy todir="${build.dir}">
+        <copy todir="${build.dir}" encoding="${charset}" outputencoding="${charset}">
             <fileset refid="full_source"/>
             <filterset>
                 <filter token="TIMESTAMP" value="${timestamp.isoformat}"/>

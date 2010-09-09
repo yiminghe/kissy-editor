@@ -59,26 +59,26 @@ KISSY.Editor.add("music", function(editor) {
                 }
 
             }
-            //4 �?flash 的优先级 5 高！
+            //4 比 flash 的优先级 5 高！
         }}, 4);
 
-    //重构，和flash结合起来，抽�?
+    //重构，和flash结合起来，抽象
     if (!KE.MusicInserter) {
         (function() {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)"',
                 bodyHtml = "" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址�?" +
+                    "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
                     "</span><input class='ke-music-url' style='width:230px' " +
                     "value='"
                     + TIP
                     + "'/></label>" +
                     "</p>" +
-                    "<p style='margin:5px 0'><label>�?nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                    "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
                     "<select class='ke-music-align'>" +
-                    "<option value=''>�?/option>" +
-                    "<option value='left'>左对�?/option>" +
-                    "<option value='right'>右对�?/option>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
                     "</select>" +
                     "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
@@ -103,7 +103,7 @@ KISSY.Editor.add("music", function(editor) {
                         editor = self.editor;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
-                    self._title = "音乐属�?";
+                    self._title = "音乐属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
@@ -158,10 +158,10 @@ KISSY.Editor.add("music", function(editor) {
                 return url.replace(/^.+niftyplayer\.swf\?file=/, "");
             }
 
-            Flash.registerBubble("music", "音乐网址�?", checkMusic);
+            Flash.registerBubble("music", "音乐网址： ", checkMusic);
             KE.MusicInserter = MusicInserter;
             var contextMenu = {
-                "音乐属�?":function(editor) {
+                "音乐属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkMusic(startElement),

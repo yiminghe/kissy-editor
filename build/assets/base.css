@@ -5,11 +5,11 @@ build time: Aug 16 16:50
 */
 /*
 KISSY CSS Reset
-理念�?. reset 的目的不是清除浏览器的默认样式，这仅是部分工作�?清除和重置是紧密不可分的�?
-     2. reset 的目的不是让默认样式在所有浏览器下一致，而是减少默认样式有可能带来的问题�?
-     3. reset 期望提供�?��普�?通用的基�?��式�?但没有银弹，推荐根据具体�?��，裁剪和修改后再使用�?
-特色�?. 适应中文�?. 基于�?��主流浏览器�?
-维护：玉�?lifesinger@gmail.com>, 正淳<ragecarrier@gmail.com>
+理念：1. reset 的目的不是清除浏览器的默认样式，这仅是部分工作。清除和重置是紧密不可分的。
+     2. reset 的目的不是让默认样式在所有浏览器下一致，而是减少默认样式有可能带来的问题。
+     3. reset 期望提供一套普适通用的基础样式。但没有银弹，推荐根据具体需求，裁剪和修改后再使用。
+特色：1. 适应中文；2. 基于最新主流浏览器。
+维护：玉伯<lifesinger@gmail.com>, 正淳<ragecarrier@gmail.com>
 */
 
 /** 清除内外边距 **/
@@ -43,7 +43,7 @@ address, cite, dfn, em, var {
     font-style: normal;
 }
 
-/* 将斜体扶�?*/
+/* 将斜体扶正 */
 code, kbd, pre, samp {
     font-family: courier new, courier, monospace;
 }
@@ -53,7 +53,7 @@ small {
     font-size: 12px;
 }
 
-/* 小于 12px 的中文很难阅读，�?small 正常�?*/
+/* 小于 12px 的中文很难阅读，让 small 正常化 */
 
 /** 重置列表元素 **/
 ul, ol {
@@ -73,7 +73,7 @@ sup {
     vertical-align: text-top;
 }
 
-/* 重置，减少对行高的影�?*/
+/* 重置，减少对行高的影响 */
 sub {
     vertical-align: text-bottom;
 }
@@ -88,7 +88,7 @@ fieldset, img {
     border: 0;
 }
 
-/* img 搭车：让链接里的 img 无边�?*/
+/* img 搭车：让链接里的 img 无边框 */
 button,
 input,
 select, textarea {
@@ -96,7 +96,7 @@ select, textarea {
     font-family: tahoma, arial, \5b8b\4f53, sans-serif;
 }
 
-/* 使得表单元素�?ie 下能继承字体大小 */
+/* 使得表单元素在 ie 下能继承字体大小 */
 /* 注：optgroup 无法扶正 */
 
 /** 重置表格元素 **/
@@ -111,9 +111,9 @@ MIT Licensed
 build time: Aug 16 16:50
 */
 /*
-双飞翼栅格布�?Flying Swing Grids Layout
-理念：简单质朴，语义化布�??
-维护：玉�?lifesinger@gmail.com>, 正淳<ragecarrier@gmail.com>
+双飞翼栅格布局 Flying Swing Grids Layout
+理念：简单质朴，语义化布局。
+维护：玉伯<lifesinger@gmail.com>, 正淳<ragecarrier@gmail.com>
 */
 
 /* 居中 */
@@ -125,7 +125,7 @@ build time: Aug 16 16:50
 /** 布局基础样式 **/
 .col-main {
     float: left;
-    width: 100%; /* bug fix: 主栏没有内容时，�?Firefox �?Chrome 等浏览器下，布局不对 */
+    width: 100%; /* bug fix: 主栏没有内容时，在 Firefox 和 Chrome 等浏览器下，布局不对 */
     min-height: 1px;
 }
 
@@ -151,9 +151,9 @@ MIT Licensed
 build time: Aug 16 16:50
 */
 /*
-常用的�?用样�?Common Style
+常用的通用样式 Common Style
 理念：少而精
-维护：玉�?lifesinger@gmail.com>
+维护：玉伯<lifesinger@gmail.com>
 */
 
 /* 隐藏 */

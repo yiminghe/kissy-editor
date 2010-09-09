@@ -59,7 +59,7 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
-                //�?��为空，一个不为空
+                //一个为空，一个不为空
                 if (!e1 || !e2)return false;
                 e1 = normalElDom(e1);
                 e2 = normalElDom(e2);
@@ -279,7 +279,7 @@ KISSY.Editor.add("dom", function(KE) {
                 if (elem[GET_BOUNDING_CLIENT_RECT]) {
                     if (elem !== currentDoc.body && currentDocElem !== elem) {
                         box = elem[GET_BOUNDING_CLIENT_RECT]();
-                        //相对于refDocument，里层iframe的滚动不�?
+                        //相对于refDocument，里层iframe的滚动不计
                         x = box.left + (refDocument === currentDoc ? DOM["scrollLeft"](currentWindow) : 0);
                         y = box.top + (refDocument === currentDoc ? DOM["scrollTop"](currentWindow) : 0);
                     }
@@ -520,7 +520,7 @@ KISSY.Editor.add("dom", function(KE) {
                         return node._4e_name() == n;
                     };
                 }
-                //到document就完�?
+                //到document就完了
                 while ($ && $.nodeType != 9) {
                     if (!name || name(new Node($)) === true)
                         return new Node($);
@@ -570,7 +570,7 @@ KISSY.Editor.add("dom", function(KE) {
                 :
                 function(el) {
                     el = normalElDom(el);
-                    //删除firefox自己添加的标�?
+                    //删除firefox自己添加的标志
                     UA.gecko && el.removeAttribute("_moz_dirty");
                     var attributes = el.attributes;
                     return ( attributes.length > 1 || ( attributes.length == 1 && attributes[0].nodeName != '_ke_expando' ) );
@@ -877,7 +877,7 @@ KISSY.Editor.add("dom", function(KE) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando');
                 expandoNumber && delete customData[ expandoNumber ];
-                //ie inner html 会把属�?带上，删掉！
+                //ie inner html 会把属性带上，删掉！
                 expandoNumber && el.removeAttribute("_ke_expando");
             },
             _4e_getUniqueId : function(el) {
@@ -934,7 +934,7 @@ KISSY.Editor.add("dom", function(KE) {
                 return ( dtd && dtd['#'] );
             },
             /**
-             * 修正scrollIntoView在可视区域内不需要滚�?
+             * 修正scrollIntoView在可视区域内不需要滚动
              * @param elem
              */
             _4e_scrollIntoView:function(elem) {

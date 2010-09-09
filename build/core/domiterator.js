@@ -26,7 +26,7 @@ KISSY.Editor.add("domiterator", function(KE) {
         this._ || ( this._ = {} );
     }
 
-    var beginWhitespaceRegex = /^[\r\n\t ]*$/,///^[\r\n\t ]+$/,//+:*??不匹配空�?
+    var beginWhitespaceRegex = /^[\r\n\t ]*$/,///^[\r\n\t ]+$/,//+:*??不匹配空串
         isBookmark = Walker.bookmark();
 
     S.augment(Iterator, {

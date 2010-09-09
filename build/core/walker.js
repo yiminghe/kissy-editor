@@ -43,7 +43,7 @@ KISSY.Editor.add("walker", function(KE) {
             // Gets the node that stops the walker when going LTR.
             var limitLTR = range.endContainer,
                 blockerLTR = new Node(limitLTR[0].childNodes[range.endOffset]);
-            //从左到右保证�?range 区间内获�?nextSourceNode
+            //从左到右保证在 range 区间内获取 nextSourceNode
             this._.guardLTR = function(node, movingOut) {
                 //从endContainer移出去，失败返回false
                 return (
@@ -54,7 +54,7 @@ KISSY.Editor.add("walker", function(KE) {
                         //到达深度遍历的最后一个节点，结束
                         && ( !blockerLTR[0] || node[0] !== (blockerLTR[0]) )
 
-                        //从body移出也结�?
+                        //从body移出也结束
                         && ( node[0].nodeType != KEN.NODE_ELEMENT
                         || !movingOut
                         || node._4e_name() != 'body' ) );
@@ -220,7 +220,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Check all nodes at left, executing the evaluation fuction.
-         * 是不�?(不能后�?�?
+         * 是不是 (不能后退了)
          * @returns {Boolean} "false" if the evaluator function returned
          *        "false" for any of the matched nodes. Otherwise "true".
          */

@@ -13,7 +13,7 @@ KISSY.Editor.add("image", function(editor) {
         Overlay = KE.SimpleOverlay,
         TIP = "http://",
         DTIP = "自动";
-    //!TODO �?��重构，flashsupport ,image 类似，再抽离�?
+    //!TODO 需要重构，flashsupport ,image 类似，再抽离？
     if (!KE.ImageInserter) {
         (function() {
 
@@ -32,21 +32,21 @@ KISSY.Editor.add("image", function(editor) {
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div>" +
                     "<p>" +
-                    labelStyle + "图片网址�?" +
+                    labelStyle + "图片网址： " +
                     "</span><input class='ke-img-url' style='width:230px' value='" + TIP + "'/></label>" +
                     "</p>" +
                     "<p style='margin:5px 0'>" +
-                    labelStyle + "高度�?" +
+                    labelStyle + "高度： " +
                     "</span><input class='ke-img-height' style='width:90px' value='" + DTIP + "'/> px </label> &nbsp;" +
-                    labelStyle + "宽度�?" +
+                    labelStyle + "宽度： " +
                     "</span><input class='ke-img-width' style='width:90px' value='" + DTIP + "'/> px </label>" +
                     "</p>" +
                     "<p>" +
-                    labelStyle + "对齐�?" +
+                    labelStyle + "对齐： " +
                     "</span><select class='ke-img-align'>" +
-                    "<option value=''>�?/option>" +
-                    "<option value='left'>左对�?/option>" +
-                    "<option value='right'>右对�?/option>" +
+                    "<option value=''>无</option>" +
+                    "<option value='left'>左对齐</option>" +
+                    "<option value='right'>右对齐</option>" +
                     "</select></label>" +
                     "</p>" +
                     "</div>",
@@ -56,7 +56,7 @@ KISSY.Editor.add("image", function(editor) {
                 editor:{}
             };
             var contextMenu = {
-                "图片属�?":function(editor) {
+                "图片属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = checkImg(startElement),
@@ -115,7 +115,7 @@ KISSY.Editor.add("image", function(editor) {
                 _prepare:function() {
                     var self = this,editor = self.get("editor");
                     self.d = new Overlay({
-                        title:"图片属�?",
+                        title:"图片属性",
                         mask:true,
                         width:"350px"
                     });
@@ -253,7 +253,7 @@ KISSY.Editor.add("image", function(editor) {
                         });
                     }
                 });
-            })(TYPE_IMG, "图片网址�?", checkImg);
+            })(TYPE_IMG, "图片网址： ", checkImg);
         })();
     }
 

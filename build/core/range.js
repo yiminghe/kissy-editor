@@ -333,7 +333,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     currentNode = currentSibling;
                 }
-                //ckeditor这里错了，当前节点的路径�?��父节点不能clone(true)，要在后面深入子节点处理
+                //ckeditor这里错了，当前节点的路径所在父节点不能clone(true)，要在后面深入子节点处理
                 if (levelClone)
                     clone = levelClone;
             }
@@ -1537,12 +1537,12 @@ KISSY.Editor.add("range", function(KE) {
     function elementBoundaryEval(node) {
         // Reject any text node unless it's being bookmark
         // OR it's spaces. (#3883)
-        //如果不是文本节点并且是空的，可以继续取下�?��判断边界
+        //如果不是文本节点并且是空的，可以继续取下一个判断边界
         var c1 = node[0].nodeType != KEN.NODE_TEXT
             && node._4e_name() in dtd.$removeEmpty,
-            //文本为空，可以继续取下一个判断边�?
+            //文本为空，可以继续取下一个判断边界
             c2 = !S.trim(node[0].nodeValue),
-            //恩，进去了书签，可以继续取下�?��判断边界
+            //恩，进去了书签，可以继续取下一个判断边界
             c3 = !!node.parent().attr('_ke_bookmark');
         return c1 || c2 || c3;
     }

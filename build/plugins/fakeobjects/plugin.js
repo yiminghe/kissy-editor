@@ -15,7 +15,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
     var htmlFilterRules = {
         elements : {
             /**
-             * 生成�?��html时，从编辑器html转化把fake替换为真实，并将style的width,height搞到属�?上去
+             * 生成最终html时，从编辑器html转化把fake替换为真实，并将style的width,height搞到属性上去
              * @param element
              */
             $ : function(element) {

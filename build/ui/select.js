@@ -41,7 +41,7 @@ KISSY.Editor.add("select", function() {
                 drop = el.one(".ke-select-drop");
             text.html(title);
             text.css("width", self.get("width"));
-            //ie6,7 不失去焦�?
+            //ie6,7 不失去焦点
             el._4e_unselectable();
             el.attr(TITLE, title);
             el.appendTo(container);
@@ -54,7 +54,7 @@ KISSY.Editor.add("select", function() {
         },
 
         /**
-         * 当�?辑�?变化时，更新select的显示�?
+         * 当逻辑值变化时，更新select的显示值
          * @param ev
          */
         _valueChange:function(ev) {
@@ -133,10 +133,10 @@ KISSY.Editor.add("select", function() {
 
             if (!a) return;
             var preVal = self.get("value"),newVal = a.attr("data-value");
-            //更新逻辑�?
+            //更新逻辑值
             self.set("value", newVal);
 
-            //触发 click 事件，必要时可监�?afterValueChange
+            //触发 click 事件，必要时可监听 afterValueChange
             self.fire("click", {
                 newVal:newVal,
                 preVal:preVal,

@@ -17,38 +17,38 @@ KISSY.Editor.add("table", function(editor, undefined) {
         TABLE_HTML = "<table class='ke-table-config'>" +
             "<tr>" +
             "<td>" +
-            "<label>行数�?<input value='2' class='ke-table-rows ke-table-create-only' size='" + IN_SIZE + "'/></label>" +
+            "<label>行数： <input value='2' class='ke-table-rows ke-table-create-only' size='" + IN_SIZE + "'/></label>" +
             "</td>" +
             "<td>" +
-            "<label>宽度�?<input value='200' class='ke-table-width' size='" + IN_SIZE + "'/></label> " +
+            "<label>宽度： <input value='200' class='ke-table-width' size='" + IN_SIZE + "'/></label> " +
             "<select class='ke-table-width-unit'>" +
             "<option value='px'>像素</option>" +
-            "<option value='%'>百分�?/option>" +
+            "<option value='%'>百分比</option>" +
             "</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
-            "<label>列数�?<input class='ke-table-cols ke-table-create-only' value='3' size='" + IN_SIZE + "'/></label>" +
+            "<label>列数： <input class='ke-table-cols ke-table-create-only' value='3' size='" + IN_SIZE + "'/></label>" +
             "</td>" +
             "<td>" +
-            "<label>高度�?<input value='' class='ke-table-height' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>高度： <input value='' class='ke-table-height' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
 
             "<td>" +
-            "<label>对齐�?<select class='ke-table-align'>" +
-            "<option value=''>�?/option>" +
-            "<option value='left'>左对�?/option>" +
-            "<option value='right'>右对�?/option>" +
+            "<label>对齐： <select class='ke-table-align'>" +
+            "<option value=''>无</option>" +
+            "<option value='left'>左对齐</option>" +
+            "<option value='right'>右对齐</option>" +
             "<option value='center'>中间对齐</option>" +
             "</select>" +
             "</label>" + "</td>" +
 
 
             "<td>" +
-            "<label>间距�?<input value='1' class='ke-table-cellspacing' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>间距： <input value='1' class='ke-table-cellspacing' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -56,13 +56,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
             "<td>" +
             "<label>标题格： <select class='ke-table-head ke-table-create-only'>" +
-            "<option value=''>�?/option>" +
-            "<option value='1'>�?/option>" +
+            "<option value=''>无</option>" +
+            "<option value='1'>有</option>" +
             "</select>" +
             "</td>" +
             "<td>" +
 
-            "<label>边距�?<input value='1' class='ke-table-cellpadding' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>边距： <input value='1' class='ke-table-cellpadding' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -70,13 +70,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
             "</td>" +
             "<td>" +
-            "<label>边框�?<input value='1' class='ke-table-border' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>边框： <input value='1' class='ke-table-border' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
             "<td colspan='2'>" +
             "<label>" +
-            "标题�?input class='ke-table-caption' style='width:270px'>" +
+            "标题：<input class='ke-table-caption' style='width:270px'>" +
             "</label>" +
             "</td>" +
             "</tr>" +
@@ -86,7 +86,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
 
     /**
-     * table 编辑模式下显示虚线边框便于编�?
+     * table 编辑模式下显示虚线边框便于编辑
      */
     var showBorderClassName = 'ke_show_border',
         cssStyleText,
@@ -204,7 +204,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d = new Overlay({
                             width:"350px",
                             mask:true,
-                            title:"表格属�?"
+                            title:"表格属性"
                         }),
                         body = d.body;
                     d.body.html(TABLE_HTML);
@@ -289,7 +289,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         i,
                         cols = parseInt(d.tcols.val()) || 1,
                         rows = parseInt(d.trows.val()) || 1,
-                        //firefox �?�� br 才能得以放置焦点
+                        //firefox 需要 br 才能得以放置焦点
                         cellpad = UA.ie ? "" : "<br/>",
                         editor = self.editor;
 
@@ -617,7 +617,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         elementToFocus = getFocusElementAfterDelCols(colsToDelete);
 
                     for (var i = colsToDelete.length - 1; i >= 0; i--) {
-                        //某一列已经删除？？这�?��的cell再做�?!table判断处理
+                        //某一列已经删除？？这一列的cell再做？ !table判断处理
                         if (colsToDelete[ i ])
                             deleteColumns(colsToDelete[i]);
                     }
@@ -628,7 +628,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     // Get the cell's table.
                     var table = selectionOrCell._4e_ascendant('table');
 
-                    //该单元格�?��的列已经被删除了
+                    //该单元格所属的列已经被删除了
                     if (!table)
                         return null;
 
@@ -668,7 +668,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             }
 
             var contextMenu = {
-                "表格属�?" : function(editor) {
+                "表格属性" : function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         table = startElement && startElement._4e_ascendant('table', true);
@@ -700,12 +700,12 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         table._4e_remove();
                 },
 
-                '删除�?': function(editor) {
+                '删除行 ': function(editor) {
                     var selection = editor.getSelection();
                     placeCursorInCell(deleteRows(selection), undefined);
                 },
 
-                '删除�?' : function(editor) {
+                '删除列 ' : function(editor) {
                     var selection = editor.getSelection(),
                         element = deleteColumns(selection);
                     element && placeCursorInCell(element, true);
@@ -744,7 +744,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         new KE.TableUI(editor);
 
         /**
-         * 动�?加入显表格border css，便于编�?
+         * 动态加入显表格border css，便于编辑
          */
         var elem = DOM.create("<style>", null, doc);
         doc.getElementsByTagName("head")[0].appendChild(elem);

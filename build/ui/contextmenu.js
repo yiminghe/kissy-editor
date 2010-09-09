@@ -18,7 +18,7 @@ KISSY.Editor.add("contextmenu", function() {
 
     var global_rules = [];
     /**
-     * 多菜单管�?
+     * 多菜单管理
      */
     ContextMenu.register = function(doc, cfg) {
 
@@ -48,8 +48,8 @@ KISSY.Editor.add("contextmenu", function() {
 
                             ev.preventDefault();
                             stop = true;
-                            //ie 右键作用中，不会发生焦点转移，光标移�?
-                            //只能右键作用完后才能，才会发生光标移�?range变化
+                            //ie 右键作用中，不会发生焦点转移，光标移动
+                            //只能右键作用完后才能，才会发生光标移动,range变化
                             //异步右键操作
                             //qc #3764,#3767
                             setTimeout(function() {
@@ -91,7 +91,7 @@ KISSY.Editor.add("contextmenu", function() {
     var Overlay = KE.SimpleOverlay;
     S.augment(ContextMenu, {
         /**
-         * 根据配置构�?右键菜单内容
+         * 根据配置构造右键菜单内容
          */
         _init:function() {
             var self = this,cfg = self.cfg,funcs = cfg.funcs;
@@ -108,11 +108,11 @@ KISSY.Editor.add("contextmenu", function() {
                 (function(a, func) {
                     a._4e_unselectable();
                     a.on("click", function(ev) {
-                        //�?hide 还原编辑器内焦点
+                        //先 hide 还原编辑器内焦点
                         self.hide();
                         //console.log("contextmenu hide");
                         ev.halt();
-                        //�?ie �?�� hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操�?
+                        //给 ie 一点 hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操作
                         setTimeout(func, 30);
                     });
                 })(a, funcs[f]);

@@ -94,7 +94,7 @@ hr {
     color: gray;
 }
 
-/* 将斜体扶�?*/
+/* 将斜体扶正 */
 code, kbd, pre, samp {
     font-family: courier new, courier, monospace;
 }
@@ -108,7 +108,7 @@ sup {
     vertical-align: text-top;
 }
 
-/* 重置，减少对行高的影�?*/
+/* 重置，减少对行高的影响 */
 sub {
     vertical-align: text-bottom;
 }
@@ -197,7 +197,7 @@ img.ke_xiami {
     background-image: url("placeholder_xiami.png");
 }
 
-/*firefox 破碎图片手动定义才出�?/
+/*firefox 破碎图片手动定义才出现*/
 img:-moz-broken {
     -moz-force-broken-image-icon: 1;
     height: 24px;

@@ -51,7 +51,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }
 
             }
-            //4 �?flash 的优先级 5 高！
+            //4 比 flash 的优先级 5 高！
         }}, 4);
 
     function getProvider(url) {
@@ -113,19 +113,19 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         (function() {
             var bodyHtml = "" +
                 "<p style='margin-bottom:5px'>" +
-                "�?��分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
+                "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
                 "</p>" +
                 "<p>" +
-                "<label><span style='color:#0066CC;font-weight:bold;'>视频链接�?" +
+                "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
                 "</span><input class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
                 "</p>" +
-                "<p style='margin:5px 0'><label>�?nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
                 "<select class='ke-video-align'>" +
-                "<option value=''>�?/option>" +
-                "<option value='left'>左对�?/option>" +
-                "<option value='right'>右对�?/option>" +
+                "<option value=''>无</option>" +
+                "<option value='left'>左对齐</option>" +
+                "<option value='right'>右对齐</option>" +
                 "</select>" +
                 "<p>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
@@ -142,7 +142,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     var self = this;
                     self._cls = CLS_VIDEO;
                     self._type = TYPE_VIDEO;
-                    self._title = "视频属�?";
+                    self._title = "视频属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
@@ -207,10 +207,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }, true);
             }
 
-            Flash.registerBubble("bangpai-video", "视频链接�?", checkVideo);
+            Flash.registerBubble("bangpai-video", "视频链接： ", checkVideo);
             KE.BangPaiVideo = BangPaiVideo;
             var contextMenu = {
-                "视频属�?":function(editor) {
+                "视频属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
                         flash = startElement && checkVideo(startElement),

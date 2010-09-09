@@ -194,7 +194,7 @@ KISSY.Editor.add("selection", function(KE) {
                                     comparisonEnd = testRange.compareEndPoints('EndToStart', range);
 
                                 testRange.collapse();
-                                //中间有其他标�?
+                                //中间有其他标签
                                 if (comparisonStart > 0)
                                     break;
                                 // When selection stay at the side of certain self-closing elements, e.g. BR,
@@ -225,7 +225,7 @@ KISSY.Editor.add("selection", function(KE) {
                             while (distance > 0)
                                 //bug? 可能不是文本节点 nodeValue undefined
                                 //永远不会出现 textnode<img/>textnode
-                                //停止时，前面�?��为textnode
+                                //停止时，前面一定为textnode
                                 distance -= siblings[ --i ].nodeValue.length;
                         }
                             // Measurement in IE could be somtimes wrong because of <select> element. (#4611)
@@ -448,8 +448,8 @@ KISSY.Editor.add("selection", function(KE) {
         selectElement : function(element) {
             var range,self = this;
             if (UA.ie) {
-                //do not use empty()，滚动条重置�?
-                //选择�?img 内容前后莫名被清�?
+                //do not use empty()，滚动条重置了
+                //选择的 img 内容前后莫名被清除
                 //self.getNative().clear();
                 try {
                     // Try to select the node as a control.
@@ -590,7 +590,7 @@ KISSY.Editor.add("selection", function(KE) {
             var self = this,
                 collapsed = self.collapsed,isStartMarkerAlone,dummySpan;
             //选的是元素，直接使用selectElement
-            //还是有差异的，特别是img选择框问�?
+            //还是有差异的，特别是img选择框问题
             if (self.startContainer[0] === self.endContainer[0] && self.endOffset - self.startOffset == 1) {
                 var selEl = self.startContainer[0].childNodes[self.startOffset];
                 if (selEl.nodeType == KEN.NODE_ELEMENT) {
@@ -744,12 +744,12 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //wokao,ie 焦点管理不行�?
+            //wokao,ie 焦点管理不行啊
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
-            //终于和ck同步了，我也发现了这个bug，哈�?ck3.3.2解决
+            //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
             if (UA.ie < 8 ||
-                //ie8 �?7 兼容模式
+                //ie8 的 7 兼容模式
                 document.documentMode == 7) {
                 // The 'click' event is not fired when clicking the
                 // scrollbars, so we can use it to check whether
@@ -836,7 +836,7 @@ KISSY.Editor.add("selection", function(KE) {
 
             // IE is the only to provide the "selectionchange"
             // event.
-            // 注意：ie右键短暂点击并不能改变�?择范�?
+            // 注意：ie右键短暂点击并不能改变选择范围
             Event.on(doc, 'selectionchange', saveSelection);
 
             function disableSave() {

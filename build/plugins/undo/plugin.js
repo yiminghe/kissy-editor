@@ -11,7 +11,7 @@ KISSY.Editor.add("undo", function(editor) {
     if (!KE.UndoManager) {
         (function() {
             /**
-             * 当前编辑区域状�?，包括html与�?择区�?
+             * 当前编辑区域状态，包括html与选择区域
              * @param editor
              */
             function Snapshot(editor) {
@@ -25,7 +25,7 @@ KISSY.Editor.add("undo", function(editor) {
 
             S.augment(Snapshot, {
                 /**
-                 * 编辑状�?间是否相�?
+                 * 编辑状态间是否相等
                  * @param otherImage
                  */
                 equals:function(otherImage) {
@@ -60,7 +60,7 @@ KISSY.Editor.add("undo", function(editor) {
 
 
             /**
-             * 键盘输入做延迟处�?
+             * 键盘输入做延迟处理
              * @param s
              * @param fn
              * @param scope
@@ -95,7 +95,7 @@ KISSY.Editor.add("undo", function(editor) {
             function UndoManager(editor) {
                 //redo undo history stack
                 /**
-                 * 编辑器状态历史保�?
+                 * 编辑器状态历史保存
                  */
                 this.history = [];
                 this.index = 0;
@@ -123,13 +123,13 @@ KISSY.Editor.add("undo", function(editor) {
                             || keycode in modifierKeyCodes
                             )
                             return;
-                        //ctrl+z，撤�?
+                        //ctrl+z，撤销
                         if (keycode === zKeyCode && (ev.ctrlKey || ev.metaKey)) {
                             editor.fire("restore", {d:-1});
                             ev.halt();
                             return;
                         }
-                        //ctrl+y，重�?
+                        //ctrl+y，重做
                         if (keycode === yKeyCode && (ev.ctrlKey || ev.metaKey)) {
                             editor.fire("restore", {d:1});
                             ev.halt();
@@ -141,10 +141,10 @@ KISSY.Editor.add("undo", function(editor) {
 
                 _init:function() {
                     var self = this,editor = self.editor;
-                    //外部通过editor触发save|restore,管理器捕获事件处�?
+                    //外部通过editor触发save|restore,管理器捕获事件处理
                     editor.on("save", function(ev) {
                         if (ev.buffer)
-                        //键盘操作�?��缓存
+                        //键盘操作需要缓存
                             self.bufferTimer.run();
                         else {
                             //其他立即save
@@ -153,7 +153,7 @@ KISSY.Editor.add("undo", function(editor) {
                     });
                     editor.on("restore", this.restore, this);
                     self._keyMonitor();
-                    //先save�?��,why??
+                    //先save一下,why??
                     //self.save();
                 },
 
@@ -161,7 +161,7 @@ KISSY.Editor.add("undo", function(editor) {
                  * 保存历史
                  */
                 save:function() {
-                    //前面的历史抛�?
+                    //前面的历史抛弃
                     if (this.history.length > this.index + 1)
                         this.history.splice(this.index + 1, this.history.length - this.index - 1);
 
@@ -183,7 +183,7 @@ KISSY.Editor.add("undo", function(editor) {
                 /**
                  *
                  * @param ev
-                 * ev.d �?.向前撤销 �?1.向后重做
+                 * ev.d ：1.向前撤销 ，-1.向后重做
                  */
                 restore:function(ev) {
                     var d = ev.d,self = this,editor = self.editor,
@@ -241,13 +241,13 @@ KISSY.Editor.add("undo", function(editor) {
                     });
                     this.el.set("state", TripleButton.DISABLED);
                     /**
-                     * save,restore完，更新工具栏状�?
+                     * save,restore完，更新工具栏状态
                      */
                     editor.on("afterSave", this._respond, this);
                     editor.on("afterRestore", this._respond, this);
 
                     /**
-                     * 触发重做或撤�?��作，都是restore，方向不�?
+                     * 触发重做或撤销动作，都是restore，方向不同
                      */
                     self.el.on("offClick", function() {
                         editor.fire("restore", {
@@ -286,16 +286,16 @@ KISSY.Editor.add("undo", function(editor) {
     editor.addPlugin(function() {
 
         /**
-         * 编辑器历史中央管�?
+         * 编辑器历史中央管理
          */
         new KE.UndoManager(editor);
 
         /**
-         * 撤销工具栏按�?
+         * 撤销工具栏按钮
          */
         new KE.RestoreUI(editor, "undo", "撤销", "ke-toolbar-undo");
         /**
-         * 重做工具栏按�?
+         * 重做工具栏按钮
          */
         new KE.RestoreUI(editor, "redo", "重做", "ke-toolbar-redo");
     });
