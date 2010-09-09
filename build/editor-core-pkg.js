@@ -782,6 +782,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (self._monitorId) {
                 clearTimeout(self._monitorId);
             }
+            //console.log("selectionChange");
             self._monitorId = setTimeout(function() {
                 var selection = self.getSelection();
                 if (selection && !selection.isInvalid) {

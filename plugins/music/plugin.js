@@ -90,10 +90,8 @@ KISSY.Editor.add("music", function(editor) {
                 MusicInserter.superclass.constructor.apply(this, arguments);
             }
 
-            function checkMusic(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC));
-                }, true);
+            function checkMusic(node) {
+                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC))&&node;
             }
 
 

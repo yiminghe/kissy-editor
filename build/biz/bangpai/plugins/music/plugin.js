@@ -194,7 +194,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         d = self.d,
                         action = d.el.one(".ke-xiami-form"),
                         input = d.el.one(".ke-xiami-url");
-                    self.dAlign = d.el.one(".ke-xiami-align")
+                    self.dAlign = d.el.one(".ke-xiami-align");
                     self._xiami_input = input;
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._xiami_submit = d.el.one(".ke-xiami-submit");
@@ -340,10 +340,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return decodeURIComponent(r.song_name) + " - " + decodeURIComponent(r.artist_name);
             }
 
-            function checkXiami(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI));
-                }, true);
+            function checkXiami(node) {               
+                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI))&&node;
             }
 
             var contextMenu = {

@@ -164,7 +164,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:self._config_dwidth||"350px",
+                            width:self._config_dwidth || "350px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);
@@ -298,12 +298,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
             /**
              * 泡泡判断是否选择元素符合
-             * @param lastElement
+             * @param node
              */
-            function checkFlash(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH));
-                }, true);
+            function checkFlash(node) {
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH))&&node;
             }
 
             /**

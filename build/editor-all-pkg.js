@@ -782,6 +782,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (self._monitorId) {
                 clearTimeout(self._monitorId);
             }
+            //console.log("selectionChange");
             self._monitorId = setTimeout(function() {
                 var selection = self.getSelection();
                 if (selection && !selection.isInvalid) {
@@ -8477,7 +8478,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:self._config_dwidth||"350px",
+                            width:self._config_dwidth || "350px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);
@@ -8611,12 +8612,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
             /**
              * 泡泡判断是否选择元素符合
-             * @param lastElement
+             * @param node
              */
-            function checkFlash(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH));
-                }, true);
+            function checkFlash(node) {
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_FLASH))&&node;
             }
 
             /**
@@ -11524,10 +11523,8 @@ KISSY.Editor.add("image", function(editor) {
     if (!KE.ImageInserter) {
         (function() {
 
-            var checkImg = function (lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className));
-                }, true);
+            var checkImg = function (node) {
+                return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
             },
                 labelStyle = "<label><span style='color:#0066CC;font-weight:bold;'>";
 
@@ -13303,10 +13300,8 @@ KISSY.Editor.add("music", function(editor) {
                 MusicInserter.superclass.constructor.apply(this, arguments);
             }
 
-            function checkMusic(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC));
-                }, true);
+            function checkMusic(node) {
+                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC))&&node;
             }
 
 

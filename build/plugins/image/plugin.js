@@ -17,10 +17,8 @@ KISSY.Editor.add("image", function(editor) {
     if (!KE.ImageInserter) {
         (function() {
 
-            var checkImg = function (lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className));
-                }, true);
+            var checkImg = function (node) {
+                return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
             },
                 labelStyle = "<label><span style='color:#0066CC;font-weight:bold;'>";
 

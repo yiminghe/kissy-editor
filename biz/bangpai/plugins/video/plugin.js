@@ -201,10 +201,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     }
                 }
             });
-            function checkVideo(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_VIDEO));
-                }, true);
+            function checkVideo(node) {
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_VIDEO))&&node;
             }
 
             Flash.registerBubble("bangpai-video", "视频链接： ", checkVideo);
