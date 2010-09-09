@@ -137,7 +137,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<input class='ke-xiami-url' style='width:300px' value='"
                 + TIP
                 + "'/> &nbsp; " +
-                " <input type='submit' " +
+                " <input class='ke-xiami-submit' type='submit' " +
                 "style='vertical-align:middle;' value='" + BTIP + "' />" +
                 "</p>" +
                 "<p style='margin:5px 0'><label>对 齐： " +
@@ -197,8 +197,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self.dAlign = d.el.one(".ke-xiami-align")
                     self._xiami_input = input;
                     self._xiamia_list = d.el.one(".ke-xiami-list");
-
+                    self._xiami_submit = d.el.one(".ke-xiami-submit");
                     function loadRecordsByPage(page) {
+                        self._xiami_submit[0].disabled = true;
                         var params = {
                             key:encodeURIComponent(input.val()),
                             page:page,
@@ -250,6 +251,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var self = this,i,
                         re = data.results,html;
                     if (data.key == self._xiami_input.val()) {
+                        self._xiami_submit[0].disabled = false;
                         if (re && re.length) {
                             html = "<ul>";
                             for (i = 0; i < re.length; i++) {
@@ -315,14 +317,15 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         self._xiami_input.val(TIP);
                         self.dAlign.val("");
                     }
+                    self._xiami_submit[0].disabled = false;
                     self._xiamia_list.html("");
                 },
 
                 _getDInfo:function() {
                     var self = this;
                     S.mix(self._dinfo.attrs, {
-                        width:165,
-                        height:37
+                        width:257,
+                        height:33
                     });
                     return self._dinfo;
                 }
