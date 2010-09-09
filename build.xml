@@ -227,7 +227,8 @@ build file for kissy editor
                                 encoding="${charset}"
                                 outputencoding="${charset}">
                             <fileset dir="@{biz}/plugins"
-                                     includes="**/*.js"/>
+                                     includes="**/*.js"
+                                     excludes="**/*-min.js"/>
                         </concat>
                     </ac:then>
                 </ac:if>
