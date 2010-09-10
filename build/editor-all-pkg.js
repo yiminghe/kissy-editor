@@ -11811,7 +11811,7 @@ KISSY.Editor.add("image", function(editor) {
                     "" +
                     KE.Utils.duplicateStr("&nbsp;", 13) +
                     labelStyle + "间距： " +
-                    "</span> <input class='ke-img-margin' style='width:90px' value='"
+                    "</span> <input class='ke-img-margin' style='width:80px' value='"
                     + 5 + "'/> px" +
                     "</label>" +
                     "</p>" +
