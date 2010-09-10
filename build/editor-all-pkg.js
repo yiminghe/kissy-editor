@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-10 13:53:23
+ * @buildtime: 2010-09-10 15:30:15
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -7491,11 +7491,15 @@ KISSY.Editor.add("overlay", function() {
                 });
 
                 //重建窗口默认就可drag
-                var head = el.one(".ke-hd");
-                new KE.Drag({
-                    node:el,
-                    handlers:[head]
-                });
+                var head = el.one(".ke-hd"),
+                    drag = new KE.Drag({
+                        node:el,
+                        handlers:[head]
+                    });
+                if (UA.ie === 6)
+                    drag.on("move", function() {
+                        d_iframe.offset(el.offset());
+                    });
             }
         },
 

@@ -183,11 +183,15 @@ KISSY.Editor.add("overlay", function() {
                 });
 
                 //重建窗口默认就可drag
-                var head = el.one(".ke-hd");
-                new KE.Drag({
-                    node:el,
-                    handlers:[head]
-                });
+                var head = el.one(".ke-hd"),
+                    drag = new KE.Drag({
+                        node:el,
+                        handlers:[head]
+                    });
+                if (UA.ie === 6)
+                    drag.on("move", function() {
+                        d_iframe.offset(el.offset());
+                    });
             }
         },
 
