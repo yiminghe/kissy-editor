@@ -7260,8 +7260,8 @@ KISSY.Editor.add("dd", function() {
         _handleMouseDown:function(ev) {
             var t = new Node(ev.target);
             if (!this._check(t)) return;
+            ev.halt();
             DDM._start(this);
-
             var node = this.get("node");
             var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
             this.startMousePos = {
