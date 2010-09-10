@@ -93,7 +93,8 @@ KISSY.Editor.add("overlay", function() {
         visible:{value:false},
         //帮你管理焦点
         focusMgr:{value:true},
-        mask:{value:false}
+        mask:{value:false},
+        draggable:{value:true}
     };
 
     S.extend(Overlay, S.Base, {
@@ -179,6 +180,13 @@ KISSY.Editor.add("overlay", function() {
                 self._close.on("click", function(ev) {
                     ev.preventDefault();
                     self.hide();
+                });
+
+                //重建窗口默认就可drag
+                var head = el.one(".ke-hd");
+                new KE.Drag({
+                    node:el,
+                    handlers:[head]
                 });
             }
         },

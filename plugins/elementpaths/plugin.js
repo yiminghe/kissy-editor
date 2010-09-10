@@ -18,7 +18,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     var self = this,cfg = self.cfg,
                         editor = cfg.editor,
                         textarea = editor.textarea[0];
-                    self.holder = new Node("<div>");
+                    self.holder = new Node("<span>");
                     self.holder.appendTo(editor.statusDiv);
                     editor.on("selectionChange", self._selectionChange, self);
                 },

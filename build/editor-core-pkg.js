@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-09 10:58:17
+ * @buildtime: 2010-09-10 13:53:23
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -129,7 +129,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["overlay"]//,
                 //useCss: true
             },
-            "undo"
+            "undo",
+            {
+                name:"resize",
+                requires:["dd"]
+            }
         ],
         htmlparser_mods = [
             {
@@ -164,9 +168,10 @@ KISSY.add("editor", function(S, undefined) {
         ],
         ui_mods = [
             {name:"button"},
+            {name:"dd"},
             {
-                name:"overlay"//,
-                //useCss:true
+                name:"overlay",
+                requires:["dd"]
             },
             {
                 name: "contextmenu",
@@ -439,8 +444,38 @@ KISSY.Editor.add("utils", function(KE) {
         },
         duplicateStr:function(str, loop) {
             return new Array(loop + 1).join(str);
-        }
-    };
+        },
+        /**
+         * Throttles a call to a method based on the time between calls.
+         * @method throttle
+         * @for YUI
+         * @param fn {function} The function call to throttle.
+         * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
+         * @return {function} Returns a wrapped function that calls fn throttled.
+         * @since 3.1.0
+         */
+
+        /*! Based on work by Simon Willison: http://gist.github.com/292562 */
+
+        throttle : function(fn, scope,ms) {
+            ms = ms || 150;
+
+            if (ms === -1) {
+                return (function() {
+                    fn.apply(scope, arguments);
+                });
+            }
+
+            var last = (new Date()).getTime();
+
+            return (function() {
+                var now = (new Date()).getTime();
+                if (now - last > ms) {
+                    last = now;
+                    fn.apply(scope, arguments);
+                }
+            });
+        }}
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了

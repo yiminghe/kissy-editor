@@ -129,7 +129,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["overlay"]//,
                 //useCss: true
             },
-            "undo"
+            "undo",
+            {
+                name:"resize",
+                requires:["dd"]
+            }
         ],
         htmlparser_mods = [
             {
@@ -164,9 +168,10 @@ KISSY.add("editor", function(S, undefined) {
         ],
         ui_mods = [
             {name:"button"},
+            {name:"dd"},
             {
-                name:"overlay"//,
-                //useCss:true
+                name:"overlay",
+                requires:["dd"]
             },
             {
                 name: "contextmenu",

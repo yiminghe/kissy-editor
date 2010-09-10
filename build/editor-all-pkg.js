@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-09 10:58:17
+ * @buildtime: 2010-09-10 13:53:23
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -129,7 +129,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["overlay"]//,
                 //useCss: true
             },
-            "undo"
+            "undo",
+            {
+                name:"resize",
+                requires:["dd"]
+            }
         ],
         htmlparser_mods = [
             {
@@ -164,9 +168,10 @@ KISSY.add("editor", function(S, undefined) {
         ],
         ui_mods = [
             {name:"button"},
+            {name:"dd"},
             {
-                name:"overlay"//,
-                //useCss:true
+                name:"overlay",
+                requires:["dd"]
             },
             {
                 name: "contextmenu",
@@ -439,8 +444,38 @@ KISSY.Editor.add("utils", function(KE) {
         },
         duplicateStr:function(str, loop) {
             return new Array(loop + 1).join(str);
-        }
-    };
+        },
+        /**
+         * Throttles a call to a method based on the time between calls.
+         * @method throttle
+         * @for YUI
+         * @param fn {function} The function call to throttle.
+         * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
+         * @return {function} Returns a wrapped function that calls fn throttled.
+         * @since 3.1.0
+         */
+
+        /*! Based on work by Simon Willison: http://gist.github.com/292562 */
+
+        throttle : function(fn, scope,ms) {
+            ms = ms || 150;
+
+            if (ms === -1) {
+                return (function() {
+                    fn.apply(scope, arguments);
+                });
+            }
+
+            var last = (new Date()).getTime();
+
+            return (function() {
+                var now = (new Date()).getTime();
+                if (now - last > ms) {
+                    last = now;
+                    fn.apply(scope, arguments);
+                }
+            });
+        }}
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
@@ -7087,6 +7122,191 @@ KISSY.Editor.add("contextmenu", function() {
     KE.ContextMenu = ContextMenu;
 });
 /**
+ * dd support for kissy editor
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("dd", function() {
+    var S = KISSY,
+        KE = S.Editor,
+        Event = S.Event,
+        DOM = S.DOM,
+        Node = S.Node;
+    if (KE.DD) return;
+
+    KE.DD = {};
+
+    function Manager() {
+        Manager.superclass.constructor.apply(this, arguments);
+        this._init();
+    }
+
+    Manager.ATTRS = {
+        /**
+         * mousedown 后 buffer 触发时间
+         */
+        timeThred:{},
+        /**
+         * 当前激活的拖对象
+         */
+        activeDrag:{},
+        /**
+         * 所有注册对象
+         */
+        drags:{value:{}}
+    };
+
+    S.extend(Manager, S.Base, {
+        _init:function() {
+            KE.Utils.lazyRun(this, "_prepare", "_real");
+
+        },
+        reg:function(node) {
+            var drags = this.get("drags");
+            if (!node[0].id) {
+                node[0].id = S.guid("drag-");
+            }
+            drags[node[0].id] = node;
+            this._prepare();
+        },
+        _move:function(ev) {
+            var activeDrag = this.get("activeDrag");
+            if (!activeDrag) return;
+            activeDrag._move(ev);
+        },
+        _start:function(drag) {
+            var self = this;
+            self.set("activeDrag", drag);
+            self._pg.css({
+                display: "",
+                height: DOM.docHeight()
+            });
+        },
+        _end:function(ev) {
+            var self = this,activeDrag = self.get("activeDrag");
+            if (!activeDrag) return;
+            activeDrag._end(ev);
+            self.set("activeDrag", null);
+            self._pg.css({
+                display:"none"
+            });
+        },
+        _prepare:function() {
+            var self = this;
+            //创造垫片，防止进入iframe，外面document监听不到 mousedown/up/move
+            self._pg = new Node("<div " +
+                "style='" +
+                //red for debug
+                "background-color:red;" +
+                "position:absolute;" +
+                "left:0;" +
+                "width:100%;" +
+                "top:0;" +
+                "z-index:9999;" +
+                "'></div>").appendTo(document.body);
+            //0.5 for debug
+            self._pg.css("opacity", 0);
+            Event.on(document, "mousemove", KE.Utils.throttle(this._move, this, 10));
+            Event.on(document, "mouseup", this._end, this);
+
+        },
+
+        _real:function() {
+
+        }
+
+    });
+
+    KE.DD.DDM = new Manager();
+    var DDM = KE.DD.DDM;
+
+    function Draggable() {
+        Draggable.superclass.constructor.apply(this, arguments);
+        this._init();
+    }
+
+    Draggable.ATTRS = {
+        //拖放节点
+        node:{},
+        //handler 集合
+        handlers:{value:{}}
+    };
+
+    S.extend(Draggable, S.Base, {
+        _init:function() {
+            var node = this.get("node"),handlers = this.get("handlers");
+            DDM.reg(node);
+            if (S.isEmptyObject(handlers)) {
+                handlers[node[0].id] = node;
+            }
+            for (var h in handlers) {
+                var ori = handlers[h].css("cursor");
+                if (!ori || ori === "auto")
+                    handlers[h].css("cursor", "move");
+                //ie 不能被选择了
+                handlers[h]._4e_unselectable();
+            }
+            node.on("mousedown", this._handleMouseDown, this);
+            node.on("mouseup", function() {
+                DDM._end();
+            });
+        },
+        _check:function(t) {
+            var handlers = this.get("handlers");
+            for (var h in handlers) {
+                if (handlers[h]._4e_equals(t)) return true;
+            }
+            return false;
+        },
+        _handleMouseDown:function(ev) {
+            var t = new Node(ev.target);
+            if (!this._check(t)) return;
+            DDM._start(this);
+
+            var node = this.get("node");
+            var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
+            this.startMousePos = {
+                left:mx,
+                top:my
+            };
+            this.startNodePos = nxy;
+            this._diff = {
+                left:mx - nxy.left,
+                top:my - nxy.top
+            };
+            this.fire("start");
+        },
+        _move:function(ev) {
+            this.fire("move", ev)
+        },
+        _end:function() {
+
+        }
+    });
+
+
+    function Drag() {
+        Drag.superclass.constructor.apply(this, arguments);
+    }
+
+    S.extend(Drag, Draggable, {
+        _init:function() {
+            Drag.superclass._init.apply(this, arguments);
+            var node = this.get("node"),self = this;
+            self.on("move", function(ev) {
+                var left = ev.pageX - self._diff.left,
+                    top = ev.pageY - self._diff.top;
+                node.offset({
+                    left:left,
+                    top:top
+                })
+            });
+        }
+    });
+
+    KE.Draggable = Draggable;
+    KE.Drag = Drag;
+
+});/**
  * simple overlay for kissy editor using lazyRun
  * @author yiminghe@gmail.com
  * @refer http://yiminghe.javaeye.com/blog/734867
@@ -7181,7 +7401,8 @@ KISSY.Editor.add("overlay", function() {
         visible:{value:false},
         //帮你管理焦点
         focusMgr:{value:true},
-        mask:{value:false}
+        mask:{value:false},
+        draggable:{value:true}
     };
 
     S.extend(Overlay, S.Base, {
@@ -7267,6 +7488,13 @@ KISSY.Editor.add("overlay", function() {
                 self._close.on("click", function(ev) {
                     ev.preventDefault();
                     self.hide();
+                });
+
+                //重建窗口默认就可drag
+                var head = el.one(".ke-hd");
+                new KE.Drag({
+                    node:el,
+                    handlers:[head]
                 });
             }
         },
@@ -7902,7 +8130,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     var self = this,cfg = self.cfg,
                         editor = cfg.editor,
                         textarea = editor.textarea[0];
-                    self.holder = new Node("<div>");
+                    self.holder = new Node("<span>");
                     self.holder.appendTo(editor.statusDiv);
                     editor.on("selectionChange", self._selectionChange, self);
                 },
@@ -13642,6 +13870,51 @@ KISSY.Editor.add("removeformat", function(editor) {
         new RemoveFormat(editor);
     });
 
+});KISSY.Editor.add("resize", function(editor) {
+    var S = KISSY,KE = S.Editor,Node = S.Node;
+    if (!KE.Resizer) {
+        (function() {
+            var markup = "<div class='ke-resizer'></div>",
+                Draggable = KE.Draggable;
+
+            function Resizer(editor) {
+                this.editor = editor;
+                this._init();
+            }
+
+            S.augment(Resizer, {
+                _init:function() {
+                    var self = this,
+                        editor = self.editor,
+                        statusDiv = editor.statusDiv,
+                        resizer = new Node(markup);
+                    resizer.appendTo(statusDiv);
+
+                    var d = new Draggable({
+                        node:resizer
+                    }),height = 0,width = 0,
+                        heightEl = editor.wrap,
+                        widthEl = editor.editorWrap;
+                    d.on("start", function() {
+                        height = heightEl.height();
+                        width = widthEl.width();
+                    });
+                    d.on("move", function(ev) {
+                        var diffX = ev.pageX - this.startMousePos.left,
+                            diffY = ev.pageY - this.startMousePos.top;
+                        heightEl.height(height + diffY);
+                        widthEl.width(width + diffX);
+                    });
+                }
+            });
+
+            KE.Resizer = Resizer;
+        })();
+    }
+
+    editor.addPlugin(function() {
+        new KE.Resizer(editor);
+    });
 });/**
  * smiley icon from wangwang for kissy editor
  * @author: yiminghe@gmail.com

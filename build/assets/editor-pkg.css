@@ -47,6 +47,8 @@ textarea,iframe包装
     height: 16px;
     line-height: 16px;
     padding: 4px 0 5px;
+    overflow:hidden;
+    position:relative;
 }
 
 /*
@@ -418,6 +420,14 @@ a.ke-color-a span {
 .elementpath:hover {
     background: #CCFFFF;
     text-decoration: none;
+}.ke-resizer {
+    background: url("resizer.png") no-repeat right bottom;
+    height: 20px;
+    width: 10px;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    cursor: se-resize;
 }.ke-smiley-sprite {
     background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;
     height: 235px;

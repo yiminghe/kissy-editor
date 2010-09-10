@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-09 10:58:17
+ * @buildtime: 2010-09-10 13:53:23
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -129,7 +129,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["overlay"]//,
                 //useCss: true
             },
-            "undo"
+            "undo",
+            {
+                name:"resize",
+                requires:["dd"]
+            }
         ],
         htmlparser_mods = [
             {
@@ -164,9 +168,10 @@ KISSY.add("editor", function(S, undefined) {
         ],
         ui_mods = [
             {name:"button"},
+            {name:"dd"},
             {
-                name:"overlay"//,
-                //useCss:true
+                name:"overlay",
+                requires:["dd"]
             },
             {
                 name: "contextmenu",

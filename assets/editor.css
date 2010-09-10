@@ -47,6 +47,8 @@ textarea,iframe包装
     height: 16px;
     line-height: 16px;
     padding: 4px 0 5px;
+    overflow:hidden;
+    position:relative;
 }
 
 /*

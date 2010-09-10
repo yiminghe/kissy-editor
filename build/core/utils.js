@@ -182,6 +182,36 @@ KISSY.Editor.add("utils", function(KE) {
         },
         duplicateStr:function(str, loop) {
             return new Array(loop + 1).join(str);
-        }
-    };
+        },
+        /**
+         * Throttles a call to a method based on the time between calls.
+         * @method throttle
+         * @for YUI
+         * @param fn {function} The function call to throttle.
+         * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
+         * @return {function} Returns a wrapped function that calls fn throttled.
+         * @since 3.1.0
+         */
+
+        /*! Based on work by Simon Willison: http://gist.github.com/292562 */
+
+        throttle : function(fn, scope,ms) {
+            ms = ms || 150;
+
+            if (ms === -1) {
+                return (function() {
+                    fn.apply(scope, arguments);
+                });
+            }
+
+            var last = (new Date()).getTime();
+
+            return (function() {
+                var now = (new Date()).getTime();
+                if (now - last > ms) {
+                    last = now;
+                    fn.apply(scope, arguments);
+                }
+            });
+        }}
 });
