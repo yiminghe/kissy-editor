@@ -127,6 +127,12 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
+                "" +
+                    KE.Utils.duplicateStr("&nbsp;", 1) +
+                    "<label>间距： " +
+                    "</span> <input class='ke-video-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
                 "<p>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
                     "<button class='ke-video-cancel'>取消</button>",
@@ -156,6 +162,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         d = self.d;
                     self.dUrl = d.el.one(".ke-video-url");
                     self.dAlign = d.el.one(".ke-video-align");
+                    self.dMargin = d.el.one(".ke-video-margin");
                     var action = d.el.one(".ke-video-ok"),
                         cancel = d.el.one(".ke-video-cancel");
                     action.on("click", self._gen, self);
@@ -179,7 +186,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                             attrs:{
                                 height:p.height,
                                 width:p.width,
-                                align: self.dAlign.val()
+                                align: self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
                             }
                         };
                     }
@@ -195,9 +203,11 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dAlign.val(r.attr("align"));
+                        self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                 }
             });

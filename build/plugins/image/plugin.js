@@ -45,7 +45,13 @@ KISSY.Editor.add("image", function(editor) {
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
-                    "</select></label>" +
+                    "</select>" +
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    labelStyle + "间距： " +
+                    "</span> <input class='ke-img-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
                     "</p>" +
                     "</div>",
                 footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
@@ -127,6 +133,7 @@ KISSY.Editor.add("image", function(editor) {
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
                     self.imgAlign = content.one(".ke-img-align");
+                    self.imgMargin = content.one(".ke-img-margin");
                     cancel.on("click", function(ev) {
                         self.d.hide();
                         ev.halt();
@@ -152,6 +159,7 @@ KISSY.Editor.add("image", function(editor) {
                     var height = parseInt(self.imgHeight.val()),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
+                        margin = parseInt(self.imgMargin.val()),
                         style = '';
 
                     if (height) {
@@ -161,7 +169,10 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align + ";margin:0 5px;";
+                        style += "float:" + align;
+                    }
+                    if (!isNaN(margin)) {
+                        style += "margin:" + margin + "px;";
                     }
                     if (style) {
                         style = " style='" + style + "' ";
@@ -191,12 +202,16 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl._4e_style("float"))
+                        self.imgAlign.val(_selectedEl._4e_style("float"));
+                        var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
+                        self.imgMargin.val(margin);
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
-                        self.imgAlign.val()
+                        self.imgAlign.val();
+                        self.imgMargin.val("5");
+
                     }
                 },
                 show:function(ev, _selectedEl) {

@@ -65,7 +65,7 @@ KISSY.Editor.add("music", function(editor) {
     //重构，和flash结合起来，抽象
     if (!KE.MusicInserter) {
         (function() {
-            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)"',
+            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
                 bodyHtml = "" +
                     "<p>" +
                     "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
@@ -80,6 +80,12 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 1) +
+                    "<label>间距： " +
+                    "</span> <input class='ke-music-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
                     "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
                     "<button class='ke-music-cancel'>取消</button>",
@@ -91,7 +97,7 @@ KISSY.Editor.add("music", function(editor) {
             }
 
             function checkMusic(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC))&&node;
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC)) && node;
             }
 
 
@@ -115,6 +121,7 @@ KISSY.Editor.add("music", function(editor) {
                         d = self.d;
                     self.dUrl = d.el.one(".ke-music-url");
                     self.dAlign = d.el.one(".ke-music-align");
+                    self.dMargin = d.el.one(".ke-music-margin");
                     var action = d.el.one(".ke-music-ok"),
                         cancel = d.el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
@@ -125,12 +132,14 @@ KISSY.Editor.add("music", function(editor) {
 
                 _getDInfo:function() {
                     var self = this;
+
                     return {
-                        url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
+                        url: MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
                         attrs:{
                             width:165,
                             height:37,
-                            align:self.dAlign.val()
+                            align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
                         }
                     };
                 },
@@ -146,9 +155,11 @@ KISSY.Editor.add("music", function(editor) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dAlign.val(f.attr("align"));
+                        self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                 }
             });

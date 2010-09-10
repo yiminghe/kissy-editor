@@ -436,6 +436,9 @@ KISSY.Editor.add("utils", function(KE) {
 
         addSeparator:function(bar) {
             new S.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(bar);
+        },
+        duplicateStr:function(str, loop) {
+            return new Array(loop + 1).join(str);
         }
     };
 });
@@ -6800,7 +6803,7 @@ KISSY.Editor.add("bubbleview", function() {
             }
         });
 
-        Event.on(editor.document, "scroll", function() {
+        Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
             bubble && bubble.hide();
         });
         Event.on(document, "click", function() {
@@ -8353,6 +8356,14 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
+
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    "<label>间距： " +
+                    "</span> <input class='ke-flash-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
+
                     "<p>",
 
                 footHtml = "<button class='ke-flash-ok'>确定</button> " +
@@ -8512,11 +8523,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         }
                         self.dAlign.val(r.attr("align"));
                         self.dUrl.val(getFlashUrl(r));
+                        self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
                         self.dWidth.val("");
                         self.dHeight.val("");
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                 },
                 show:function(ev, _selectedEl) {
@@ -8536,6 +8549,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self.dWidth = d.el.one(".ke-flash-width");
                     self.dUrl = d.el.one(".ke-flash-url");
                     self.dAlign = d.el.one(".ke-flash-align");
+                    self.dMargin = d.el.one(".ke-flash-margin");
                     var action = d.el.one(".ke-flash-ok"),
                         cancel = d.el.one(".ke-flash-cancel");
                     action.on("click", self._gen, self);
@@ -8555,7 +8569,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         attrs:{
                             width:self.dWidth.val(),
                             height:self.dHeight.val(),
-                            align:self.dAlign.val()
+                            align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px"
                         }
                     };
                 },
@@ -8563,6 +8578,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * 真正产生 flash 元素
                  */
                 _gen: function() {
+                    //debugger
                     var self = this,
                         editor = self.editor,
                         dinfo = self._getDInfo(),
@@ -11559,7 +11575,13 @@ KISSY.Editor.add("image", function(editor) {
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
-                    "</select></label>" +
+                    "</select>" +
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    labelStyle + "间距： " +
+                    "</span> <input class='ke-img-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
                     "</p>" +
                     "</div>",
                 footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
@@ -11641,6 +11663,7 @@ KISSY.Editor.add("image", function(editor) {
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
                     self.imgAlign = content.one(".ke-img-align");
+                    self.imgMargin = content.one(".ke-img-margin");
                     cancel.on("click", function(ev) {
                         self.d.hide();
                         ev.halt();
@@ -11666,6 +11689,7 @@ KISSY.Editor.add("image", function(editor) {
                     var height = parseInt(self.imgHeight.val()),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
+                        margin = parseInt(self.imgMargin.val()),
                         style = '';
 
                     if (height) {
@@ -11675,7 +11699,10 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align + ";margin:0 5px;";
+                        style += "float:" + align;
+                    }
+                    if (!isNaN(margin)) {
+                        style += "margin:" + margin + "px;";
                     }
                     if (style) {
                         style = " style='" + style + "' ";
@@ -11705,12 +11732,16 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl._4e_style("float"))
+                        self.imgAlign.val(_selectedEl._4e_style("float"));
+                        var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
+                        self.imgMargin.val(margin);
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
-                        self.imgAlign.val()
+                        self.imgAlign.val();
+                        self.imgMargin.val("5");
+
                     }
                 },
                 show:function(ev, _selectedEl) {
@@ -13288,7 +13319,7 @@ KISSY.Editor.add("music", function(editor) {
     //重构，和flash结合起来，抽象
     if (!KE.MusicInserter) {
         (function() {
-            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)"',
+            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
                 bodyHtml = "" +
                     "<p>" +
                     "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
@@ -13303,6 +13334,12 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 1) +
+                    "<label>间距： " +
+                    "</span> <input class='ke-music-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
                     "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +
                     "<button class='ke-music-cancel'>取消</button>",
@@ -13314,7 +13351,7 @@ KISSY.Editor.add("music", function(editor) {
             }
 
             function checkMusic(node) {
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC))&&node;
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC)) && node;
             }
 
 
@@ -13338,6 +13375,7 @@ KISSY.Editor.add("music", function(editor) {
                         d = self.d;
                     self.dUrl = d.el.one(".ke-music-url");
                     self.dAlign = d.el.one(".ke-music-align");
+                    self.dMargin = d.el.one(".ke-music-margin");
                     var action = d.el.one(".ke-music-ok"),
                         cancel = d.el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
@@ -13348,12 +13386,14 @@ KISSY.Editor.add("music", function(editor) {
 
                 _getDInfo:function() {
                     var self = this;
+
                     return {
-                        url:  MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
+                        url: MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
                         attrs:{
                             width:165,
                             height:37,
-                            align:self.dAlign.val()
+                            align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
                         }
                     };
                 },
@@ -13369,9 +13409,11 @@ KISSY.Editor.add("music", function(editor) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dAlign.val(f.attr("align"));
+                        self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                 }
             });

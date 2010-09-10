@@ -146,6 +146,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
+                "" +
+                KE.Utils.duplicateStr("&nbsp;", 1) +
+                "<label>间距： " +
+                "</span> <input class='ke-xiami-margin' style='width:90px' value='"
+                + 5 + "'/> px" +
+                "</label>" +
                 "</p>" +
                 "</form>" +
                 "<div class='ke-xiami-list'>" +
@@ -198,6 +204,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._xiami_input = input;
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._xiami_submit = d.el.one(".ke-xiami-submit");
+                    self.dMargin = d.el.one(".ke-xiami-margin");
                     function loadRecordsByPage(page) {
                         self._xiami_submit[0].disabled = true;
                         var params = {
@@ -238,7 +245,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                     + "/singlePlayer.swf"),
                                 attrs:{
                                     title:add.attr("title"),
-                                    align:self.dAlign.val()
+                                    align:self.dAlign.val(),
+                                    style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
                                 }
                             };
                             self._gen();
@@ -313,9 +321,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     if (f) {
                         self._xiami_input.val(f.attr("title"));
                         self.dAlign.val(f.attr("align"));
+                        self.dMargin.val(parseInt(f._4e_style("margin")) || 0);
                     } else {
                         self._xiami_input.val(TIP);
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                     self._xiami_submit[0].disabled = false;
                     self._xiamia_list.html("");
@@ -340,8 +350,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return decodeURIComponent(r.song_name) + " - " + decodeURIComponent(r.artist_name);
             }
 
-            function checkXiami(node) {               
-                    return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI))&&node;
+            function checkXiami(node) {
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_XIAMI)) && node;
             }
 
             var contextMenu = {

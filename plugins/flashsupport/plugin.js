@@ -38,6 +38,14 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
+
+                    "" +
+                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    "<label>间距： " +
+                    "</span> <input class='ke-flash-margin' style='width:90px' value='"
+                    + 5 + "'/> px" +
+                    "</label>" +
+
                     "<p>",
 
                 footHtml = "<button class='ke-flash-ok'>确定</button> " +
@@ -197,11 +205,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         }
                         self.dAlign.val(r.attr("align"));
                         self.dUrl.val(getFlashUrl(r));
+                        self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
                         self.dWidth.val("");
                         self.dHeight.val("");
                         self.dAlign.val("");
+                        self.dMargin.val("5");
                     }
                 },
                 show:function(ev, _selectedEl) {
@@ -221,6 +231,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self.dWidth = d.el.one(".ke-flash-width");
                     self.dUrl = d.el.one(".ke-flash-url");
                     self.dAlign = d.el.one(".ke-flash-align");
+                    self.dMargin = d.el.one(".ke-flash-margin");
                     var action = d.el.one(".ke-flash-ok"),
                         cancel = d.el.one(".ke-flash-cancel");
                     action.on("click", self._gen, self);
@@ -240,7 +251,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         attrs:{
                             width:self.dWidth.val(),
                             height:self.dHeight.val(),
-                            align:self.dAlign.val()
+                            align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px"
                         }
                     };
                 },
@@ -248,6 +260,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * 真正产生 flash 元素
                  */
                 _gen: function() {
+                    //debugger
                     var self = this,
                         editor = self.editor,
                         dinfo = self._getDInfo(),
