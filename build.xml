@@ -18,6 +18,8 @@ build file for kissy editor
     <property name="git.origin" value="origin"/>
     <property name="git.gh-pages" value="gh-pages"/>
     <property name="git.master" value="master"/>
+    <property name="git.wait" value="10"/>
+    <property name="git.url" value="http://www.github.com"/>
     <filelist dir="${current.dir}"
               files="${build.dir}/editor.js"
               id="editor_js"/>
@@ -97,26 +99,45 @@ build file for kissy editor
                     <arg line="/c git commit -am '${git.commit.message}'"/>
                 </exec>
 
+                <!--
+                test whether online in order to push
+                -->
+                <waitfor maxwait="${git.wait}"
+                         maxwaitunit="second"
+                         timeoutproperty="git.offline">
+                    <http url="${git.url}"/>
+                </waitfor>
 
-                <exec executable="cmd" failonerror="true">
-                    <arg line="/c git push ${git.origin} ${git.master}"/>
-                </exec>
+                <ac:if>
+                    <not>
+                        <isset property="git.offline"/>
+                    </not>
+                    <ac:then>
+                        <exec executable="cmd" failonerror="true">
+                            <arg line="/c git push ${git.origin} ${git.master}"/>
+                        </exec>
 
-                <exec executable="cmd" failonerror="true">
-                    <arg line="/c git checkout ${git.gh-pages}"/>
-                </exec>
+                        <exec executable="cmd" failonerror="true">
+                            <arg line="/c git checkout ${git.gh-pages}"/>
+                        </exec>
 
-                <exec executable="cmd" failonerror="true">
-                    <arg line="/c git merge ${git.master}"/>
-                </exec>
+                        <exec executable="cmd" failonerror="true">
+                            <arg line="/c git merge ${git.master}"/>
+                        </exec>
 
-                <exec executable="cmd" failonerror="true">
-                    <arg line="/c git push ${git.origin} ${git.gh-pages}"/>
-                </exec>
+                        <exec executable="cmd" failonerror="true">
+                            <arg line="/c git push ${git.origin} ${git.gh-pages}"/>
+                        </exec>
 
-                <exec executable="cmd" failonerror="true">
-                    <arg line="/c git checkout ${git.master}"/>
-                </exec>
+                        <exec executable="cmd" failonerror="true">
+                            <arg line="/c git checkout ${git.master}"/>
+                        </exec>
+                    </ac:then>
+                    <ac:else>
+                        <echo>offline no push!</echo>
+                    </ac:else>
+                </ac:if>
+
 
             </ac:then>
         </ac:if>
