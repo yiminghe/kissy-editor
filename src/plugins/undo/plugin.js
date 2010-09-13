@@ -3,11 +3,12 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("undo", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         arrayCompare = KE.Utils.arrayCompare,
         UA = S.UA,
-        Event = S.Event;
+        Event = S.Event,
+        LIMIT = 30;
     if (!KE.UndoManager) {
         (function() {
             /**
@@ -15,11 +16,13 @@ KISSY.Editor.add("undo", function(editor) {
              * @param editor
              */
             function Snapshot(editor) {
-                var contents = editor._getRawData(),selection = contents && editor.getSelection();
+                var contents = editor._getRawData(),
+                    self = this,
+                    selection = contents && editor.getSelection();
                 //内容html
-                this.contents = contents;
+                self.contents = contents;
                 //选择区域书签标志
-                this.bookmarks = selection && selection.createBookmarks2(true);
+                self.bookmarks = selection && selection.createBookmarks2(true);
             }
 
 
@@ -29,11 +32,12 @@ KISSY.Editor.add("undo", function(editor) {
                  * @param otherImage
                  */
                 equals:function(otherImage) {
-                    var thisContents = this.contents,
+                    var self = this,
+                        thisContents = self.contents,
                         otherContents = otherImage.contents;
                     if (thisContents != otherContents)
                         return false;
-                    var bookmarksA = this.bookmarks,
+                    var bookmarksA = self.bookmarks,
                         bookmarksB = otherImage.bookmarks;
 
                     if (bookmarksA || bookmarksB) {
@@ -58,36 +62,6 @@ KISSY.Editor.add("undo", function(editor) {
                 }
             });
 
-
-            /**
-             * 键盘输入做延迟处理
-             * @param s
-             * @param fn
-             * @param scope
-             */
-            function BufferTimer(s, fn, scope) {
-                this.s = s;
-                this.fn = fn;
-                this.scope = scope || window;
-                this.bufferTimer = null;
-            }
-
-            S.augment(BufferTimer, {
-                run:function() {
-                    if (this.bufferTimer) {
-                        clearTimeout(this.bufferTimer);
-                        this.bufferTimer = null;
-                    }
-                    var self = this;
-
-                    this.bufferTimer = setTimeout(function() {
-                        self.fn.call(self.scope);
-                    }, this.s);
-                }
-            });
-            var LIMIT = 30;
-
-
             /**
              * 通过编辑器的save与restore事件，编辑器实例的历史栈管理，与键盘监控
              * @param editor
@@ -97,16 +71,19 @@ KISSY.Editor.add("undo", function(editor) {
                 /**
                  * 编辑器状态历史保存
                  */
-                this.history = [];
-                this.index = 0;
-                this.editor = editor;
-                this.bufferTimer = new BufferTimer(500, this.save, this);
-                this._init();
+                var self = this;
+                self.history = [];
+                //当前所处状态对应的历史栈内下标
+                self.index = -1;
+                self.editor = editor;
+                //键盘输入做延迟处理
+                self.bufferRunner = KE.Utils.buffer(self.save, self, 500);
+                self._init();
             }
 
             var editingKeyCodes = { /*Backspace*/ 8:1, /*Delete*/ 46:1 },
                 modifierKeyCodes = { /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1 },
-                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1 },// Arrows: L, T, R, B
+                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },// Arrows: L, T, R, B
                 zKeyCode = 90,
                 yKeyCode = 89;
 
@@ -116,7 +93,9 @@ KISSY.Editor.add("undo", function(editor) {
                  * 监控键盘输入，buffer处理
                  */
                 _keyMonitor:function() {
-                    var self = this,editor = self.editor,doc = editor.document;
+                    var self = this,
+                        editor = self.editor,
+                        doc = editor.document;
                     Event.on(doc, "keydown", function(ev) {
                         var keycode = ev.keyCode;
                         if (keycode in navigationKeyCodes
@@ -140,20 +119,22 @@ KISSY.Editor.add("undo", function(editor) {
                 },
 
                 _init:function() {
-                    var self = this,editor = self.editor;
+                    var self = this,
+                        editor = self.editor;
                     //外部通过editor触发save|restore,管理器捕获事件处理
                     editor.on("save", function(ev) {
-                        if (ev.buffer)
-                        //键盘操作需要缓存
-                            self.bufferTimer.run();
-                        else {
+                        if (ev.buffer) {
+                            //键盘操作需要缓存
+                            self.bufferRunner();
+                        } else {
                             //其他立即save
                             self.save();
                         }
                     });
-                    editor.on("restore", this.restore, this);
+                    editor.on("restore", self.restore, self);
                     self._keyMonitor();
                     //先save一下,why??
+                    //0913:初始状态保存，放在use回调中
                     //self.save();
                 },
 
@@ -161,22 +142,25 @@ KISSY.Editor.add("undo", function(editor) {
                  * 保存历史
                  */
                 save:function() {
-                    //前面的历史抛弃
-                    if (this.history.length > this.index + 1)
-                        this.history.splice(this.index + 1, this.history.length - this.index - 1);
-
                     var self = this,
-                        editor = self.editor,
-                        last = self.history.length > 0 ? self.history[self.history.length - 1] : null,
-                        current = new Snapshot(self.editor);
+                        history = self.history,
+                        index = self.index;
+
+                    //前面的历史抛弃
+                    if (history.length > index + 1)
+                        history.splice(index + 1, history.length - index - 1);
+
+                    var editor = self.editor,
+                        last = history[history.length - 1],
+                        current = new Snapshot(editor);
 
                     if (!last || !last.equals(current)) {
-                        if (self.history.length === LIMIT) {
-                            self.history.shift();
+                        if (history.length === LIMIT) {
+                            history.shift();
                         }
-                        self.history.push(current);
-                        this.index = self.history.length - 1;
-                        editor.fire("afterSave", {history:self.history,index:this.index});
+                        history.push(current);
+                        self.index = index = history.length - 1;
+                        editor.fire("afterSave", {history:history,index:index});
                     }
                 },
 
@@ -186,24 +170,27 @@ KISSY.Editor.add("undo", function(editor) {
                  * ev.d ：1.向前撤销 ，-1.向后重做
                  */
                 restore:function(ev) {
-                    var d = ev.d,self = this,editor = self.editor,
-                        snapshot = self.history.length > 0 ? self.history[this.index + d] : null;
+                    var d = ev.d,
+                        self = this,
+                        history = self.history,
+                        editor = self.editor,
+                        snapshot = history[self.index + d];
                     if (snapshot) {
                         editor._setRawData(snapshot.contents);
                         if (snapshot.bookmarks)
-                            self.editor.getSelection().selectBookmarks(snapshot.bookmarks);
+                            editor.getSelection().selectBookmarks(snapshot.bookmarks);
                         else if (UA.ie) {
                             // IE BUG: If I don't set the selection to *somewhere* after setting
                             // document contents, then IE would create an empty paragraph at the bottom
                             // the next time the document is modified.
-                            var $range = this.editor.document.body.createTextRange();
+                            var $range = editor.document.body.createTextRange();
                             $range.collapse(true);
                             $range.select();
                         }
-                        this.index += d;
+                        self.index += d;
                         editor.fire("afterRestore", {
-                            history:self.history,
-                            index:this.index
+                            history:history,
+                            index:self.index
                         });
                         editor.notifySelectionChange();
                     }
@@ -223,33 +210,34 @@ KISSY.Editor.add("undo", function(editor) {
              */
             function RestoreUI(editor, text, title, contentCls) {
                 var self = this;
-                this.editor = editor;
+                self.editor = editor;
                 self.title = title;
-                this.text = text;
-                this.contentCls = contentCls;
-                this._init();
+                self.text = text;
+                self.contentCls = contentCls;
+                self._init();
             }
 
             S.augment(RestoreUI, {
                 _init:function() {
-                    var self = this,editor = self.editor;
+                    var self = this,
+                        editor = self.editor;
+
                     self.el = new TripleButton({
                         contentCls:self.contentCls,
-                        //text:self.text,
                         title:self.title,
                         container:editor.toolBarDiv
                     });
-                    this.el.set("state", TripleButton.DISABLED);
+                    var el = self.el;
+                    el.set("state", TripleButton.DISABLED);
                     /**
                      * save,restore完，更新工具栏状态
                      */
-                    editor.on("afterSave", this._respond, this);
-                    editor.on("afterRestore", this._respond, this);
+                    editor.on("afterSave afterRestore", self._respond, self);
 
                     /**
                      * 触发重做或撤销动作，都是restore，方向不同
                      */
-                    self.el.on("offClick", function() {
+                    el.on("offClick", function() {
                         editor.fire("restore", {
                             d:RedoMap[self.text]
                         });
@@ -257,23 +245,26 @@ KISSY.Editor.add("undo", function(editor) {
                 },
 
                 _respond:function(ev) {
-                    var self = this,history = ev.history,
-                        index = ev.index;
-                    self.updateUI(history, index);
+                    this.updateUI(ev.history, ev.index);
                 },
 
                 updateUI:function(history, index) {
-                    if (this.text == "undo") {
-                        if (index > 0 && history.length > 0) {
-                            this.el.set("state", TripleButton.OFF);
+                    var self = this,
+                        el = self.el,
+                        text = self.text;
+                    if (text == "undo") {
+                        //有状态可退
+                        if (index > 0) {
+                            el.set("state", TripleButton.OFF);
                         } else {
-                            this.el.set("state", TripleButton.DISABLED);
+                            el.set("state", TripleButton.DISABLED);
                         }
-                    } else if (this.text == "redo") {
+                    } else if (text == "redo") {
+                        //有状态可前进
                         if (index < history.length - 1) {
-                            this.el.set("state", TripleButton.OFF);
+                            el.set("state", TripleButton.OFF);
                         } else {
-                            this.el.set("state", TripleButton.DISABLED);
+                            el.set("state", TripleButton.DISABLED);
                         }
                     }
                 }

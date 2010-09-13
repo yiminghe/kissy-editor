@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-13 14:07:50
+ * @buildtime: 2010-09-13 15:34:02
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -42,6 +42,7 @@ KISSY.add("editor", function(S, undefined) {
             } else {
                 self.on("dataReady", function() {
                     self.setData(textarea.val());
+                    self.fire("save");
                 });
             }
             return self;

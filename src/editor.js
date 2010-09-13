@@ -42,6 +42,7 @@ KISSY.add("editor", function(S, undefined) {
             } else {
                 self.on("dataReady", function() {
                     self.setData(textarea.val());
+                    self.fire("save");
                 });
             }
             return self;

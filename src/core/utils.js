@@ -213,5 +213,20 @@ KISSY.Editor.add("utils", function(KE) {
                     fn.apply(scope, arguments);
                 }
             });
-        }}
+        },
+        buffer : function(fn, scope, ms) {
+            ms = ms || 0;
+            var timer = null;
+            return (function() {
+                timer && clearTimeout(timer);
+                var args = arguments;
+                timer = setTimeout(function() {
+                    return fn.apply(scope, args);
+                }, ms);
+            });
+        }
+
+
+
+    }
 });

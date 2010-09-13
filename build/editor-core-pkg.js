@@ -42,6 +42,7 @@ KISSY.add("editor", function(S, undefined) {
             } else {
                 self.on("dataReady", function() {
                     self.setData(textarea.val());
+                    self.fire("save");
                 });
             }
             return self;
@@ -481,7 +482,22 @@ KISSY.Editor.add("utils", function(KE) {
                     fn.apply(scope, arguments);
                 }
             });
-        }}
+        },
+        buffer : function(fn, scope, ms) {
+            ms = ms || 0;
+            var timer = null;
+            return (function() {
+                timer && clearTimeout(timer);
+                var args = arguments;
+                timer = setTimeout(function() {
+                    return fn.apply(scope, args);
+                }, ms);
+            });
+        }
+
+
+
+    }
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
