@@ -49,23 +49,12 @@ build file for kissy editor
     -->
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
-        <copy todir="${build.dir}"
-              encoding="${charset}"
-              outputencoding="${charset}">
-            <fileset dir="${src.dir}"
-                     includes="${theme.dir}/**/*"/>
-        </copy>
 
         <copy todir="${build.dir}"
               encoding="${charset}"
               outputencoding="${charset}">
             <fileset dir="${src.dir}"
-                     includes="**/*"
-                     excludes="${theme.dir}/**/*"/>
-            <filterset>
-                <filter token="TIMESTAMP"
-                        value="${timestamp.isoformat}"/>
-            </filterset>
+                     includes="**/*"/>
         </copy>
     </target>
 
@@ -200,6 +189,15 @@ build file for kissy editor
             <fileset dir="${build.dir}"
                      includes="**/*.js"/>
         </replaceregexp>
+        <replaceregexp match="@TIMESTAMP@"
+                       replace="${timestamp.isoformat}"
+                       flags="g"
+                       byline="true"
+                       encoding="${charset}">
+            <fileset dir="${build.dir}"
+                     includes="**/*.js"/>
+        </replaceregexp>
+
     </target>
 
     <!--
