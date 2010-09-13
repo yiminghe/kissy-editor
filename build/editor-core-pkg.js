@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-13 16:58:09
+ * @buildtime: 2010-09-13 17:47:58
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -5469,7 +5469,6 @@ KISSY.Editor.add("selection", function(KE) {
             var ieRange = this.document.body.createTextRange();
 
             // Position the range at the start boundary.
-
             ieRange.moveToElementText(startNode[0]);
 
             ieRange.moveStart('character', 1);

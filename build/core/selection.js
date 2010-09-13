@@ -619,7 +619,6 @@ KISSY.Editor.add("selection", function(KE) {
             var ieRange = this.document.body.createTextRange();
 
             // Position the range at the start boundary.
-
             ieRange.moveToElementText(startNode[0]);
 
             ieRange.moveStart('character', 1);

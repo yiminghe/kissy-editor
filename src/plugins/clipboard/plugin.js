@@ -26,11 +26,19 @@ KISSY.Editor.add("clipboard", function(editor) {
                 },
                 _paste:function(ev) {
                     if (ev.type === 'keydown' &&
-                        !(ev.keyCode === 86 && (ev.ctrlKey || ev.metaKey))) {
+                        !(ev.keyCode === 86 &&
+                            (ev.ctrlKey || ev.metaKey)
+                            )) {
                         return;
                     }
 
+
                     var self = this,editor = self.editor,doc = editor.document;
+                    //防止 ie 过快报错
+                    if (self._running) {
+                        ev.halt();
+                        return;
+                    }
                     var sel = editor.getSelection(),
                         range = new KERange(doc);
 
@@ -61,7 +69,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     range.setStartAt(pastebin, KER.POSITION_AFTER_START);
                     range.setEndAt(pastebin, KER.POSITION_BEFORE_END);
                     range.select(true);
-
+                    self._running = true;
                     // Wait a while and grab the pasted contents
                     setTimeout(function() {
                         pastebin._4e_remove();
@@ -74,11 +82,12 @@ KISSY.Editor.add("clipboard", function(editor) {
 
                         pastebin = ( UA.webkit
                             && ( bogusSpan = pastebin._4e_first() )
-                            && ( bogusSpan[0] && bogusSpan.hasClass('Apple-style-span') ) ?
+                            && (bogusSpan.hasClass('Apple-style-span') ) ?
                             bogusSpan : pastebin );
                         sel.selectBookmarks(bms);
                         //console.log(pastebin.html());
                         editor.insertHtml(pastebin.html());
+                        self._running = false;
                     }, 0);
                 }
             });
