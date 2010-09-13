@@ -7,7 +7,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         KE = S.Editor,
         DOM = S.DOM,
         Node = S.Node,
-        loading = KE.Config.base + "assets/loading.gif",
+        loading = KE.Config.base + "theme/loading.gif",
         Flash = KE.Flash,
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "bangpai-music",

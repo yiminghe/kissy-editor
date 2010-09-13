@@ -21,7 +21,7 @@ KISSY.Editor.add("definition", function(KE) {
         ke_textarea_wrap = ".ke-textarea-wrap",
         ke_editor_tools = ".ke-editor-tools",
         ke_editor_status = ".ke-editor-status",
-        CSS_FILE = KE.Utils.debugUrl("assets/editor-iframe.css");
+        CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
 
     function prepareIFrameHtml(id) {
         return HTML5_DTD

@@ -10,9 +10,15 @@ build file for kissy editor
     <description>Kissy Editor Build File</description>
 
     <dirname property="current.dir" file="${ant.file.kissy-editor-build}"/>
-    <property name="root.dir" location="${current.dir}/../"/>
+    <dirname property="project.dir" file="${ant.file.kissy-editor-build}/../"/>
+    <property name="root.dir" location="${project.dir}/../"/>
+
+    <property name="src.dir" location="${project.dir}/src/"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
-    <property name="build.dir" location="${current.dir}/build/"/>
+    <property name="build.dir" location="${project.dir}/build/"/>
+
+    <property name="theme.dir" value="theme"/>
+    <property name="biz.dir" value="biz"/>
     <property name="version" value="2.0"/>
     <property name="charset" value="UTF-8"/>
     <property name="git.origin" value="origin"/>
@@ -20,28 +26,19 @@ build file for kissy editor
     <property name="git.master" value="master"/>
     <property name="git.wait" value="10"/>
     <property name="git.url" value="http://www.github.com"/>
-    <filelist dir="${current.dir}"
-              files="${build.dir}/editor.js"
-              id="editor_js"/>
-    <filelist dir="${build.dir}/core"
+
+    <filelist dir="${src.dir}/core"
               id="core_js"
-              files="utils.js,focusmanager.js,definition.js,
+              files="../editor.js,utils.js,focusmanager.js,definition.js,
                       dtd.js,dom.js,elementpath.js
                       ,walker.js,range.js,domiterator.js,selection.js
                       ,styles.js"/>
-    <fileset dir="${current.dir}"
-             includes="assets/*"
-             excludes="assets/*.js,assets/*.css"
-             id="assets_img">
+
+    <fileset dir="${src.dir}"
+             includes="plugins/**/*.js,ui/**/*.js"
+             id="main_js">
     </fileset>
-    <fileset dir="${current.dir}"
-             includes="assets/*.js,assets/*.css,core/**,plugins/**,ui/**,biz/**,editor.js"
-             id="full_source">
-    </fileset>
-    <dirset dir="${build.dir}/biz/"
-            includes="*"
-            id="biz_build_source">
-    </dirset>
+
     <tstamp>
         <format property="timestamp.isoformat"
                 pattern="yyyy-MM-dd' 'HH:mm:ss" locale="en"/>
@@ -52,13 +49,22 @@ build file for kissy editor
     -->
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
-        <copy todir="${build.dir}">
-            <fileset refid="assets_img"/>
+        <copy todir="${build.dir}"
+              encoding="${charset}"
+              outputencoding="${charset}">
+            <fileset dir="${src.dir}"
+                     includes="${theme.dir}/**/*"/>
         </copy>
-        <copy todir="${build.dir}" encoding="${charset}" outputencoding="${charset}">
-            <fileset refid="full_source"/>
+
+        <copy todir="${build.dir}"
+              encoding="${charset}"
+              outputencoding="${charset}">
+            <fileset dir="${src.dir}"
+                     includes="**/*"
+                     excludes="${theme.dir}/**/*"/>
             <filterset>
-                <filter token="TIMESTAMP" value="${timestamp.isoformat}"/>
+                <filter token="TIMESTAMP"
+                        value="${timestamp.isoformat}"/>
             </filterset>
         </copy>
     </target>
@@ -68,18 +74,6 @@ build file for kissy editor
     "run git from windows command prompt"
     when install
     -->
-    <target name="get-commit-message">
-        <input addproperty="git.commit.message">
-            git commit message :
-        </input>
-        <condition property="git.commit.message.set">
-            <not>
-                <equals arg1="${git.commit.message}" arg2="">
-                </equals>
-            </not>
-        </condition>
-    </target>
-
     <target name="git" depends="minify">
 
         <input addproperty="git.commit.message">
@@ -152,17 +146,7 @@ build file for kissy editor
     minify all js and css to build dir
     -->
     <target name="minify" depends="concat">
-        <!--
-        remove debug info
-        -->
-        <replaceregexp match="^\s*console\.log\(.+$"
-                       replace=""
-                       flags="g"
-                       byline="true"
-                       encoding="${charset}">
-            <fileset dir="${build.dir}"
-                     includes="**/*.js"/>
-        </replaceregexp>
+
 
         <apply executable="java"
                verbose="true"
@@ -170,7 +154,10 @@ build file for kissy editor
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${build.dir}" includes="**/*.js" excludes="**/*-min.js"/>
+            <fileset dir="${src.dir}"
+                     includes="**/*.js"/>
+            <fileset dir="${build.dir}"
+                     includes="**/*-pkg.js"/>
             <arg line="-jar"/>
             <arg path="${ks-tools.dir}/closure-compiler/compiler.jar"/>
             <arg line="--charset ${charset}"/>
@@ -189,7 +176,10 @@ build file for kissy editor
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${build.dir}" includes="**/*.css" excludes="**/*-min.css"/>
+            <fileset dir="${src.dir}"
+                     includes="**/*.css"/>
+            <fileset dir="${build.dir}"
+                     includes="**/*-pkg.css"/>
             <arg line="-jar"/>
             <arg path="${ks-tools.dir}/yuicompressor/yuicompressor.jar"/>
             <arg line="--charset ${charset}"/>
@@ -199,7 +189,17 @@ build file for kissy editor
             <mapper type="regexp" from="^(.*)\.(css|js)$" to="\1-min.\2"/>
         </apply>
 
-
+        <!--
+        remove debug info
+        -->
+        <replaceregexp match="^\s*console\.log\(.+$"
+                       replace=""
+                       flags="g"
+                       byline="true"
+                       encoding="${charset}">
+            <fileset dir="${build.dir}"
+                     includes="**/*.js"/>
+        </replaceregexp>
     </target>
 
     <!--
@@ -209,20 +209,20 @@ build file for kissy editor
         <!--
         kissy editor core ,load plugins dynamically
         -->
-        <concat destfile="${build.dir}/editor-core-pkg.js" encoding="${charset}" outputencoding="${charset}">
-            <filelist refid="editor_js"/>
+        <concat destfile="${build.dir}/editor-core-pkg.js"
+                encoding="${charset}"
+                outputencoding="${charset}">
             <filelist refid="core_js"/>
         </concat>
 
         <!--
         full kissy editor ,all plugins static included
         -->
-        <concat destfile="${build.dir}/editor-all-pkg.js" encoding="${charset}" outputencoding="${charset}">
+        <concat destfile="${build.dir}/editor-all-pkg.js"
+                encoding="${charset}"
+                outputencoding="${charset}">
             <path location="${build.dir}/editor-core-pkg.js"/>
-            <fileset dir="ui"
-                     includes="**/*.js"/>
-            <fileset dir="plugins"
-                     includes="**/*.js"/>
+            <fileset refid="main_js"/>
         </concat>
 
         <!--
@@ -230,7 +230,7 @@ build file for kissy editor
         -->
         <ac:for param="biz">
             <path>
-                <dirset refid="biz_build_source"></dirset>
+                <dirset dir="${build.dir}/${biz.dir}" includes="*"/>
             </path>
             <sequential>
                 <!--
@@ -244,12 +244,13 @@ build file for kissy editor
                 <ac:if>
                     <available file="@{biz}/plugins"></available>
                     <ac:then>
-                        <concat destfile="@{biz}/editor-plugin-${var.biz.dirname}-pkg.js"
+                        <concat destfile="@{biz}/editor-plugin-pkg.js"
                                 encoding="${charset}"
                                 outputencoding="${charset}">
-                            <fileset dir="@{biz}/plugins"
-                                     includes="**/*.js"
-                                     excludes="**/*-min.js"/>
+                            <fileset
+                                    dir="${src.dir}/${biz.dir}/${var.biz.dirname}/plugins"
+                                    includes="**/*.js"
+                                    />
                         </concat>
                     </ac:then>
                 </ac:if>
@@ -261,16 +262,32 @@ build file for kissy editor
         <!--
         full css build
         -->
-        <concat destfile="${build.dir}/assets/editor-pkg.css" encoding="${charset}" outputencoding="${charset}">
-            <filelist dir="assets" files="editor.css"/>
-            <fileset dir="."
-                     includes="plugins/**/*.css,ui/**/*.css"/>
-        </concat>
+        <ac:for param="theme">
+            <path>
+                <dirset dir="${build.dir}/${theme.dir}" includes="*"/>
+            </path>
+            <sequential>
+                <ac:var name="var.theme.dirname" unset="true"/>
+                <basename property="var.theme.dirname" file="@{theme}"/>
+                <echo>
+                    build ${var.theme.dirname} for @{theme}
+                </echo>
+
+                <concat
+                        destfile="@{theme}/editor-pkg.css"
+                        encoding="${charset}"
+                        outputencoding="${charset}">
+                    <fileset
+                            dir="${src.dir}/${theme.dir}/${var.theme.dirname}"
+                            includes="*.css"/>
+                </concat>
+            </sequential>
+        </ac:for>
 
     </target>
 
     <target name="clean">
-        <delete dir="${build.dir}"></delete>
+        <delete dir="${build.dir}"/>
     </target>
 
 </project>

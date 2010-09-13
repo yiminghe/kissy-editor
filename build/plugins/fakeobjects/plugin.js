@@ -7,6 +7,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         S = KISSY,
         Node = S.Node,
         KEN = KE.NODE,
+    SPACER_GIF= KE.Config.base + 'theme/spacer.gif',
         HtmlParser = KE.HtmlParser,
         Editor = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
@@ -78,7 +79,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 }
                 var attributes = {
                     'class' : className,
-                    src : KE.Config.base + 'assets/spacer.gif',
+                    src : SPACER_GIF,
                     _ke_realelement : encodeURIComponent(html),
                     _ke_real_node_type : realElement.type,
                     style:style,
@@ -112,7 +113,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
             }
             var self = this,attributes = {
                 'class' : className,
-                src : KE.Config.base + 'assets/spacer.gif',
+                src : SPACER_GIF,
                 _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
                 _ke_real_node_type : realElement[0].nodeType,
                 align : realElement.attr("align") || '',

@@ -17,7 +17,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else if (DOM._4e_name(params[i]) == "embed") {
                         url = DOM.attr(params[i], "src");
                     } else if (DOM._4e_name(params[i]) == "object") {
-                        url == DOM.attr(params[i], "data");
+                        url = DOM.attr(params[i], "data");
                     }
                 }
             } else if (r._4e_name() == "embed") {
@@ -26,11 +26,11 @@ KISSY.Editor.add("utils", function(KE) {
             return url;
         },
         debugUrl:function (url) {
-            if (!debug) return "build/" + url.replace(/\.(js|css)/i, "-min.$1");
+            if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
-                return url;
+                return  "../src/" + url;
             }
-            return "build/" + url;
+            return  url;
         }
         ,
         /**
@@ -195,7 +195,7 @@ KISSY.Editor.add("utils", function(KE) {
 
         /*! Based on work by Simon Willison: http://gist.github.com/292562 */
 
-        throttle : function(fn, scope,ms) {
+        throttle : function(fn, scope, ms) {
             ms = ms || 150;
 
             if (ms === -1) {

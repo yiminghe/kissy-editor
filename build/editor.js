@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-10 15:30:15
+ * @buildtime: 2010-09-13 13:15:49
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -53,11 +53,11 @@ KISSY.add("editor", function(S, undefined) {
     S.app(Editor, S.EventTarget);
     Editor.Config.base = S.Config.base + "editor/";
     function debugUrl(url) {
-        if (!debug) return "build/" + url.replace(/\.(js|css)/i, "-min.$1");
+        if (!debug) return  url.replace(/\.(js|css)/i, "-min.$1");
         if (debug === "dev") {
-            return url;
+            return "../src/" + url;
         }
-        return "build/" + url;
+        return url;
     }
 
     var debug = S.Config.debug,mods = {

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-10 15:30:15
+ * @buildtime: @TIMESTAMP@
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -53,11 +53,11 @@ KISSY.add("editor", function(S, undefined) {
     S.app(Editor, S.EventTarget);
     Editor.Config.base = S.Config.base + "editor/";
     function debugUrl(url) {
-        if (!debug) return "build/" + url.replace(/\.(js|css)/i, "-min.$1");
+        if (!debug) return  url.replace(/\.(js|css)/i, "-min.$1");
         if (debug === "dev") {
-            return url;
+            return "../src/" + url;
         }
-        return "build/" + url;
+        return url;
     }
 
     var debug = S.Config.debug,mods = {
@@ -279,7 +279,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else if (DOM._4e_name(params[i]) == "embed") {
                         url = DOM.attr(params[i], "src");
                     } else if (DOM._4e_name(params[i]) == "object") {
-                        url == DOM.attr(params[i], "data");
+                        url = DOM.attr(params[i], "data");
                     }
                 }
             } else if (r._4e_name() == "embed") {
@@ -288,11 +288,11 @@ KISSY.Editor.add("utils", function(KE) {
             return url;
         },
         debugUrl:function (url) {
-            if (!debug) return "build/" + url.replace(/\.(js|css)/i, "-min.$1");
+            if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
-                return url;
+                return  "../src/" + url;
             }
-            return "build/" + url;
+            return  url;
         }
         ,
         /**
@@ -457,7 +457,7 @@ KISSY.Editor.add("utils", function(KE) {
 
         /*! Based on work by Simon Willison: http://gist.github.com/292562 */
 
-        throttle : function(fn, scope,ms) {
+        throttle : function(fn, scope, ms) {
             ms = ms || 150;
 
             if (ms === -1) {
@@ -564,7 +564,7 @@ KISSY.Editor.add("definition", function(KE) {
         ke_textarea_wrap = ".ke-textarea-wrap",
         ke_editor_tools = ".ke-editor-tools",
         ke_editor_status = ".ke-editor-status",
-        CSS_FILE = KE.Utils.debugUrl("assets/editor-iframe.css");
+        CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
 
     function prepareIFrameHtml(id) {
         return HTML5_DTD
