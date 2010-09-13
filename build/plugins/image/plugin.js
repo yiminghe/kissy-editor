@@ -169,7 +169,7 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align;
+                        style += "float:" + align+";";
                     }
                     if (!isNaN(margin)) {
                         style += "margin:" + margin + "px;";

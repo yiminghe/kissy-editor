@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-13 16:12:11
+ * @buildtime: 2010-09-13 16:58:09
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -10920,7 +10920,7 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align;
+                        style += "float:" + align+";";
                     }
                     if (!isNaN(margin)) {
                         style += "margin:" + margin + "px;";
@@ -12963,7 +12963,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,editor = self.editor;
                     var t = ev.target,icon;
                     if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img alt='' style='width:52px;height:48px;' src='" + icon + "'/>", null, editor.document);
+                        var img = new Node("<img alt='' src='" + icon + "'/>", null, editor.document);
                         editor.insertElement(img);
                         this.smileyWin.hide();
                     }
