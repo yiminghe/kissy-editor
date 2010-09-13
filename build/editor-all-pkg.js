@@ -90,7 +90,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay"]
+                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
@@ -103,14 +103,20 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "image",
-                requires: ["overlay"]
+                requires: ["overlay","contextmenu","bubbleview"]
             },
             "indent",
             "justify",
-            {name:"link", requires: ["bubbleview"]},
+            {
+                name:"link",
+                requires: ["bubbleview"]
+            },
             "list",
             "maximize",
-            "music",
+            {
+                name:"music",
+                requires:["flashsupport"]
+            },
             "preview",
             "removeformat",
             {

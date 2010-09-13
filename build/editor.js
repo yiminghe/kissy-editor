@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-13 13:15:49
+ * @buildtime: 2010-09-13 14:07:50
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -90,7 +90,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay"]
+                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
@@ -103,14 +103,20 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "image",
-                requires: ["overlay"]
+                requires: ["overlay","contextmenu","bubbleview"]
             },
             "indent",
             "justify",
-            {name:"link", requires: ["bubbleview"]},
+            {
+                name:"link",
+                requires: ["bubbleview"]
+            },
             "list",
             "maximize",
-            "music",
+            {
+                name:"music",
+                requires:["flashsupport"]
+            },
             "preview",
             "removeformat",
             {
