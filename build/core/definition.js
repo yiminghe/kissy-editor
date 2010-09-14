@@ -355,8 +355,8 @@ KISSY.Editor.add("definition", function(KE) {
             }
 
             var next = lastElement._4e_nextSourceNode(true),p,
-                doc = self.document,
-                dtd = KE.XHTML_DTD;
+                doc = self.document;
+            dtd = KE.XHTML_DTD;
 
             //行内元素不用加换行
             if (!dtd.$inline[clone._4e_name()]) {

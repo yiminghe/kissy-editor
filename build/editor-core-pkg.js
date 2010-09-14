@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 11:13:52
+ * @buildtime: 2010-09-14 14:09:29
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -493,6 +493,9 @@ KISSY.Editor.add("utils", function(KE) {
                     return fn.apply(scope, args);
                 }, ms);
             });
+        },
+        isNumber:function(n) {
+            return /^\d+(.\d+)?$/.test(S.trim(n));
         }
 
 
@@ -920,8 +923,8 @@ KISSY.Editor.add("definition", function(KE) {
             }
 
             var next = lastElement._4e_nextSourceNode(true),p,
-                doc = self.document,
-                dtd = KE.XHTML_DTD;
+                doc = self.document;
+            dtd = KE.XHTML_DTD;
 
             //行内元素不用加换行
             if (!dtd.$inline[clone._4e_name()]) {

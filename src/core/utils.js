@@ -224,6 +224,9 @@ KISSY.Editor.add("utils", function(KE) {
                     return fn.apply(scope, args);
                 }, ms);
             });
+        },
+        isNumber:function(n) {
+            return /^\d+(.\d+)?$/.test(S.trim(n));
         }
 
 

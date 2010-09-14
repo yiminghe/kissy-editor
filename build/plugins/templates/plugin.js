@@ -33,7 +33,7 @@ KISSY.Editor.add("templates", function(editor) {
                     KE.Utils.lazyRun(this, "_prepare", "_real");
                 },
                 _prepare:function() {
-                    var self = this,editor = self.editor,templates = editor.cfg.pluginConfig.templates;
+                    var self = this,editor = self.editor,templates = editor.cfg.pluginConfig.templates || [];
                     var HTML = "<div class='ke-tpl'>";
 
                     for (var i = 0; i < templates.length; i++) {
@@ -46,7 +46,7 @@ KISSY.Editor.add("templates", function(editor) {
                     var ui = new Overlay({mask:true,title:"内容模板"});
                     ui.body.html(HTML);
                     var list = ui.body.all(".ke-tpl-list");
-                                        list.on("click", function(ev) {
+                    list.on("click", function(ev) {
                         ev.halt();
                         var t = new Node(ev.target);
                         var index = t._4e_index();

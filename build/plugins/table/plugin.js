@@ -81,6 +81,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "</tr>" +
             "</table>",
+        isNumber = KE.Utils.isNumber,
+        isNumberWarn = "请输入数字",
         footHtml = "<button class='ke-table-ok'>确定</button> <button class='ke-table-cancel'>取消</button>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
@@ -233,7 +235,20 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     });
                 },
                 _tableOk:function() {
-                    var self = this;
+                    var self = this,
+                        tableDialog = self.tableDialog,
+                        inputs = tableDialog.el.all("input");
+                    for (var i = 0; i < inputs.length; i++) {
+                        var input = new Node(inputs[i]);
+                        if (input[0] == tableDialog.tcaption[0]) continue;
+                        if (S.trim(input.val()) &&
+                            !isNumber(input.val())) {
+                            var label = input.parent("label").text().replace(/[:：]/g, "");
+                            alert(label + isNumberWarn);
+                            return;
+                        }
+                    }
+
                     if (!self.selectedTable) {
                         self._genTable();
                     } else {
@@ -694,7 +709,9 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     // If the table's parent has only one child, remove it,except body,as well.( #5416 )
                     var parent = table.parent();
-                    if (parent[0].childNodes.length == 1 && parent._4e_name() != 'body')
+                    if (parent[0].childNodes.length == 1 &&
+                        parent._4e_name() != 'body' &&
+                        parent._4e_name() != 'td')
                         parent._4e_remove();
                     else
                         table._4e_remove();
