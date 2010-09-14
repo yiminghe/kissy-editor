@@ -33,36 +33,48 @@ KISSY.Editor.add("contextmenu", function() {
         if (!doc.ke_contextmenu) {
             doc.ke_contextmenu = 1;
             Event.on(doc, "mousedown", ContextMenu.hide);
-            Event.on(doc, "contextmenu", function(ev) {
-                ContextMenu.hide.call(this);
-                var t = new Node(ev.target);
-                while (t) {
-                    var name = t._4e_name(),stop = false;
-                    if (name == "body")break;
-                    for (var i = 0; i < global_rules.length; i++) {
-                        var instance = global_rules[i].instance,
-                            rules = global_rules[i].rules,
-                            doc2 = global_rules[i].doc;
-                        if (doc === doc2 && applyRules(t[0], rules)) {
+            /*
+             Event.on(doc, "contextmenu", function(ev) {
+             ev.preventDefault();
+             });*/
+            Event.on(doc,
+                //"mouseup"
+                "contextmenu"
+                ,
 
+                function(ev) {
+                    /*
+                     if (ev.which != 3)
+                     return;
+                     */
+                    ContextMenu.hide.call(this);
+                    var t = new Node(ev.target);
+                    while (t) {
+                        var name = t._4e_name(),stop = false;
+                        if (name == "body")break;
+                        for (var i = 0; i < global_rules.length; i++) {
+                            var instance = global_rules[i].instance,
+                                rules = global_rules[i].rules,
+                                doc2 = global_rules[i].doc;
+                            if (doc === doc2 && applyRules(t[0], rules)) {
+                                ev.preventDefault();
+                                stop = true;
+                                //ie 右键作用中，不会发生焦点转移，光标移动
+                                //只能右键作用完后才能，才会发生光标移动,range变化
+                                //异步右键操作
+                                //qc #3764,#3767
+                                setTimeout(function() {
+                                    //console.log("show");
+                                    instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
+                                }, 30);
 
-                            ev.preventDefault();
-                            stop = true;
-                            //ie 右键作用中，不会发生焦点转移，光标移动
-                            //只能右键作用完后才能，才会发生光标移动,range变化
-                            //异步右键操作
-                            //qc #3764,#3767
-                            setTimeout(function() {
-                                instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
-                            }, 30);
-
-                            break;
+                                break;
+                            }
                         }
+                        if (stop) break;
+                        t = t.parent();
                     }
-                    if (stop) break;
-                    t = t.parent();
-                }
-            });
+                });
         }
         return cm;
     };

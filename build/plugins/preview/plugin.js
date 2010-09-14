@@ -48,6 +48,8 @@ KISSY.Editor.add("preview", function(editor) {
                     oWindow.document.open();
                     oWindow.document.write(sHTML);
                     oWindow.document.close();
+                    //ie 重新显示
+                    oWindow.focus();
                 }
             });
             KE.Preview = Preview;

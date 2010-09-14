@@ -130,6 +130,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // object even when type == 'None' is returned by IE.
                         // So we'd better check the object returned by
                         // createRange() rather than by looking at the type.
+                        //当前一个操作选中文本，后一个操作右键点了字串中间就会出现了
                         if (sel.createRange().parentElement)
                             type = KES.SELECTION_TEXT;
                     }
@@ -822,8 +823,7 @@ KISSY.Editor.add("selection", function(KE) {
                 saveEnabled = true;
                 setTimeout(function() {
                     saveSelection(true);
-                },
-                    0);
+                }, 0);
             });
 
             body.on('keydown', disableSave);
@@ -832,7 +832,6 @@ KISSY.Editor.add("selection", function(KE) {
                 saveSelection();
             });
 
-
             // IE is the only to provide the "selectionchange"
             // event.
             // 注意：ie右键短暂点击并不能改变选择范围
@@ -840,12 +839,15 @@ KISSY.Editor.add("selection", function(KE) {
 
             function disableSave() {
                 saveEnabled = false;
+                //console.log("disableSave");
             }
 
             function saveSelection(testIt) {
+                //console.log("saveSelection");
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
+                        type = sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking
@@ -856,13 +858,15 @@ KISSY.Editor.add("selection", function(KE) {
                     // range at the very start of the document. In
                     // such situation we have to test the range, to
                     // be sure it's valid.
-                    if (testIt && nativeSel && nativeSel.type == 'None') {
+                    //右键时，若前一个操作选中，则该次一直为None
+                    if (testIt && nativeSel && type == KES.SELECTION_NONE) {
                         // The "InsertImage" command can be used to
                         // test whether the selection is good or not.
                         // If not, it's enough to give some time to
                         // IE to put things in order for us.
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
+                                //console.log("retry");
                                 saveSelection(true);
                             }, 50);
                             return;
@@ -871,12 +875,13 @@ KISSY.Editor.add("selection", function(KE) {
 
                     // Avoid saving selection from within text input. (#5747)
                     var parentTag;
-                    if (nativeSel && nativeSel.type == 'Text'
-                        && ( parentTag = nativeSel.createRange().parentElement().nodeName.toLowerCase() )
+                    if (nativeSel && type == KES.SELECTION_TEXT
+                        && ( parentTag = DOM._4e_name(nativeSel.createRange().parentElement()))
                         && parentTag in { input: 1, textarea : 1 }) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
+                    //console.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }

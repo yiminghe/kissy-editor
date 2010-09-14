@@ -292,6 +292,7 @@ KISSY.Editor.add("overlay", function() {
             var self = this,
                 editor = self._focusEditor,
                 v = ev.newVal;
+            //console.log(v + " change");
             //将要出现
             if (v) {
                 //保存当前焦点editor

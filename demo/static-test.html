@@ -259,9 +259,11 @@ xiami 音乐
 
         var KE = KISSY.Editor;
 
-        KE.Config.base = base+"src/";
+        KE.Config.base = base + "src/";
 
         window.editor = KE("#editor", {
+            disableObjectResizing:true,
+            disableInlineTableEditing:true,
             pluginConfig: {
                 "templates": [
                     {

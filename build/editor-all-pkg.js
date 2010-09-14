@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 14:37:08
+ * @buildtime: 2010-09-14 16:34:30
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -857,7 +857,7 @@ KISSY.Editor.add("definition", function(KE) {
                         self.fire("selectionChange", { selection : self, path : currentPath, element : startElement });
                     }
                 }
-            }, 200);
+            }, 100);
         }
         ,
         /**
@@ -1007,9 +1007,10 @@ KISSY.Editor.add("definition", function(KE) {
             iframe = self.iframe,
             textarea = self.textarea[0],
             win = iframe[0].contentWindow,
-            doc = self.document;
-        // Remove bootstrap script from the DOM.
-        var script = doc.getElementById("ke_actscrpt");
+            doc = self.document,
+            cfg = self.cfg,
+            // Remove bootstrap script from the DOM.
+            script = doc.getElementById("ke_actscrpt");
         script.parentNode.removeChild(script);
 
         var body = doc.body;
@@ -1045,11 +1046,11 @@ KISSY.Editor.add("definition", function(KE) {
         // IE, Opera and Safari may not support it and throw
         // errors.
         try {
-            doc.execCommand('enableObjectResizing', false, true);
+            doc.execCommand('enableObjectResizing', false, !cfg.disableObjectResizing);
         } catch(e) {
         }
         try {
-            doc.execCommand('enableInlineTableEditing', false, true);
+            doc.execCommand('enableInlineTableEditing', false, !cfg.disableInlineTableEditing);
         } catch(e) {
         }
 
@@ -4983,6 +4984,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // object even when type == 'None' is returned by IE.
                         // So we'd better check the object returned by
                         // createRange() rather than by looking at the type.
+                        //当前一个操作选中文本，后一个操作右键点了字串中间就会出现了
                         if (sel.createRange().parentElement)
                             type = KES.SELECTION_TEXT;
                     }
@@ -5675,8 +5677,7 @@ KISSY.Editor.add("selection", function(KE) {
                 saveEnabled = true;
                 setTimeout(function() {
                     saveSelection(true);
-                },
-                    0);
+                }, 0);
             });
 
             body.on('keydown', disableSave);
@@ -5685,7 +5686,6 @@ KISSY.Editor.add("selection", function(KE) {
                 saveSelection();
             });
 
-
             // IE is the only to provide the "selectionchange"
             // event.
             // 注意：ie右键短暂点击并不能改变选择范围
@@ -5693,12 +5693,15 @@ KISSY.Editor.add("selection", function(KE) {
 
             function disableSave() {
                 saveEnabled = false;
+                //console.log("disableSave");
             }
 
             function saveSelection(testIt) {
+                //console.log("saveSelection");
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
+                        type = sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking
@@ -5709,13 +5712,15 @@ KISSY.Editor.add("selection", function(KE) {
                     // range at the very start of the document. In
                     // such situation we have to test the range, to
                     // be sure it's valid.
-                    if (testIt && nativeSel && nativeSel.type == 'None') {
+                    //右键时，若前一个操作选中，则该次一直为None
+                    if (testIt && nativeSel && type == KES.SELECTION_NONE) {
                         // The "InsertImage" command can be used to
                         // test whether the selection is good or not.
                         // If not, it's enough to give some time to
                         // IE to put things in order for us.
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
+                                //console.log("retry");
                                 saveSelection(true);
                             }, 50);
                             return;
@@ -5724,12 +5729,13 @@ KISSY.Editor.add("selection", function(KE) {
 
                     // Avoid saving selection from within text input. (#5747)
                     var parentTag;
-                    if (nativeSel && nativeSel.type == 'Text'
-                        && ( parentTag = nativeSel.createRange().parentElement().nodeName.toLowerCase() )
+                    if (nativeSel && type == KES.SELECTION_TEXT
+                        && ( parentTag = DOM._4e_name(nativeSel.createRange().parentElement()))
                         && parentTag in { input: 1, textarea : 1 }) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
+                    //console.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }
@@ -12724,6 +12730,8 @@ KISSY.Editor.add("preview", function(editor) {
                     oWindow.document.open();
                     oWindow.document.write(sHTML);
                     oWindow.document.close();
+                    //ie 重新显示
+                    oWindow.focus();
                 }
             });
             KE.Preview = Preview;
@@ -14467,36 +14475,48 @@ KISSY.Editor.add("contextmenu", function() {
         if (!doc.ke_contextmenu) {
             doc.ke_contextmenu = 1;
             Event.on(doc, "mousedown", ContextMenu.hide);
-            Event.on(doc, "contextmenu", function(ev) {
-                ContextMenu.hide.call(this);
-                var t = new Node(ev.target);
-                while (t) {
-                    var name = t._4e_name(),stop = false;
-                    if (name == "body")break;
-                    for (var i = 0; i < global_rules.length; i++) {
-                        var instance = global_rules[i].instance,
-                            rules = global_rules[i].rules,
-                            doc2 = global_rules[i].doc;
-                        if (doc === doc2 && applyRules(t[0], rules)) {
+            /*
+             Event.on(doc, "contextmenu", function(ev) {
+             ev.preventDefault();
+             });*/
+            Event.on(doc,
+                //"mouseup"
+                "contextmenu"
+                ,
 
+                function(ev) {
+                    /*
+                     if (ev.which != 3)
+                     return;
+                     */
+                    ContextMenu.hide.call(this);
+                    var t = new Node(ev.target);
+                    while (t) {
+                        var name = t._4e_name(),stop = false;
+                        if (name == "body")break;
+                        for (var i = 0; i < global_rules.length; i++) {
+                            var instance = global_rules[i].instance,
+                                rules = global_rules[i].rules,
+                                doc2 = global_rules[i].doc;
+                            if (doc === doc2 && applyRules(t[0], rules)) {
+                                ev.preventDefault();
+                                stop = true;
+                                //ie 右键作用中，不会发生焦点转移，光标移动
+                                //只能右键作用完后才能，才会发生光标移动,range变化
+                                //异步右键操作
+                                //qc #3764,#3767
+                                setTimeout(function() {
+                                    //console.log("show");
+                                    instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
+                                }, 30);
 
-                            ev.preventDefault();
-                            stop = true;
-                            //ie 右键作用中，不会发生焦点转移，光标移动
-                            //只能右键作用完后才能，才会发生光标移动,range变化
-                            //异步右键操作
-                            //qc #3764,#3767
-                            setTimeout(function() {
-                                instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
-                            }, 30);
-
-                            break;
+                                break;
+                            }
                         }
+                        if (stop) break;
+                        t = t.parent();
                     }
-                    if (stop) break;
-                    t = t.parent();
-                }
-            });
+                });
         }
         return cm;
     };
@@ -15051,6 +15071,7 @@ KISSY.Editor.add("overlay", function() {
             var self = this,
                 editor = self._focusEditor,
                 v = ev.newVal;
+            //console.log(v + " change");
             //将要出现
             if (v) {
                 //保存当前焦点editor

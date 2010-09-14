@@ -289,7 +289,7 @@ KISSY.Editor.add("definition", function(KE) {
                         self.fire("selectionChange", { selection : self, path : currentPath, element : startElement });
                     }
                 }
-            }, 200);
+            }, 100);
         }
         ,
         /**
@@ -439,9 +439,10 @@ KISSY.Editor.add("definition", function(KE) {
             iframe = self.iframe,
             textarea = self.textarea[0],
             win = iframe[0].contentWindow,
-            doc = self.document;
-        // Remove bootstrap script from the DOM.
-        var script = doc.getElementById("ke_actscrpt");
+            doc = self.document,
+            cfg = self.cfg,
+            // Remove bootstrap script from the DOM.
+            script = doc.getElementById("ke_actscrpt");
         script.parentNode.removeChild(script);
 
         var body = doc.body;
@@ -477,11 +478,11 @@ KISSY.Editor.add("definition", function(KE) {
         // IE, Opera and Safari may not support it and throw
         // errors.
         try {
-            doc.execCommand('enableObjectResizing', false, true);
+            doc.execCommand('enableObjectResizing', false, !cfg.disableObjectResizing);
         } catch(e) {
         }
         try {
-            doc.execCommand('enableInlineTableEditing', false, true);
+            doc.execCommand('enableInlineTableEditing', false, !cfg.disableInlineTableEditing);
         } catch(e) {
         }
 
