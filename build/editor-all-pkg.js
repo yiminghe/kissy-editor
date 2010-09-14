@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 17:58:10
+ * @buildtime: 2010-09-14 18:44:44
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -13119,7 +13119,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         KEN = KE.NODE,
         TripleButton = KE.TripleButton,
         Overlay = KE.SimpleOverlay,
-        IN_SIZE = 8,
+        IN_SIZE = 6,
         TABLE_HTML = "<table class='ke-table-config'>" +
             "<tr>" +
             "<td>" +
@@ -13151,33 +13151,45 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<option value='center'>中间对齐</option>" +
             "</select>" +
             "</label>" + "</td>" +
+            /*
 
+             "<td>" +
+             "<label>间距： <input value='1' class='ke-table-cellspacing' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+             "</td>" +
 
-            "<td>" +
-            "<label>间距： <input value='1' class='ke-table-cellspacing' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-
-
+             */
             "<td>" +
             "<label>标题格： <select class='ke-table-head ke-table-create-only'>" +
             "<option value=''>无</option>" +
             "<option value='1'>有</option>" +
             "</select>" +
             "</td>" +
-            "<td>" +
 
-            "<label>边距： <input value='1' class='ke-table-cellpadding' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
-            "</td>" +
             "</tr>" +
-            "<tr>" +
-            "<td>" +
+            /*
+             "<tr>" +
 
-            "</td>" +
+
+
+
+             "<td>" +
+
+             "<label>边距： <input value='1' class='ke-table-cellpadding' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+             "</td>" +
+
+
+
+             "</tr>" +
+             */
+            "<tr>" +
+
+
             "<td>" +
             "<label>边框： <input value='1' class='ke-table-border' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
+            "<td>" +
+            "</td>" +
+
             "</tr>" +
             "<tr>" +
             "<td colspan='2'>" +
@@ -13319,8 +13331,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     d.foot.html(footHtml);
                     d.twidth = d.body.one(".ke-table-width");
                     d.theight = d.body.one(".ke-table-height");
-                    d.tcellspacing = d.body.one(".ke-table-cellspacing");
-                    d.tcellpadding = d.body.one(".ke-table-cellpadding");
+                    // d.tcellspacing = d.body.one(".ke-table-cellspacing");
+                    //d.tcellpadding = d.body.one(".ke-table-cellpadding");
                     d.tborder = d.body.one(".ke-table-border");
                     d.tcaption = d.body.one(".ke-table-caption");
                     d.talign = d.body.one(".ke-table-align");
@@ -13370,11 +13382,11 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (valid(d.talign.val()))
                         selectedTable.attr("align", trim(d.talign.val()));
 
-                    if (valid(d.tcellspacing.val()))
-                        selectedTable.attr("cellspacing", trim(d.tcellspacing.val()));
+                    //if (valid(d.tcellspacing.val()))
+                    //    selectedTable.attr("cellspacing", trim(d.tcellspacing.val()));
 
-                    if (valid(d.tcellpadding.val()))
-                        selectedTable.attr("cellpadding", trim(d.tcellpadding.val()));
+                    //if (valid(d.tcellpadding.val()))
+                    //    selectedTable.attr("cellpadding", trim(d.tcellpadding.val()));
 
                     if (valid(d.tborder.val())) {
                         selectedTable.attr("border", trim(d.tborder.val()));
@@ -13416,10 +13428,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     if (S.trim(d.talign.val()).length != 0)
                         html += "align='" + S.trim(d.talign.val()) + "' ";
-                    if (S.trim(d.tcellspacing.val()).length != 0)
-                        html += "cellspacing='" + S.trim(d.tcellspacing.val()) + "' ";
-                    if (S.trim(d.tcellpadding.val()).length != 0)
-                        html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
+                    //if (S.trim(d.tcellspacing.val()).length != 0)
+                    //    html += "cellspacing='" + S.trim(d.tcellspacing.val()) + "' ";
+                    //if (S.trim(d.tcellpadding.val()).length != 0)
+                    //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
                     if (S.trim(d.tborder.val()).length != 0)
                         html += "border='" + S.trim(d.tborder.val()) + "' ";
                     if (S.trim(d.twidth.val()).length != 0 || (S.trim(d.theight.val()).length != 0)) {
@@ -13476,10 +13488,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     d.talign.val(selectedTable.attr("align") || "");
 
 
-                    d.tcellspacing.val(selectedTable.attr("cellspacing") || "");
+                    //d.tcellspacing.val(selectedTable.attr("cellspacing") || "");
 
 
-                    d.tcellpadding.val(selectedTable.attr("cellpadding") || "");
+                    //d.tcellpadding.val(selectedTable.attr("cellpadding") || "");
 
 
                     d.tborder.val(selectedTable.attr("border") | "");

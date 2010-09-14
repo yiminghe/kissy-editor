@@ -47,8 +47,8 @@ textarea,iframe包装
     height: 16px;
     line-height: 16px;
     padding: 4px 0 5px;
-    overflow:hidden;
-    position:relative;
+    overflow: hidden;
+    position: relative;
 }
 
 /*
@@ -331,9 +331,8 @@ from : resource://gre/res/html.css
 
 .ke-post table {
     display: table;
-    border-spacing: 2px;
-    border-collapse: separate;
-    text-indent: 0;
+    border-collapse: collapse;
+    border-color: #A9A9A9;
 }
 
 .ke-post blockquote, .ke-post ul, .ke-post ol, .ke-post dl {
@@ -364,6 +363,7 @@ from : resource://gre/res/html.css
 .ke-post th, .ke-post td {
 /* padding to make the table readable */
     padding: .5em;
+    border-color: #A9A9A9;
 }
 
 .ke-post caption {
