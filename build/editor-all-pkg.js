@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 16:34:30
+ * @buildtime: 2010-09-14 17:58:10
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -16,9 +16,9 @@ KISSY.add("editor", function(S, undefined) {
             textarea = S.one(textarea);
         }
         if (!textarea[0]) textarea = new Node(textarea);
-
-        self.cfg = cfg || {pluginConfig:{}};
-
+        cfg = cfg || {};
+        cfg.pluginConfig = cfg.pluginConfig || {};
+        self.cfg = cfg
         S.app(self, S.EventTarget);
         self.use = function(mods) {
             if (S.isString(mods)) {
@@ -1043,27 +1043,6 @@ KISSY.Editor.add("definition", function(KE) {
         // ability when document is empty.(#3864)
         //activateEditing 删掉，初始引起屏幕滚动了
 
-        // IE, Opera and Safari may not support it and throw
-        // errors.
-        try {
-            doc.execCommand('enableObjectResizing', false, !cfg.disableObjectResizing);
-        } catch(e) {
-        }
-        try {
-            doc.execCommand('enableInlineTableEditing', false, !cfg.disableInlineTableEditing);
-        } catch(e) {
-        }
-
-        // Gecko/Webkit need some help when selecting control type elements. (#3448)
-        //if (!( UA.ie || UA.opera)) {
-        if (UA.webkit) {
-            Event.on(doc, "mousedown", function(ev) {
-                var control = new Node(ev.target);
-                if (S.inArray(control._4e_name(), ['img', 'hr', 'input', 'textarea', 'select'])) {
-                    self.getSelection().selectElement(control);
-                }
-            });
-        }
 
         // Webkit: avoid from editing form control elements content.
         if (UA.webkit) {
@@ -1243,7 +1222,45 @@ KISSY.Editor.add("definition", function(KE) {
 
         setTimeout(function() {
             self.fire("dataReady");
+            /*
+             some break for firefox ，不能立即设置
+             */
+            var disableObjectResizing = cfg.disableObjectResizing,
+                disableInlineTableEditing = cfg.disableInlineTableEditing;
+            if (disableObjectResizing || disableInlineTableEditing) {
+                // IE, Opera and Safari may not support it and throw errors.
+                try {
+                    doc.execCommand('enableObjectResizing', false, !disableObjectResizing);
+                    doc.execCommand('enableInlineTableEditing', false, !disableInlineTableEditing);
+                }
+                catch(e) {
+                    // For browsers which don't support the above methods, we can use the the resize event or resizestart for IE (#4208)
+                    Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
+                        if (
+                            disableObjectResizing ||
+                                (
+                                    DOM._4e_name(evt.target) === 'table'
+                                        &&
+                                        disableInlineTableEditing )
+                            )
+                            evt.preventDefault();
+                    });
+                }
+            }
         }, 10);
+
+
+        // Gecko/Webkit need some help when selecting control type elements. (#3448)
+        //if (!( UA.ie || UA.opera)) {
+        if (UA.webkit) {
+            Event.on(doc, "mousedown", function(ev) {
+                var control = new Node(ev.target);
+                if (S.inArray(control._4e_name(), ['img', 'hr', 'input', 'textarea', 'select'])) {
+                    self.getSelection().selectElement(control);
+                }
+            });
+        }
+
         //注意：必须放在这个位置，等iframe加载好再开始运行
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);
@@ -7986,8 +8003,7 @@ KISSY.Editor.add("font", function(editor) {
         S = KISSY,
         KEStyle = KE.Style,
         TripleButton = KE.TripleButton,
-        Node = S.Node;
-    var
+        Node = S.Node,
         FONT_SIZES = editor.cfg.pluginConfig["font-size"] ||
             ["8px","10px","12px",
                 "14px","18px","24px","36px","48px","60px","72px","84px","96px","108px"],

@@ -169,7 +169,7 @@
     KISSY.use('editor', function() {
 
         var KE = KISSY.Editor;
-        KE.Config.base = base+"build/";
+        KE.Config.base = base + "build/";
 
         KE("#editor", {
             pluginConfig: {
@@ -192,7 +192,10 @@
                 "separator,table,resize"
                 );
 
-        KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font");
+        KE("#editor2", {
+            disableObjectResizing:true,
+            disableInlineTableEditing:true
+        }).use("htmldataprocessor,enterkey,clipboard,undo,font,image");
     });
 
 </script>

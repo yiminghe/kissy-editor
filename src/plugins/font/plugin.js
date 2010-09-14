@@ -7,8 +7,7 @@ KISSY.Editor.add("font", function(editor) {
         S = KISSY,
         KEStyle = KE.Style,
         TripleButton = KE.TripleButton,
-        Node = S.Node;
-    var
+        Node = S.Node,
         FONT_SIZES = editor.cfg.pluginConfig["font-size"] ||
             ["8px","10px","12px",
                 "14px","18px","24px","36px","48px","60px","72px","84px","96px","108px"],

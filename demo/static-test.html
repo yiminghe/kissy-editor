@@ -262,8 +262,7 @@ xiami 音乐
         KE.Config.base = base + "src/";
 
         window.editor = KE("#editor", {
-            disableObjectResizing:true,
-            disableInlineTableEditing:true,
+
             pluginConfig: {
                 "templates": [
                     {
@@ -284,7 +283,10 @@ xiami 音乐
                 "separator,table,resize"
                 );
 
-        KE("#editor2").use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates");
+        KE("#editor2", {
+            disableObjectResizing:true,
+            disableInlineTableEditing:true
+        }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates");
     });
 
 </script>

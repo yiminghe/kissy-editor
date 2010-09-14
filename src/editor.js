@@ -16,9 +16,9 @@ KISSY.add("editor", function(S, undefined) {
             textarea = S.one(textarea);
         }
         if (!textarea[0]) textarea = new Node(textarea);
-
-        self.cfg = cfg || {pluginConfig:{}};
-
+        cfg = cfg || {};
+        cfg.pluginConfig = cfg.pluginConfig || {};
+        self.cfg = cfg
         S.app(self, S.EventTarget);
         self.use = function(mods) {
             if (S.isString(mods)) {
