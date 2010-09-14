@@ -23,7 +23,7 @@ KISSY.Editor.add("overlay", function() {
         var self = this;
         Overlay.superclass.constructor.apply(self, arguments);
         self._init();
-        if (S.UA.ie === 6) {
+        if (UA.ie === 6) {
             //将要显示前就更新状态,不能改为show，防止连续出现，没有change?，不触发
             self.on("show", function(ev) {
                 var el = self.get("el"),
@@ -183,11 +183,14 @@ KISSY.Editor.add("overlay", function() {
                 });
 
                 //重建窗口默认就可drag
-                var head = el.one(".ke-hd"),
-                    drag = new KE.Drag({
-                        node:el,
-                        handlers:[head]
-                    });
+                var head = el.one(".ke-hd"),id = S.guid("ke-overlay-head-");
+                head[0].id = id;
+                var drag = new KE.Drag({
+                    node:el,
+                    handlers:{
+                        id:head
+                    }
+                });
                 if (UA.ie === 6)
                     drag.on("move", function() {
                         d_iframe.offset(el.offset());

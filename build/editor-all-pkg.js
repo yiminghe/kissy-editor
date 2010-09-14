@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-13 17:47:58
+ * @buildtime: 2010-09-14 10:55:37
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -10912,10 +10912,10 @@ KISSY.Editor.add("image", function(editor) {
                 },
                 _insert:function() {
                     var self = this,
-                        editor = self.get("editor"),
                         url = self.imgUrl.val();
                     if (!url) return;
                     var height = parseInt(self.imgHeight.val()),
+                        editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
                         margin = parseInt(self.imgMargin.val()),
@@ -10928,7 +10928,7 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align+";";
+                        style += "float:" + align + ";";
                     }
                     if (!isNaN(margin)) {
                         style += "margin:" + margin + "px;";
@@ -14660,19 +14660,20 @@ KISSY.Editor.add("dd", function() {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var node = this.get("node"),handlers = this.get("handlers");
+            var self=this,node = self.get("node"),handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }
             for (var h in handlers) {
-                var ori = handlers[h].css("cursor");
+                if (!handlers.hasOwnProperty(h)) continue;
+                var hl = handlers[h],ori = hl.css("cursor");
                 if (!ori || ori === "auto")
-                    handlers[h].css("cursor", "move");
+                    hl.css("cursor", "move");
                 //ie 不能被选择了
-                handlers[h]._4e_unselectable();
+                hl._4e_unselectable();
             }
-            node.on("mousedown", this._handleMouseDown, this);
+            node.on("mousedown", self._handleMouseDown, self);
             node.on("mouseup", function() {
                 DDM._end();
             });
@@ -14680,27 +14681,28 @@ KISSY.Editor.add("dd", function() {
         _check:function(t) {
             var handlers = this.get("handlers");
             for (var h in handlers) {
+                if (!handlers.hasOwnProperty(h)) continue;
                 if (handlers[h]._4e_equals(t)) return true;
             }
             return false;
         },
         _handleMouseDown:function(ev) {
-            var t = new Node(ev.target);
-            if (!this._check(t)) return;
+            var self=this,t = new Node(ev.target);
+            if (!self._check(t)) return;
             ev.halt();
-            DDM._start(this);
-            var node = this.get("node");
+            DDM._start(self);
+            var node = self.get("node");
             var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
-            this.startMousePos = {
+            self.startMousePos = {
                 left:mx,
                 top:my
             };
-            this.startNodePos = nxy;
-            this._diff = {
+            self.startNodePos = nxy;
+            self._diff = {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
-            this.fire("start");
+            self.fire("start");
         },
         _move:function(ev) {
             this.fire("move", ev)
@@ -14758,7 +14760,7 @@ KISSY.Editor.add("overlay", function() {
         var self = this;
         Overlay.superclass.constructor.apply(self, arguments);
         self._init();
-        if (S.UA.ie === 6) {
+        if (UA.ie === 6) {
             //将要显示前就更新状态,不能改为show，防止连续出现，没有change?，不触发
             self.on("show", function(ev) {
                 var el = self.get("el"),
@@ -14918,11 +14920,14 @@ KISSY.Editor.add("overlay", function() {
                 });
 
                 //重建窗口默认就可drag
-                var head = el.one(".ke-hd"),
-                    drag = new KE.Drag({
-                        node:el,
-                        handlers:[head]
-                    });
+                var head = el.one(".ke-hd"),id = S.guid("ke-overlay-head-");
+                head[0].id = id;
+                var drag = new KE.Drag({
+                    node:el,
+                    handlers:{
+                        id:head
+                    }
+                });
                 if (UA.ie === 6)
                     drag.on("move", function() {
                         d_iframe.offset(el.offset());

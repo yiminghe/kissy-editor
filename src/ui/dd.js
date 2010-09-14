@@ -110,19 +110,20 @@ KISSY.Editor.add("dd", function() {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var node = this.get("node"),handlers = this.get("handlers");
+            var self=this,node = self.get("node"),handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }
             for (var h in handlers) {
-                var ori = handlers[h].css("cursor");
+                if (!handlers.hasOwnProperty(h)) continue;
+                var hl = handlers[h],ori = hl.css("cursor");
                 if (!ori || ori === "auto")
-                    handlers[h].css("cursor", "move");
+                    hl.css("cursor", "move");
                 //ie 不能被选择了
-                handlers[h]._4e_unselectable();
+                hl._4e_unselectable();
             }
-            node.on("mousedown", this._handleMouseDown, this);
+            node.on("mousedown", self._handleMouseDown, self);
             node.on("mouseup", function() {
                 DDM._end();
             });
@@ -130,27 +131,28 @@ KISSY.Editor.add("dd", function() {
         _check:function(t) {
             var handlers = this.get("handlers");
             for (var h in handlers) {
+                if (!handlers.hasOwnProperty(h)) continue;
                 if (handlers[h]._4e_equals(t)) return true;
             }
             return false;
         },
         _handleMouseDown:function(ev) {
-            var t = new Node(ev.target);
-            if (!this._check(t)) return;
+            var self=this,t = new Node(ev.target);
+            if (!self._check(t)) return;
             ev.halt();
-            DDM._start(this);
-            var node = this.get("node");
+            DDM._start(self);
+            var node = self.get("node");
             var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
-            this.startMousePos = {
+            self.startMousePos = {
                 left:mx,
                 top:my
             };
-            this.startNodePos = nxy;
-            this._diff = {
+            self.startNodePos = nxy;
+            self._diff = {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
-            this.fire("start");
+            self.fire("start");
         },
         _move:function(ev) {
             this.fire("move", ev)

@@ -153,10 +153,10 @@ KISSY.Editor.add("image", function(editor) {
                 },
                 _insert:function() {
                     var self = this,
-                        editor = self.get("editor"),
                         url = self.imgUrl.val();
                     if (!url) return;
                     var height = parseInt(self.imgHeight.val()),
+                        editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
                         margin = parseInt(self.imgMargin.val()),
@@ -169,7 +169,7 @@ KISSY.Editor.add("image", function(editor) {
                         style += "width:" + width + "px;";
                     }
                     if (align) {
-                        style += "float:" + align+";";
+                        style += "float:" + align + ";";
                     }
                     if (!isNaN(margin)) {
                         style += "margin:" + margin + "px;";

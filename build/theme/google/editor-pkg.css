@@ -679,6 +679,10 @@ from : resource://gre/res/html.css
     text-decoration: none;
 }
 
+.ke-select:active {
+    color: #000;
+}
+
 .ke-select-text {
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
