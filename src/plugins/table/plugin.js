@@ -223,19 +223,20 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         body = d.body;
                     d.body.html(TABLE_HTML);
                     d.foot.html(footHtml);
-                    d.twidth = d.body.one(".ke-table-width");
-                    d.theight = d.body.one(".ke-table-height");
+                    var dbody=d.body;
+                    d.twidth = dbody.one(".ke-table-width");
+                    d.theight = dbody.one(".ke-table-height");
                     // d.tcellspacing = d.body.one(".ke-table-cellspacing");
                     //d.tcellpadding = d.body.one(".ke-table-cellpadding");
-                    d.tborder = d.body.one(".ke-table-border");
-                    d.tcaption = d.body.one(".ke-table-caption");
-                    d.talign = d.body.one(".ke-table-align");
-                    d.trows = d.body.one(".ke-table-rows");
-                    d.tcols = d.body.one(".ke-table-cols");
-                    d.thead = d.body.one(".ke-table-head");
+                    d.tborder = dbody.one(".ke-table-border");
+                    d.tcaption = dbody.one(".ke-table-caption");
+                    d.talign = dbody.one(".ke-table-align");
+                    d.trows = dbody.one(".ke-table-rows");
+                    d.tcols = dbody.one(".ke-table-cols");
+                    d.thead = dbody.one(".ke-table-head");
                     var tok = d.foot.one(".ke-table-ok"),
                         tclose = d.foot.one(".ke-table-cancel");
-                    d.twidthunit = d.body.one(".ke-table-width-unit");
+                    d.twidthunit = dbody.one(".ke-table-width-unit");
                     self.tableDialog = d;
                     tok.on("click", self._tableOk, self);
                     d.on("hide", function() {
@@ -275,6 +276,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     if (valid(d.talign.val()))
                         selectedTable.attr("align", trim(d.talign.val()));
+                    else
+                        selectedTable.removeAttr("align");
 
                     //if (valid(d.tcellspacing.val()))
                     //    selectedTable.attr("cellspacing", trim(d.tcellspacing.val()));
@@ -284,6 +287,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     if (valid(d.tborder.val())) {
                         selectedTable.attr("border", trim(d.tborder.val()));
+                    } else {
+                        selectedTable.removeAttr("border");
                     }
                     if (!valid(d.tborder.val()) || d.tborder.val() == "0") {
                         selectedTable.addClass(showBorderClassName);
@@ -293,12 +298,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     if (valid(d.twidth.val()))
                         selectedTable.css("width", trim(d.twidth.val()) + d.twidthunit.val());
-
+                    else
+                        selectedTable.css("width", "");
                     if (valid(d.theight.val()))
                         selectedTable.css("height", trim(d.theight.val()));
-
+                    else
+                        selectedTable.css("height", "");
                     if (valid(d.tcaption.val())) {
-
                         if (caption && caption[0])
                             caption.html(trim(d.tcaption.val()));
                         else
@@ -320,31 +326,32 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         cellpad = UA.ie ? "" : "<br/>",
                         editor = self.editor;
 
-                    if (S.trim(d.talign.val()).length != 0)
+                    if (valid(d.talign.val()))
                         html += "align='" + S.trim(d.talign.val()) + "' ";
                     //if (S.trim(d.tcellspacing.val()).length != 0)
                     //    html += "cellspacing='" + S.trim(d.tcellspacing.val()) + "' ";
                     //if (S.trim(d.tcellpadding.val()).length != 0)
                     //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
-                    if (S.trim(d.tborder.val()).length != 0)
+                    if (valid(d.tborder.val()))
                         html += "border='" + S.trim(d.tborder.val()) + "' ";
-                    if (S.trim(d.twidth.val()).length != 0 || (S.trim(d.theight.val()).length != 0)) {
+                    if (valid(d.twidth.val()) || valid(d.theight.val())) {
                         html += "style='";
-                        if (S.trim(d.twidth.val()).length != 0) {
+                        if (valid(d.twidth.val())) {
                             html += "width:" + S.trim(d.twidth.val()) + d.twidthunit.val() + ";"
                         }
-                        if (S.trim(d.theight.val()).length != 0) {
+                        if (valid(d.theight.val())) {
                             html += "height:" + S.trim(d.theight.val()) + "px;"
                         }
                         html += "' "
                     }
-                    if (S.trim(d.tborder.val()).length == 0 || S.trim(d.tborder.val()) == "0") {
+                    if (!valid(d.tborder.val()) || S.trim(d.tborder.val()) == "0") {
                         html += "class='" + showBorderClassName + "' "
                     }
 
                     html += ">";
-                    if (S.trim(d.tcaption.val())) {
-                        html += "<caption><span>" + S.trim(d.tcaption.val()) + "</span></caption>";
+                    if (valid(d.tcaption.val())) {
+                        html += "<caption><span>" + S.trim(d.tcaption.val())
+                            + "</span></caption>";
                     }
                     if (d.thead.val()) {
                         html += "<thead>";
@@ -388,7 +395,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     //d.tcellpadding.val(selectedTable.attr("cellpadding") || "");
 
 
-                    d.tborder.val(selectedTable.attr("border") | "");
+                    d.tborder.val(selectedTable.attr("border") || "");
                     var w = selectedTable._4e_style("width") || "";
 
                     d.twidth.val(w.replace(/px|%/i, ""));
