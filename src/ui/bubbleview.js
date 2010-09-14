@@ -79,6 +79,9 @@ KISSY.Editor.add("bubbleview", function() {
         //bubble 默认false
         focusMgr:{
             value:false
+        },
+        draggable:{
+            value:false
         }
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
@@ -90,9 +93,8 @@ KISSY.Editor.add("bubbleview", function() {
          * 当前关联插件实例
          */
         //_plugin
-        _initEl:function() {
-            var self = this,el = new Node(markup);
-            el.appendTo(document.body);
+        _createEl:function() {
+            var self = this,el = new Node(markup).appendTo(document.body);
             self.el = el;
             self.set("el", el);
         },

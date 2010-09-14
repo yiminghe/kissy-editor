@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 14:09:29
+ * @buildtime: 2010-09-14 14:37:08
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -14309,6 +14309,9 @@ KISSY.Editor.add("bubbleview", function() {
         //bubble 默认false
         focusMgr:{
             value:false
+        },
+        draggable:{
+            value:false
         }
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
@@ -14320,9 +14323,8 @@ KISSY.Editor.add("bubbleview", function() {
          * 当前关联插件实例
          */
         //_plugin
-        _initEl:function() {
-            var self = this,el = new Node(markup);
-            el.appendTo(document.body);
+        _createEl:function() {
+            var self = this,el = new Node(markup).appendTo(document.body);
             self.el = el;
             self.set("el", el);
         },
@@ -15040,7 +15042,7 @@ KISSY.Editor.add("overlay", function() {
                 self.fire("blur");
             });
         },
-        
+
         /**
          * 焦点管理，弹出前记住当前的焦点所在editor
          * 隐藏好重新focus当前的editor
@@ -15055,7 +15057,10 @@ KISSY.Editor.add("overlay", function() {
                 self._focusEditor = focusManager.currentInstance();
                 editor = self._focusEditor;
                 //聚焦到当前窗口
-                self._getFocusEl()[0].focus();
+                if (!UA.webkit) {
+                    //webkit 滚动到页面顶部
+                    self._getFocusEl()[0].focus();
+                }
                 var input = self.el.one("input");
                 if (input) {
                     setTimeout(function() {

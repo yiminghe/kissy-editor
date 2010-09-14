@@ -283,7 +283,7 @@ KISSY.Editor.add("overlay", function() {
                 self.fire("blur");
             });
         },
-        
+
         /**
          * 焦点管理，弹出前记住当前的焦点所在editor
          * 隐藏好重新focus当前的editor
@@ -298,7 +298,10 @@ KISSY.Editor.add("overlay", function() {
                 self._focusEditor = focusManager.currentInstance();
                 editor = self._focusEditor;
                 //聚焦到当前窗口
-                self._getFocusEl()[0].focus();
+                if (!UA.webkit) {
+                    //webkit 滚动到页面顶部
+                    self._getFocusEl()[0].focus();
+                }
                 var input = self.el.one("input");
                 if (input) {
                     setTimeout(function() {
