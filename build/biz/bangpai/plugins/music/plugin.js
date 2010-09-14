@@ -14,7 +14,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         BTIP = "搜 索 ",
-        BLOADING = "载入中 ",
         TIP = "输入想要添加的歌曲名、专辑名、艺人名";
 
     function checkXiami(url) {
@@ -48,7 +47,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     return null;
                 }
                 for (i = 0; i < element.children.length; i++) {
-                    var c = element.children[ i ];
+                    c = element.children[ i ];
                     if (c.name == 'param' && c.attributes.name == "movie") {
                         if (checkXiami(c.attributes.value)) {
                             return dataProcessor.createFakeParserElement(element, CLS_XIAMI, TYPE_XIAMI, true, {
@@ -256,9 +255,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     });
                 },
                 _listSearch:function(data) {
-                    var self = this,i,
-                        re = data.results,html;
-                    if (data.key == self._xiami_input.val()) {
+                    var self = this,
+                        i,
+                        re = data.results,
+                        html = "";
+                    //xiami 返回结果自动trim了
+                    if (data.key == S.trim(self._xiami_input.val())) {
                         self._xiami_submit[0].disabled = false;
                         if (re && re.length) {
                             html = "<ul>";
