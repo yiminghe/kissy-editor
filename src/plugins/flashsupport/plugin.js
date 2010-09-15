@@ -268,7 +268,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         attrs = dinfo && dinfo.attrs;
                     if (!url) return;
 
-                    var nodeInfo = flashUtils.createSWF(url, attrs, editor.document),
+                    var nodeInfo = flashUtils.createSWF(url, {attrs:attrs}, editor.document),
                         real = nodeInfo.el,
                         substitute = editor.createFakeElement ?
                             editor.createFakeElement(real,

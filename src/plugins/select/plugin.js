@@ -71,6 +71,24 @@ KISSY.Editor.add("select", function() {
             }
             self.title.html(name);
         },
+
+        _itemsChange:function(ev) {
+            var self = this,items = ev.newVal,
+                menuNode = self.menu.el;
+            menuNode.html("");
+            if (items)
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i],a = new Node("<a " +
+                        "class='ke-select-menu-item' " +
+                        "href='#' data-value='" + item.value + "'>"
+                        + item.name + "</a>", item.attrs);
+                    a._4e_unselectable();
+                    a.appendTo(menuNode);
+                }
+
+            self.as = menuNode.all("a");
+
+        },
         _prepare:function() {
             var self = this,
                 el = self.el,
@@ -81,7 +99,7 @@ KISSY.Editor.add("select", function() {
                     focusMgr:false
                 }),
                 items = self.get("items");
-
+            self.menu = menu;
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -90,19 +108,11 @@ KISSY.Editor.add("select", function() {
                     ">" + self.get("title") + "</div>").appendTo(menuNode);
             }
 
-
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i],a = new Node("<a " +
-                    "class='ke-select-menu-item' " +
-                    "href='#' data-value='" + item.value + "'>"
-                    + item.name + "</a>", item.attrs);
-                a._4e_unselectable();
-                a.appendTo(menuNode);
-            }
+            self._itemsChange({newVal:items});
             self.get("popUpWidth") && menuNode.css("width", self.get("popUpWidth"));
             menuNode.appendTo(document.body);
 
-            self.menu = menu;
+
             menu.on("show", function() {
                 focusA.addClass(ke_select_active);
             });
@@ -115,11 +125,13 @@ KISSY.Editor.add("select", function() {
             });
             menuNode.on("click", self._select, self);
             self.as = menuNode.all("a");
-            var as = self.as;
+
             //mouseenter kissy core bug
             Event.on(menuNode[0], 'mouseenter', function() {
-                as.removeClass(ke_menu_selected);
+                self.as.removeClass(ke_menu_selected);
             });
+
+            self.on("afterItemsChange", self._itemsChange, self);
         },
         _select:function(ev) {
             ev.halt();

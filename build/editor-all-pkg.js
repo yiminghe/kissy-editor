@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 13:21:11
+ * @buildtime: 2010-09-15 20:08:45
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -98,6 +98,10 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["htmldataprocessor"]
             },
             {
+                name:"draft",
+                requires:["localStorage"]
+            },
+            {
                 name:"flash",
                 requires:["flashsupport"]
             },
@@ -186,7 +190,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["htmlparser-filter"]
             }
         ],
-        ui_mods = [
+        mis_mods = [
+            {
+                name:"localStorage",
+                requires:["flashutils"]
+            },
             {name:"button"},
             {name:"dd"},
             {
@@ -220,7 +228,7 @@ KISSY.add("editor", function(S, undefined) {
         mod.requires = mod.requires || [];
         mod.requires = mod.requires.concat(["button"]);
     }
-    plugin_mods = ui_mods.concat(plugin_mods);
+    plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
@@ -7653,6 +7661,166 @@ KISSY.Editor.add("dd", function() {
     KE.Drag = Drag;
 
 });/**
+ * draft support for kissy editor
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("draft", function(editor) {
+    var S = KISSY,KE = S.Editor;
+    if (!KE.Draft) {
+        (function() {
+            var Node = S.Node,
+                LIMIT = 5,
+                INTERVAL = 5 * 60 ,
+                JSON = S.JSON,
+                DRAFT_SAVE = "ke-draft-save",
+                localStorage = window[KE.STORE],
+                TIP = "内容正文每10分钟自动保存一次，上次保存 ： ";
+
+            function padding(n, l, p) {
+                n += "";
+                while (n.length < l) {
+                    n = p + n;
+                }
+                return n;
+            }
+
+            function date(d) {
+                if (S.isNumber(d)) {
+                    d = new Date(d);
+                }
+                if (d instanceof Date)
+                    return [
+                        d.getFullYear(),
+                        "-",
+                        padding(d.getMonth() - 1, 2, "0"),
+                        "-",
+                        padding(d.getDay(), 2, "0"),
+                        " ",
+                        //"&nbsp;",
+                        padding(d.getHours(), 2, "0"),
+                        ":",
+                        padding(d.getMinutes(), 2, "0"),
+                        ":",
+                        padding(d.getSeconds(), 2, "0")
+                        //"&nbsp;",
+                        //"&nbsp;"
+                    ].join("");
+                else
+                    return d;
+            }
+
+            function Draft(editor) {
+                this.editor = editor;
+                this._init();
+            }
+
+            S.augment(Draft, {
+                _init:function() {
+                    var self = this,
+                        editor = self.editor,
+                        toolbar = editor.toolBarDiv,
+                        statusbar = editor.statusDiv,
+                        holder = new Node(
+                            "<div style='" +
+                                "position:absolute;" +
+                                "right:30px;" +
+                                "bottom:0;" +
+                                "width:600px'>" +
+                                "<span style='vertical-align:middle'>" +
+                                "内容正文每5分钟自动保存一次&nbsp;&nbsp;" +
+                                "</span>" +
+                                "</div>").appendTo(statusbar),
+                        versions = new KE.Select({
+                            container: holder,
+                            doc:editor.document,
+                            width:"100px",
+                            popUpWidth:"220px",
+                            title:"恢复编辑历史"
+                        }),
+                        save = new KE.TripleButton({
+                            text:"立即保存",
+                            title:"立即保存",
+                            container: holder
+                        }),
+                        str = localStorage.getItem(DRAFT_SAVE),
+                        drafts = [],date;
+                    self.timeTip = new Node("<span>").appendTo(holder);
+                    self.versions = versions;
+                    if (str) {
+                        drafts = S.isString(str) ? JSON.parse(decodeURIComponent(str)) : str;
+                    }
+                    self.drafts = drafts;
+                    self.sync();
+
+                    save.on("click", function() {
+                        self.save(false);
+                    });
+
+                    setInterval(function() {
+                        self.save(true);
+                    }, INTERVAL * 1000);
+
+                    versions.on("click", self.recover, self);
+                },
+
+                sync:function() {
+                    var self = this,
+                        timeTip = self.timeTip,
+                        versions = self.versions,drafts = self.drafts;
+                    if (drafts.length > LIMIT)
+                        drafts.splice(0, drafts.length - LIMIT);
+                    var items = [],draft,tip;
+                    for (var i = 0; i < drafts.length; i++) {
+                        draft = drafts[i];
+                        tip = (draft.auto ? "自动" : "手动") + "保存于：" + date(draft.date);
+                        items.push({
+                            name:tip,
+                            value:i
+                        });
+                    }
+                    versions.set("items", items);
+                    timeTip.html(tip);
+
+                    localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
+                },
+
+                save:function(auto) {
+                    var self = this,drafts = self.drafts,data = editor.getData();
+                    if (drafts[drafts.length - 1] &&
+                        data == drafts[drafts.length - 1].content) {
+                        drafts.length -= 1;
+                    }
+                    self.drafts = drafts.concat({
+                        content:editor._getRawData(),
+                        date:new Date().getTime(),
+                        auto:auto
+                    });
+                    self.sync();
+
+                },
+
+                recover:function(ev) {
+                    var self = this,
+                        editor = self.editor,
+                        versions = self.versions,drafts = self.drafts,
+                        v = ev.newVal;
+                    versions.reset("value");
+                    if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？"))
+                        editor._setRawData(drafts[v].content);
+                }
+            });
+            KE.Draft = Draft;
+        })();
+    }
+
+    editor.addPlugin(function() {
+        KE.storeReady(function() {
+            new KE.Draft(editor);
+        });
+    });
+
+
+});/**
  * element path shown in status bar,modified from ckeditor
  * @modifier: yiminghe@gmail.com
  */
@@ -8357,7 +8525,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         attrs = dinfo && dinfo.attrs;
                     if (!url) return;
 
-                    var nodeInfo = flashUtils.createSWF(url, attrs, editor.document),
+                    var nodeInfo = flashUtils.createSWF(url, {attrs:attrs}, editor.document),
                         real = nodeInfo.el,
                         substitute = editor.createFakeElement ?
                             editor.createFakeElement(real,
@@ -8501,7 +8669,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
 KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
     if (flashUtils) return;
-    var DOM = S.DOM,Node = S.Node;
+    var DOM = S.DOM,Node = S.Node,UA = S.UA;
     flashUtils = {
         getUrl: function (r) {
             var url = "",KEN = KE.NODE;
@@ -8522,29 +8690,115 @@ KISSY.Editor.add("flashutils", function() {
             }
             return url;
         },
-        createSWF:function(movie, attrs, doc) {
-            doc = doc || document,attrs_str = "";
+        createSWF:function(movie, cfg, doc) {
+            var attrs = cfg.attrs,flashVars = cfg.flashVars,
+                attrs_str = "",
+                vars_str = "";
+            doc = doc || document;
             if (attrs) {
                 for (var a in attrs) {
                     attrs_str += a + "='" + attrs[a] + "' ";
                 }
             }
+            if (flashVars) {
+                for (var f in flashVars) {
+                    vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
+                }
+                vars_str = vars_str.substring(1);
+            }
+
             var outerHTML = '<object ' +
                 attrs_str +
                 ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
                 '<param name="quality" value="high" />' +
                 '<param name="movie" value="' + movie + '" />' +
-                '<embed ' +
-                attrs_str +
-                'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
-                'quality="high" ' +
-                ' src="' + movie + '" ' +
-                ' type="application/x-shockwave-flash"/>' +
+                (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+
+                "<object type='application/x-shockwave-flash'" +
+                " data='" + movie + "'" +
+                " " + attrs_str +
+                ">"
+                +
+                (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                /*
+                 '<embed ' +
+                 attrs_str +
+                 " " +
+                 (vars_str ? ( 'FlashVars="' + vars_str + '"') : "") +
+                 ' pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
+                 ' quality="high" ' +
+                 ' src="' + movie + '" ' +
+                 ' type="application/x-shockwave-flash"/>' +
+                 */
+                + '</object>' +
                 '</object>';
             return {
                 el:new Node(outerHTML, null, doc),
                 html:outerHTML
             };
+        },
+        createSWFRuntime2:function(movie, cfg, doc) {
+            doc = doc || document;
+            var holder = new Node(
+                "<div " +
+                    "style='" +
+                    "width:0;" +
+                    "height:0;" +
+                    "overflow:hidden;" +
+                    "'>", null, doc).appendTo(doc.body)
+                , el = flashUtils.createSWF.apply(this, arguments).el.appendTo(holder);
+            if (!UA.ie)
+                el = el.one("object");
+            return el[0];
+
+        },
+        createSWFRuntime:function(movie, cfg, doc) {
+            var attrs = cfg.attrs,
+                flashVars = cfg.flashVars,
+                attrs_str = "",
+                vars_str = "";
+            doc = doc || document;
+            attrs = attrs || {};
+            attrs.id = S.guid("ke-localstorage-");
+            for (var a in attrs) {
+                attrs_str += a + "='" + attrs[a] + "' ";
+            }
+            if (flashVars) {
+                for (var f in flashVars) {
+                    vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
+                }
+                vars_str = vars_str.substring(1);
+            }
+            if (UA.ie) {
+                var outerHTML = '<object ' +
+                    attrs_str +
+                    ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
+                    '<param name="quality" value="high" />' +
+                    '<param name="movie" value="' + movie + '" />' +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    '</object>';
+            }
+            else {
+                outerHTML = "<object " +
+                    "type='application/x-shockwave-flash'" +
+                    " data='" + movie + "'" +
+                    " " + attrs_str +
+                    ">"
+                    +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    + '</object>';
+            }
+
+            var holder = new Node(
+                "<div " +
+                    "style='" +
+                    "width:0;" +
+                    "height:0;" +
+                    "overflow:hidden;" +
+                    "'>", null, doc).appendTo(doc.body);
+
+            holder.html(outerHTML);
+            return doc.getElementById(attrs.id);
         }
 
     };
@@ -12850,6 +13104,84 @@ KISSY.Editor.add("list", function(editor) {
     });
 });
 /**
+ * localStorage support for ie<8
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("localStorage", function() {
+    var S = KISSY,
+        KE = S.Editor,STORE;
+    STORE = KE.STORE = "localStorage";
+    if (!KE.storeReady) {
+        KE.storeReady = function(run) {
+            KE.on("storeReady", run);
+        };
+        function rewrite() {
+            KE.storeReady = function(run) {
+                run();
+            };
+            KE.detach("storeReady");
+        }
+
+        KE.on("storeReady", rewrite);
+    }
+    function complete() {
+        KE.fire("storeReady");
+    }
+
+    //原生或者已经定义过立即返回
+    if (window[STORE]) {
+        //原生的立即可用
+        if (!window[STORE]._ke) {
+            complete();
+        }
+        return;
+    }
+
+    var Node = S.Node,
+        UA = S.UA,
+        movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf")
+        ,flash,name = "ke-localstorage-";
+
+    function init() {
+        flash = KE.Utils.flash.createSWFRuntime(movie, {
+            attrs:{
+                allowScriptAccess:'always',
+                allowNetworking:'all',
+                scale:'noScale'
+            },
+            flashVars:{
+                allowedDomain : location.hostname,
+                shareData: true,
+                YUISwfId:S.guid(name),
+                YUIBridgeCallback:STORE + ".ready",
+                browser: name,
+                useCompression: true
+            }
+        });
+    }
+
+    window[STORE] = {
+        _ke:1,
+        getItem:function(key) {
+            return flash.getValueOf(key);
+        },
+        setItem:function(key, data) {
+            return flash.setItem(key, data);
+        },
+        removeItem:function(key) {
+            return flash.removeItem(key);
+        },
+        //非原生，等待flash通知
+        ready:function(id, event) {
+            if (event.type == "contentReady") {
+                complete();
+                this.ready = function() {
+                };
+            }
+        }
+    };
+    init();
+});/**
  * maximize editor
  * @author:yiminghe@gmail.com
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
@@ -13931,6 +14263,24 @@ KISSY.Editor.add("select", function() {
             }
             self.title.html(name);
         },
+
+        _itemsChange:function(ev) {
+            var self = this,items = ev.newVal,
+                menuNode = self.menu.el;
+            menuNode.html("");
+            if (items)
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i],a = new Node("<a " +
+                        "class='ke-select-menu-item' " +
+                        "href='#' data-value='" + item.value + "'>"
+                        + item.name + "</a>", item.attrs);
+                    a._4e_unselectable();
+                    a.appendTo(menuNode);
+                }
+
+            self.as = menuNode.all("a");
+
+        },
         _prepare:function() {
             var self = this,
                 el = self.el,
@@ -13941,7 +14291,7 @@ KISSY.Editor.add("select", function() {
                     focusMgr:false
                 }),
                 items = self.get("items");
-
+            self.menu = menu;
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -13950,19 +14300,11 @@ KISSY.Editor.add("select", function() {
                     ">" + self.get("title") + "</div>").appendTo(menuNode);
             }
 
-
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i],a = new Node("<a " +
-                    "class='ke-select-menu-item' " +
-                    "href='#' data-value='" + item.value + "'>"
-                    + item.name + "</a>", item.attrs);
-                a._4e_unselectable();
-                a.appendTo(menuNode);
-            }
+            self._itemsChange({newVal:items});
             self.get("popUpWidth") && menuNode.css("width", self.get("popUpWidth"));
             menuNode.appendTo(document.body);
 
-            self.menu = menu;
+
             menu.on("show", function() {
                 focusA.addClass(ke_select_active);
             });
@@ -13975,11 +14317,13 @@ KISSY.Editor.add("select", function() {
             });
             menuNode.on("click", self._select, self);
             self.as = menuNode.all("a");
-            var as = self.as;
+
             //mouseenter kissy core bug
             Event.on(menuNode[0], 'mouseenter', function() {
-                as.removeClass(ke_menu_selected);
+                self.as.removeClass(ke_menu_selected);
             });
+
+            self.on("afterItemsChange", self._itemsChange, self);
         },
         _select:function(ev) {
             ev.halt();

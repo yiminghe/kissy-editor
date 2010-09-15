@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 13:21:11
+ * @buildtime: 2010-09-15 20:08:45
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -98,6 +98,10 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["htmldataprocessor"]
             },
             {
+                name:"draft",
+                requires:["localStorage"]
+            },
+            {
                 name:"flash",
                 requires:["flashsupport"]
             },
@@ -186,7 +190,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["htmlparser-filter"]
             }
         ],
-        ui_mods = [
+        mis_mods = [
+            {
+                name:"localStorage",
+                requires:["flashutils"]
+            },
             {name:"button"},
             {name:"dd"},
             {
@@ -220,7 +228,7 @@ KISSY.add("editor", function(S, undefined) {
         mod.requires = mod.requires || [];
         mod.requires = mod.requires.concat(["button"]);
     }
-    plugin_mods = ui_mods.concat(plugin_mods);
+    plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
