@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 20:37:48
+ * @buildtime: 2010-09-15 20:39:14
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -7781,7 +7781,7 @@ KISSY.Editor.add("draft", function(editor) {
                             value:i
                         });
                     }
-                    versions.set("items", items);
+                    versions.set("items", items.reverse());
                     timeTip.html(tip);
 
                     localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
