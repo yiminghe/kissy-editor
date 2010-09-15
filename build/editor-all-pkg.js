@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 20:39:14
+ * @buildtime: 2010-09-15 20:44:43
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -7809,8 +7809,11 @@ KISSY.Editor.add("draft", function(editor) {
                         versions = self.versions,drafts = self.drafts,
                         v = ev.newVal;
                     versions.reset("value");
-                    if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？"))
+                    if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
+                        editor.fire("save");
                         editor._setRawData(drafts[v].content);
+                        editor.fire("save");
+                    }
                 }
             });
             KE.Draft = Draft;
