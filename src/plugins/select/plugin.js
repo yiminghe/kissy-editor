@@ -74,20 +74,19 @@ KISSY.Editor.add("select", function() {
 
         _itemsChange:function(ev) {
             var self = this,items = ev.newVal,
-                menuNode = self.menu.el;
-            menuNode.html("");
-            if (items)
+                _selectList = self._selectList;
+            _selectList.html("");
+            if (items) {
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i],a = new Node("<a " +
                         "class='ke-select-menu-item' " +
                         "href='#' data-value='" + item.value + "'>"
-                        + item.name + "</a>", item.attrs);
-                    a._4e_unselectable();
-                    a.appendTo(menuNode);
+                        + item.name + "</a>", item.attrs)
+                        .appendTo(_selectList)
+                        ._4e_unselectable();
                 }
-
-            self.as = menuNode.all("a");
-
+            }
+            self.as = _selectList.all("a");
         },
         _prepare:function() {
             var self = this,
@@ -107,6 +106,7 @@ KISSY.Editor.add("select", function() {
                     "' " +
                     ">" + self.get("title") + "</div>").appendTo(menuNode);
             }
+            self._selectList = new Node("<div>").appendTo(menuNode);
 
             self._itemsChange({newVal:items});
             self.get("popUpWidth") && menuNode.css("width", self.get("popUpWidth"));
@@ -124,7 +124,7 @@ KISSY.Editor.add("select", function() {
                 menu.hide();
             });
             menuNode.on("click", self._select, self);
-            self.as = menuNode.all("a");
+            self.as = self._selectList.all("a");
 
             //mouseenter kissy core bug
             Event.on(menuNode[0], 'mouseenter', function() {
