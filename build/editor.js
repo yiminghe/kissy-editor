@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 12:05:55
+ * @buildtime: 2010-09-15 13:19:08
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -18,7 +18,7 @@ KISSY.add("editor", function(S, undefined) {
         if (!textarea[0]) textarea = new Node(textarea);
         cfg = cfg || {};
         cfg.pluginConfig = cfg.pluginConfig || {};
-        self.cfg = cfg
+        self.cfg = cfg;
         S.app(self, S.EventTarget);
         self.use = function(mods) {
             if (S.isString(mods)) {
@@ -61,17 +61,25 @@ KISSY.add("editor", function(S, undefined) {
         return url;
     }
 
-    var debug = S.Config.debug,mods = {
-        "htmlparser": {
-            attach: false,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js")
-        }
-    },
+    var debug = S.Config.debug,
+        mods = {
+            "htmlparser": {
+                attach: false,
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js")
+            }
+        },
         core_mods = [
-            "utils","focusmanager","definition",
-            "dtd","dom", "elementpath",
-            "walker","range","domiterator",
-            "selection","styles"
+            "utils",
+            "focusmanager",
+            "definition",
+            "dtd",
+            "dom",
+            "elementpath",
+            "walker",
+            "range",
+            "domiterator",
+            "selection",
+            "styles"
         ],
         plugin_mods = [
             "flashutils",
@@ -85,14 +93,18 @@ KISSY.add("editor", function(S, undefined) {
                 //useCss: true
             },
             "enterkey",
-            "fakeobjects",
+            {
+                name:"fakeobjects",
+                requires:["htmldataprocessor"]
+            },
             {
                 name:"flash",
                 requires:["flashsupport"]
             },
             {
                 name: "flashsupport",
-                requires: ["flashutils","contextmenu","fakeobjects","overlay","bubbleview"]
+                requires: ["flashutils","contextmenu",
+                    "fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
@@ -198,40 +210,25 @@ KISSY.add("editor", function(S, undefined) {
             }
         ],
         i, len, mod, name, requires;
-
-    // ui modules
-    for (i = 0,len = ui_mods.length; i < len; i++) {
-        mod = ui_mods[i];
-        name = mod;
-        requires = undefined;
-
-        if (!S.isString(mod)) {
-            requires = mod.requires;
-            name = mod.name;
+    for (i = 0,len = plugin_mods.length; i < len; i++) {
+        mod = plugin_mods[i];
+        if (S.isString(mod)) {
+            mod = plugin_mods[i] = {
+                name:mod
+            };
         }
-
-        mods[name] = {
-            attach: false,
-            requires: requires,
-            path: debugUrl("ui/" + name + ".js"),
-            csspath: mod.useCss ? debugUrl("ui/" + name + ".css") : ""
-        };
+        mod.requires = mod.requires || [];
+        mod.requires = mod.requires.concat(["button"]);
     }
-
+    plugin_mods = ui_mods.concat(plugin_mods);
+    // ui modules
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod;
-        requires = ["button"];
-
-        if (!S.isString(mod)) {
-            mod.requires && (requires = requires.concat(mod.requires));
-            name = mod.name;
-        }
-
+        name = mod.name;
         mods[name] = {
             attach: false,
-            requires: requires,
+            requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js")
         };
@@ -253,10 +250,6 @@ KISSY.add("editor", function(S, undefined) {
             path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js")
         };
     }
-
-    Editor.add(mods);
-
-    mods = { };
     for (i = 0,len = core_mods.length; i < len; i++) {
         mod = core_mods[i];
         mods[mod] = {
@@ -265,6 +258,5 @@ KISSY.add("editor", function(S, undefined) {
         };
     }
     Editor.add(mods);
-
     S.Editor = Editor;
 });
