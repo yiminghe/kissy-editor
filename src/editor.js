@@ -74,6 +74,7 @@ KISSY.add("editor", function(S, undefined) {
             "selection","styles"
         ],
         plugin_mods = [
+            "flashutils",
             "clipboard",
             {
                 name: "color"//,
@@ -91,7 +92,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
+                requires: ["flashutils","contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",

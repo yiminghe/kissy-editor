@@ -9,7 +9,6 @@ KISSY.Editor.add("music", function(editor) {
         CLS_MUSIC = "ke_music",
         TYPE_MUSIC = 'music',
         MUSIC_PLAYER = "niftyplayer.swf",
-        getFlashUrl = KE.Utils.getFlashUrl,
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         TIP = "请输入如 http://xxx.com/xx.mp3";
@@ -145,7 +144,7 @@ KISSY.Editor.add("music", function(editor) {
                 },
 
                 _getFlashUrl:function(r) {
-                    return   getMusicUrl(getFlashUrl(r));
+                    return   getMusicUrl(MusicInserter.superclass._getFlashUrl.call(this, r));
                 },
                 _updateD:function() {
                     var self = this,

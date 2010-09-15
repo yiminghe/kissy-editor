@@ -15,7 +15,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
         dataProcessor = editor.htmlDataProcessor,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
-        getFlashUrl = KE.Utils.getFlashUrl,
+        flashUtils = KE.Utils.flash,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         TIP = "请输入如 http://www.xxx.com/xxx.swf";
 
@@ -143,7 +143,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * @param r flash 元素
                  */
                 _getFlashUrl:function(r) {
-                    return getFlashUrl(r);
+                    return flashUtils.getUrl(r);
                 },
                 /**
                  * 更新泡泡弹出的界面，子类覆盖
@@ -204,7 +204,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                             self.dHeight.val(parseInt(r.attr("height")));
                         }
                         self.dAlign.val(r.attr("align"));
-                        self.dUrl.val(getFlashUrl(r));
+                        self.dUrl.val(self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
@@ -264,31 +264,19 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         dinfo = self._getDInfo(),
-                        url = dinfo && dinfo.url,
-                        attrs = dinfo && dinfo.attrs,
-                        attrs_str = " ";
-                    if (!S.trim(url)) return;
-                    if (attrs) {
-                        for (var a in attrs) {
-                            attrs_str += a + "='" + attrs[a] + "' ";
-                        }
-                    }
-                    var outerHTML = '<object ' +
-                        attrs_str +
-                        ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
-                        ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0">' +
-                        '<param name="quality" value="high" />' +
-                        '<param name="movie" value="' + url + '" />' +
-                        '<embed ' +
-                        attrs_str +
-                        'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
-                        'quality="high" ' +
-                        ' src="' + url + '" ' +
-                        ' type="application/x-shockwave-flash"/>' +
-                        '</object>',
-                        real = new Node(outerHTML, null, editor.document),
+                        url = dinfo && S.trim(dinfo.url),
+                        attrs = dinfo && dinfo.attrs;
+                    if (!url) return;
+
+                    var nodeInfo = flashUtils.createSWF(url, attrs, editor.document),
+                        real = nodeInfo.el,
                         substitute = editor.createFakeElement ?
-                            editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
+                            editor.createFakeElement(real,
+                                self._cls,
+                                self._type,
+                                true,
+                                nodeInfo.html,
+                                attrs) :
                             real;
                     substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中

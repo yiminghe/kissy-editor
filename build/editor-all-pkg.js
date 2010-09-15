@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 20:10:23
+ * @buildtime: 2010-09-15 12:05:55
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -74,6 +74,7 @@ KISSY.add("editor", function(S, undefined) {
             "selection","styles"
         ],
         plugin_mods = [
+            "flashutils",
             "clipboard",
             {
                 name: "color"//,
@@ -91,7 +92,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
+                requires: ["flashutils","contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
@@ -275,25 +276,7 @@ KISSY.Editor.add("utils", function(KE) {
 
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
-        getFlashUrl: function (r) {
-            var url = "",KEN = KE.NODE;
-            if (r._4e_name() == "object") {
-                var params = r[0].childNodes;
-                for (var i = 0; i < params.length; i++) {
-                    if (params[i].nodeType != KEN.NODE_ELEMENT)continue;
-                    if ((DOM.attr(params[i], "name") || "").toLowerCase() == "movie") {
-                        url = DOM.attr(params[i], "value");
-                    } else if (DOM._4e_name(params[i]) == "embed") {
-                        url = DOM.attr(params[i], "src");
-                    } else if (DOM._4e_name(params[i]) == "object") {
-                        url = DOM.attr(params[i], "data");
-                    }
-                }
-            } else if (r._4e_name() == "embed") {
-                url = r.attr("src");
-            }
-            return url;
-        },
+        
         debugUrl:function (url) {
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
@@ -7588,7 +7571,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
         dataProcessor = editor.htmlDataProcessor,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
-        getFlashUrl = KE.Utils.getFlashUrl,
+        flashUtils = KE.Utils.flash,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         TIP = "请输入如 http://www.xxx.com/xxx.swf";
 
@@ -7716,7 +7699,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * @param r flash 元素
                  */
                 _getFlashUrl:function(r) {
-                    return getFlashUrl(r);
+                    return flashUtils.getUrl(r);
                 },
                 /**
                  * 更新泡泡弹出的界面，子类覆盖
@@ -7777,7 +7760,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                             self.dHeight.val(parseInt(r.attr("height")));
                         }
                         self.dAlign.val(r.attr("align"));
-                        self.dUrl.val(getFlashUrl(r));
+                        self.dUrl.val(self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         self.dUrl.val(TIP);
@@ -7837,31 +7820,19 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         dinfo = self._getDInfo(),
-                        url = dinfo && dinfo.url,
-                        attrs = dinfo && dinfo.attrs,
-                        attrs_str = " ";
-                    if (!S.trim(url)) return;
-                    if (attrs) {
-                        for (var a in attrs) {
-                            attrs_str += a + "='" + attrs[a] + "' ";
-                        }
-                    }
-                    var outerHTML = '<object ' +
-                        attrs_str +
-                        ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
-                        ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0">' +
-                        '<param name="quality" value="high" />' +
-                        '<param name="movie" value="' + url + '" />' +
-                        '<embed ' +
-                        attrs_str +
-                        'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
-                        'quality="high" ' +
-                        ' src="' + url + '" ' +
-                        ' type="application/x-shockwave-flash"/>' +
-                        '</object>',
-                        real = new Node(outerHTML, null, editor.document),
+                        url = dinfo && S.trim(dinfo.url),
+                        attrs = dinfo && dinfo.attrs;
+                    if (!url) return;
+
+                    var nodeInfo = flashUtils.createSWF(url, attrs, editor.document),
+                        real = nodeInfo.el,
                         substitute = editor.createFakeElement ?
-                            editor.createFakeElement(real, self._cls, self._type, true, outerHTML, attrs) :
+                            editor.createFakeElement(real,
+                                self._cls,
+                                self._type,
+                                true,
+                                nodeInfo.html,
+                                attrs) :
                             real;
                     substitute = editor.insertElement(substitute);
                     //如果是修改，就再选中
@@ -7994,7 +7965,59 @@ KISSY.Editor.add("flashsupport", function(editor) {
             }
         }}, 5);
 });
-/**
+KISSY.Editor.add("flashutils", function() {
+    var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
+    if (flashUtils) return;
+    var DOM = S.DOM,Node = S.Node,flashUtils = {
+        getUrl: function (r) {
+            var url = "",KEN = KE.NODE;
+            if (r._4e_name() == "object") {
+                var params = r[0].childNodes;
+                for (var i = 0; i < params.length; i++) {
+                    if (params[i].nodeType != KEN.NODE_ELEMENT)continue;
+                    if ((DOM.attr(params[i], "name") || "").toLowerCase() == "movie") {
+                        url = DOM.attr(params[i], "value");
+                    } else if (DOM._4e_name(params[i]) == "embed") {
+                        url = DOM.attr(params[i], "src");
+                    } else if (DOM._4e_name(params[i]) == "object") {
+                        url = DOM.attr(params[i], "data");
+                    }
+                }
+            } else if (r._4e_name() == "embed") {
+                url = r.attr("src");
+            }
+            return url;
+        },
+        createSWF:function(movie, attrs, doc) {
+            doc = doc || document,attrs_str = "";
+            if (attrs) {
+                for (var a in attrs) {
+                    attrs_str += a + "='" + attrs[a] + "' ";
+                }
+            }
+            var outerHTML = '<object ' +
+                attrs_str +
+                ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
+                '<param name="quality" value="high" />' +
+                '<param name="movie" value="' + movie + '" />' +
+                '<embed ' +
+                attrs_str +
+                'pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
+                'quality="high" ' +
+                ' src="' + movie + '" ' +
+                ' type="application/x-shockwave-flash"/>' +
+                '</object>';
+            return {
+                el:new Node(outerHTML, null, doc),
+                html:outerHTML
+            };
+        }
+
+    };
+    KE.Utils.flash = flashUtils;
+
+
+});/**
  * font formatting for kissy editor
  * @author: yiminghe@gmail.com
  */
@@ -12517,7 +12540,6 @@ KISSY.Editor.add("music", function(editor) {
         CLS_MUSIC = "ke_music",
         TYPE_MUSIC = 'music',
         MUSIC_PLAYER = "niftyplayer.swf",
-        getFlashUrl = KE.Utils.getFlashUrl,
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         TIP = "请输入如 http://xxx.com/xx.mp3";
@@ -12653,7 +12675,7 @@ KISSY.Editor.add("music", function(editor) {
                 },
 
                 _getFlashUrl:function(r) {
-                    return   getMusicUrl(getFlashUrl(r));
+                    return   getMusicUrl(MusicInserter.superclass._getFlashUrl.call(this, r));
                 },
                 _updateD:function() {
                     var self = this,

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 20:10:23
+ * @buildtime: 2010-09-15 12:05:55
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -74,6 +74,7 @@ KISSY.add("editor", function(S, undefined) {
             "selection","styles"
         ],
         plugin_mods = [
+            "flashutils",
             "clipboard",
             {
                 name: "color"//,
@@ -91,7 +92,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
+                requires: ["flashutils","contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
@@ -275,25 +276,7 @@ KISSY.Editor.add("utils", function(KE) {
 
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
-        getFlashUrl: function (r) {
-            var url = "",KEN = KE.NODE;
-            if (r._4e_name() == "object") {
-                var params = r[0].childNodes;
-                for (var i = 0; i < params.length; i++) {
-                    if (params[i].nodeType != KEN.NODE_ELEMENT)continue;
-                    if ((DOM.attr(params[i], "name") || "").toLowerCase() == "movie") {
-                        url = DOM.attr(params[i], "value");
-                    } else if (DOM._4e_name(params[i]) == "embed") {
-                        url = DOM.attr(params[i], "src");
-                    } else if (DOM._4e_name(params[i]) == "object") {
-                        url = DOM.attr(params[i], "data");
-                    }
-                }
-            } else if (r._4e_name() == "embed") {
-                url = r.attr("src");
-            }
-            return url;
-        },
+        
         debugUrl:function (url) {
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {

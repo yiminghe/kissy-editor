@@ -6,7 +6,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         CLS_VIDEO = "ke_video",
-        getFlashUrl = KE.Utils.getFlashUrl,
         TYPE_VIDEO = "bangpai-video",
         Flash = KE.Flash,
         dataProcessor = editor.htmlDataProcessor,
@@ -192,9 +191,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         };
                     }
                 },
-                _getFlashUrl:function(r) {
-                    return getFlashUrl(r);
-                },
+              
                 _updateD:function() {
                     var self = this,
                         editor = self.editor,

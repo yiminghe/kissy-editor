@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-14 18:44:44
+ * @buildtime: 2010-09-15 12:05:55
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -74,6 +74,7 @@ KISSY.add("editor", function(S, undefined) {
             "selection","styles"
         ],
         plugin_mods = [
+            "flashutils",
             "clipboard",
             {
                 name: "color"//,
@@ -91,7 +92,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "flashsupport",
-                requires: ["contextmenu","fakeobjects","overlay","bubbleview"]
+                requires: ["flashutils","contextmenu","fakeobjects","overlay","bubbleview"]
             },
             {
                 name:"font",
