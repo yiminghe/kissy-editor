@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 20:30:09
+ * @buildtime: 2010-09-15 20:37:48
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -7672,6 +7672,7 @@ KISSY.Editor.add("draft", function(editor) {
                 LIMIT = 5,
                 INTERVAL = 5 * 60 ,
                 JSON = S.JSON,
+                MIDDLE = " vertical-align:middle;",
                 DRAFT_SAVE = "ke-draft-save",
                 localStorage = window[KE.STORE],
                 TIP = "内容正文每10分钟自动保存一次，上次保存 ： ";
@@ -7726,17 +7727,20 @@ KISSY.Editor.add("draft", function(editor) {
                                 "right:30px;" +
                                 "bottom:0;" +
                                 "width:600px'>" +
-                                "<span style='vertical-align:middle'>" +
-                                "内容正文每5分钟自动保存一次&nbsp;&nbsp;" +
+                                "<span style='" + MIDDLE + "'>" +
+                                "内容正文每5分钟自动保存一次。" +
                                 "</span>" +
-                                "</div>").appendTo(statusbar),
-                        versions = new KE.Select({
-                            container: holder,
-                            doc:editor.document,
-                            width:"100px",
-                            popUpWidth:"220px",
-                            title:"恢复编辑历史"
-                        }),
+                                "</div>").appendTo(statusbar);
+                    self.timeTip = new Node("<span style='" + MIDDLE + "" +
+                        "margin:0 10px;" +
+                        "'>").appendTo(holder);
+                    var versions = new KE.Select({
+                        container: holder,
+                        doc:editor.document,
+                        width:"100px",
+                        popUpWidth:"220px",
+                        title:"恢复编辑历史"
+                    }),
                         save = new KE.TripleButton({
                             text:"立即保存",
                             title:"立即保存",
@@ -7744,7 +7748,6 @@ KISSY.Editor.add("draft", function(editor) {
                         }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
-                    self.timeTip = new Node("<span>").appendTo(holder);
                     self.versions = versions;
                     if (str) {
                         drafts = S.isString(str) ? JSON.parse(decodeURIComponent(str)) : str;
