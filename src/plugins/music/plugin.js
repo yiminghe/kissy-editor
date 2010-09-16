@@ -67,13 +67,17 @@ KISSY.Editor.add("music", function(editor) {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
                 bodyHtml = "" +
                     "<p>" +
-                    "<label><span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
-                    "</span><input class='ke-music-url' style='width:230px' " +
+                    "<label>" +
+                    "<span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
+                    "</span>" +
+                    "<input class='ke-music-url' style='width:230px' " +
                     "value='"
                     + TIP
-                    + "'/></label>" +
+                    + "'/>" +
+                    "</label>" +
                     "</p>" +
-                    "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                    "<p style='margin:5px 0'>" +
+                    "<label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +

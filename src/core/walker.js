@@ -45,19 +45,26 @@ KISSY.Editor.add("walker", function(KE) {
                 blockerLTR = new Node(limitLTR[0].childNodes[range.endOffset]);
             //从左到右保证在 range 区间内获取 nextSourceNode
             this._.guardLTR = function(node, movingOut) {
+                node = DOM._4e_wrap(node);
                 //从endContainer移出去，失败返回false
                 return (
-                    ( !movingOut
-                        ||
-                        ! DOM._4e_equals(limitLTR, node)
-                        )
+                    node
+                        && node[0]
+                        &&
+                        (!movingOut
+                            ||
+                            ! DOM._4e_equals(limitLTR, node)
+                            )
                         //到达深度遍历的最后一个节点，结束
-                        && ( !blockerLTR[0] || node[0] !== (blockerLTR[0]) )
+                        &&
+
+                        (!blockerLTR[0] || !node._4e_equals(blockerLTR))
 
                         //从body移出也结束
                         && ( node[0].nodeType != KEN.NODE_ELEMENT
                         || !movingOut
-                        || node._4e_name() != 'body' ) );
+                        || node._4e_name() != 'body' )
+                    );
             };
         }
 
@@ -68,13 +75,14 @@ KISSY.Editor.add("walker", function(KE) {
                 blockerRTL = ( range.startOffset > 0 ) && new Node(limitRTL[0].childNodes[range.startOffset - 1]);
 
             self._.guardRTL = function(node, movingOut) {
-
+                node = DOM._4e_wrap(node);
                 return (
                     node
                         && node[0]
-                        && ( !movingOut || limitRTL[0] !== node[0] )
-                        && ( !blockerRTL[0] || node[0] !== blockerRTL[0] )
-                        && ( node[0].nodeType != KEN.NODE_ELEMENT || !movingOut || node._4e_name() != 'body' ) );
+                        && ( !movingOut || !node._4e_equals(limitRTL)  )
+                        && ( !blockerRTL[0] || !node._4e_equals(blockerRTL) )
+                        && ( node[0].nodeType != KEN.NODE_ELEMENT || !movingOut || node._4e_name() != 'body' )
+                    );
             };
         }
 
@@ -258,8 +266,8 @@ KISSY.Editor.add("walker", function(KE) {
 
     Walker.blockBoundary = function(customNodeNames) {
         return function(node) {
-            if (!node[0]) node = new Node(node);
-            return ! ( node[0].nodeType == KEN.NODE_ELEMENT
+            node = DOM._4e_wrap(node);
+            return ! ( node && node[0].nodeType == KEN.NODE_ELEMENT
                 && node._4e_isBlockBoundary(customNodeNames) );
         };
     };

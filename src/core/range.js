@@ -98,15 +98,15 @@ KISSY.Editor.add("range", function(KE) {
             this.setEnd(node.parent(), node._4e_index());
         },
         optimizeBookmark: function() {
-            var startNode = this.startContainer,
-                endNode = this.endContainer;
+            var self=this,startNode = self.startContainer,
+                endNode = self.endContainer;
 
             if (startNode && startNode._4e_name() == 'span'
                 && startNode.attr('_ke_bookmark'))
-                this.setStartAt(startNode, KER.POSITION_BEFORE_START);
+                self.setStartAt(startNode, KER.POSITION_BEFORE_START);
             if (endNode && endNode._4e_name() == 'span'
                 && endNode.attr('_ke_bookmark'))
-                this.setEndAt(endNode, KER.POSITION_AFTER_END);
+                self.setEndAt(endNode, KER.POSITION_AFTER_END);
         },
         /**
          * Sets the start position of a Range.
@@ -236,7 +236,7 @@ KISSY.Editor.add("range", function(KE) {
                     // If the offset points after the last node.
                     if (endOffset >= endNode[0].childNodes.length) {
                         // Let's create a temporary node and mark it for removal.
-                        endNode = new Node(endNode[0].appendChild(this.document.createTextNode("")));
+                        endNode = new Node(endNode[0].appendChild(self.document.createTextNode("")));
                         removeEndNode = true;
                     }
                     else
@@ -262,15 +262,15 @@ KISSY.Editor.add("range", function(KE) {
                 // sibling, so let's use the first one, but mark it for removal.
                 if (!startOffset) {
                     // Let's create a temporary node and mark it for removal.
-                    t = new Node(this.document.createTextNode(""));
+                    t = new Node(self.document.createTextNode(""));
                     DOM.insertBefore(t[0], startNode[0].firstChild);
                     startNode = t;
                     removeStartNode = true;
                 }
                 else if (startOffset >= startNode[0].childNodes.length) {
                     // Let's create a temporary node and mark it for removal.
-                    //startNode = startNode[0].appendChild(this.document.createTextNode(''));
-                    t = new Node(this.document.createTextNode(""));
+                    //startNode = startNode[0].appendChild(self.document.createTextNode(''));
+                    t = new Node(self.document.createTextNode(""));
                     startNode[0].appendChild(t[0]);
                     startNode = t;
                     removeStartNode = true;
@@ -446,7 +446,8 @@ KISSY.Editor.add("range", function(KE) {
         },
 
         clone : function() {
-            var clone = new KERange(this.document),self = this;
+            var self = this,
+                clone = new KERange(self.document);
 
             clone.startContainer = self.startContainer;
             clone.startOffset = self.startOffset;
@@ -458,25 +459,28 @@ KISSY.Editor.add("range", function(KE) {
         },
         getEnclosedNode : function() {
             var walkerRange = this.clone();
-
-            // Optimize and analyze the range to avoid DOM destructive nature of walker. (#
+            // Optimize and analyze the range to avoid DOM destructive nature of walker.
             walkerRange.optimize();
             if (walkerRange.startContainer[0].nodeType != KEN.NODE_ELEMENT
                 || walkerRange.endContainer[0].nodeType != KEN.NODE_ELEMENT)
                 return null;
-
-            var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
-
-            var
+            //var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
+            var walker = new KE.Walker(walkerRange),
                 isNotBookmarks = bookmark(true, undefined),
-                isNotWhitespaces = whitespaces(true),
+                isNotWhitespaces = whitespaces(true),node,pre,
                 evaluator = function(node) {
                     return isNotWhitespaces(node) && isNotBookmarks(node);
                 };
-            while (current && evaluator(current)) {
-                current = new Node(current)._4e_nextSourceNode()[0];
-            }
-            return new Node(current);
+            walkerRange.evaluator = evaluator;
+            //深度优先遍历的第一个元素
+            //        x
+            //     y     z
+            // x->y ,return y
+            node = walker.next();
+            walker.reset();
+            pre = walker.previous();
+            //前后相等，则脱一层皮 :)
+            return node && node._4e_equals(pre) ? node : null;
         },
         shrink : function(mode, selectContents) {
             // Unable to shrink a collapsed range.
@@ -559,12 +563,12 @@ KISSY.Editor.add("range", function(KE) {
             }
         },
         getTouchedStartNode : function() {
-            var container = this.startContainer;
+            var self=this,container = self.startContainer;
 
-            if (this.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
+            if (self.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
                 return container;
 
-            return container.childNodes[this.startOffset] || container;
+            return container.childNodes[self.startOffset] || container;
         },
         createBookmark2 : function(normalized) {
             //debugger;
@@ -924,7 +928,7 @@ KISSY.Editor.add("range", function(KE) {
                                 if (commonReached)
                                     startTop = enlargeable;
                                 else
-                                    this.setStartBefore(enlargeable);
+                                    self.setStartBefore(enlargeable);
                             }
 
                             sibling = enlargeable[0].previousSibling;
@@ -987,7 +991,7 @@ KISSY.Editor.add("range", function(KE) {
                                     if (commonReached)
                                         startTop = enlargeable;
                                     else if (enlargeable)
-                                        this.setStartBefore(enlargeable);
+                                        self.setStartBefore(enlargeable);
                                 }
                                 else
                                     needsWhiteSpace = true;
@@ -1069,7 +1073,7 @@ KISSY.Editor.add("range", function(KE) {
                                 if (commonReached)
                                     endTop = enlargeable;
                                 else if (enlargeable)
-                                    this.setEndAfter(enlargeable);
+                                    self.setEndAfter(enlargeable);
                             }
 
                             sibling = enlargeable[0].nextSibling;
@@ -1124,7 +1128,7 @@ KISSY.Editor.add("range", function(KE) {
                                     if (commonReached)
                                         endTop = enlargeable;
                                     else
-                                        this.setEndAfter(enlargeable);
+                                        self.setEndAfter(enlargeable);
                                 }
                             }
 
@@ -1153,8 +1157,8 @@ KISSY.Editor.add("range", function(KE) {
                     // If the common ancestor can be enlarged by both boundaries, then include it also.
                     if (startTop && endTop) {
                         commonAncestor = startTop._4e_contains(endTop) ? endTop : startTop;
-                        this.setStartBefore(commonAncestor);
-                        this.setEndAfter(commonAncestor);
+                        self.setStartBefore(commonAncestor);
+                        self.setEndAfter(commonAncestor);
                     }
                     break;
 
@@ -1198,7 +1202,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // Start the range at different position by comparing
                     // the document position of it with 'enlargeable' node.
-                    this.setStartAt(
+                    self.setStartAt(
                         blockBoundary,
                         blockBoundary._4e_name() != 'br' &&
                             ( !enlargeable && self.checkStartOfBlock()
@@ -1225,7 +1229,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // Start the range at different position by comparing
                     // the document position of it with 'enlargeable' node.
-                    this.setEndAt(
+                    self.setEndAt(
                         blockBoundary,
                         ( !enlargeable && self.checkEndOfBlock()
                             || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
@@ -1301,14 +1305,15 @@ KISSY.Editor.add("range", function(KE) {
             return walker.checkForward();
         },
         deleteContents:function() {
-            if (this.collapsed)
+            var self=this;
+            if (self.collapsed)
                 return;
-            this.execContentsAction(0);
+            self.execContentsAction(0);
         },
         extractContents : function() {
-            var docFrag = this.document.createDocumentFragment();
-            if (!this.collapsed)
-                this.execContentsAction(1, docFrag);
+            var self=this, docFrag = self.document.createDocumentFragment();
+            if (!self.collapsed)
+                self.execContentsAction(1, docFrag);
             return docFrag;
         },
         /**

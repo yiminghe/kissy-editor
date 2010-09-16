@@ -52,10 +52,11 @@ KISSY.Editor.add("dom", function(KE) {
             return   el[0] || el;
         },
         normalEl = function(el) {
-            if (!el[0]) return new Node(el);
+            if (el && !el[0]) return new Node(el);
             return el;
         },
         editorDom = {
+            _4e_wrap:normalEl,
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
@@ -413,7 +414,7 @@ KISSY.Editor.add("dom", function(KE) {
                 // Guarding when we're skipping the current element( no children or 'startFromSibling' ).
                 // send the 'moving out' signal even we don't actually dive into.
                 if (!node) {
-                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(this, true) === false)
+                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, true) === false)
                         return null;
                     node = el.nextSibling;
                 }
@@ -429,7 +430,7 @@ KISSY.Editor.add("dom", function(KE) {
 
                 if (!node)
                     return null;
-                node = new Node(node);
+                node = DOM._4e_wrap(node);
                 if (guard && guard(node) === false)
                     return null;
 
@@ -469,7 +470,7 @@ KISSY.Editor.add("dom", function(KE) {
 
                 if (!node)
                     return null;
-                node = new Node(node);
+                node = DOM._4e_wrap(node);
                 if (guard && guard(node) === false)
                     return null;
 
@@ -789,6 +790,7 @@ KISSY.Editor.add("dom", function(KE) {
              * @param {Function} evaluator Filtering the result node.
              */
             _4e_last : function(el, evaluator) {
+                el = DOM._4e_wrap(el);
                 var last = el[0].lastChild,
                     retval = last && new Node(last);
                 if (retval && evaluator && !evaluator(retval))
@@ -819,7 +821,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
 
             _4e_setMarker : function(element, database, name, value) {
-                if (!element[0]) element = new Node(element);
+                element = DOM._4e_wrap(element);
                 var id = element._4e_getData('list_marker_id') ||
                     ( element._4e_setData('list_marker_id', S.guid())._4e_getData('list_marker_id')),
                     markerNames = element._4e_getData('list_marker_names') ||

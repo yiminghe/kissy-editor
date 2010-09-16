@@ -2,9 +2,11 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-16 17:08:17
+ * @buildtime: 2010-09-16 21:41:31
  */
 KISSY.add("editor", function(S, undefined) {
+    var DOM = S.DOM;
+
     function Editor(textarea, cfg) {
         var self = this;
 
@@ -15,7 +17,7 @@ KISSY.add("editor", function(S, undefined) {
         if (S.isString(textarea)) {
             textarea = S.one(textarea);
         }
-        if (!textarea[0]) textarea = new Node(textarea);
+        textarea = DOM._4e_wrap(textarea);
         cfg = cfg || {};
         cfg.pluginConfig = cfg.pluginConfig || {};
         self.cfg = cfg;
@@ -1145,10 +1147,14 @@ KISSY.Editor.add("definition", function(KE) {
             //DOM.addClass(doc.documentElement, doc.compatMode);
             // Override keystrokes which should have deletion behavior
             //  on control types in IE . (#4047)
+            /**
+             * 选择img，出现缩放框后不能直接删除
+             */
             Event.on(doc, 'keydown', function(evt) {
                 var keyCode = evt.keyCode;
                 // Backspace OR Delete.
                 if (keyCode in { 8 : 1, 46 : 1 }) {
+                    //debugger
                     var sel = self.getSelection(),
                         control = sel.getSelectedElement();
                     if (control) {
@@ -1548,10 +1554,11 @@ KISSY.Editor.add("dom", function(KE) {
             return   el[0] || el;
         },
         normalEl = function(el) {
-            if (!el[0]) return new Node(el);
+            if (el && !el[0]) return new Node(el);
             return el;
         },
         editorDom = {
+            _4e_wrap:normalEl,
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
@@ -1909,7 +1916,7 @@ KISSY.Editor.add("dom", function(KE) {
                 // Guarding when we're skipping the current element( no children or 'startFromSibling' ).
                 // send the 'moving out' signal even we don't actually dive into.
                 if (!node) {
-                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(this, true) === false)
+                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, true) === false)
                         return null;
                     node = el.nextSibling;
                 }
@@ -1925,7 +1932,7 @@ KISSY.Editor.add("dom", function(KE) {
 
                 if (!node)
                     return null;
-                node = new Node(node);
+                node = DOM._4e_wrap(node);
                 if (guard && guard(node) === false)
                     return null;
 
@@ -1965,7 +1972,7 @@ KISSY.Editor.add("dom", function(KE) {
 
                 if (!node)
                     return null;
-                node = new Node(node);
+                node = DOM._4e_wrap(node);
                 if (guard && guard(node) === false)
                     return null;
 
@@ -2285,6 +2292,7 @@ KISSY.Editor.add("dom", function(KE) {
              * @param {Function} evaluator Filtering the result node.
              */
             _4e_last : function(el, evaluator) {
+                el = DOM._4e_wrap(el);
                 var last = el[0].lastChild,
                     retval = last && new Node(last);
                 if (retval && evaluator && !evaluator(retval))
@@ -2315,7 +2323,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
 
             _4e_setMarker : function(element, database, name, value) {
-                if (!element[0]) element = new Node(element);
+                element = DOM._4e_wrap(element);
                 var id = element._4e_getData('list_marker_id') ||
                     ( element._4e_setData('list_marker_id', S.guid())._4e_getData('list_marker_id')),
                     markerNames = element._4e_getData('list_marker_names') ||
@@ -2635,19 +2643,26 @@ KISSY.Editor.add("walker", function(KE) {
                 blockerLTR = new Node(limitLTR[0].childNodes[range.endOffset]);
             //从左到右保证在 range 区间内获取 nextSourceNode
             this._.guardLTR = function(node, movingOut) {
+                node = DOM._4e_wrap(node);
                 //从endContainer移出去，失败返回false
                 return (
-                    ( !movingOut
-                        ||
-                        ! DOM._4e_equals(limitLTR, node)
-                        )
+                    node
+                        && node[0]
+                        &&
+                        (!movingOut
+                            ||
+                            ! DOM._4e_equals(limitLTR, node)
+                            )
                         //到达深度遍历的最后一个节点，结束
-                        && ( !blockerLTR[0] || node[0] !== (blockerLTR[0]) )
+                        &&
+
+                        (!blockerLTR[0] || !node._4e_equals(blockerLTR))
 
                         //从body移出也结束
                         && ( node[0].nodeType != KEN.NODE_ELEMENT
                         || !movingOut
-                        || node._4e_name() != 'body' ) );
+                        || node._4e_name() != 'body' )
+                    );
             };
         }
 
@@ -2658,13 +2673,14 @@ KISSY.Editor.add("walker", function(KE) {
                 blockerRTL = ( range.startOffset > 0 ) && new Node(limitRTL[0].childNodes[range.startOffset - 1]);
 
             self._.guardRTL = function(node, movingOut) {
-
+                node = DOM._4e_wrap(node);
                 return (
                     node
                         && node[0]
-                        && ( !movingOut || limitRTL[0] !== node[0] )
-                        && ( !blockerRTL[0] || node[0] !== blockerRTL[0] )
-                        && ( node[0].nodeType != KEN.NODE_ELEMENT || !movingOut || node._4e_name() != 'body' ) );
+                        && ( !movingOut || !node._4e_equals(limitRTL)  )
+                        && ( !blockerRTL[0] || !node._4e_equals(blockerRTL) )
+                        && ( node[0].nodeType != KEN.NODE_ELEMENT || !movingOut || node._4e_name() != 'body' )
+                    );
             };
         }
 
@@ -2848,8 +2864,8 @@ KISSY.Editor.add("walker", function(KE) {
 
     Walker.blockBoundary = function(customNodeNames) {
         return function(node) {
-            if (!node[0]) node = new Node(node);
-            return ! ( node[0].nodeType == KEN.NODE_ELEMENT
+            node = DOM._4e_wrap(node);
+            return ! ( node && node[0].nodeType == KEN.NODE_ELEMENT
                 && node._4e_isBlockBoundary(customNodeNames) );
         };
     };
@@ -3022,15 +3038,15 @@ KISSY.Editor.add("range", function(KE) {
             this.setEnd(node.parent(), node._4e_index());
         },
         optimizeBookmark: function() {
-            var startNode = this.startContainer,
-                endNode = this.endContainer;
+            var self=this,startNode = self.startContainer,
+                endNode = self.endContainer;
 
             if (startNode && startNode._4e_name() == 'span'
                 && startNode.attr('_ke_bookmark'))
-                this.setStartAt(startNode, KER.POSITION_BEFORE_START);
+                self.setStartAt(startNode, KER.POSITION_BEFORE_START);
             if (endNode && endNode._4e_name() == 'span'
                 && endNode.attr('_ke_bookmark'))
-                this.setEndAt(endNode, KER.POSITION_AFTER_END);
+                self.setEndAt(endNode, KER.POSITION_AFTER_END);
         },
         /**
          * Sets the start position of a Range.
@@ -3160,7 +3176,7 @@ KISSY.Editor.add("range", function(KE) {
                     // If the offset points after the last node.
                     if (endOffset >= endNode[0].childNodes.length) {
                         // Let's create a temporary node and mark it for removal.
-                        endNode = new Node(endNode[0].appendChild(this.document.createTextNode("")));
+                        endNode = new Node(endNode[0].appendChild(self.document.createTextNode("")));
                         removeEndNode = true;
                     }
                     else
@@ -3186,15 +3202,15 @@ KISSY.Editor.add("range", function(KE) {
                 // sibling, so let's use the first one, but mark it for removal.
                 if (!startOffset) {
                     // Let's create a temporary node and mark it for removal.
-                    t = new Node(this.document.createTextNode(""));
+                    t = new Node(self.document.createTextNode(""));
                     DOM.insertBefore(t[0], startNode[0].firstChild);
                     startNode = t;
                     removeStartNode = true;
                 }
                 else if (startOffset >= startNode[0].childNodes.length) {
                     // Let's create a temporary node and mark it for removal.
-                    //startNode = startNode[0].appendChild(this.document.createTextNode(''));
-                    t = new Node(this.document.createTextNode(""));
+                    //startNode = startNode[0].appendChild(self.document.createTextNode(''));
+                    t = new Node(self.document.createTextNode(""));
                     startNode[0].appendChild(t[0]);
                     startNode = t;
                     removeStartNode = true;
@@ -3370,7 +3386,8 @@ KISSY.Editor.add("range", function(KE) {
         },
 
         clone : function() {
-            var clone = new KERange(this.document),self = this;
+            var self = this,
+                clone = new KERange(self.document);
 
             clone.startContainer = self.startContainer;
             clone.startOffset = self.startOffset;
@@ -3382,25 +3399,28 @@ KISSY.Editor.add("range", function(KE) {
         },
         getEnclosedNode : function() {
             var walkerRange = this.clone();
-
-            // Optimize and analyze the range to avoid DOM destructive nature of walker. (#
+            // Optimize and analyze the range to avoid DOM destructive nature of walker.
             walkerRange.optimize();
             if (walkerRange.startContainer[0].nodeType != KEN.NODE_ELEMENT
                 || walkerRange.endContainer[0].nodeType != KEN.NODE_ELEMENT)
                 return null;
-
-            var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
-
-            var
+            //var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
+            var walker = new KE.Walker(walkerRange),
                 isNotBookmarks = bookmark(true, undefined),
-                isNotWhitespaces = whitespaces(true),
+                isNotWhitespaces = whitespaces(true),node,pre,
                 evaluator = function(node) {
                     return isNotWhitespaces(node) && isNotBookmarks(node);
                 };
-            while (current && evaluator(current)) {
-                current = new Node(current)._4e_nextSourceNode()[0];
-            }
-            return new Node(current);
+            walkerRange.evaluator = evaluator;
+            //深度优先遍历的第一个元素
+            //        x
+            //     y     z
+            // x->y ,return y
+            node = walker.next();
+            walker.reset();
+            pre = walker.previous();
+            //前后相等，则脱一层皮 :)
+            return node && node._4e_equals(pre) ? node : null;
         },
         shrink : function(mode, selectContents) {
             // Unable to shrink a collapsed range.
@@ -3483,12 +3503,12 @@ KISSY.Editor.add("range", function(KE) {
             }
         },
         getTouchedStartNode : function() {
-            var container = this.startContainer;
+            var self=this,container = self.startContainer;
 
-            if (this.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
+            if (self.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
                 return container;
 
-            return container.childNodes[this.startOffset] || container;
+            return container.childNodes[self.startOffset] || container;
         },
         createBookmark2 : function(normalized) {
             //debugger;
@@ -3848,7 +3868,7 @@ KISSY.Editor.add("range", function(KE) {
                                 if (commonReached)
                                     startTop = enlargeable;
                                 else
-                                    this.setStartBefore(enlargeable);
+                                    self.setStartBefore(enlargeable);
                             }
 
                             sibling = enlargeable[0].previousSibling;
@@ -3911,7 +3931,7 @@ KISSY.Editor.add("range", function(KE) {
                                     if (commonReached)
                                         startTop = enlargeable;
                                     else if (enlargeable)
-                                        this.setStartBefore(enlargeable);
+                                        self.setStartBefore(enlargeable);
                                 }
                                 else
                                     needsWhiteSpace = true;
@@ -3993,7 +4013,7 @@ KISSY.Editor.add("range", function(KE) {
                                 if (commonReached)
                                     endTop = enlargeable;
                                 else if (enlargeable)
-                                    this.setEndAfter(enlargeable);
+                                    self.setEndAfter(enlargeable);
                             }
 
                             sibling = enlargeable[0].nextSibling;
@@ -4048,7 +4068,7 @@ KISSY.Editor.add("range", function(KE) {
                                     if (commonReached)
                                         endTop = enlargeable;
                                     else
-                                        this.setEndAfter(enlargeable);
+                                        self.setEndAfter(enlargeable);
                                 }
                             }
 
@@ -4077,8 +4097,8 @@ KISSY.Editor.add("range", function(KE) {
                     // If the common ancestor can be enlarged by both boundaries, then include it also.
                     if (startTop && endTop) {
                         commonAncestor = startTop._4e_contains(endTop) ? endTop : startTop;
-                        this.setStartBefore(commonAncestor);
-                        this.setEndAfter(commonAncestor);
+                        self.setStartBefore(commonAncestor);
+                        self.setEndAfter(commonAncestor);
                     }
                     break;
 
@@ -4122,7 +4142,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // Start the range at different position by comparing
                     // the document position of it with 'enlargeable' node.
-                    this.setStartAt(
+                    self.setStartAt(
                         blockBoundary,
                         blockBoundary._4e_name() != 'br' &&
                             ( !enlargeable && self.checkStartOfBlock()
@@ -4149,7 +4169,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // Start the range at different position by comparing
                     // the document position of it with 'enlargeable' node.
-                    this.setEndAt(
+                    self.setEndAt(
                         blockBoundary,
                         ( !enlargeable && self.checkEndOfBlock()
                             || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
@@ -4225,14 +4245,15 @@ KISSY.Editor.add("range", function(KE) {
             return walker.checkForward();
         },
         deleteContents:function() {
-            if (this.collapsed)
+            var self=this;
+            if (self.collapsed)
                 return;
-            this.execContentsAction(0);
+            self.execContentsAction(0);
         },
         extractContents : function() {
-            var docFrag = this.document.createDocumentFragment();
-            if (!this.collapsed)
-                this.execContentsAction(1, docFrag);
+            var self=this, docFrag = self.document.createDocumentFragment();
+            if (!self.collapsed)
+                self.execContentsAction(1, docFrag);
             return docFrag;
         },
         /**
@@ -5250,7 +5271,7 @@ KISSY.Editor.add("selection", function(KE) {
                     }
             }
 
-            return cache.startElement = ( node ? new Node(node) : null );
+            return cache.startElement = ( node ? DOM._4e_wrap(node) : null );
         },
 
         /**
@@ -5267,31 +5288,44 @@ KISSY.Editor.add("selection", function(KE) {
             if (cache.selectedElement !== undefined)
                 return cache.selectedElement;
 
-            var self = this, node = tryThese(
-                // Is it native IE control type selection?
-                function() {
-                    return self.getNative().createRange().item(0);
-                },
-                // Figure it out by checking if there's a single enclosed
-                // node of the range.
-                function() {
+            var self = this, node;
+            // Is it native IE control type selection?
+
+            if (UA.ie) {
+                var range = self.getNative().createRange();
+                node = range.item && range.item(0);
+
+            }// Figure it out by checking if there's a single enclosed
+            // node of the range.
+            if (!node) {
+                node = (function() {
                     var range = self.getRanges()[ 0 ],
                         enclosed,
                         selected;
 
                     // Check first any enclosed element, e.g. <ul>[<li><a href="#">item</a></li>]</ul>
-                    for (var i = 2; i && !( ( enclosed = range.getEnclosedNode() )
-                        && ( enclosed[0].nodeType == KEN.NODE_ELEMENT )
-                        && styleObjectElements[ enclosed._4e_name() ]
-                        && ( selected = enclosed ) ); i--) {
+                    //脱两层？？2是啥意思？
+                    for (var i = 2;
+                         i && !
+                             (
+                                 ( enclosed = range.getEnclosedNode() )
+                                     && ( enclosed[0].nodeType == KEN.NODE_ELEMENT )
+                                     //某些值得这么多的元素？？
+                                     && styleObjectElements[ enclosed._4e_name() ]
+                                     && ( selected = enclosed )
+                                 ); i--) {
                         // Then check any deep wrapped element, e.g. [<b><i><img /></i></b>]
+                        //一下子退到底  ^<a><span><span><img/></span></span></a>^
+                        // ->
+                        //<a><span><span>^<img/>^</span></span></a>
                         range.shrink(KER.SHRINK_ELEMENT);
                     }
 
-                    return  selected[0];
-                });
+                    return  selected && selected[0];
+                })();
+            }
 
-            return cache.selectedElement = ( node ? new Node(node) : null );
+            return cache.selectedElement = DOM._4e_wrap(node);
         },
 
 

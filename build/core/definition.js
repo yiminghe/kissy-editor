@@ -594,10 +594,14 @@ KISSY.Editor.add("definition", function(KE) {
             //DOM.addClass(doc.documentElement, doc.compatMode);
             // Override keystrokes which should have deletion behavior
             //  on control types in IE . (#4047)
+            /**
+             * 选择img，出现缩放框后不能直接删除
+             */
             Event.on(doc, 'keydown', function(evt) {
                 var keyCode = evt.keyCode;
                 // Backspace OR Delete.
                 if (keyCode in { 8 : 1, 46 : 1 }) {
+                    //debugger
                     var sel = self.getSelection(),
                         control = sel.getSelectedElement();
                     if (control) {

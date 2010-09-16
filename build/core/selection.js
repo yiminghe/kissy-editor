@@ -396,7 +396,7 @@ KISSY.Editor.add("selection", function(KE) {
                     }
             }
 
-            return cache.startElement = ( node ? new Node(node) : null );
+            return cache.startElement = ( node ? DOM._4e_wrap(node) : null );
         },
 
         /**
@@ -413,31 +413,44 @@ KISSY.Editor.add("selection", function(KE) {
             if (cache.selectedElement !== undefined)
                 return cache.selectedElement;
 
-            var self = this, node = tryThese(
-                // Is it native IE control type selection?
-                function() {
-                    return self.getNative().createRange().item(0);
-                },
-                // Figure it out by checking if there's a single enclosed
-                // node of the range.
-                function() {
+            var self = this, node;
+            // Is it native IE control type selection?
+
+            if (UA.ie) {
+                var range = self.getNative().createRange();
+                node = range.item && range.item(0);
+
+            }// Figure it out by checking if there's a single enclosed
+            // node of the range.
+            if (!node) {
+                node = (function() {
                     var range = self.getRanges()[ 0 ],
                         enclosed,
                         selected;
 
                     // Check first any enclosed element, e.g. <ul>[<li><a href="#">item</a></li>]</ul>
-                    for (var i = 2; i && !( ( enclosed = range.getEnclosedNode() )
-                        && ( enclosed[0].nodeType == KEN.NODE_ELEMENT )
-                        && styleObjectElements[ enclosed._4e_name() ]
-                        && ( selected = enclosed ) ); i--) {
+                    //脱两层？？2是啥意思？
+                    for (var i = 2;
+                         i && !
+                             (
+                                 ( enclosed = range.getEnclosedNode() )
+                                     && ( enclosed[0].nodeType == KEN.NODE_ELEMENT )
+                                     //某些值得这么多的元素？？
+                                     && styleObjectElements[ enclosed._4e_name() ]
+                                     && ( selected = enclosed )
+                                 ); i--) {
                         // Then check any deep wrapped element, e.g. [<b><i><img /></i></b>]
+                        //一下子退到底  ^<a><span><span><img/></span></span></a>^
+                        // ->
+                        //<a><span><span>^<img/>^</span></span></a>
                         range.shrink(KER.SHRINK_ELEMENT);
                     }
 
-                    return  selected[0];
-                });
+                    return  selected && selected[0];
+                })();
+            }
 
-            return cache.selectedElement = ( node ? new Node(node) : null );
+            return cache.selectedElement = DOM._4e_wrap(node);
         },
 
 
