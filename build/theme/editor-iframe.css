@@ -4,7 +4,15 @@ for kissy editor iframe
 @from:resource://gre/res/html.css
 **/
 html {
-    _overflow-y: scroll;
+    /* #3658: [IE6] Editor document has horizontal scrollbar on long lines
+     To prevent this misbehavior, we show the scrollbar always */
+    _overflow-y: scroll
+}
+
+body {
+/* Text color */
+    color: #222; /* Remove the background color to make it transparent */
+    background-color: #fff;
 }
 
 /*
@@ -147,6 +155,14 @@ ol li {
 ul  li {
 /* giving UL's LIs generated disc markers */
     list-style: disc outside;
+}
+
+ul li ul li {
+    list-style: circle;
+}
+
+ul li ul li ul li {
+    list-style: square;
 }
 
 dl dd {

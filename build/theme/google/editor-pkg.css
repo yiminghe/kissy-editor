@@ -462,6 +462,19 @@ from : resource://gre/res/html.css
     list-style: disc outside;
 }
 
+.ke-post ul  li {
+/* giving UL's LIs generated disc markers */
+    list-style: disc outside;
+}
+
+.ke-post ul li ul li {
+    list-style: circle;
+}
+
+.ke-post ul li ul li ul li {
+    list-style: square;
+}
+
 .ke-post dl dd {
 /* providing spacing for definition terms */
     margin-left: 1em;
