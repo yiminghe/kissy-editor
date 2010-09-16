@@ -610,6 +610,14 @@ from : resource://gre/res/html.css
     padding: 8px;
 }
 
+.ke-ft {
+    text-align: right;
+}
+
+.ke-bd td {
+    padding: 2px;
+}
+
 .clearfix:after {
     content: ".";
     display: block;

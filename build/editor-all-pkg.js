@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-15 20:44:43
+ * @buildtime: 2010-09-16 17:08:17
  */
 KISSY.add("editor", function(S, undefined) {
     function Editor(textarea, cfg) {
@@ -8288,29 +8288,39 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
         (function() {
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<p><label>地址： " +
+                bodyHtml = "<table>" +
+                    "<tr>" +
+                    "<td colspan='2'>" +
+                    "<label>地址： " +
                     "<input class='ke-flash-url' style='width:280px' value='"
                     + TIP
-                    + "'/></label></p>" +
-                    "<p style='margin:5px 0'><label>宽度： " +
-                    "<input class='ke-flash-width' style='width:110px' /></label>" +
-                    "&nbsp;&nbsp;<label>高度：<input class='ke-flash-height' " +
-                    "style='width:110px' /></label></p>" +
-                    "<p style='margin:5px 0'><label>对齐： " +
+                    + "'/></label>" +
+                    "</td></tr>" +
+                    "<tr>" +
+                    "<td>" +
+                    "<label>宽度： " +
+                    "<input class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>高度：<input class='ke-flash-height' " +
+                    "style='width:60px' /> 像素 </label></td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
+                    "<label>对齐： " +
                     "<select class='ke-flash-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 13) +
-                    "<label>间距： " +
-                    "</span> <input class='ke-flash-margin' style='width:90px' value='"
-                    + 5 + "'/> px" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>间距：" +
+                    "<input class='ke-flash-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
-
-                    "<p>",
+                    "</td></tr>" +
+                    "</table>",
 
                 footHtml = "<button class='ke-flash-ok'>确定</button> " +
                     "<button class='ke-flash-cancel'>取消</button>";
@@ -8419,8 +8429,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
-                    tipurl.html(self._getFlashUrl(r));
-                    tipurl.attr("href", self._getFlashUrl(r));
+                    var url = self._getFlashUrl(r);
+                    tipurl.html(url);
+                    tipurl.attr("href", url);
                 },
 
                 //根据图片标志触发本插件应用
@@ -8720,24 +8731,23 @@ KISSY.Editor.add("flashutils", function() {
                 '<param name="quality" value="high" />' +
                 '<param name="movie" value="' + movie + '" />' +
                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
-
-                "<object type='application/x-shockwave-flash'" +
-                " data='" + movie + "'" +
-                " " + attrs_str +
-                ">"
-                +
-                (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                 /*
-                 '<embed ' +
-                 attrs_str +
-                 " " +
-                 (vars_str ? ( 'FlashVars="' + vars_str + '"') : "") +
-                 ' pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
-                 ' quality="high" ' +
-                 ' src="' + movie + '" ' +
-                 ' type="application/x-shockwave-flash"/>' +
+                 "<object type='application/x-shockwave-flash'" +
+                 " data='" + movie + "'" +
+                 " " + attrs_str +
+                 ">"
+                 +
+                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                  */
-                + '</object>' +
+                '<embed ' +
+                attrs_str +
+                " " +
+                (vars_str ? ( 'FlashVars="' + vars_str + '"') : "") +
+                ' pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
+                ' quality="high" ' +
+                ' src="' + movie + '" ' +
+                ' type="application/x-shockwave-flash"/>' +
+               // + '</object>' +
                 '</object>';
             return {
                 el:new Node(outerHTML, null, doc),
@@ -11622,7 +11632,7 @@ KISSY.Editor.add("image", function(editor) {
             var checkImg = function (node) {
                 return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
             },
-                labelStyle = "<label><span style='color:#0066CC;font-weight:bold;'>";
+                labelStyle = "<label><span>";
 
             function ImageInserter(cfg) {
                 ImageInserter.superclass.constructor.call(this, cfg);
@@ -11630,32 +11640,50 @@ KISSY.Editor.add("image", function(editor) {
             }
 
             var TripleButton = KE.TripleButton,
-                bodyHtml = "<div>" +
-                    "<p>" +
-                    labelStyle + "图片网址： " +
-                    "</span><input class='ke-img-url' style='width:230px' value='" + TIP + "'/></label>" +
-                    "</p>" +
-                    "<p style='margin:5px 0'>" +
+                bodyHtml = "<table>" +
+                    "<tr>" +
+                    "<td colspan='2'>" +
+                    "<label>" +
+                    "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
+                    "</span>" +
+                    "<input class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "</label>" +
+                    "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
                     labelStyle + "高度： " +
-                    "</span><input class='ke-img-height' style='width:90px' value='" + DTIP + "'/> px </label> &nbsp;" +
-                    labelStyle + "宽度： " +
-                    "</span><input class='ke-img-width' style='width:90px' value='" + DTIP + "'/> px </label>" +
-                    "</p>" +
-                    "<p>" +
+                    "</span>" +
+                    "<input class='ke-img-height' style='width:60px' " +
+                    "value='" + DTIP + "'/> 像素 </label>" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>" +
+                    "<span>" + "宽度： " +
+                    "</span>" +
+                    "<input class='ke-img-width' style='width:60px' value='" +
+                    DTIP + "'/> 像素 </label>" +
+                    "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
                     labelStyle + "对齐： " +
-                    "</span><select class='ke-img-align'>" +
+                    "</span>" +
+                    "<select class='ke-img-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    "</td>" +
+                    "<td>" +
                     labelStyle + "间距： " +
-                    "</span> <input class='ke-img-margin' style='width:80px' value='"
-                    + 5 + "'/> px" +
+                    "</span> " +
+                    "<input class='ke-img-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
-                    "</p>" +
-                    "</div>",
+                    "</td>" +
+                    "</tr>" +
+                    "</table>",
                 footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
 
             ImageInserter.ATTRS = {
@@ -13486,8 +13514,8 @@ KISSY.Editor.add("music", function(editor) {
                     "" +
                     KE.Utils.duplicateStr("&nbsp;", 1) +
                     "<label>间距： " +
-                    "</span> <input class='ke-music-margin' style='width:90px' value='"
-                    + 5 + "'/> px" +
+                    "</span> <input class='ke-music-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
                     "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +

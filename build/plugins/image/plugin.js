@@ -20,7 +20,7 @@ KISSY.Editor.add("image", function(editor) {
             var checkImg = function (node) {
                 return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
             },
-                labelStyle = "<label><span style='color:#0066CC;font-weight:bold;'>";
+                labelStyle = "<label><span>";
 
             function ImageInserter(cfg) {
                 ImageInserter.superclass.constructor.call(this, cfg);
@@ -28,32 +28,50 @@ KISSY.Editor.add("image", function(editor) {
             }
 
             var TripleButton = KE.TripleButton,
-                bodyHtml = "<div>" +
-                    "<p>" +
-                    labelStyle + "图片网址： " +
-                    "</span><input class='ke-img-url' style='width:230px' value='" + TIP + "'/></label>" +
-                    "</p>" +
-                    "<p style='margin:5px 0'>" +
+                bodyHtml = "<table>" +
+                    "<tr>" +
+                    "<td colspan='2'>" +
+                    "<label>" +
+                    "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
+                    "</span>" +
+                    "<input class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "</label>" +
+                    "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
                     labelStyle + "高度： " +
-                    "</span><input class='ke-img-height' style='width:90px' value='" + DTIP + "'/> px </label> &nbsp;" +
-                    labelStyle + "宽度： " +
-                    "</span><input class='ke-img-width' style='width:90px' value='" + DTIP + "'/> px </label>" +
-                    "</p>" +
-                    "<p>" +
+                    "</span>" +
+                    "<input class='ke-img-height' style='width:60px' " +
+                    "value='" + DTIP + "'/> 像素 </label>" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>" +
+                    "<span>" + "宽度： " +
+                    "</span>" +
+                    "<input class='ke-img-width' style='width:60px' value='" +
+                    DTIP + "'/> 像素 </label>" +
+                    "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
                     labelStyle + "对齐： " +
-                    "</span><select class='ke-img-align'>" +
+                    "</span>" +
+                    "<select class='ke-img-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 13) +
+                    "</td>" +
+                    "<td>" +
                     labelStyle + "间距： " +
-                    "</span> <input class='ke-img-margin' style='width:80px' value='"
-                    + 5 + "'/> px" +
+                    "</span> " +
+                    "<input class='ke-img-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
-                    "</p>" +
-                    "</div>",
+                    "</td>" +
+                    "</tr>" +
+                    "</table>",
                 footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
 
             ImageInserter.ATTRS = {

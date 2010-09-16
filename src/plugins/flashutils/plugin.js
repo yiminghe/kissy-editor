@@ -45,24 +45,23 @@ KISSY.Editor.add("flashutils", function() {
                 '<param name="quality" value="high" />' +
                 '<param name="movie" value="' + movie + '" />' +
                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
-
-                "<object type='application/x-shockwave-flash'" +
-                " data='" + movie + "'" +
-                " " + attrs_str +
-                ">"
-                +
-                (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                 /*
-                 '<embed ' +
-                 attrs_str +
-                 " " +
-                 (vars_str ? ( 'FlashVars="' + vars_str + '"') : "") +
-                 ' pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
-                 ' quality="high" ' +
-                 ' src="' + movie + '" ' +
-                 ' type="application/x-shockwave-flash"/>' +
+                 "<object type='application/x-shockwave-flash'" +
+                 " data='" + movie + "'" +
+                 " " + attrs_str +
+                 ">"
+                 +
+                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                  */
-                + '</object>' +
+                '<embed ' +
+                attrs_str +
+                " " +
+                (vars_str ? ( 'FlashVars="' + vars_str + '"') : "") +
+                ' pluginspage="http://www.macromedia.com/go/getflashplayer" ' +
+                ' quality="high" ' +
+                ' src="' + movie + '" ' +
+                ' type="application/x-shockwave-flash"/>' +
+               // + '</object>' +
                 '</object>';
             return {
                 el:new Node(outerHTML, null, doc),

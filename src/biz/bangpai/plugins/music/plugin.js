@@ -148,8 +148,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "" +
                 KE.Utils.duplicateStr("&nbsp;", 1) +
                 "<label>间距： " +
-                "</span> <input class='ke-xiami-margin' style='width:90px' value='"
-                + 5 + "'/> px" +
+                "</span> <input class='ke-xiami-margin' style='width:60px' value='"
+                + 5 + "'/> 像素" +
                 "</label>" +
                 "</p>" +
                 "</form>" +

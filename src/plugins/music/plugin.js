@@ -82,8 +82,8 @@ KISSY.Editor.add("music", function(editor) {
                     "" +
                     KE.Utils.duplicateStr("&nbsp;", 1) +
                     "<label>间距： " +
-                    "</span> <input class='ke-music-margin' style='width:90px' value='"
-                    + 5 + "'/> px" +
+                    "</span> <input class='ke-music-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
                     "<p>",
                 footHtml = "<button class='ke-music-ok'>确定</button> " +

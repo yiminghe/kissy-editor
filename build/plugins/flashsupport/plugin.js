@@ -24,29 +24,39 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
         (function() {
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<p><label>地址： " +
+                bodyHtml = "<table>" +
+                    "<tr>" +
+                    "<td colspan='2'>" +
+                    "<label>地址： " +
                     "<input class='ke-flash-url' style='width:280px' value='"
                     + TIP
-                    + "'/></label></p>" +
-                    "<p style='margin:5px 0'><label>宽度： " +
-                    "<input class='ke-flash-width' style='width:110px' /></label>" +
-                    "&nbsp;&nbsp;<label>高度：<input class='ke-flash-height' " +
-                    "style='width:110px' /></label></p>" +
-                    "<p style='margin:5px 0'><label>对齐： " +
+                    + "'/></label>" +
+                    "</td></tr>" +
+                    "<tr>" +
+                    "<td>" +
+                    "<label>宽度： " +
+                    "<input class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>高度：<input class='ke-flash-height' " +
+                    "style='width:60px' /> 像素 </label></td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td>" +
+                    "<label>对齐： " +
                     "<select class='ke-flash-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 13) +
-                    "<label>间距： " +
-                    "</span> <input class='ke-flash-margin' style='width:90px' value='"
-                    + 5 + "'/> px" +
+                    "</td>" +
+                    "<td>" +
+                    "<label>间距：" +
+                    "<input class='ke-flash-margin' style='width:60px' value='"
+                    + 5 + "'/> 像素" +
                     "</label>" +
-
-                    "<p>",
+                    "</td></tr>" +
+                    "</table>",
 
                 footHtml = "<button class='ke-flash-ok'>确定</button> " +
                     "<button class='ke-flash-cancel'>取消</button>";
@@ -155,8 +165,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
-                    tipurl.html(self._getFlashUrl(r));
-                    tipurl.attr("href", self._getFlashUrl(r));
+                    var url = self._getFlashUrl(r);
+                    tipurl.html(url);
+                    tipurl.attr("href", url);
                 },
 
                 //根据图片标志触发本插件应用

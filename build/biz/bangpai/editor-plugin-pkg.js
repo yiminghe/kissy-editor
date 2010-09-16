@@ -148,8 +148,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "" +
                 KE.Utils.duplicateStr("&nbsp;", 1) +
                 "<label>间距： " +
-                "</span> <input class='ke-xiami-margin' style='width:90px' value='"
-                + 5 + "'/> px" +
+                "</span> <input class='ke-xiami-margin' style='width:60px' value='"
+                + 5 + "'/> 像素" +
                 "</label>" +
                 "</p>" +
                 "</form>" +
@@ -390,6 +390,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         CLS_VIDEO = "ke_video",
         TYPE_VIDEO = "bangpai-video",
         Flash = KE.Flash,
+        DTIP = "自动",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         TIP = "请输入如 http://www.xxx.com/xxx.swf";
@@ -493,28 +494,46 @@ KISSY.Editor.add("bangpai-video", function(editor) {
     if (!KE.BangPaiVideo) {
         (function() {
             var bodyHtml = "" +
-                "<p style='margin-bottom:5px'>" +
+                "<table>" +
+                "<tr><td colspan='2'>" +
                 "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
-                "</p>" +
-                "<p>" +
+                "</td></tr>" +
+                "<tr><td colspan='2'>" +
                 "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
                 "</span><input class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
-                "</p>" +
-                "<p style='margin:5px 0'><label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                "</td></tr>" +
+                "<tr><td>" +
+                "<label>宽度： " +
+                "</span> <input class='ke-video-width' style='width:60px' value='"
+                + DTIP + "'/> 像素 " +
+                "</label>" +
+                "</td>" +
+                "<td>" +
+                "<label> 高度： " +
+                "</span> <input class='ke-video-height' style='width:60px' value='"
+                + DTIP + "'/> 像素 " +
+                "</label>" +
+
+                "</td></tr>" +
+                "<tr>" +
+                "<td>" +
+                "<label>对齐： " +
                 "<select class='ke-video-align'>" +
                 "<option value=''>无</option>" +
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
-                "" +
-                    KE.Utils.duplicateStr("&nbsp;", 1) +
-                    "<label>间距： " +
-                    "</span> <input class='ke-video-margin' style='width:90px' value='"
-                    + 5 + "'/> px" +
-                    "</label>" +
-                "<p>",
+                "</td>" +
+                "<td>" +
+
+                "<label>间距： " +
+                "</span> <input class='ke-video-margin' style='width:60px' value='"
+                + 5 + "'/> 像素" +
+                "</label>" +
+                "</td></tr>" +
+                "</table>",
                 footHtml = "<button class='ke-video-ok'>确定</button> " +
                     "<button class='ke-video-cancel'>取消</button>",
                 flashRules = ["img." + CLS_VIDEO];
@@ -544,6 +563,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self.dUrl = d.el.one(".ke-video-url");
                     self.dAlign = d.el.one(".ke-video-align");
                     self.dMargin = d.el.one(".ke-video-margin");
+                    self.dWidth = d.el.one(".ke-video-width");
+                    self.dHeight = d.el.one(".ke-video-height");
                     var action = d.el.one(".ke-video-ok"),
                         cancel = d.el.one(".ke-video-cancel");
                     action.on("click", self._gen, self);
@@ -565,15 +586,15 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         return {
                             url:re,
                             attrs:{
-                                height:p.height,
-                                width:p.width,
+                                height:parseInt(self.dHeight.val()) || p.height,
+                                width:parseInt(self.dWidth.val()) || p.width,
                                 align: self.dAlign.val(),
-                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
+                                style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
                             }
                         };
                     }
                 },
-              
+
                 _updateD:function() {
                     var self = this,
                         editor = self.editor,
@@ -583,15 +604,19 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dAlign.val(r.attr("align"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
+                        self.dWidth.val(r.attr("width"));
+                        self.dHeight.val(r.attr("height"));
                     } else {
                         self.dUrl.val(TIP);
                         self.dAlign.val("");
                         self.dMargin.val("5");
+                        self.dWidth.val(DTIP);
+                        self.dHeight.val(DTIP);
                     }
                 }
             });
             function checkVideo(node) {
-                return node._4e_name() === 'img' && (!!node.hasClass(CLS_VIDEO))&&node;
+                return node._4e_name() === 'img' && (!!node.hasClass(CLS_VIDEO)) && node;
             }
 
             Flash.registerBubble("bangpai-video", "视频链接： ", checkVideo);

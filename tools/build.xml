@@ -35,7 +35,7 @@ build file for kissy editor
                       ,styles.js"/>
 
     <fileset dir="${src.dir}"
-             includes="plugins/**/*.js,ui/**/*.js"
+             includes="plugins/**/*.js"
              id="main_js">
     </fileset>
 
