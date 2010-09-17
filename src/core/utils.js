@@ -6,7 +6,7 @@ KISSY.Editor.add("utils", function(KE) {
 
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
-        
+
         debugUrl:function (url) {
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
@@ -209,6 +209,20 @@ KISSY.Editor.add("utils", function(KE) {
         },
         isNumber:function(n) {
             return /^\d+(.\d+)?$/.test(S.trim(n));
+        },
+        verifyInputs:function(inputs, warn) {
+            for (var i = 0; i < inputs.length; i++) {
+                var input = DOM._4e_wrap(inputs[i]),
+                    v = S.trim(input.val()),
+                    verify = input.attr("data-verify"),
+                    warning = input.attr("data-warning");
+                if (verify &&
+                    !new RegExp(verify).test(v)) {
+                    alert(warning);
+                    return;
+                }
+            }
+            return true;
         }
 
 

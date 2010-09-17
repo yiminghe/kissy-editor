@@ -27,18 +27,27 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 bodyHtml = "<table>" +
                     "<tr>" +
                     "<td colspan='2'>" +
-                    "<label>地址： " +
-                    "<input class='ke-flash-url' style='width:280px' value='"
+                    "<label>网址： " +
+                    "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
+                    "class='ke-flash-url' style='width:280px' value='"
                     + TIP
                     + "'/></label>" +
                     "</td></tr>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +
-                    "<input class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "<input " +
+                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-warning='宽度请输入正数' " +
+                    "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
-                    "<label>高度：<input class='ke-flash-height' " +
+                    "<label>高度：<input " +
+                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-warning='高度请输入正数' " +
+                    "class='ke-flash-height' " +
                     "style='width:60px' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
@@ -52,7 +61,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "</td>" +
                     "<td>" +
                     "<label>间距：" +
-                    "<input class='ke-flash-margin' style='width:60px' value='"
+                    "<input " +
+                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-warning='间距请输入非负数字' "
+                    + "class='ke-flash-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +
@@ -276,9 +288,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         editor = self.editor,
                         dinfo = self._getDInfo(),
                         url = dinfo && S.trim(dinfo.url),
-                        attrs = dinfo && dinfo.attrs;
-                    if (!url) return;
-
+                        attrs = dinfo && dinfo.attrs,
+                        re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    if (!re || !dinfo) return;
                     var nodeInfo = flashUtils.createSWF(url, {attrs:attrs}, editor.document),
                         real = nodeInfo.el,
                         substitute = editor.createFakeElement ?

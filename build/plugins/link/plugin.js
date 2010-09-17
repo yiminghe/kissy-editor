@@ -46,6 +46,8 @@ KISSY.Editor.add("link", function(editor) {
                     "网址： " +
                     "</span>" +
                     "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
                     "class='ke-link-url' " +
                     "style='width:220px' " +
                     "value='http://'/>" +
@@ -195,7 +197,7 @@ KISSY.Editor.add("link", function(editor) {
                         a,
                         linkStyle;
 
-                    if (!S.trim(url)) {
+                    if (!KE.Utils.verifyInputs(d.el.all("input"))) {
                         return;
                     }
                     d.hide();

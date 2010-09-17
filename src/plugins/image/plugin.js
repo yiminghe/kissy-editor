@@ -34,7 +34,10 @@ KISSY.Editor.add("image", function(editor) {
                     "<label>" +
                     "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
                     "</span>" +
-                    "<input class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
+                    "class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
@@ -42,14 +45,22 @@ KISSY.Editor.add("image", function(editor) {
                     "<td>" +
                     labelStyle + "高度： " +
                     "</span>" +
-                    "<input class='ke-img-height' style='width:60px' " +
+                    "<input " +
+                    "" +
+                    "" +
+                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-warning='高度请输入正数' " +
+                    "class='ke-img-height' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>" +
                     "<span>" + "宽度： " +
                     "</span>" +
-                    "<input class='ke-img-width' style='width:60px' value='" +
+                    "<input " +
+                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-warning='宽度请输入正数' " +
+                    "class='ke-img-width' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
                     "</td>" +
                     "</tr>" +
@@ -66,13 +77,18 @@ KISSY.Editor.add("image", function(editor) {
                     "<td>" +
                     labelStyle + "间距： " +
                     "</span> " +
-                    "<input class='ke-img-margin' style='width:60px' value='"
+                    "<input " +
+                    "" +
+                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-warning='间距请输入非负数字' " +
+                    "class='ke-img-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
                     "</table>",
-                footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
+                footHtml = "<button class='ke-img-insert'>确定</button> " +
+                    "<button class='ke-img-cancel'>取消</button>";
 
             ImageInserter.ATTRS = {
                 editor:{}
@@ -146,7 +162,8 @@ KISSY.Editor.add("image", function(editor) {
                     d.foot.html(footHtml);
                     self.content = d.el;
                     var content = self.content;
-                    var cancel = content.one(".ke-img-cancel"),ok = content.one(".ke-img-insert");
+                    var cancel = content.one(".ke-img-cancel"),
+                        ok = content.one(".ke-img-insert");
                     self.imgUrl = content.one(".ke-img-url");
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
@@ -171,15 +188,16 @@ KISSY.Editor.add("image", function(editor) {
                 },
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val();
-                    if (!url) return;
+                        url = self.imgUrl.val(),re;
+
+                    re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    if (!re) return;
                     var height = parseInt(self.imgHeight.val()),
                         editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
                         margin = parseInt(self.imgMargin.val()),
                         style = '';
-
                     if (height) {
                         style += "height:" + height + "px;";
                     }

@@ -118,19 +118,29 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</td></tr>" +
                 "<tr><td colspan='2'>" +
                 "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
-                "</span><input class='ke-video-url' style='width:230px' value='"
+                "</span><input " +
+              
+                "class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
                 "</td></tr>" +
                 "<tr><td>" +
                 "<label>宽度： " +
-                "</span> <input class='ke-video-width' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-warning='宽度请输入正数' " +
+                "class='ke-video-width' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
                 "</label>" +
                 "</td>" +
                 "<td>" +
                 "<label> 高度： " +
-                "</span> <input class='ke-video-height' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-warning='高度请输入正数' " +
+                "class='ke-video-height' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
                 "</label>" +
 
@@ -147,7 +157,11 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<td>" +
 
                 "<label>间距： " +
-                "</span> <input class='ke-video-margin' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-warning='间距请输入非负数字' " +
+                "class='ke-video-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-17 17:52:35
+ * @buildtime: 2010-09-17 20:23:09
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -278,7 +278,7 @@ KISSY.Editor.add("utils", function(KE) {
 
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
-        
+
         debugUrl:function (url) {
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
@@ -481,6 +481,20 @@ KISSY.Editor.add("utils", function(KE) {
         },
         isNumber:function(n) {
             return /^\d+(.\d+)?$/.test(S.trim(n));
+        },
+        verifyInputs:function(inputs, warn) {
+            for (var i = 0; i < inputs.length; i++) {
+                var input = DOM._4e_wrap(inputs[i]),
+                    v = S.trim(input.val()),
+                    verify = input.attr("data-verify"),
+                    warning = input.attr("data-warning");
+                if (verify &&
+                    !new RegExp(verify).test(v)) {
+                    alert(warning);
+                    return;
+                }
+            }
+            return true;
         }
 
 
@@ -8327,18 +8341,27 @@ KISSY.Editor.add("flashsupport", function(editor) {
                 bodyHtml = "<table>" +
                     "<tr>" +
                     "<td colspan='2'>" +
-                    "<label>地址： " +
-                    "<input class='ke-flash-url' style='width:280px' value='"
+                    "<label>网址： " +
+                    "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
+                    "class='ke-flash-url' style='width:280px' value='"
                     + TIP
                     + "'/></label>" +
                     "</td></tr>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +
-                    "<input class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "<input " +
+                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-warning='宽度请输入正数' " +
+                    "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
-                    "<label>高度：<input class='ke-flash-height' " +
+                    "<label>高度：<input " +
+                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-warning='高度请输入正数' " +
+                    "class='ke-flash-height' " +
                     "style='width:60px' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
@@ -8352,7 +8375,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "</td>" +
                     "<td>" +
                     "<label>间距：" +
-                    "<input class='ke-flash-margin' style='width:60px' value='"
+                    "<input " +
+                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-warning='间距请输入非负数字' "
+                    + "class='ke-flash-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +
@@ -8576,9 +8602,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         editor = self.editor,
                         dinfo = self._getDInfo(),
                         url = dinfo && S.trim(dinfo.url),
-                        attrs = dinfo && dinfo.attrs;
-                    if (!url) return;
-
+                        attrs = dinfo && dinfo.attrs,
+                        re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    if (!re || !dinfo) return;
                     var nodeInfo = flashUtils.createSWF(url, {attrs:attrs}, editor.document),
                         real = nodeInfo.el,
                         substitute = editor.createFakeElement ?
@@ -11689,7 +11715,10 @@ KISSY.Editor.add("image", function(editor) {
                     "<label>" +
                     "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
                     "</span>" +
-                    "<input class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
+                    "class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
@@ -11697,14 +11726,22 @@ KISSY.Editor.add("image", function(editor) {
                     "<td>" +
                     labelStyle + "高度： " +
                     "</span>" +
-                    "<input class='ke-img-height' style='width:60px' " +
+                    "<input " +
+                    "" +
+                    "" +
+                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-warning='高度请输入正数' " +
+                    "class='ke-img-height' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>" +
                     "<span>" + "宽度： " +
                     "</span>" +
-                    "<input class='ke-img-width' style='width:60px' value='" +
+                    "<input " +
+                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-warning='宽度请输入正数' " +
+                    "class='ke-img-width' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
                     "</td>" +
                     "</tr>" +
@@ -11721,13 +11758,18 @@ KISSY.Editor.add("image", function(editor) {
                     "<td>" +
                     labelStyle + "间距： " +
                     "</span> " +
-                    "<input class='ke-img-margin' style='width:60px' value='"
+                    "<input " +
+                    "" +
+                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-warning='间距请输入非负数字' " +
+                    "class='ke-img-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
                     "</table>",
-                footHtml = "<button class='ke-img-insert'>确定</button> <button class='ke-img-cancel'>取消</button>";
+                footHtml = "<button class='ke-img-insert'>确定</button> " +
+                    "<button class='ke-img-cancel'>取消</button>";
 
             ImageInserter.ATTRS = {
                 editor:{}
@@ -11801,7 +11843,8 @@ KISSY.Editor.add("image", function(editor) {
                     d.foot.html(footHtml);
                     self.content = d.el;
                     var content = self.content;
-                    var cancel = content.one(".ke-img-cancel"),ok = content.one(".ke-img-insert");
+                    var cancel = content.one(".ke-img-cancel"),
+                        ok = content.one(".ke-img-insert");
                     self.imgUrl = content.one(".ke-img-url");
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
@@ -11826,15 +11869,16 @@ KISSY.Editor.add("image", function(editor) {
                 },
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val();
-                    if (!url) return;
+                        url = self.imgUrl.val(),re;
+
+                    re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    if (!re) return;
                     var height = parseInt(self.imgHeight.val()),
                         editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
                         margin = parseInt(self.imgMargin.val()),
                         style = '';
-
                     if (height) {
                         style += "height:" + height + "px;";
                     }
@@ -12399,6 +12443,8 @@ KISSY.Editor.add("link", function(editor) {
                     "网址： " +
                     "</span>" +
                     "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
                     "class='ke-link-url' " +
                     "style='width:220px' " +
                     "value='http://'/>" +
@@ -12548,7 +12594,7 @@ KISSY.Editor.add("link", function(editor) {
                         a,
                         linkStyle;
 
-                    if (!S.trim(url)) {
+                    if (!KE.Utils.verifyInputs(d.el.all("input"))) {
                         return;
                     }
                     d.hide();
@@ -13546,16 +13592,20 @@ KISSY.Editor.add("music", function(editor) {
                 bodyHtml = "" +
                     "<p>" +
                     "<label>" +
-                    "<span style='color:#0066CC;font-weight:bold;'>音乐网址： " +
+                    "<span style='color:#0066CC;font-weight:bold;'>网址： " +
                     "</span>" +
-                    "<input class='ke-music-url' style='width:230px' " +
+                    "<input " +
+                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-warning='网址格式为：http://' " +
+                    "class='ke-music-url' style='width:230px' " +
                     "value='"
                     + TIP
                     + "'/>" +
                     "</label>" +
                     "</p>" +
                     "<p style='margin:5px 0'>" +
-                    "<label>对&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;齐： " +
+                    "<label>对" +
+                    KE.Utils.duplicateStr("&nbsp;", 8) + "齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
@@ -13564,7 +13614,10 @@ KISSY.Editor.add("music", function(editor) {
                     "" +
                     KE.Utils.duplicateStr("&nbsp;", 1) +
                     "<label>间距： " +
-                    "</span> <input class='ke-music-margin' style='width:60px' value='"
+                    "</span> <input " +
+                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-warning='间距请输入非负数字' " +
+                    "class='ke-music-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "<p>",
@@ -14720,11 +14773,21 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<tr>" +
             "<td>" +
             "<label>行数： " +
-            "<input value='2' class='ke-table-rows ke-table-create-only' " +
-            "size='" + IN_SIZE + "'/></label>" +
+            "<input " +
+            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-warning='行数请输入正数' " +
+            " value='2' " +
+            " class='ke-table-rows ke-table-create-only' " +
+            " size='" + IN_SIZE + "'" +
+            " /></label>" +
             "</td>" +
             "<td>" +
-            "<label>宽度： <input value='200' class='ke-table-width' size='" + IN_SIZE + "'/></label> " +
+            "<label>宽度： <input " +
+            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-warning='宽度请输入正数' " +
+            "value='200' " +
+            "class='ke-table-width' " +
+            "size='" + IN_SIZE + "'/></label> " +
             "<select class='ke-table-width-unit'>" +
             "<option value='px'>像素</option>" +
             "<option value='%'>百分比</option>" +
@@ -14733,10 +14796,21 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</tr>" +
             "<tr>" +
             "<td>" +
-            "<label>列数： <input class='ke-table-cols ke-table-create-only' value='3' size='" + IN_SIZE + "'/></label>" +
+            "<label>列数： <input " +
+            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-warning='列数请输入正数' " +
+            "" +
+            "class='ke-table-cols ke-table-create-only' " +
+            "value='3' " +
+            "size='" + IN_SIZE + "'/></label>" +
             "</td>" +
             "<td>" +
-            "<label>高度： <input value='' class='ke-table-height' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>高度： <input " +
+            " data-verify='^\\s*((?!0)\\d+(.\\d+)?)?\\s*' " +
+            " data-warning='高度请输入正数' " +
+            "value='' " +
+            "class='ke-table-height' " +
+            "size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -14783,7 +14857,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
 
             "<td>" +
-            "<label>边框： <input value='1' class='ke-table-border' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "<label>边框： <input " +
+            " data-verify='^\\d+(.\\d+)?' " +
+            " data-warning='边框请输入非负数字' " +
+            "value='1' " +
+            "class='ke-table-border' " +
+            "size='" + IN_SIZE + "'/>" +
+            "</label> &nbsp;像素</select>" +
             "</td>" +
             "<td>" +
             "</td>" +
@@ -14797,8 +14877,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "</tr>" +
             "</table>",
-        isNumber = KE.Utils.isNumber,
-        isNumberWarn = "请输入正数",
         footHtml = "<button class='ke-table-ok'>确定</button> <button class='ke-table-cancel'>取消</button>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
@@ -14954,26 +15032,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 _tableOk:function() {
                     var self = this,
                         tableDialog = self.tableDialog,
-                        inputs = tableDialog.el.all("input");
-                    for (var i = 0; i < inputs.length; i++) {
-                        var input = new Node(inputs[i]),
-                            v = input.val(),
-                            label = input.parent("label").text();
-                        if (input._4e_equals(tableDialog.tcaption)) continue;
-                        if (S.trim(v)
-                            &&
-                            !isNumber(v)
-                            ||
-                            (!input._4e_equals(tableDialog.tborder) && parseInt(v) <= 0)) {
-                            alert(label + isNumberWarn);
+                        inputs = tableDialog.el.all("input"),
+                        re = KE.Utils.verifyInputs(inputs);
+                    if (!re) return;
+                    if (tableDialog.twidthunit.val() == "%") {
+                        if (parseInt(tableDialog.twidth.val()) > 100) {
+                            alert("宽度：" + "请输入0-100之间");
                             return;
-                        }
-                        if (input._4e_equals(tableDialog.twidth) &&
-                            tableDialog.twidthunit.val() == "%") {
-                            if (parseInt(v) > 100) {
-                                alert(label + "请输入0-100之间");
-                                return;
-                            }
                         }
                     }
 
@@ -15105,8 +15170,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
 
                     //d.tcellspacing.val(selectedTable.attr("cellspacing") || "");
-
-
                     //d.tcellpadding.val(selectedTable.attr("cellpadding") || "");
 
 

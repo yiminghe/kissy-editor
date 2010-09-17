@@ -135,14 +135,21 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
             var bodyHtml = "" +
                 "<form action='#' class='ke-xiami-form'><p>" +
-                "<input class='ke-xiami-url' style='width:300px' value='"
+                "<input class='ke-xiami-url' " +
+
+                "style='width:300px' value='"
                 + TIP
                 + "'/> &nbsp; " +
-                " <input class='ke-xiami-submit' type='submit' " +
+                " <input " +
+                "class='ke-xiami-submit' " +
+                "type='submit' " +
                 "style='vertical-align:middle;' value='" + BTIP + "' />" +
                 "</p>" +
-                "<p style='margin:5px 0'><label>对 齐： " +
-                "<select class='ke-xiami-align'>" +
+                "<p " +
+                "style='margin:5px 0'>" +
+                "<label>对 齐： " +
+                "<select " +
+                "class='ke-xiami-align'>" +
                 "<option value=''>无</option>" +
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
@@ -150,12 +157,18 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "" +
                 KE.Utils.duplicateStr("&nbsp;", 1) +
                 "<label>间距： " +
-                "</span> <input class='ke-xiami-margin' style='width:60px' value='"
+                "</span> " +
+                "<input " +
+                "" +
+                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-warning='间距请输入非负数字' " +
+                "class='ke-xiami-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</p>" +
                 "</form>" +
-                "<div class='ke-xiami-list'>" +
+                "<div " +
+                "class='ke-xiami-list'>" +
                 "</div>" +
                 "",
                 footHtml = "";
@@ -619,19 +632,29 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</td></tr>" +
                 "<tr><td colspan='2'>" +
                 "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
-                "</span><input class='ke-video-url' style='width:230px' value='"
+                "</span><input " +
+              
+                "class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
                 "</td></tr>" +
                 "<tr><td>" +
                 "<label>宽度： " +
-                "</span> <input class='ke-video-width' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-warning='宽度请输入正数' " +
+                "class='ke-video-width' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
                 "</label>" +
                 "</td>" +
                 "<td>" +
                 "<label> 高度： " +
-                "</span> <input class='ke-video-height' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-warning='高度请输入正数' " +
+                "class='ke-video-height' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
                 "</label>" +
 
@@ -648,7 +671,11 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<td>" +
 
                 "<label>间距： " +
-                "</span> <input class='ke-video-margin' style='width:60px' value='"
+                "</span> <input " +
+                "" +
+                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-warning='间距请输入非负数字' " +
+                "class='ke-video-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +

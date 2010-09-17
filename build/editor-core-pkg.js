@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-17 17:52:35
+ * @buildtime: 2010-09-17 20:23:09
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -278,7 +278,7 @@ KISSY.Editor.add("utils", function(KE) {
 
     var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
     KE.Utils = {
-        
+
         debugUrl:function (url) {
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
@@ -481,6 +481,20 @@ KISSY.Editor.add("utils", function(KE) {
         },
         isNumber:function(n) {
             return /^\d+(.\d+)?$/.test(S.trim(n));
+        },
+        verifyInputs:function(inputs, warn) {
+            for (var i = 0; i < inputs.length; i++) {
+                var input = DOM._4e_wrap(inputs[i]),
+                    v = S.trim(input.val()),
+                    verify = input.attr("data-verify"),
+                    warning = input.attr("data-warning");
+                if (verify &&
+                    !new RegExp(verify).test(v)) {
+                    alert(warning);
+                    return;
+                }
+            }
+            return true;
         }
 
 
