@@ -254,16 +254,24 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         tableDialog = self.tableDialog,
                         inputs = tableDialog.el.all("input");
                     for (var i = 0; i < inputs.length; i++) {
-                        var input = new Node(inputs[i]),v = input.val();
+                        var input = new Node(inputs[i]),
+                            v = input.val(),
+                            label = input.parent("label").text();
                         if (input._4e_equals(tableDialog.tcaption)) continue;
                         if (S.trim(v)
                             &&
                             !isNumber(v)
                             ||
                             (!input._4e_equals(tableDialog.tborder) && parseInt(v) <= 0)) {
-                            var label = input.parent("label").text().replace(/[:：]/g, "");
                             alert(label + isNumberWarn);
                             return;
+                        }
+                        if (input._4e_equals(tableDialog.twidth) &&
+                            tableDialog.twidthunit.val() == "%") {
+                            if (parseInt(v) > 100) {
+                                alert(label + "请输入0-100之间");
+                                return;
+                            }
                         }
                     }
 
