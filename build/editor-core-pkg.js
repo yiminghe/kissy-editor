@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-16 21:59:25
+ * @buildtime: 2010-09-17 10:15:52
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1223,7 +1223,9 @@ KISSY.Editor.add("definition", function(KE) {
                     doc.execCommand('enableInlineTableEditing', false, !disableInlineTableEditing);
                 }
                 catch(e) {
-                    // For browsers which don't support the above methods, we can use the the resize event or resizestart for IE (#4208)
+                    //只能ie能用？，目前只有firefox,ie支持图片缩放
+                    // For browsers which don't support the above methods,
+                    // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
                         if (
                             disableObjectResizing ||

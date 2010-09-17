@@ -4,6 +4,8 @@
  */
 KISSY.Editor.add("bangpai-music", function(editor) {
     var S = KISSY,
+        UA = S.UA,
+        Event = S.Event,
         KE = S.Editor,
         DOM = S.DOM,
         Node = S.Node,
@@ -161,6 +163,15 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
             function BangPaiMusic(editor) {
                 BangPaiMusic.superclass.constructor.apply(this, arguments);
+                //只能ie能用？，目前只有firefox,ie支持图片缩放
+                var disableObjectResizing = editor.cfg.disableObjectResizing;
+                if (!disableObjectResizing) {
+                    Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize', function(evt) {
+                        //console.log(evt.target);
+                        if (DOM.hasClass(evt.target, CLS_XIAMI))
+                            evt.preventDefault();
+                    });
+                }
             }
 
             var xiami_url = "http://www.xiami.com/app/nineteen/search/key/${key}/page/${page}?" +

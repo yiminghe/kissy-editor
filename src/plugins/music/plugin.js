@@ -5,6 +5,9 @@
 KISSY.Editor.add("music", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        DOM = S.DOM,
+        UA = S.UA,
+        Event = S.Event,
         Flash = KE.Flash,
         CLS_MUSIC = "ke_music",
         TYPE_MUSIC = 'music',
@@ -97,6 +100,15 @@ KISSY.Editor.add("music", function(editor) {
 
             function MusicInserter(editor) {
                 MusicInserter.superclass.constructor.apply(this, arguments);
+                //只能ie能用？，目前只有firefox,ie支持图片缩放
+                var disableObjectResizing = editor.cfg.disableObjectResizing;
+                if (!disableObjectResizing) {
+                    Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize', function(evt) {
+                        //console.log(evt.target);
+                        if (DOM.hasClass(evt.target, CLS_MUSIC))
+                            evt.preventDefault();
+                    });
+                }
             }
 
             function checkMusic(node) {

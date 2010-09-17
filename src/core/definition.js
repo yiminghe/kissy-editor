@@ -670,7 +670,9 @@ KISSY.Editor.add("definition", function(KE) {
                     doc.execCommand('enableInlineTableEditing', false, !disableInlineTableEditing);
                 }
                 catch(e) {
-                    // For browsers which don't support the above methods, we can use the the resize event or resizestart for IE (#4208)
+                    //只能ie能用？，目前只有firefox,ie支持图片缩放
+                    // For browsers which don't support the above methods,
+                    // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
                         if (
                             disableObjectResizing ||
