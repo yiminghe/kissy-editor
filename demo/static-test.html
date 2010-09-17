@@ -150,6 +150,10 @@
 
     </textarea>
 </div>
+<h2>插入图片到编辑器1</h2>
+<div style="border:1px solid red;" id="imgup1">
+
+</div>
 
 <div style="width: 60%; margin: 50px auto">
     <label for="editor2">Editor Instance 2:</label>
@@ -254,7 +258,10 @@ youku,ku6,tudou视频
 xiami 音乐
 -->
 <script src="../src/biz/bangpai/plugins/music/plugin.js"></script>
-
+<!--
+xiami 音乐
+-->
+<script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
 <script>
 
     KISSY.use('editor', function(S) {
@@ -278,11 +285,18 @@ xiami 音乐
                 ],
                 "font-size":["13px","16px","20px"]
                 //,"font-family":["song"]
+                ,"bangpai-upload":{
+                    holder:"#imgup1",
+                    serverUrl:"",
+                    serverParams:{
+
+                    }
+                }
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "maximize,templates,separator,undo,separator,removeformat,font,format,color,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft"
+                "separator,table,resize,draft,bangpai-upload"
                 );
 
         KE("#editor2", {

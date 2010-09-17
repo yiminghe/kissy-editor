@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-17 10:15:52
+ * @buildtime: 2010-09-17 17:36:23
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8783,7 +8783,7 @@ KISSY.Editor.add("flashutils", function() {
                 ' quality="high" ' +
                 ' src="' + movie + '" ' +
                 ' type="application/x-shockwave-flash"/>' +
-               // + '</object>' +
+                // + '</object>' +
                 '</object>';
             return {
                 el:new Node(outerHTML, null, doc),
@@ -8812,7 +8812,7 @@ KISSY.Editor.add("flashutils", function() {
                 vars_str = "";
             doc = doc || document;
             attrs = attrs || {};
-            attrs.id = S.guid("ke-localstorage-");
+            attrs.id = attrs.id || S.guid("ke-runtimeflash-");
             for (var a in attrs) {
                 attrs_str += a + "='" + attrs[a] + "' ";
             }
@@ -8827,8 +8827,9 @@ KISSY.Editor.add("flashutils", function() {
                     attrs_str +
                     ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
                     '<param name="quality" value="high" />' +
+                    '<param name="wmode" value="transparent"/> ' +
                     '<param name="movie" value="' + movie + '" />' +
-                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '" />' : '') +
                     '</object>';
             }
             else {
@@ -8836,20 +8837,26 @@ KISSY.Editor.add("flashutils", function() {
                     "type='application/x-shockwave-flash'" +
                     " data='" + movie + "'" +
                     " " + attrs_str +
-                    ">"
+                    ">" +
+                    '<param name="wmode" value="transparent"/> '
                     +
-                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '')
                     + '</object>';
             }
 
+
             var holder = new Node(
                 "<div " +
-                    "style='" +
-                    "width:0;" +
-                    "height:0;" +
-                    "overflow:hidden;" +
-                    "'>", null, doc).appendTo(doc.body);
-
+                    "style='" + (
+                    cfg.style ? cfg.style : (
+                        "width:0;" +
+                            "height:0;" +
+                            "overflow:hidden;" 
+                        ))
+                    +
+                    "'>", null, doc
+                ).
+                appendTo(doc.body);
             holder.html(outerHTML);
             return doc.getElementById(attrs.id);
         }
@@ -14092,7 +14099,67 @@ KISSY.Editor.add("preview", function(editor) {
         new KE.Preview(editor);
     });
 });
-/**
+KISSY.Editor.add("progressbar", function() {
+    var S = KISSY,KE = S.Editor;
+    if (KE.ProgressBar) return;
+
+    (function() {
+        var DOM = S.DOM;
+        DOM.addStyleSheet("" +
+            "" +
+            ".ke-progressbar {" +
+            "border:1px solid #8F8F73;" +
+            "}" +
+            "" +
+            ".ke-progressbar-inner {" +
+            "background-color:#FF8C00;" +
+            "height:100%;" +
+            "}" +
+            "" +
+            ".ke-progressbar-title {" +
+            "width:50px;" +
+            "left:50%;" +
+            "position:absolute;" +
+            "}" +
+            "", "ke_progressbar");
+        function ProgressBar() {
+            ProgressBar.superclass.constructor.apply(this, arguments);
+            this._init();
+        }
+
+        ProgressBar.ATTRS = {
+            width:{},
+            height:{},
+            //0-100
+            progress:{}
+        };
+        S.extend(ProgressBar, S.Base, {
+            _init:function() {
+                var self = this,el = new Node("<div" +
+                    " class='ke-progressbar' " +
+                    "style='width:" + self.get("width") + ";" +
+                    "height:"
+                    + self.get("height") + ";'" +
+                    ">"),
+
+                    p = new Node("<div class='ke-progressbar-inner'>").appendTo(el),
+                    title = new Node("<span class='ke-progressbar-title'>").appendTo(el);
+                self.el = el;
+                self._title = title;
+                self._p = p;
+
+            },
+
+            _progressChange:function(ev) {
+                var self = this,v = ev.newVal;
+                self._p.css("width", v + "%");
+                self._title.html(v + "%");
+            }
+        });
+
+    })();
+
+});/**
  * remove inline-style format for kissy editor,modified from ckeditor
  * @author: yiminghe@gmail.com
  */
@@ -14652,7 +14719,9 @@ KISSY.Editor.add("table", function(editor, undefined) {
         TABLE_HTML = "<table class='ke-table-config'>" +
             "<tr>" +
             "<td>" +
-            "<label>行数： <input value='2' class='ke-table-rows ke-table-create-only' size='" + IN_SIZE + "'/></label>" +
+            "<label>行数： " +
+            "<input value='2' class='ke-table-rows ke-table-create-only' " +
+            "size='" + IN_SIZE + "'/></label>" +
             "</td>" +
             "<td>" +
             "<label>宽度： <input value='200' class='ke-table-width' size='" + IN_SIZE + "'/></label> " +
@@ -14729,7 +14798,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</tr>" +
             "</table>",
         isNumber = KE.Utils.isNumber,
-        isNumberWarn = "请输入数字",
+        isNumberWarn = "请输入正数",
         footHtml = "<button class='ke-table-ok'>确定</button> <button class='ke-table-cancel'>取消</button>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
@@ -14858,7 +14927,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         body = d.body;
                     d.body.html(TABLE_HTML);
                     d.foot.html(footHtml);
-                    var dbody=d.body;
+                    var dbody = d.body;
                     d.twidth = dbody.one(".ke-table-width");
                     d.theight = dbody.one(".ke-table-height");
                     // d.tcellspacing = d.body.one(".ke-table-cellspacing");
@@ -14887,10 +14956,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         tableDialog = self.tableDialog,
                         inputs = tableDialog.el.all("input");
                     for (var i = 0; i < inputs.length; i++) {
-                        var input = new Node(inputs[i]);
-                        if (input[0] == tableDialog.tcaption[0]) continue;
-                        if (S.trim(input.val()) &&
-                            !isNumber(input.val())) {
+                        var input = new Node(inputs[i]),v = input.val();
+                        if (input._4e_equals(tableDialog.tcaption)) continue;
+                        if (S.trim(v)
+                            &&
+                            !isNumber(v)
+                            ||
+                            (!input._4e_equals(tableDialog.tborder) && parseInt(v) <= 0)) {
                             var label = input.parent("label").text().replace(/[:：]/g, "");
                             alert(label + isNumberWarn);
                             return;

@@ -17,7 +17,9 @@ KISSY.Editor.add("table", function(editor, undefined) {
         TABLE_HTML = "<table class='ke-table-config'>" +
             "<tr>" +
             "<td>" +
-            "<label>行数： <input value='2' class='ke-table-rows ke-table-create-only' size='" + IN_SIZE + "'/></label>" +
+            "<label>行数： " +
+            "<input value='2' class='ke-table-rows ke-table-create-only' " +
+            "size='" + IN_SIZE + "'/></label>" +
             "</td>" +
             "<td>" +
             "<label>宽度： <input value='200' class='ke-table-width' size='" + IN_SIZE + "'/></label> " +
@@ -94,7 +96,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</tr>" +
             "</table>",
         isNumber = KE.Utils.isNumber,
-        isNumberWarn = "请输入数字",
+        isNumberWarn = "请输入正数",
         footHtml = "<button class='ke-table-ok'>确定</button> <button class='ke-table-cancel'>取消</button>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
@@ -223,7 +225,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         body = d.body;
                     d.body.html(TABLE_HTML);
                     d.foot.html(footHtml);
-                    var dbody=d.body;
+                    var dbody = d.body;
                     d.twidth = dbody.one(".ke-table-width");
                     d.theight = dbody.one(".ke-table-height");
                     // d.tcellspacing = d.body.one(".ke-table-cellspacing");
@@ -252,10 +254,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         tableDialog = self.tableDialog,
                         inputs = tableDialog.el.all("input");
                     for (var i = 0; i < inputs.length; i++) {
-                        var input = new Node(inputs[i]);
-                        if (input[0] == tableDialog.tcaption[0]) continue;
-                        if (S.trim(input.val()) &&
-                            !isNumber(input.val())) {
+                        var input = new Node(inputs[i]),v = input.val();
+                        if (input._4e_equals(tableDialog.tcaption)) continue;
+                        if (S.trim(v)
+                            &&
+                            !isNumber(v)
+                            ||
+                            (!input._4e_equals(tableDialog.tborder) && parseInt(v) <= 0)) {
                             var label = input.parent("label").text().replace(/[:：]/g, "");
                             alert(label + isNumberWarn);
                             return;

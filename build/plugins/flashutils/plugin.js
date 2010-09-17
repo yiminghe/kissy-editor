@@ -61,7 +61,7 @@ KISSY.Editor.add("flashutils", function() {
                 ' quality="high" ' +
                 ' src="' + movie + '" ' +
                 ' type="application/x-shockwave-flash"/>' +
-               // + '</object>' +
+                // + '</object>' +
                 '</object>';
             return {
                 el:new Node(outerHTML, null, doc),
@@ -90,7 +90,7 @@ KISSY.Editor.add("flashutils", function() {
                 vars_str = "";
             doc = doc || document;
             attrs = attrs || {};
-            attrs.id = S.guid("ke-localstorage-");
+            attrs.id = attrs.id || S.guid("ke-runtimeflash-");
             for (var a in attrs) {
                 attrs_str += a + "='" + attrs[a] + "' ";
             }
@@ -105,8 +105,9 @@ KISSY.Editor.add("flashutils", function() {
                     attrs_str +
                     ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
                     '<param name="quality" value="high" />' +
+                    '<param name="wmode" value="transparent"/> ' +
                     '<param name="movie" value="' + movie + '" />' +
-                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '" />' : '') +
                     '</object>';
             }
             else {
@@ -114,20 +115,26 @@ KISSY.Editor.add("flashutils", function() {
                     "type='application/x-shockwave-flash'" +
                     " data='" + movie + "'" +
                     " " + attrs_str +
-                    ">"
+                    ">" +
+                    '<param name="wmode" value="transparent"/> '
                     +
-                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
+                    (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '')
                     + '</object>';
             }
 
+
             var holder = new Node(
                 "<div " +
-                    "style='" +
-                    "width:0;" +
-                    "height:0;" +
-                    "overflow:hidden;" +
-                    "'>", null, doc).appendTo(doc.body);
-
+                    "style='" + (
+                    cfg.style ? cfg.style : (
+                        "width:0;" +
+                            "height:0;" +
+                            "overflow:hidden;" 
+                        ))
+                    +
+                    "'>", null, doc
+                ).
+                appendTo(doc.body);
             holder.html(outerHTML);
             return doc.getElementById(attrs.id);
         }
