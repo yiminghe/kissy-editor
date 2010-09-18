@@ -29,7 +29,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td colspan='2'>" +
                     "<label>网址： " +
                     "<input " +
-                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-flash-url' style='width:280px' value='"
                     + TIP
@@ -39,13 +39,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>宽度： " +
                     "<input " +
-                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-verify='^(?!0)\\d+(.\\d+)?$' " +
                     " data-warning='宽度请输入正数' " +
                     "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
-                    " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+                    " data-verify='^(?!0)\\d+(.\\d+)?$' " +
                     " data-warning='高度请输入正数' " +
                     "class='ke-flash-height' " +
                     "style='width:60px' /> 像素 </label></td>" +
@@ -62,7 +62,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>间距：" +
                     "<input " +
-                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' "
                     + "class='ke-flash-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +

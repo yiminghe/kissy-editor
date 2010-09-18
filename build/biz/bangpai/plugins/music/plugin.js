@@ -160,7 +160,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</span> " +
                 "<input " +
                 "" +
-                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-verify='^\\d+(.\\d+)?$' " +
                 " data-warning='间距请输入非负数字' " +
                 "class='ke-xiami-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +

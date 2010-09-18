@@ -160,7 +160,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</span> " +
                 "<input " +
                 "" +
-                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-verify='^\\d+(.\\d+)?$' " +
                 " data-warning='间距请输入非负数字' " +
                 "class='ke-xiami-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +
@@ -642,7 +642,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<label>宽度： " +
                 "</span> <input " +
                 "" +
-                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
                 " data-warning='宽度请输入正数' " +
                 "class='ke-video-width' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
@@ -652,7 +652,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<label> 高度： " +
                 "</span> <input " +
                 "" +
-                " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
                 " data-warning='高度请输入正数' " +
                 "class='ke-video-height' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
@@ -673,7 +673,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<label>间距： " +
                 "</span> <input " +
                 "" +
-                " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                " data-verify='^\\d+(.\\d+)?$' " +
                 " data-warning='间距请输入非负数字' " +
                 "class='ke-video-margin' style='width:60px' value='"
                 + 5 + "'/> 像素" +

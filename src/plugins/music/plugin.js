@@ -74,7 +74,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<span style='color:#0066CC;font-weight:bold;'>网址： " +
                     "</span>" +
                     "<input " +
-                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-music-url' style='width:230px' " +
                     "value='"
@@ -94,7 +94,7 @@ KISSY.Editor.add("music", function(editor) {
                     KE.Utils.duplicateStr("&nbsp;", 1) +
                     "<label>间距： " +
                     "</span> <input " +
-                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' " +
                     "class='ke-music-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +

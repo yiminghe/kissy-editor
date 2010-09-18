@@ -35,7 +35,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
                     "</span>" +
                     "<input " +
-                    " data-verify='^\\s*https?://[^\\s]+' " +
+                    " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
                     "</label>" +
@@ -48,7 +48,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<input " +
                     "" +
                     "" +
-                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
                     " data-warning='高度请输入正数' " +
                     "class='ke-img-height' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
@@ -58,7 +58,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<span>" + "宽度： " +
                     "</span>" +
                     "<input " +
-                    " data-verify='^\\s*" + DTIP + "|((?!0)\\d+(.\\d+)?)\\s*' " +
+                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
                     " data-warning='宽度请输入正数' " +
                     "class='ke-img-width' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
@@ -79,7 +79,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</span> " +
                     "<input " +
                     "" +
-                    " data-verify='^\\s*\\d+(.\\d+)?\\s*' " +
+                    " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' " +
                     "class='ke-img-margin' style='width:60px' value='"
                     + 5 + "'/> 像素" +

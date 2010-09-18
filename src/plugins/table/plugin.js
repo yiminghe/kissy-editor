@@ -19,7 +19,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<td>" +
             "<label>行数： " +
             "<input " +
-            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
             " data-warning='行数请输入正数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only' " +
@@ -28,7 +28,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>宽度： <input " +
-            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
             " data-warning='宽度请输入正数' " +
             "value='200' " +
             "class='ke-table-width' " +
@@ -42,7 +42,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<tr>" +
             "<td>" +
             "<label>列数： <input " +
-            " data-verify='^\\s*(?!0)\\d+(.\\d+)?\\s*' " +
+            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
             " data-warning='列数请输入正数' " +
             "" +
             "class='ke-table-cols ke-table-create-only' " +
@@ -51,7 +51,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>高度： <input " +
-            " data-verify='^\\s*((?!0)\\d+(.\\d+)?)?\\s*' " +
+            " data-verify='^((?!0)\\d+(.\\d+)?)?$' " +
             " data-warning='高度请输入正数' " +
             "value='' " +
             "class='ke-table-height' " +
@@ -103,7 +103,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
             "<td>" +
             "<label>边框： <input " +
-            " data-verify='^\\d+(.\\d+)?' " +
+            " data-verify='^\\d+(.\\d+)?$' " +
             " data-warning='边框请输入非负数字' " +
             "value='1' " +
             "class='ke-table-border' " +
