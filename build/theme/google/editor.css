@@ -109,10 +109,6 @@ textarea,iframe包装
     background-position: -160px 50%;
 }
 
-.ke-toolbar-ul {
-    background-position: -160px 50%;
-}
-
 .ke-toolbar-outdent {
     background-position: -144px 50%;
 }
@@ -166,7 +162,7 @@ textarea,iframe包装
     background-position: -997px 50%;
 }
 
-.ke-toolbar-flash {
+.ke-toolbar-flash,.ke-toolbar-video {
     background-position: -736px 50%;
     width: 16px;
 }
