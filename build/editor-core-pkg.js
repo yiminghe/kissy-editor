@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 13:45:31
+ * @buildtime: 2010-09-19 15:10:45
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -499,10 +499,11 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             }
             return true;
+        },
+        sourceDisable:function(editor, plugin) {
+            editor.on("sourcemode", plugin.disable, plugin);
+            editor.on("wysiwygmode", plugin.enable, plugin);
         }
-
-
-
     }
 });
 /**
@@ -681,7 +682,6 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
-            self._plugins = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -760,8 +760,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.iframe.css(DISPLAY, "");
             self.textarea.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, "");
             self.fire("wysiwygmode");
         },
 
@@ -769,9 +767,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.textarea.css(DISPLAY, "");
             self.iframe.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, HIDDEN);
-            self.toolBarDiv.all(".ke-tool-editor-source").css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, HIDDEN);
             //ie textarea height:100%不起作用
             if (UA.ie < 8) {
                 self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));
@@ -5776,7 +5771,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
-                        type = sel.getType(),
+                        type = sel&&sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking

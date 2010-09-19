@@ -21,6 +21,13 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     self.holder = new Node("<span>");
                     self.holder.appendTo(editor.statusDiv);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.holder.css("visibility", "hidden");
+                },
+                enable:function() {
+                    this.holder.css("visibility", "");
                 },
                 _selectionChange:function(ev) {
                     //console.log(ev);

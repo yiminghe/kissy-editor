@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 13:45:31
+ * @buildtime: 2010-09-19 15:10:45
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -499,10 +499,11 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             }
             return true;
+        },
+        sourceDisable:function(editor, plugin) {
+            editor.on("sourcemode", plugin.disable, plugin);
+            editor.on("wysiwygmode", plugin.enable, plugin);
         }
-
-
-
     }
 });
 /**
@@ -681,7 +682,6 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
-            self._plugins = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -760,8 +760,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.iframe.css(DISPLAY, "");
             self.textarea.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, "");
             self.fire("wysiwygmode");
         },
 
@@ -769,9 +767,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.textarea.css(DISPLAY, "");
             self.iframe.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, HIDDEN);
-            self.toolBarDiv.all(".ke-tool-editor-source").css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, HIDDEN);
             //ie textarea height:100%不起作用
             if (UA.ie < 8) {
                 self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));
@@ -5776,7 +5771,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
-                        type = sel.getType(),
+                        type = sel&&sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking
@@ -7310,18 +7305,25 @@ KISSY.Editor.add("color", function(editor) {
             S.extend(ColorSupport, S.Base, {
                 _init:function() {
                     var self = this,
-                        editor = this.get("editor"),
+                        editor = self.get("editor"),
                         toolBarDiv = editor.toolBarDiv,
                         el = new TripleButton({
                             container:toolBarDiv,
-                            title:this.get("title"),
-                            contentCls:this.get("contentCls")
+                            title:self.get("title"),
+                            contentCls:self.get("contentCls")
                             //text:this.get("text")
                         });
 
-                    el.on("offClick", this._showColors, this);
-                    this.el = el;
-                    KE.Utils.lazyRun(this, "_prepare", "_real");
+                    el.on("offClick", self._showColors, self);
+                    self.el = el;
+                    KE.Utils.lazyRun(self, "_prepare", "_real");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
                     var self = this;
@@ -7839,8 +7841,15 @@ KISSY.Editor.add("draft", function(editor) {
                     }, INTERVAL * 1000);
 
                     versions.on("click", self.recover, self);
+                    self.holder = holder;
+                    KE.Utils.sourceDisable(editor, self);
                 },
-
+                disable:function() {
+                    this.holder.css("visibility", "hidden");
+                },
+                enable:function() {
+                    this.holder.css("visibility", "");
+                },
                 sync:function() {
                     var self = this,
                         timeTip = self.timeTip,
@@ -7925,6 +7934,13 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     self.holder = new Node("<span>");
                     self.holder.appendTo(editor.statusDiv);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.holder.css("visibility", "hidden");
+                },
+                enable:function() {
+                    this.holder.css("visibility", "");
                 },
                 _selectionChange:function(ev) {
                     //console.log(ev);
@@ -8466,7 +8482,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         contentCls:self._contentCls,
                         title:self._tip
                     });
-                    self.el.on("click", self.show, this);
+                    self.el.on("offClick", self.show, this);
 
 
                     //右键功能关联到编辑器实例
@@ -8496,6 +8512,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     //注册双击，双击时检测
                     Event.on(editor.document, "dblclick", self._dbclick, self);
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
                 /**
@@ -8997,7 +9020,7 @@ KISSY.Editor.add("font", function(editor) {
                 styles:{},
                 editor:{}
             };
-
+            var Select = KE.Select;
             S.extend(Font, S.Base, {
 
                 _init:function() {
@@ -9005,7 +9028,7 @@ KISSY.Editor.add("font", function(editor) {
                         editor = self.get("editor"),
                         toolBarDiv = editor.toolBarDiv,
                         html = self.get("html");
-                    self.el = new KE.Select({
+                    self.el = new Select({
                         container: toolBarDiv,
                         doc:editor.document,
                         width:self.get("width"),
@@ -9016,6 +9039,13 @@ KISSY.Editor.add("font", function(editor) {
 
                     self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", Select.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", Select.ENABLED);
                 },
 
                 _vChange:function(ev) {
@@ -9087,6 +9117,13 @@ KISSY.Editor.add("font", function(editor) {
                     self.el.on("offClick", self._on, self);
                     self.el.on("onClick", self._off, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _on:function() {
                     var self = this,
@@ -9268,13 +9305,13 @@ KISSY.Editor.add("format", function(editor) {
             Format.ATTRS = {
                 editor:{}
             };
-
+            var Select = KE.Select;
             S.extend(Format, S.Base, {
                 _init:function() {
                     var self = this,
                         editor = this.get("editor"),
                         toolBarDiv = editor.toolBarDiv;
-                    self.el = new KE.Select({
+                    self.el = new Select({
                         container: toolBarDiv,
                         value:"",
                         doc:editor.document,
@@ -9285,6 +9322,13 @@ KISSY.Editor.add("format", function(editor) {
                     });
                     self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", Select.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", Select.ENABLED);
                 },
 
                 _vChange:function(ev) {
@@ -11848,6 +11892,13 @@ KISSY.Editor.add("image", function(editor) {
                         pluginInstance:self
                     });
 
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _dblclick:function(ev) {
                     var self = this,t = new Node(ev.target);
@@ -12284,6 +12335,13 @@ KISSY.Editor.add("indent", function(editor) {
                         editor.on("selectionChange", this._selectionChange, this);
                     else
                         el.set("state", TripleButton.OFF);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
 
@@ -12367,7 +12425,14 @@ KISSY.Editor.add("justify", function(editor) {
                         container:toolBarDiv
                     });
                     editor.on("selectionChange", self._selectionChange, self);
-                    self.el.on("click", self._effect, self);
+                    self.el.on("offClick", self._effect, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _effect:function() {
                     var self = this,editor = self.editor,
@@ -12574,11 +12639,18 @@ KISSY.Editor.add("link", function(editor) {
                         contentCls:"ke-toolbar-link",
                         title:"插入链接 "
                     });
-                    self.el.on("click", self.show, self);
+                    self.el.on("offClick", self.show, self);
                     BubbleView.attach({
                         pluginName:"link",
                         pluginInstance:self
                     });
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
                 _removeLink:function(a) {
@@ -13188,8 +13260,15 @@ KISSY.Editor.add("list", function(editor) {
                         toolBarDiv = editor.toolBarDiv,
                         el = self.el;
                     var self = self;
-                    el.on("click", self._change, self);
+                    el.on("offClick", self._change, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
 
@@ -13364,7 +13443,6 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"全屏",
                         contentCls:"ke-toolbar-maximize"
                         //text:"maximize"
@@ -14141,17 +14219,18 @@ KISSY.Editor.add("pagebreak", function(editor) {
     if (!KE.PageBreak) {
         (function() {
             var Node = S.Node,
+                TripleButton = KE.TripleButton,
                 mark_up = '<div' +
                     ' style="page-break-after: always; ">' +
                     '<span style="DISPLAY:none">&nbsp;</span></div>';
 
             function PageBreak(editor) {
-                var el = new KE.TripleButton({
+                var el = new TripleButton({
                     container:editor.toolBarDiv,
                     title:"分页",
                     contentCls:"ke-toolbar-pagebreak"
                 });
-                el.on("click", function() {
+                el.on("offClick", function() {
                     var real = new Node(mark_up, null, editor.document),
                         substitute = editor.createFakeElement ?
                             editor.createFakeElement(real,
@@ -14164,14 +14243,25 @@ KISSY.Editor.add("pagebreak", function(editor) {
                         insert = new Node("<div>", null, editor.document).append(substitute);
                     editor.insertElement(insert);
                 });
+                this.el = el;
+                KE.Utils.sourceDisable(editor, this);
             }
+
+            S.augment(PageBreak, {
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
+                }
+            });
 
             KE.PageBreak = PageBreak;
         })();
     }
 
     editor.addPlugin(function() {
-        KE.PageBreak(editor);
+        new KE.PageBreak(editor);
     });
 });/**
  * preview for kissy editor
@@ -14192,7 +14282,6 @@ KISSY.Editor.add("preview", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"预览",
                         contentCls:"ke-toolbar-preview"
                         //text:"preview"
@@ -14340,6 +14429,13 @@ KISSY.Editor.add("removeformat", function(editor) {
                 container:editor.toolBarDiv
             });
             self.el.on("offClick", self._remove, self);
+            KE.Utils.sourceDisable(editor, self);
+        },
+        disable:function() {
+            this.el.set("state", TripleButton.DISABLED);
+        },
+        enable:function() {
+            this.el.set("state", TripleButton.OFF);
         },
         _remove:function() {
             var self = this,
@@ -14504,14 +14600,23 @@ KISSY.Editor.add("select", function() {
         self._init();
     }
 
+    var DISABLED_CLASS = "ke-select-disabled",
+        ENABLED = 1,
+        DISABLED = 0;
+    Select.DISABLED = DISABLED;
+    Select.ENABLED = ENABLED;
+
+
     Select.ATTRS = {
         container:{},
         doc:{},
         value:{},
         width:{},
         title:{},
-        items:{}
+        items:{},
+        state:{value:ENABLED}
     };
+
 
     S.extend(Select, S.Base, {
         _init:function() {
@@ -14533,6 +14638,7 @@ KISSY.Editor.add("select", function() {
             self._focusA = el.one("a.ke-select");
             KE.Utils.lazyRun(this, "_prepare", "_real");
             self.on("afterValueChange", self._valueChange, self);
+            self.on("afterStateChange", self._stateChange, self);
         },
 
         /**
@@ -14615,6 +14721,14 @@ KISSY.Editor.add("select", function() {
 
             self.on("afterItemsChange", self._itemsChange, self);
         },
+        _stateChange:function(ev) {
+            var v = ev.newVal,el = this.el;
+            if (v == ENABLED) {
+                el.removeClass(DISABLED_CLASS);
+            } else {
+                el.addClass(DISABLED_CLASS);
+            }
+        },
         _select:function(ev) {
             ev.halt();
             var self = this,
@@ -14659,7 +14773,12 @@ KISSY.Editor.add("select", function() {
             ev.preventDefault();
 
             var self = this,
+                el = self.el,
                 v = self.get("value");
+
+            if (el.hasClass(DISABLED_CLASS)) {
+                return;
+            }
 
             if (self._focusA.hasClass(ke_select_active)) {
                 self.menu.hide();
@@ -14723,6 +14842,13 @@ KISSY.Editor.add("smiley", function(editor) {
                     });
                     self.el.on("offClick", this._show, this);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
                     var self = this,t = ev.target;
@@ -14797,7 +14923,6 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"源码",
                         contentCls:"ke-toolbar-source"
                         //text:"source"
@@ -15084,6 +15209,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     KE.Utils.lazyRun(this, "_prepareTableShow", "_realTableShow");
 
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _tableInit:function() {
                     var self = this,
@@ -15693,8 +15825,16 @@ KISSY.Editor.add("templates", function(editor) {
                         contentCls:"ke-toolbar-template",
                         title:"模板"
                     });
-                    el.on("click", self._show, self);
+                    el.on("offClick", self._show, self);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
+                    self.el=el;
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _prepare:function() {
                     var self = this,editor = self.editor,templates = editor.cfg.pluginConfig.templates || [];
@@ -15983,6 +16123,14 @@ KISSY.Editor.add("undo", function(editor) {
                             d:RedoMap[self.text]
                         });
                     });
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this._saveState = this.el.get("state");
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", this._saveState);
                 },
 
                 _respond:function(ev) {

@@ -29,8 +29,16 @@ KISSY.Editor.add("templates", function(editor) {
                         contentCls:"ke-toolbar-template",
                         title:"模板"
                     });
-                    el.on("click", self._show, self);
+                    el.on("offClick", self._show, self);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
+                    self.el=el;
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _prepare:function() {
                     var self = this,editor = self.editor,templates = editor.cfg.pluginConfig.templates || [];

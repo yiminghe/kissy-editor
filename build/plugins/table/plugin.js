@@ -238,6 +238,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     KE.Utils.lazyRun(this, "_prepareTableShow", "_realTableShow");
 
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _tableInit:function() {
                     var self = this,

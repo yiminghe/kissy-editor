@@ -739,7 +739,6 @@ select style for kissy editor
     text-decoration: none; /*border: 1px solid #A3D7FF;*/
     vertical-align: middle;
     white-space: nowrap; /*outline: none;*/
-    cursor: pointer;
 }
 
 .ke-select:hover {
@@ -755,7 +754,6 @@ select style for kissy editor
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
     vertical-align: middle;
-    cursor: pointer;
 }
 
 .ke-select-drop {
@@ -766,12 +764,18 @@ select style for kissy editor
     vertical-align: middle;
     width: 7px;
     height: 16px;
-    cursor: pointer;
 }
 
 .ke-select-active {
     background-color: #DDE1EB !important;
-    cursor: pointer;
+}
+
+.ke-select-disabled,
+.ke-select-disabled .ke-select:hover,
+.ke-select-disabled .ke-select {
+    cursor: default;
+    opacity: 0.3;
+    filter: alpha(opacity = 30);
 }
 
 .ke-menu .ke-select-menu-item {

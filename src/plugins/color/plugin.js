@@ -118,18 +118,25 @@ KISSY.Editor.add("color", function(editor) {
             S.extend(ColorSupport, S.Base, {
                 _init:function() {
                     var self = this,
-                        editor = this.get("editor"),
+                        editor = self.get("editor"),
                         toolBarDiv = editor.toolBarDiv,
                         el = new TripleButton({
                             container:toolBarDiv,
-                            title:this.get("title"),
-                            contentCls:this.get("contentCls")
+                            title:self.get("title"),
+                            contentCls:self.get("contentCls")
                             //text:this.get("text")
                         });
 
-                    el.on("offClick", this._showColors, this);
-                    this.el = el;
-                    KE.Utils.lazyRun(this, "_prepare", "_real");
+                    el.on("offClick", self._showColors, self);
+                    self.el = el;
+                    KE.Utils.lazyRun(self, "_prepare", "_real");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
                     var self = this;

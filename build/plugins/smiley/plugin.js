@@ -38,6 +38,13 @@ KISSY.Editor.add("smiley", function(editor) {
                     });
                     self.el.on("offClick", this._show, this);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
                     var self = this,t = ev.target;

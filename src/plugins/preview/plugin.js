@@ -17,7 +17,6 @@ KISSY.Editor.add("preview", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"预览",
                         contentCls:"ke-toolbar-preview"
                         //text:"preview"

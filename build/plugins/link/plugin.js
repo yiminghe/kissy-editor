@@ -152,11 +152,18 @@ KISSY.Editor.add("link", function(editor) {
                         contentCls:"ke-toolbar-link",
                         title:"插入链接 "
                     });
-                    self.el.on("click", self.show, self);
+                    self.el.on("offClick", self.show, self);
                     BubbleView.attach({
                         pluginName:"link",
                         pluginInstance:self
                     });
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
                 _removeLink:function(a) {

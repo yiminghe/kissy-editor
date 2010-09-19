@@ -57,13 +57,13 @@ KISSY.Editor.add("format", function(editor) {
             Format.ATTRS = {
                 editor:{}
             };
-
+            var Select = KE.Select;
             S.extend(Format, S.Base, {
                 _init:function() {
                     var self = this,
                         editor = this.get("editor"),
                         toolBarDiv = editor.toolBarDiv;
-                    self.el = new KE.Select({
+                    self.el = new Select({
                         container: toolBarDiv,
                         value:"",
                         doc:editor.document,
@@ -74,6 +74,13 @@ KISSY.Editor.add("format", function(editor) {
                     });
                     self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", Select.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", Select.ENABLED);
                 },
 
                 _vChange:function(ev) {

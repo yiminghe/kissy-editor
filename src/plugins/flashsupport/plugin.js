@@ -127,7 +127,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         contentCls:self._contentCls,
                         title:self._tip
                     });
-                    self.el.on("click", self.show, this);
+                    self.el.on("offClick", self.show, this);
 
 
                     //右键功能关联到编辑器实例
@@ -157,6 +157,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     //注册双击，双击时检测
                     Event.on(editor.document, "dblclick", self._dbclick, self);
                     KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
                 /**

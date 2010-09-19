@@ -32,7 +32,6 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"全屏",
                         contentCls:"ke-toolbar-maximize"
                         //text:"maximize"

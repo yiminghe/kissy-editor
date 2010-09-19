@@ -223,9 +223,10 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             }
             return true;
+        },
+        sourceDisable:function(editor, plugin) {
+            editor.on("sourcemode", plugin.disable, plugin);
+            editor.on("wysiwygmode", plugin.enable, plugin);
         }
-
-
-
     }
 });

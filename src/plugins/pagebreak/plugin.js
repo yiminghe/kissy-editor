@@ -24,17 +24,18 @@ KISSY.Editor.add("pagebreak", function(editor) {
     if (!KE.PageBreak) {
         (function() {
             var Node = S.Node,
+                TripleButton = KE.TripleButton,
                 mark_up = '<div' +
                     ' style="page-break-after: always; ">' +
                     '<span style="DISPLAY:none">&nbsp;</span></div>';
 
             function PageBreak(editor) {
-                var el = new KE.TripleButton({
+                var el = new TripleButton({
                     container:editor.toolBarDiv,
                     title:"分页",
                     contentCls:"ke-toolbar-pagebreak"
                 });
-                el.on("click", function() {
+                el.on("offClick", function() {
                     var real = new Node(mark_up, null, editor.document),
                         substitute = editor.createFakeElement ?
                             editor.createFakeElement(real,
@@ -47,13 +48,24 @@ KISSY.Editor.add("pagebreak", function(editor) {
                         insert = new Node("<div>", null, editor.document).append(substitute);
                     editor.insertElement(insert);
                 });
+                this.el = el;
+                KE.Utils.sourceDisable(editor, this);
             }
+
+            S.augment(PageBreak, {
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
+                }
+            });
 
             KE.PageBreak = PageBreak;
         })();
     }
 
     editor.addPlugin(function() {
-        KE.PageBreak(editor);
+        new KE.PageBreak(editor);
     });
 });

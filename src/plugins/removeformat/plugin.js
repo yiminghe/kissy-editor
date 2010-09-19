@@ -43,6 +43,13 @@ KISSY.Editor.add("removeformat", function(editor) {
                 container:editor.toolBarDiv
             });
             self.el.on("offClick", self._remove, self);
+            KE.Utils.sourceDisable(editor, self);
+        },
+        disable:function() {
+            this.el.set("state", TripleButton.DISABLED);
+        },
+        enable:function() {
+            this.el.set("state", TripleButton.OFF);
         },
         _remove:function() {
             var self = this,

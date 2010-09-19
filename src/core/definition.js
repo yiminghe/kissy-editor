@@ -110,7 +110,6 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
-            self._plugins = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -189,8 +188,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.iframe.css(DISPLAY, "");
             self.textarea.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, "");
             self.fire("wysiwygmode");
         },
 
@@ -198,9 +195,6 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.textarea.css(DISPLAY, "");
             self.iframe.css(DISPLAY, NONE);
-            self.toolBarDiv.children().css(VISIBILITY, HIDDEN);
-            self.toolBarDiv.all(".ke-tool-editor-source").css(VISIBILITY, "");
-            self.statusDiv.children().css(VISIBILITY, HIDDEN);
             //ie textarea height:100%不起作用
             if (UA.ie < 8) {
                 self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));

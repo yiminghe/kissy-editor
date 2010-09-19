@@ -860,7 +860,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
-                        type = sel.getType(),
+                        type = sel&&sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking

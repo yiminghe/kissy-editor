@@ -102,8 +102,15 @@ KISSY.Editor.add("draft", function(editor) {
                     }, INTERVAL * 1000);
 
                     versions.on("click", self.recover, self);
+                    self.holder = holder;
+                    KE.Utils.sourceDisable(editor, self);
                 },
-
+                disable:function() {
+                    this.holder.css("visibility", "hidden");
+                },
+                enable:function() {
+                    this.holder.css("visibility", "");
+                },
                 sync:function() {
                     var self = this,
                         timeTip = self.timeTip,

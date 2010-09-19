@@ -29,7 +29,14 @@ KISSY.Editor.add("justify", function(editor) {
                         container:toolBarDiv
                     });
                     editor.on("selectionChange", self._selectionChange, self);
-                    self.el.on("click", self._effect, self);
+                    self.el.on("offClick", self._effect, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _effect:function() {
                     var self = this,editor = self.editor,

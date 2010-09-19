@@ -79,7 +79,7 @@ KISSY.Editor.add("font", function(editor) {
                 styles:{},
                 editor:{}
             };
-
+            var Select = KE.Select;
             S.extend(Font, S.Base, {
 
                 _init:function() {
@@ -87,7 +87,7 @@ KISSY.Editor.add("font", function(editor) {
                         editor = self.get("editor"),
                         toolBarDiv = editor.toolBarDiv,
                         html = self.get("html");
-                    self.el = new KE.Select({
+                    self.el = new Select({
                         container: toolBarDiv,
                         doc:editor.document,
                         width:self.get("width"),
@@ -98,6 +98,13 @@ KISSY.Editor.add("font", function(editor) {
 
                     self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", Select.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", Select.ENABLED);
                 },
 
                 _vChange:function(ev) {
@@ -169,6 +176,13 @@ KISSY.Editor.add("font", function(editor) {
                     self.el.on("offClick", self._on, self);
                     self.el.on("onClick", self._off, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
                 _on:function() {
                     var self = this,

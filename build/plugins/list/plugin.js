@@ -505,8 +505,15 @@ KISSY.Editor.add("list", function(editor) {
                         toolBarDiv = editor.toolBarDiv,
                         el = self.el;
                     var self = self;
-                    el.on("click", self._change, self);
+                    el.on("offClick", self._change, self);
                     editor.on("selectionChange", self._selectionChange, self);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
 

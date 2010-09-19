@@ -258,6 +258,13 @@ KISSY.Editor.add("indent", function(editor) {
                         editor.on("selectionChange", this._selectionChange, this);
                     else
                         el.set("state", TripleButton.OFF);
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", TripleButton.OFF);
                 },
 
 

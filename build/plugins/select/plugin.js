@@ -22,14 +22,23 @@ KISSY.Editor.add("select", function() {
         self._init();
     }
 
+    var DISABLED_CLASS = "ke-select-disabled",
+        ENABLED = 1,
+        DISABLED = 0;
+    Select.DISABLED = DISABLED;
+    Select.ENABLED = ENABLED;
+
+
     Select.ATTRS = {
         container:{},
         doc:{},
         value:{},
         width:{},
         title:{},
-        items:{}
+        items:{},
+        state:{value:ENABLED}
     };
+
 
     S.extend(Select, S.Base, {
         _init:function() {
@@ -51,6 +60,7 @@ KISSY.Editor.add("select", function() {
             self._focusA = el.one("a.ke-select");
             KE.Utils.lazyRun(this, "_prepare", "_real");
             self.on("afterValueChange", self._valueChange, self);
+            self.on("afterStateChange", self._stateChange, self);
         },
 
         /**
@@ -133,6 +143,14 @@ KISSY.Editor.add("select", function() {
 
             self.on("afterItemsChange", self._itemsChange, self);
         },
+        _stateChange:function(ev) {
+            var v = ev.newVal,el = this.el;
+            if (v == ENABLED) {
+                el.removeClass(DISABLED_CLASS);
+            } else {
+                el.addClass(DISABLED_CLASS);
+            }
+        },
         _select:function(ev) {
             ev.halt();
             var self = this,
@@ -177,7 +195,12 @@ KISSY.Editor.add("select", function() {
             ev.preventDefault();
 
             var self = this,
+                el = self.el,
                 v = self.get("value");
+
+            if (el.hasClass(DISABLED_CLASS)) {
+                return;
+            }
 
             if (self._focusA.hasClass(ke_select_active)) {
                 self.menu.hide();

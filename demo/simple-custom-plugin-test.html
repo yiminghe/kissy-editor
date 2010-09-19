@@ -184,16 +184,17 @@
                 //,"font-family":["song"]
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "maximize,templates,separator,undo,separator,removeformat,font,format,color,separator," +
+                "templates,separator," +
+                "undo,separator,removeformat,font,format,color,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,pagebreak"
+                "separator,table,resize,draft,pagebreak,separator,maximize"
                 );
 
-
+        var TripleButton=KE.TripleButton;
         //最简单的自己写插件
         k.on("dataReady", function() {
 
-            var b1 = new KE.TripleButton({
+            var b1 = new TripleButton({
                 container:k.toolBarDiv,
                 title:"get data",
                 text:"get data"
@@ -203,7 +204,7 @@
             });
 
 
-            var b2 = new KE.TripleButton({
+            var b2 = new TripleButton({
                 container:k.toolBarDiv,
                 title:"set data",
                 text:"set data"
@@ -213,7 +214,7 @@
             });
 
 
-            var b3 = new KE.TripleButton({
+            var b3 = new TripleButton({
                 container:k.toolBarDiv,
                 title:"insert data",
                 //设置图标，css自己写
@@ -227,10 +228,12 @@
 
             k.on("sourcemode", function() {
                 alert("切换到了sourcemode ： " + (k.getMode() == KE.SOURCE_MODE));
+                b1.set("state", TripleButton.DISABLED);
             });
 
             k.on("wysiwygmode", function() {
                 alert("切换到了可视编辑器模式 ： " + (k.getMode() == KE.WYSIWYG_MODE));
+                b1.set("state", TripleButton.OFF);
             });
 
         });

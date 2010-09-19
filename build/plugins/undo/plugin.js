@@ -242,6 +242,14 @@ KISSY.Editor.add("undo", function(editor) {
                             d:RedoMap[self.text]
                         });
                     });
+                    KE.Utils.sourceDisable(editor, self);
+                },
+                disable:function() {
+                    this._saveState = this.el.get("state");
+                    this.el.set("state", TripleButton.DISABLED);
+                },
+                enable:function() {
+                    this.el.set("state", this._saveState);
                 },
 
                 _respond:function(ev) {

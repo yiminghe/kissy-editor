@@ -19,7 +19,6 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     var self = this,editor = self.editor;
                     self.el = new TripleButton({
                         container:editor.toolBarDiv,
-                        cls:"ke-tool-editor-source",
                         title:"源码",
                         contentCls:"ke-toolbar-source"
                         //text:"source"
