@@ -20,6 +20,7 @@ link
     _border: none;
     vertical-align: middle;
     white-space: nowrap; /*outline: none;*/
+    background-color: transparent;
 }
 
 .ke-triplebutton-on {
@@ -46,7 +47,7 @@ hover
 }
 
 .ke-triplebutton-off:hover {
-    background-color: #A3D7FF;
+    background-color: transparent;
     opacity: 0.7;
     filter: alpha(opacity = 70);
 }

@@ -697,7 +697,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self._title = "视频属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
-                    self._contentCls = "ke-toolbar-flash";
+                    self._contentCls = "ke-toolbar-video";
                     self._tip = "插入视频";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
