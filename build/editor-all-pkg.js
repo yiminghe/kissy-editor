@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 17:29:06
+ * @buildtime: 2010-09-19 20:13:13
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8394,13 +8394,13 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>宽度： " +
                     "<input " +
-                    " data-verify='^(?!0)\\d+(.\\d+)?$' " +
+                    " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='宽度请输入正数' " +
                     "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
-                    " data-verify='^(?!0)\\d+(.\\d+)?$' " +
+                    " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='高度请输入正数' " +
                     "class='ke-flash-height' " +
                     "style='width:60px' /> 像素 </label></td>" +
@@ -11807,7 +11807,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<input " +
                     "" +
                     "" +
-                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                     " data-warning='高度请输入正数' " +
                     "class='ke-img-height' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
@@ -11817,7 +11817,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<span>" + "宽度： " +
                     "</span>" +
                     "<input " +
-                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                     " data-warning='宽度请输入正数' " +
                     "class='ke-img-width' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
@@ -14999,8 +14999,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<td>" +
             "<label>行数： " +
             "<input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
-            " data-warning='行数请输入正数' " +
+             " data-verify='^(?!0$)\\d+$' " +
+            " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only' " +
             " size='" + IN_SIZE + "'" +
@@ -15008,7 +15008,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>宽度： <input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
+            " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
             " data-warning='宽度请输入正数' " +
             "value='200' " +
             "class='ke-table-width' " +
@@ -15022,8 +15022,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<tr>" +
             "<td>" +
             "<label>列数： <input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
-            " data-warning='列数请输入正数' " +
+            " data-verify='^(?!0$)\\d+$' " +
+            " data-warning='列数请输入正整数' " +
             "" +
             "class='ke-table-cols ke-table-create-only' " +
             "value='3' " +
@@ -15031,7 +15031,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>高度： <input " +
-            " data-verify='^((?!0)\\d+(.\\d+)?)?$' " +
+            " data-verify='^((?!0$)\\d+(.\\d+)?)?$' " +
             " data-warning='高度请输入正数' " +
             "value='' " +
             "class='ke-table-height' " +
@@ -15269,7 +15269,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (!re) return;
                     if (tableDialog.twidthunit.val() == "%") {
                         if (parseInt(tableDialog.twidth.val()) > 100) {
-                            alert("宽度：" + "请输入0-100之间");
+                            alert("宽度百分比：" + "请输入1-100之间");
                             return;
                         }
                     }

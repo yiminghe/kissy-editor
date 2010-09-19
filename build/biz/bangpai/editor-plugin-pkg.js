@@ -584,11 +584,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             width:480,
             height:400,
             detect:function(url) {
-                /*
-                 var m = url.match(/id_([^.]+)\.html$/);
-                 if (m) {
-                 return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
-                 }*/
+                var m = url.match(/id_([^.]+)\.html$/);
+                if (m) {
+                    return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                }
                 //if (/\.swf$/.test(url))
                 return url;
             }
@@ -598,11 +597,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             width:480,
             height:400,
             detect:function(url) {
-                /*
-                 var m = url.match(/\/view\/([^/]+)\/$/);
-                 if (m) {
-                 return "http://www.tudou.com/v/" + m[1] + "/v.swf";
-                 }*/
+                var m = url.match(/\/view\/([^/]+)\/$/);
+                if (m) {
+                    return "http://www.tudou.com/v/" + m[1] + "/v.swf";
+                }
                 //if (/\.swf$/.test(url))
                 return url;
             }
@@ -612,11 +610,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             width:480,
             height:400,
             detect:function(url) {
-                /*
-                 var m = url.match(/show\/([^.]+)\.html$/);
-                 if (m) {
-                 return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
-                 }*/
+                var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
+                if (m) {
+                    return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
+                }
                 //if (/\.swf$/.test(url))
                 return url;
             }
@@ -642,7 +639,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<label>宽度： " +
                 "</span> <input " +
                 "" +
-                " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                 " data-warning='宽度请输入正数' " +
                 "class='ke-video-width' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +
@@ -652,7 +649,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<label> 高度： " +
                 "</span> <input " +
                 "" +
-                " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                 " data-warning='高度请输入正数' " +
                 "class='ke-video-height' style='width:60px' value='"
                 + DTIP + "'/> 像素 " +

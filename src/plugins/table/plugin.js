@@ -19,8 +19,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<td>" +
             "<label>行数： " +
             "<input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
-            " data-warning='行数请输入正数' " +
+             " data-verify='^(?!0$)\\d+$' " +
+            " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only' " +
             " size='" + IN_SIZE + "'" +
@@ -28,7 +28,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>宽度： <input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
+            " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
             " data-warning='宽度请输入正数' " +
             "value='200' " +
             "class='ke-table-width' " +
@@ -42,8 +42,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<tr>" +
             "<td>" +
             "<label>列数： <input " +
-            " data-verify='^(?!0)\\d+(.\\d+)?$' " +
-            " data-warning='列数请输入正数' " +
+            " data-verify='^(?!0$)\\d+$' " +
+            " data-warning='列数请输入正整数' " +
             "" +
             "class='ke-table-cols ke-table-create-only' " +
             "value='3' " +
@@ -51,7 +51,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>高度： <input " +
-            " data-verify='^((?!0)\\d+(.\\d+)?)?$' " +
+            " data-verify='^((?!0$)\\d+(.\\d+)?)?$' " +
             " data-warning='高度请输入正数' " +
             "value='' " +
             "class='ke-table-height' " +
@@ -289,7 +289,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (!re) return;
                     if (tableDialog.twidthunit.val() == "%") {
                         if (parseInt(tableDialog.twidth.val()) > 100) {
-                            alert("宽度：" + "请输入0-100之间");
+                            alert("宽度百分比：" + "请输入1-100之间");
                             return;
                         }
                     }

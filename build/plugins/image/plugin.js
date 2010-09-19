@@ -48,7 +48,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<input " +
                     "" +
                     "" +
-                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                     " data-warning='高度请输入正数' " +
                     "class='ke-img-height' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
@@ -58,7 +58,7 @@ KISSY.Editor.add("image", function(editor) {
                     "<span>" + "宽度： " +
                     "</span>" +
                     "<input " +
-                    " data-verify='^" + DTIP + "|((?!0)\\d+(.\\d+)?)$' " +
+                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                     " data-warning='宽度请输入正数' " +
                     "class='ke-img-width' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
