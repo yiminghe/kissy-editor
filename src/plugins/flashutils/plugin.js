@@ -27,21 +27,25 @@ KISSY.Editor.add("flashutils", function() {
                 attrs_str = "",
                 vars_str = "";
             doc = doc || document;
-            if (attrs) {
-                for (var a in attrs) {
+
+            attrs = attrs || {};
+            attrs["wmode"] = "transparent";
+            for (var a in attrs) {
+                if (attrs.hasOwnProperty(a))
                     attrs_str += a + "='" + attrs[a] + "' ";
-                }
             }
+
             if (flashVars) {
                 for (var f in flashVars) {
-                    vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
+                    if (flashVars.hasOwnProperty(f))
+                        vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
                 }
                 vars_str = vars_str.substring(1);
             }
 
             var outerHTML = '<object ' +
                 attrs_str +
-                ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
+                ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +
                 '<param name="quality" value="high" />' +
                 '<param name="movie" value="' + movie + '" />' +
                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
@@ -92,20 +96,22 @@ KISSY.Editor.add("flashutils", function() {
             attrs = attrs || {};
             attrs.id = attrs.id || S.guid("ke-runtimeflash-");
             for (var a in attrs) {
-                attrs_str += a + "='" + attrs[a] + "' ";
+                if (attrs.hasOwnProperty(a))
+                    attrs_str += a + "='" + attrs[a] + "' ";
             }
             if (flashVars) {
                 for (var f in flashVars) {
-                    vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
+                    if (flashVars.hasOwnProperty(f))
+                        vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
                 }
                 vars_str = vars_str.substring(1);
             }
             if (UA.ie) {
                 var outerHTML = '<object ' +
                     attrs_str +
-                    ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
+                    ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +
                     '<param name="quality" value="high" />' +
-                    '<param name="wmode" value="transparent"/> ' +
+                    '<param name="wmode" value="transparent" /> ' +
                     '<param name="movie" value="' + movie + '" />' +
                     (vars_str ? '<param name="flashVars" value="' + vars_str + '" />' : '') +
                     '</object>';
@@ -129,7 +135,7 @@ KISSY.Editor.add("flashutils", function() {
                     cfg.style ? cfg.style : (
                         "width:0;" +
                             "height:0;" +
-                            "overflow:hidden;" 
+                            "overflow:hidden;"
                         ))
                     +
                     "'>", null, doc
