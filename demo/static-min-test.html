@@ -4,12 +4,34 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
-<link href="../build/theme/google/editor-pkg-min.css" rel="stylesheet"/>
+<link href="../build/theme/google/editor-pkg-min.css" rel="stylesheet" id="theme"/>
+<script src="http://github.com/yiminghe/kissy/raw/master/build/kissy-min.js"></script>
 </head>
 <body>
 
 <h1>KISSY Editor Demo</h1>
 
+<p>
+    <label>选择主题：
+        <select id="themes">
+            <option value="google">
+                google
+            </option>
+            <option value="cool">
+                清爽
+            </option>
+        </select></label>
+    <script>
+        KISSY.ready(function(S) {
+            var theme = S.one("#theme"),themes = S.one("#themes");
+            themes.val("google");
+            themes.on("change", function() {
+                var v = themes.val();
+                theme.attr("href", "../build/theme/" + v + "/editor-pkg-min.css");
+            });
+        })
+    </script>
+</p>
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
@@ -156,7 +178,6 @@
 </div>
 
 
-<script src="http://github.com/yiminghe/kissy/raw/master/build/kissy-min.js"></script>
 <script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
 <script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
 <script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
