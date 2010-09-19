@@ -141,10 +141,17 @@ KISSY.Editor.add("definition", function(KE) {
         addCommand:function(name, obj) {
             this._commands[name] = obj;
         },
+        hasCommand:function(name) {
+            return this._commands[name];
+        },
         execCommand:function(name) {
-            this.fire("save");
-            this._commands[name].exec(this);
-            this.fire("save");
+            var self = this;
+            //if (self._commands[name]) {
+            self.fire("save");
+            var re = self._commands[name].exec(self);
+            self.fire("save");
+            return re;
+            //}
         },
         getMode:function() {
             return this.textarea.css("display") == "none" ?

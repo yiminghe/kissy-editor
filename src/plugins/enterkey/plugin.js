@@ -38,9 +38,16 @@ KISSY.Editor.add("enterkey", function(editor) {
                     var path = new ElementPath(range.startContainer),
                         block = path.block;
                     //只有两层？
-                    if (block && ( block._4e_name() == 'li' || block.parent()._4e_name() == 'li' )) {
-                        editor.execCommand('outdent');
-                        return;
+                    if (block &&
+                        ( block._4e_name() == 'li' || block.parent()._4e_name() == 'li' )
+
+                        ) {
+                        if (editor.hasCommand('outdent')) {
+                            editor.execCommand('outdent');
+                            return;
+                        } else {
+                            return false;
+                        }
                     }
                 }
 
@@ -180,8 +187,8 @@ KISSY.Editor.add("enterkey", function(editor) {
                     if (keyCode === 13) {
                         if (ev.shiftKey) {
                         } else {
-                            editor.execCommand("enterBlock");
-                            ev.preventDefault();
+                            var re = editor.execCommand("enterBlock");
+                            if (re !== false)ev.preventDefault();
                         }
 
                     }

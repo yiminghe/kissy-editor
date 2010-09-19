@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 20:21:24
+ * @buildtime: 2010-09-19 20:57:26
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -713,10 +713,17 @@ KISSY.Editor.add("definition", function(KE) {
         addCommand:function(name, obj) {
             this._commands[name] = obj;
         },
+        hasCommand:function(name) {
+            return this._commands[name];
+        },
         execCommand:function(name) {
-            this.fire("save");
-            this._commands[name].exec(this);
-            this.fire("save");
+            var self = this;
+            //if (self._commands[name]) {
+            self.fire("save");
+            var re = self._commands[name].exec(self);
+            self.fire("save");
+            return re;
+            //}
         },
         getMode:function() {
             return this.textarea.css("display") == "none" ?
@@ -8037,9 +8044,16 @@ KISSY.Editor.add("enterkey", function(editor) {
                     var path = new ElementPath(range.startContainer),
                         block = path.block;
                     //只有两层？
-                    if (block && ( block._4e_name() == 'li' || block.parent()._4e_name() == 'li' )) {
-                        editor.execCommand('outdent');
-                        return;
+                    if (block &&
+                        ( block._4e_name() == 'li' || block.parent()._4e_name() == 'li' )
+
+                        ) {
+                        if (editor.hasCommand('outdent')) {
+                            editor.execCommand('outdent');
+                            return;
+                        } else {
+                            return false;
+                        }
                     }
                 }
 
@@ -8179,8 +8193,8 @@ KISSY.Editor.add("enterkey", function(editor) {
                     if (keyCode === 13) {
                         if (ev.shiftKey) {
                         } else {
-                            editor.execCommand("enterBlock");
-                            ev.preventDefault();
+                            var re = editor.execCommand("enterBlock");
+                            if (re !== false)ev.preventDefault();
                         }
 
                     }
