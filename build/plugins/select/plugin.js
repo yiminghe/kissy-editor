@@ -157,11 +157,19 @@ KISSY.Editor.add("select", function() {
             menu.hide();
         },
         _real:function() {
-            var self = this,xy = self.el.offset();
+            var self = this,
+                xy = self.el.offset(),
+                orixy = S.clone(xy),
+                menuHeight = self.menu.el.height(),
+                menuWidth = self.menu.el.width();
             xy.top += self.el.height();
+            if ((xy.top + menuHeight) > (DOM.scrollTop() + DOM.viewportHeight())) {
+                xy = orixy;
+                xy.top -= menuHeight + 12;
+            }
             xy.left += 1;
-            if (xy.left + self.menu.el.width() > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - self.menu.el.width() - 60;
+            if (xy.left + menuWidth > DOM.viewportWidth() - 60) {
+                xy.left = DOM.viewportWidth() - menuWidth - 60;
             }
             self.menu.show(xy);
         },
