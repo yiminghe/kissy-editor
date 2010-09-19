@@ -37,7 +37,7 @@ select style for kissy editor
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
-    vertical-align: middle;
+    /*vertical-align: middle; chrome 不居中*/
 }
 
 .ke-select-drop {

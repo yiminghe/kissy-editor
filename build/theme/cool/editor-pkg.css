@@ -632,15 +632,15 @@ menu style for kissy editor ,include contextmenu and select menu
 .ke-hd-x a {
     display: block;
     text-decoration: none;
-    background: url("toolbar-sprite.png") no-repeat scroll -784px 0 #E0EDFE;
-    height: 15px;
+    background: url("toolbar-sprite.png") no-repeat scroll -643px 0 #E0EDFE;
+    height: 16px;
     text-indent: -9999px;
     outline: none;
     width: 15px;
 }
 
 .ke-hd-x a:hover {
-    background-position: -768px 0;
+    background-position: -663px 0;
 }
 
 .ke-hd {
@@ -753,7 +753,7 @@ select style for kissy editor
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
-    vertical-align: middle;
+    /*vertical-align: middle; chrome 不居中*/
 }
 
 .ke-select-drop {

@@ -181,9 +181,9 @@ KISSY.Editor.add("overlay", function() {
             var self = this;
             Event.on(document, "keydown", self._keydown, self);
             //mask click support
-            if (mask) {
-                mask.on("click", self.hide, self);
-            }
+            //if (mask) {
+            //    mask.on("click", self.hide, self);
+            //}
         },
         //esc keydown support
         _keydown:function(ev) {
@@ -197,9 +197,9 @@ KISSY.Editor.add("overlay", function() {
         _unregister:function() {
             var self = this;
             Event.remove(document, "keydown", self._keydown, self);
-            if (mask) {
-                mask.detach("click", self.hide, self);
-            }
+            //if (mask) {
+            //    mask.detach("click", self.hide, self);
+            //}
         },
         _createEl:function() {
             //just manage container

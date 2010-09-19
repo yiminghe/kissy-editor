@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
-<link href="../build/theme/google/editor-pkg-min.css" rel="stylesheet" id="theme"/>
+<link href="../build/theme/cool/editor-pkg-min.css" rel="stylesheet" id="theme"/>
 <script src="http://github.com/yiminghe/kissy/raw/master/build/kissy-min.js"></script>
 </head>
 <body>
@@ -18,13 +18,13 @@
                 google
             </option>
             <option value="cool">
-                清爽
+                taobao - 清爽
             </option>
         </select></label>
     <script>
         KISSY.ready(function(S) {
             var theme = S.one("#theme"),themes = S.one("#themes");
-            themes.val("google");
+            themes.val("cool");
             themes.on("change", function() {
                 var v = themes.val();
                 theme.attr("href", "../build/theme/" + v + "/editor-pkg-min.css");

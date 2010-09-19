@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 15:17:13
+ * @buildtime: 2010-09-19 15:29:13
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14020,9 +14020,9 @@ KISSY.Editor.add("overlay", function() {
             var self = this;
             Event.on(document, "keydown", self._keydown, self);
             //mask click support
-            if (mask) {
-                mask.on("click", self.hide, self);
-            }
+            //if (mask) {
+            //    mask.on("click", self.hide, self);
+            //}
         },
         //esc keydown support
         _keydown:function(ev) {
@@ -14036,9 +14036,9 @@ KISSY.Editor.add("overlay", function() {
         _unregister:function() {
             var self = this;
             Event.remove(document, "keydown", self._keydown, self);
-            if (mask) {
-                mask.detach("click", self.hide, self);
-            }
+            //if (mask) {
+            //    mask.detach("click", self.hide, self);
+            //}
         },
         _createEl:function() {
             //just manage container
