@@ -11,7 +11,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         DTIP = "自动",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "请输入如 http://www.xxx.com/xxx.swf";
+        TIP = "http://";
 
     dataFilter && dataFilter.addRules({
         elements : {
@@ -75,8 +75,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                  if (m) {
                  return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                  }*/
-                if (/\.swf$/.test(url))
-                    return url;
+                //if (/\.swf$/.test(url))
+                return url;
             }
         },
         {
@@ -89,8 +89,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                  if (m) {
                  return "http://www.tudou.com/v/" + m[1] + "/v.swf";
                  }*/
-                if (/\.swf$/.test(url))
-                    return url;
+                //if (/\.swf$/.test(url))
+                return url;
             }
         },
         {
@@ -103,8 +103,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                  if (m) {
                  return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
                  }*/
-                if (/\.swf$/.test(url))
-                    return url;
+                //if (/\.swf$/.test(url))
+                return url;
             }
         }
     ];
@@ -119,7 +119,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<tr><td colspan='2'>" +
                 "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
                 "</span><input " +
-              
+
                 "class='ke-video-url' style='width:230px' value='"
                 + TIP
                 + "'/></label>" +
@@ -214,6 +214,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         var re = p.detect(url);
                         if (!re) {
                             alert(TIP);
+                            return;
                         }
                         return {
                             url:re,
