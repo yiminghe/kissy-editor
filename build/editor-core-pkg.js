@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 09:51:42
+ * @buildtime: 2010-09-19 12:07:19
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -95,6 +95,10 @@ KISSY.add("editor", function(S, undefined) {
                 //useCss: true
             },
             "enterkey",
+            {
+                name:"pagebreak",
+                requires:["fakeobjects"]
+            },
             {
                 name:"fakeobjects",
                 requires:["htmldataprocessor"]
@@ -646,6 +650,10 @@ KISSY.Editor.add("definition", function(KE) {
 
     //所有link,flash,music的悬浮小提示
     //KE.Tips = {};
+
+    KE.SOURCE_MODE = 0;
+    KE.WYSIWYG_MODE = 1;
+
     S.augment(KE, {
         init:function(textarea) {
             var self = this,
@@ -710,17 +718,32 @@ KISSY.Editor.add("definition", function(KE) {
             this._commands[name].exec(this);
             this.fire("save");
         },
+        getMode:function() {
+            return this.textarea.css("display") == "none" ?
+                KE.WYSIWYG_MODE :
+                KE.SOURCE_MODE;
+        },
         getData:function() {
-            var self = this;
+            var self = this,html;
+            if (self.getMode() == KE.WYSIWYG_MODE) {
+                html = self.document.body.innerHTML;
+            } else {
+                html = self.textarea.val();
+            }
             if (self.htmlDataProcessor)
-                return self.htmlDataProcessor.toHtml(self.document.body.innerHTML, "p");
-            return self.document.body.innerHTML;
+                return self.htmlDataProcessor.toHtml(html, "p");
+            return html;
         } ,
         setData:function(data) {
             var self = this;
             if (self.htmlDataProcessor)
                 data = self.htmlDataProcessor.toDataFormat(data, "p");
             self.document.body.innerHTML = data;
+            if (self.getMode() == KE.WYSIWYG_MODE) {
+                self.document.body.innerHTML = data;
+            } else {
+                self.textarea.val(data);
+            }
         },
         sync:function() {
             this.textarea.val(this.getData());
@@ -739,6 +762,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.textarea.css(DISPLAY, NONE);
             self.toolBarDiv.children().css(VISIBILITY, "");
             self.statusDiv.children().css(VISIBILITY, "");
+            self.fire("wysiwygmode");
         },
 
         _showSource:    function() {
@@ -752,6 +776,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (UA.ie < 8) {
                 self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));
             }
+            self.fire("sourcemode");
         },
         _prepareIFrameHtml:prepareIFrameHtml,
 

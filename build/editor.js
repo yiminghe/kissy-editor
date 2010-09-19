@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-16 21:59:25
+ * @buildtime: 2010-09-19 11:39:39
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -95,6 +95,10 @@ KISSY.add("editor", function(S, undefined) {
                 //useCss: true
             },
             "enterkey",
+            {
+                name:"pagebreak",
+                requires:["fakeobjects"]
+            },
             {
                 name:"fakeobjects",
                 requires:["htmldataprocessor"]

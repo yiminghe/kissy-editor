@@ -1,5 +1,7 @@
 /**
-button LoVe F HAte
+triple state button style for kissy editor
+LoVe F HAte
+@author:yiminghe@gmail.com
 **/
 
 /**
@@ -55,6 +57,7 @@ hover
 
 .ke-triplebutton-disabled:hover {
     background-color: white;
+    opacity: 0.3;
     filter: alpha(opacity = 30);
 }
 

@@ -219,3 +219,17 @@ img:-moz-broken {
     height: 24px;
     width: 24px;
 }
+
+img.ke_pagebreak {
+    background-image: url("pagebreak.gif");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-bottom: 1px dotted #999999;
+    border-top: 1px dotted #999999;
+    clear: both;
+    display: block;
+    float: none;
+    height: 5px !important;
+    page-break-after: always;
+    width: 100% !important;
+}

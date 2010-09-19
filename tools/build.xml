@@ -275,6 +275,7 @@ build file for kissy editor
                         destfile="@{theme}/editor-pkg.css"
                         encoding="${charset}"
                         outputencoding="${charset}">
+                    <filelist dir="${src.dir}/${theme.dir}" files="editor-common.css"/>
                     <fileset
                             dir="${src.dir}/${theme.dir}/${var.theme.dirname}"
                             includes="*.css"/>

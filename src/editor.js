@@ -96,6 +96,10 @@ KISSY.add("editor", function(S, undefined) {
             },
             "enterkey",
             {
+                name:"pagebreak",
+                requires:["fakeobjects"]
+            },
+            {
                 name:"fakeobjects",
                 requires:["htmldataprocessor"]
             },

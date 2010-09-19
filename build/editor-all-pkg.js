@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 09:51:42
+ * @buildtime: 2010-09-19 12:07:19
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -95,6 +95,10 @@ KISSY.add("editor", function(S, undefined) {
                 //useCss: true
             },
             "enterkey",
+            {
+                name:"pagebreak",
+                requires:["fakeobjects"]
+            },
             {
                 name:"fakeobjects",
                 requires:["htmldataprocessor"]
@@ -646,6 +650,10 @@ KISSY.Editor.add("definition", function(KE) {
 
     //所有link,flash,music的悬浮小提示
     //KE.Tips = {};
+
+    KE.SOURCE_MODE = 0;
+    KE.WYSIWYG_MODE = 1;
+
     S.augment(KE, {
         init:function(textarea) {
             var self = this,
@@ -710,17 +718,32 @@ KISSY.Editor.add("definition", function(KE) {
             this._commands[name].exec(this);
             this.fire("save");
         },
+        getMode:function() {
+            return this.textarea.css("display") == "none" ?
+                KE.WYSIWYG_MODE :
+                KE.SOURCE_MODE;
+        },
         getData:function() {
-            var self = this;
+            var self = this,html;
+            if (self.getMode() == KE.WYSIWYG_MODE) {
+                html = self.document.body.innerHTML;
+            } else {
+                html = self.textarea.val();
+            }
             if (self.htmlDataProcessor)
-                return self.htmlDataProcessor.toHtml(self.document.body.innerHTML, "p");
-            return self.document.body.innerHTML;
+                return self.htmlDataProcessor.toHtml(html, "p");
+            return html;
         } ,
         setData:function(data) {
             var self = this;
             if (self.htmlDataProcessor)
                 data = self.htmlDataProcessor.toDataFormat(data, "p");
             self.document.body.innerHTML = data;
+            if (self.getMode() == KE.WYSIWYG_MODE) {
+                self.document.body.innerHTML = data;
+            } else {
+                self.textarea.val(data);
+            }
         },
         sync:function() {
             this.textarea.val(this.getData());
@@ -739,6 +762,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.textarea.css(DISPLAY, NONE);
             self.toolBarDiv.children().css(VISIBILITY, "");
             self.statusDiv.children().css(VISIBILITY, "");
+            self.fire("wysiwygmode");
         },
 
         _showSource:    function() {
@@ -752,6 +776,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (UA.ie < 8) {
                 self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));
             }
+            self.fire("sourcemode");
         },
         _prepareIFrameHtml:prepareIFrameHtml,
 
@@ -14090,7 +14115,65 @@ KISSY.Editor.add("overlay", function() {
 
     KE.SimpleOverlay = Overlay;
 });
-/**
+KISSY.Editor.add("pagebreak", function(editor) {
+    var S = KISSY,KE = S.Editor,
+        dataProcessor = editor.htmlDataProcessor,
+        dataFilter = dataProcessor && dataProcessor.dataFilter,
+        CLS = "ke_pagebreak",
+        TYPE = "div";
+    if (dataFilter) {
+        dataFilter.addRules({
+            elements :
+            {
+                div : function(element) {
+                    var attributes = element.attributes,
+                        style = attributes && attributes.style,
+                        child = style && element.children.length == 1 && element.children[ 0 ],
+                        childStyle = child && ( child.name == 'span' ) && child.attributes.style;
+
+                    if (childStyle && ( /page-break-after\s*:\s*always/i ).test(style) && ( /display\s*:\s*none/i ).test(childStyle))
+                        return dataProcessor.createFakeParserElement(element, CLS, TYPE);
+                }
+            }
+        });
+    }
+
+    if (!KE.PageBreak) {
+        (function() {
+            var Node = S.Node,
+                mark_up = '<div' +
+                    ' style="page-break-after: always; ">' +
+                    '<span style="DISPLAY:none">&nbsp;</span></div>';
+
+            function PageBreak(editor) {
+                var el = new KE.TripleButton({
+                    container:editor.toolBarDiv,
+                    title:"分页",
+                    contentCls:"ke-toolbar-pagebreak"
+                });
+                el.on("click", function() {
+                    var real = new Node(mark_up, null, editor.document),
+                        substitute = editor.createFakeElement ?
+                            editor.createFakeElement(real,
+                                CLS,
+                                TYPE,
+                                true,
+                                mark_up) :
+                            real,
+
+                        insert = new Node("<div>", null, editor.document).append(substitute);
+                    editor.insertElement(insert);
+                });
+            }
+
+            KE.PageBreak = PageBreak;
+        })();
+    }
+
+    editor.addPlugin(function() {
+        KE.PageBreak(editor);
+    });
+});/**
  * preview for kissy editor
  * @author: yiminghe@gmail.com
  */
