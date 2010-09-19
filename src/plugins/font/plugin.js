@@ -214,11 +214,14 @@ KISSY.Editor.add("font", function(editor) {
                         text = self.get("text"),
                         style = self.get("style"),
                         title = self.get("title"),
+                        el = self.el,
                         elementPath = ev.path;
+                    if (el.get("state") == TripleButton.DISABLED)
+                        return;
                     if (style.checkActive(elementPath)) {
-                        self.el.set("state", TripleButton.ON);
+                        el.set("state", TripleButton.ON);
                     } else {
-                        self.el.set("state", TripleButton.OFF);
+                        el.set("state", TripleButton.OFF);
                     }
 
                 }

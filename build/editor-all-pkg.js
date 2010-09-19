@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 15:10:45
+ * @buildtime: 2010-09-19 15:17:13
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -9155,11 +9155,14 @@ KISSY.Editor.add("font", function(editor) {
                         text = self.get("text"),
                         style = self.get("style"),
                         title = self.get("title"),
+                        el = self.el,
                         elementPath = ev.path;
+                    if (el.get("state") == TripleButton.DISABLED)
+                        return;
                     if (style.checkActive(elementPath)) {
-                        self.el.set("state", TripleButton.ON);
+                        el.set("state", TripleButton.ON);
                     } else {
-                        self.el.set("state", TripleButton.OFF);
+                        el.set("state", TripleButton.OFF);
                     }
 
                 }
