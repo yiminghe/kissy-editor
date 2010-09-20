@@ -8,24 +8,19 @@
     top: 0;
     border: none;
     position: absolute;
-    z-index: 9999;
 }
 
 .ke-loading {
     position: absolute;
-    width: 66px;
-    height: 66px;
     left: -9999px;
     top: -9999px;
-    line-height: 66px;
-    text-align: center;
-    z-index: 10000;
-    background: url('loading_mask.gif');
+    border: 1px solid #3A5774;
+    padding: 4px;
+    background: #000000 url('loading_mask.gif') center center no-repeat;
 }
 
 .ke-dialog {
     position: absolute;
-    z-index: 10001;
     background: none repeat scroll 0 0 #C1D9FF;
     border: 1px solid #3A5774;
     color: #000000;
@@ -35,7 +30,6 @@
 
 .ke-dialog-iframe {
     position: absolute;
-    z-index: 995;
     border: none;
 }
 
@@ -51,15 +45,15 @@
 .ke-hd-x a {
     display: block;
     text-decoration: none;
-    background: url("toolbar-sprite.png") no-repeat scroll -643px 0 #E0EDFE;
-    height: 16px;
+    background: url("toolbar-sprite.png") no-repeat scroll -784px 0 #E0EDFE;
+    height: 15px;
     text-indent: -9999px;
     outline: none;
     width: 15px;
 }
 
 .ke-hd-x a:hover {
-    background-position: -663px 0;
+    background-position: -768px 0;
 }
 
 .ke-hd {
