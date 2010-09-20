@@ -721,6 +721,20 @@ KISSY.Editor.add("definition", function(KE) {
             });
         }
 
+
+        if (false && UA.gecko) {
+            Event.on(doc, "mousedown", function(ev) {
+                var control = new Node(ev.target);
+                if (control._4e_name() === 'img' &&
+                    /ke_/.test(control[0].className)
+                    ) {
+                    //firefox禁止拖放
+                    self.getSelection().selectElement(control);
+                    ev.preventDefault();
+                }
+            });
+        }
+
         //注意：必须放在这个位置，等iframe加载好再开始运行
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);

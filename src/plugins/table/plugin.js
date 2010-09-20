@@ -19,7 +19,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<td>" +
             "<label>行数： " +
             "<input " +
-             " data-verify='^(?!0$)\\d+$' " +
+            " data-verify='^(?!0$)\\d+$' " +
             " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only' " +

@@ -184,6 +184,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
+                    if(!r) return;
                     var url = self._getFlashUrl(r);
                     tipurl.html(url);
                     tipurl.attr("href", url);
@@ -227,6 +228,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
+                        if(!r) return;
                         if (r.attr("width")) {
                             self.dWidth.val(parseInt(r.attr("width")));
                         }

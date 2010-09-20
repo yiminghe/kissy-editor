@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-20 10:00:37
+ * @buildtime: 2010-09-20 12:48:30
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1289,6 +1289,20 @@ KISSY.Editor.add("definition", function(KE) {
                 var control = new Node(ev.target);
                 if (S.inArray(control._4e_name(), ['img', 'hr', 'input', 'textarea', 'select'])) {
                     self.getSelection().selectElement(control);
+                }
+            });
+        }
+
+
+        if (false && UA.gecko) {
+            Event.on(doc, "mousedown", function(ev) {
+                var control = new Node(ev.target);
+                if (control._4e_name() === 'img' &&
+                    /ke_/.test(control[0].className)
+                    ) {
+                    //firefox禁止拖放
+                    self.getSelection().selectElement(control);
+                    ev.preventDefault();
                 }
             });
         }
@@ -8552,6 +8566,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
+                    if(!r) return;
                     var url = self._getFlashUrl(r);
                     tipurl.html(url);
                     tipurl.attr("href", url);
@@ -8595,6 +8610,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
+                        if(!r) return;
                         if (r.attr("width")) {
                             self.dWidth.val(parseInt(r.attr("width")));
                         }
@@ -11841,7 +11857,7 @@ KISSY.Editor.add("image", function(editor) {
                     labelStyle + "对齐： " +
                     "</span>" +
                     "<select class='ke-img-align'>" +
-                    "<option value=''>无</option>" +
+                    "<option value='none'>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
@@ -12017,14 +12033,14 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl._4e_style("float"));
+                        self.imgAlign.val(_selectedEl.css("float"));
                         var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
                         self.imgMargin.val(margin);
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
-                        self.imgAlign.val();
+                        self.imgAlign.val("");
                         self.imgMargin.val("5");
 
                     }
@@ -15012,7 +15028,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<td>" +
             "<label>行数： " +
             "<input " +
-             " data-verify='^(?!0$)\\d+$' " +
+            " data-verify='^(?!0$)\\d+$' " +
             " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only' " +

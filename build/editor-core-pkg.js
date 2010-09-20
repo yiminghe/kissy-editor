@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-20 10:00:37
+ * @buildtime: 2010-09-20 12:48:30
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1289,6 +1289,20 @@ KISSY.Editor.add("definition", function(KE) {
                 var control = new Node(ev.target);
                 if (S.inArray(control._4e_name(), ['img', 'hr', 'input', 'textarea', 'select'])) {
                     self.getSelection().selectElement(control);
+                }
+            });
+        }
+
+
+        if (false && UA.gecko) {
+            Event.on(doc, "mousedown", function(ev) {
+                var control = new Node(ev.target);
+                if (control._4e_name() === 'img' &&
+                    /ke_/.test(control[0].className)
+                    ) {
+                    //firefox禁止拖放
+                    self.getSelection().selectElement(control);
+                    ev.preventDefault();
                 }
             });
         }

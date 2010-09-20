@@ -69,7 +69,7 @@ KISSY.Editor.add("image", function(editor) {
                     labelStyle + "对齐： " +
                     "</span>" +
                     "<select class='ke-img-align'>" +
-                    "<option value=''>无</option>" +
+                    "<option value='none'>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
@@ -245,14 +245,14 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl._4e_style("float"));
+                        self.imgAlign.val(_selectedEl.css("float"));
                         var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
                         self.imgMargin.val(margin);
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
-                        self.imgAlign.val();
+                        self.imgAlign.val("");
                         self.imgMargin.val("5");
 
                     }
