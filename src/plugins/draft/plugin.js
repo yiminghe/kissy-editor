@@ -8,7 +8,7 @@ KISSY.Editor.add("draft", function(editor) {
         (function() {
             var Node = S.Node,
                 LIMIT = 5,
-                INTERVAL = 5 * 60 ,
+                INTERVAL = 5,
                 JSON = S.JSON,
                 MIDDLE = " vertical-align:middle;",
                 DRAFT_SAVE = "ke-draft-save",
@@ -57,20 +57,29 @@ KISSY.Editor.add("draft", function(editor) {
                     var self = this,
                         editor = self.editor,
                         toolbar = editor.toolBarDiv,
-                        statusbar = editor.statusDiv,
-                        holder = new Node(
-                            "<div style='" +
-                                "position:absolute;" +
-                                "right:30px;" +
-                                "bottom:0;" +
-                                "width:600px'>" +
-                                "<span style='" + MIDDLE + "'>" +
-                                "内容正文每5分钟自动保存一次。" +
-                                "</span>" +
-                                "</div>").appendTo(statusbar);
+                        statusbar = editor.statusDiv;
+                    var cfg = editor.cfg.pluginConfig;
+                    cfg.draft = cfg.draft || {};
+                    self.draftInterval = cfg.draft.interval
+                        = cfg.draft.interval || INTERVAL;
+                    self.draftLimit = cfg.draft.limit
+                        = cfg.draft.limit || LIMIT;
+                    var holder = new Node(
+                        "<div style='" +
+                            "position:absolute;" +
+                            "right:30px;" +
+                            "bottom:0;" +
+                            "width:600px'>" +
+                            "<span style='" + MIDDLE + "'>" +
+                            "内容正文每" +
+                            cfg.draft.interval
+                            + "分钟自动保存一次。" +
+                            "</span>" +
+                            "</div>").appendTo(statusbar);
                     self.timeTip = new Node("<span style='" + MIDDLE + "" +
                         "margin:0 10px;" +
                         "'>").appendTo(holder);
+
                     var versions = new KE.Select({
                         container: holder,
                         doc:editor.document,
@@ -98,7 +107,7 @@ KISSY.Editor.add("draft", function(editor) {
 
                     setInterval(function() {
                         self.save(true);
-                    }, INTERVAL * 1000);
+                    }, self.draftInterval * 60 * 1000);
 
                     versions.on("click", self.recover, self);
                     self.holder = holder;
@@ -112,10 +121,11 @@ KISSY.Editor.add("draft", function(editor) {
                 },
                 sync:function() {
                     var self = this,
+                        draftLimit = self.draftLimit,
                         timeTip = self.timeTip,
                         versions = self.versions,drafts = self.drafts;
-                    if (drafts.length > LIMIT)
-                        drafts.splice(0, drafts.length - LIMIT);
+                    if (drafts.length > draftLimit)
+                        drafts.splice(0, drafts.length - draftLimit);
                     var items = [],draft,tip;
                     for (var i = 0; i < drafts.length; i++) {
                         draft = drafts[i];
