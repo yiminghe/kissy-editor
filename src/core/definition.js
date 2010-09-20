@@ -729,7 +729,6 @@ KISSY.Editor.add("definition", function(KE) {
                     /ke_/.test(control[0].className)
                     ) {
                     //firefox禁止拖放
-                    self.getSelection().selectElement(control);
                     ev.preventDefault();
                 }
             });
