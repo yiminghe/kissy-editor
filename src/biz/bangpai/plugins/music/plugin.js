@@ -255,6 +255,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     }, self);
 
                     function loadRecordsByPage(page) {
+                        var query = input.val();
+                        if (query.replace(/[^\x00-\xff]/g, "@@").length > 30) {
+                            alert("长度上限30个字符（1个汉字=2个字符）");
+                            return;
+                        } else if (!S.trim(query)) {
+                            alert("不能为空！");
+                            return;
+                        }
                         self._xiami_submit[0].disabled = true;
                         var params = {
                             key:encodeURIComponent(input.val()),
@@ -269,7 +277,21 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             "width:108px;" +
                             "margin:5px auto 0 auto;" +
                             "'src='" + loading + "'/>");
-                        S.getScript(req);
+                        var node = S.getScript(req, {
+                            timeout:10,
+                            success:function() {
+                            },
+                            error:function() {
+                                node.src = '';
+                                self._xiami_submit[0].disabled = false;
+                                var html = "<p style='text-align:center;margin:10px 0;'>" +
+                                    "不好意思，超时了，请重试！" +
+                                    "</p>";
+                                self._xiamia_list.html(html);
+                            }
+                        });
+
+
                     }
 
                     action.on("submit", function(ev) {
@@ -342,7 +364,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
                             var page = data.page,
                                 totalpage = Math.floor(data.total / 8),
-                                start = page - 3,end = page + 3;
+                                start = page - 3,
+                                end = page + 3;
+
                             if (totalpage > 1) {
                                 if (start <= 2) {
                                     end = Math.min(2 - start + end, totalpage - 1);

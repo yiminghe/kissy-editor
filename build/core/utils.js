@@ -31,7 +31,6 @@ KISSY.Editor.add("utils", function(KE) {
         }
         ,
 
-
         getXY:function(x, y, srcDoc, destDoc) {
             var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
 

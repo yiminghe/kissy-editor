@@ -14,8 +14,6 @@ KISSY.Editor.add("overlay", function() {
         Event = S.Event,
         DOM = S.DOM,
         mask ,
-        mask_iframe,
-        d_iframe,
         dialogMarkUp = "<div class='ke-dialog' " +
             "style='width:" +
             "@width@" +
@@ -45,6 +43,7 @@ KISSY.Editor.add("overlay", function() {
             "outline:none;" +
             "font-size:0;'" +
             "></a>",
+        loadingMask,
         noVisibleStyle = {
             "left":"-9999px",
             top:"-9999px"
@@ -60,34 +59,21 @@ KISSY.Editor.add("overlay", function() {
 
 
     Overlay.init = function() {
-        var body = document.body,maskStyle = {
-            "width": "100%",
-            "height": DOM.docHeight() + "px",
-            "opacity": 0.4
-        };
-        S.mix(maskStyle, noVisibleStyle);
-
+        Overlay.init = null;
         /**
          * 遮罩层
          */
-        mask = new Node("<div class=\"ke-mask\">&nbsp;</div>").appendTo(body);
-        mask.css(maskStyle);
-
-
-        if (UA.ie && UA.ie == 6) {
-            /**
-             * 窗口垫片-shim
-             */
-            d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'" +
-                "></iframe>").appendTo(body);
-            /**
-             * 遮罩层垫片
-             */
-            mask_iframe = new Node("<" + "iframe class='ke-mask'" +
-                "></iframe>").appendTo(body);
-            S.all([mask_iframe[0],d_iframe[0]]).css(maskStyle);
-        }
-        Overlay.init = null;
+        mask = new Node("<div class=\"ke-mask\">&nbsp;</div>").appendTo(document.body);
+        mask.css({
+            "width": "100%",
+            "height": DOM.docHeight() + "px",
+            "opacity": 0.4
+        });
+        mask = new Overlay({
+            el:mask,
+            focusMgr:false,
+            draggable:false
+        });
     };
 
 
@@ -95,6 +81,7 @@ KISSY.Editor.add("overlay", function() {
         title:{value:""},
         width:{value:"450px"},
         visible:{value:false},
+        "zIndex":{value:9999},
         //帮你管理焦点
         focusMgr:{value:true},
         mask:{value:false},
@@ -106,7 +93,7 @@ KISSY.Editor.add("overlay", function() {
             var self = this;
             self._createEl();
             var el = self.el;
-
+            el.css("z-index", self.get("zIndex"));
             /**
              * 窗口显示与隐藏
              */
@@ -122,7 +109,6 @@ KISSY.Editor.add("overlay", function() {
                     self.fire("hide");
                 }
             });
-
 
             /**
              * 关联编辑器焦点保留与复原
@@ -146,35 +132,23 @@ KISSY.Editor.add("overlay", function() {
             });
 
 
-            if (UA.ie === 6) {
-                /**
-                 * ie6 窗口垫片同步
-                 */
-                self.on("show", function() {
-                    var bw = el.width(),
-                        bh = el.height();
-                    d_iframe.css({
-                        width: bw + "px",
-                        height: bh + "px"
-                    });
-                    d_iframe.css(el.offset());
-                });
-                self.on("hide", function() {
-                    d_iframe.css(noVisibleStyle);
-                });
-            }
-
             if (self.get("mask")) {
                 /**
                  * 遮罩层与ie6遮罩垫片同步
                  */
                 self.on("show", function() {
-                    S.all([mask[0],mask_iframe && mask_iframe[0]]).css({"left":"0px","top":"0px"});
+                    mask.set("zIndex", self.get("zIndex") - 1);
+                    mask.show({left:0,top:0});
                 });
                 self.on("hide", function() {
-                    S.all([mask[0],mask_iframe && mask_iframe[0]]).css(noVisibleStyle);
+                    mask.hide();
                 });
             }
+
+            self.on("afterZIndexChange", function(ev) {
+                el.css("z-index", ev.newVal)
+            });
+            KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
 
         },
         _register:function() {
@@ -206,9 +180,13 @@ KISSY.Editor.add("overlay", function() {
             var self = this,el = self.get("el");
             if (!el) {
                 //also gen html
-                el = new Node(dialogMarkUp.replace(/@width@/, self.get("width")).replace(/@title@/,
-                    self.get("title"))).appendTo(document.body);
-                var head = el.one(".ke-hd"),id = S.guid("ke-overlay-head-");
+                el = new Node(
+                    dialogMarkUp.replace(/@width@/,
+                        self.get("width")).replace(/@title@/,
+                        self.get("title"))).appendTo(document.body
+                    );
+                var head = el.one(".ke-hd"),
+                    id = S.guid("ke-overlay-head-");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
                 self._close = el.one(".ke-close");
@@ -230,9 +208,9 @@ KISSY.Editor.add("overlay", function() {
                             id:head
                         }
                     });
-                    if (UA.ie === 6) {
+                    if (self._d_iframe) {
                         drag.on("move", function() {
-                            d_iframe.offset(el.offset());
+                            self._d_iframe.offset(el.offset());
                         });
                     }
                 }
@@ -260,22 +238,21 @@ KISSY.Editor.add("overlay", function() {
             });
         },
 
-        _prepareShow:function() {
-            Overlay.init();
-        },
 
         _getFocusEl:function() {
-            var self = this;
-            if (self._focusEl) {
-                return self._focusEl;
+            var self = this,fel = self._focusEl;
+            if (fel) {
+                return fel;
             }
             //焦点管理，显示时用a获得焦点
-            self._focusEl = new Node(focusMarkup).appendTo(self.el);
-            return self._focusEl;
+            fel = new Node(focusMarkup)
+                .appendTo(self.el);
+            return self._focusEl = fel;
         },
 
         _initFocusNotice:function() {
-            var self = this,f = self._getFocusEl();
+            var self = this,
+                f = self._getFocusEl();
             f.on("focus", function() {
                 self.fire("focus");
             });
@@ -344,6 +321,65 @@ KISSY.Editor.add("overlay", function() {
                 editor && editor.focus();
             }
         },
+        _prepareShow:function() {
+            Overlay.init && Overlay.init();
+            if (UA.ie == 6) {
+                /**
+                 * 窗口垫片-shim
+                 */
+                var self = this,el = self.el,d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'" +
+                    "></iframe>");
+                d_iframe.css(S.mix({
+                    "z-index":(self.get("zIndex") - 1)
+                }, noVisibleStyle));
+                d_iframe.appendTo(document.body);
+                self._d_iframe = d_iframe;
+                /**
+                 * ie6 窗口垫片同步
+                 */
+                self.on("show", function() {
+                    var bw = el.width(),
+                        bh = el.height();
+                    d_iframe.css({
+                        width: bw + "px",
+                        height: bh + "px"
+                    });
+                    d_iframe.css(el.offset());
+                });
+                self.on("hide", function() {
+                    d_iframe.css(noVisibleStyle);
+                });
+            }
+        },
+
+        loading:function() {
+            this._prepareLoading();
+        },
+        _prepareLoading:function() {
+            var loading = new Node("<div" +
+                " title='请稍候...' " +
+                " class='ke-loading' " +
+                ">").appendTo(document.body);
+            loading.css("opacity", 0.4);
+            loadingMask = new Overlay({
+                el:loading,
+                focusMgr:false,
+                draggable:false
+            });
+        },
+        _realLoading:function() {
+            var self = this,
+                el = self.el;
+            loadingMask.el.css({
+                width:el.width(),
+                height:el.height(),
+                "z-index":(self.get("zIndex") + 1)
+            });
+            loadingMask.show(el.offset());
+        },
+        unloading:function() {
+            loadingMask.hide();
+        },
         _realShow : function(v) {
             this.set("visible", v || true);
         },
@@ -352,8 +388,10 @@ KISSY.Editor.add("overlay", function() {
         },
         hide:function() {
             this.set("visible", false);
-        }});
-    KE.Utils.lazyRun(Overlay.prototype, "_prepareShow", "_realShow");
-
+        }
+    });
+    KE.Utils.lazyRun(Overlay.prototype,
+        "_prepareLoading",
+        "_realLoading");
     KE.SimpleOverlay = Overlay;
 });

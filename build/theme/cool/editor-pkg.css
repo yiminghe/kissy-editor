@@ -601,7 +601,7 @@ menu style for kissy editor ,include contextmenu and select menu
     line-height: 66px;
     text-align: center;
     z-index: 10000;
-    background: url('http://img05.taobaocdn.com/tps/i5/T1wjBGXe4CXXXXXXXX-66-66.gif');
+    background: url('loading_mask.gif');
 }
 
 .ke-dialog {

@@ -174,7 +174,9 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
             S.extend(BangPaiVideo, Flash, {
                 _config:function() {
-                    var self = this;
+                    var self = this,
+                        editor = self.editor,
+                        cfg = editor.cfg.pluginConfig;
                     self._cls = CLS_VIDEO;
                     self._type = TYPE_VIDEO;
                     self._title = "视频属性";
@@ -184,6 +186,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self._tip = "插入视频";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
+                    self.urlCfg = cfg["bangpai-video"] &&
+                        cfg["bangpai-video"].urlCfg;
                 },
                 _initD:function() {
                     var self = this,
@@ -203,6 +207,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 },
 
                 _getDInfo:function() {
+
                     var self = this,
                         url = self.dUrl.val(),p = getProvider(url);
                     if (!p) {
@@ -225,6 +230,38 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     }
                 },
 
+                _gen:function() {
+                    var self = this,
+                        url = self.dUrl.val(),
+                        urlCfg = self.urlCfg;
+                    if (urlCfg) {
+                        for (var i = 0; i < urlCfg.length; i++) {
+                            var c = urlCfg[i];
+                            if (c.reg.test(url)) {
+                                self.d.loading();
+                                BangPaiVideo.dynamicUrl.origin = url;
+                                BangPaiVideo.dynamicUrl.instance = self;
+                                S.getScript(c.url
+                                    .replace(/@url@/, encodeURIComponent(url))
+                                    .replace(/@callback@/,
+                                    encodeURIComponent("KISSY.Editor.BangPaiVideo.dynamicUrl"))
+                                    //.replace(/@rand@/,
+                                    //(new Date().valueOf()))
+                                    );
+                                return;
+                            }
+                        }
+                    }
+                    BangPaiVideo.superclass._gen.call(self);
+                },
+
+                _dynamicUrlPrepare:function(re) {
+                    var self = this;
+                    self.dUrl.val(re);
+                    self.d.unloading();
+                    BangPaiVideo.superclass._gen.call(self);
+                },
+
                 _updateD:function() {
                     var self = this,
                         editor = self.editor,
@@ -245,6 +282,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     }
                 }
             });
+            BangPaiVideo.dynamicUrl = function(origin, re) {
+                if (origin !== BangPaiVideo.dynamicUrl.origin) return;
+                BangPaiVideo.dynamicUrl.instance._dynamicUrlPrepare(re);
+            };
             function checkVideo(node) {
                 return node._4e_name() === 'img' && (!!node.hasClass(CLS_VIDEO)) && node;
             }

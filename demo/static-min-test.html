@@ -36,7 +36,7 @@
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
-         <script>alert(1);</script>
+        <script>alert(1);</script>
         <p>
             我是虾米音乐
         </p>
@@ -198,7 +198,8 @@
         var KE = KISSY.Editor;
         KE.Config.base = base + "build/";
 
-        KE("#editor", {
+        window.editor = KE("#editor", {
+
             pluginConfig: {
                 "templates": [
                     {
@@ -212,6 +213,25 @@
                 ],
                 "font-size":["13px","16px","20px"]
                 //,"font-family":["song"]
+                ,"bangpai-upload":{
+                    holder:"#imgup1",
+                    serverUrl:"",
+                    serverParams:{
+                    }
+                },
+                "bangpai-video":{
+                    urlCfg:[
+                        {
+                            reg:/tudou\.com/i,
+                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        }
+                    ]
+                },
+                "draft":{
+                    interval:5,
+                    limit:10
+                }
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "templates,separator," +
