@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-20 13:48:53
+ * @buildtime: 2010-09-20 14:05:08
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7771,8 +7771,7 @@ KISSY.Editor.add("draft", function(editor) {
                 JSON = S.JSON,
                 MIDDLE = " vertical-align:middle;",
                 DRAFT_SAVE = "ke-draft-save",
-                localStorage = window[KE.STORE],
-                TIP = "内容正文每10分钟自动保存一次，上次保存 ： ";
+                localStorage = window[KE.STORE];
 
             function padding(n, l, p) {
                 n += "";
@@ -7790,9 +7789,9 @@ KISSY.Editor.add("draft", function(editor) {
                     return [
                         d.getFullYear(),
                         "-",
-                        padding(d.getMonth() - 1, 2, "0"),
+                        padding(d.getMonth() + 1, 2, "0"),
                         "-",
-                        padding(d.getDay(), 2, "0"),
+                        padding(d.getDate(), 2, "0"),
                         " ",
                         //"&nbsp;",
                         padding(d.getHours(), 2, "0"),
