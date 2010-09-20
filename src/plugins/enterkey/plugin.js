@@ -179,7 +179,6 @@ KISSY.Editor.add("enterkey", function(editor) {
                 range.select();
             }
 
-
             function EnterKey(editor) {
                 var doc = editor.document;
                 Event.on(doc, "keydown", function(ev) {

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-19 20:57:26
+ * @buildtime: 2010-09-20 09:55:51
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8184,7 +8184,6 @@ KISSY.Editor.add("enterkey", function(editor) {
                 }
                 range.select();
             }
-
 
             function EnterKey(editor) {
                 var doc = editor.document;
