@@ -284,15 +284,23 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 _tableOk:function() {
                     var self = this,
                         tableDialog = self.tableDialog,
-                        inputs = tableDialog.el.all("input"),
-                        re = KE.Utils.verifyInputs(inputs);
-                    if (!re) return;
+                        inputs = tableDialog.el.all("input");
+
                     if (tableDialog.twidthunit.val() == "%") {
-                        if (parseInt(tableDialog.twidth.val()) > 100) {
+                        var tw = parseInt(tableDialog.twidth.val());
+                        if (
+                            !tw || (
+                                tw > 100 ||
+                                    tw < 0
+                                )
+                            ) {
                             alert("宽度百分比：" + "请输入1-100之间");
                             return;
                         }
                     }
+                    var re = KE.Utils.verifyInputs(inputs);
+                    if (!re) return;
+
 
                     if (!self.selectedTable) {
                         self._genTable();
