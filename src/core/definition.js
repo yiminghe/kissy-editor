@@ -722,8 +722,8 @@ KISSY.Editor.add("definition", function(KE) {
         }
 
 
-        if (false && UA.gecko) {
-            Event.on(doc, "mousedown", function(ev) {
+        if (UA.gecko) {
+            Event.on(doc, "dragstart", function(ev) {
                 var control = new Node(ev.target);
                 if (control._4e_name() === 'img' &&
                     /ke_/.test(control[0].className)

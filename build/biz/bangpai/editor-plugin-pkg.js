@@ -218,6 +218,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
+                    if (!r)return;
                     tipurl.html(selectedFlash.attr("title"));
                     tipurl.attr("href", self._getFlashUrl(r));
                 },

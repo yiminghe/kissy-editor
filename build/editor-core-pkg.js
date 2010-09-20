@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-20 12:48:30
+ * @buildtime: 2010-09-20 13:16:52
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1294,8 +1294,8 @@ KISSY.Editor.add("definition", function(KE) {
         }
 
 
-        if (false && UA.gecko) {
-            Event.on(doc, "mousedown", function(ev) {
+        if (UA.gecko) {
+            Event.on(doc, "dragstart", function(ev) {
                 var control = new Node(ev.target);
                 if (control._4e_name() === 'img' &&
                     /ke_/.test(control[0].className)
