@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-21 09:53:56
+ * @buildtime: 2010-09-21 11:15:05
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -4644,6 +4644,18 @@ KISSY.Editor.add("domiterator", function(KE) {
         isBookmark = Walker.bookmark();
 
     S.augment(Iterator, {
+        //奇怪点：
+        //<ul>
+        // <li>
+        // x
+        // </li>
+        // <li>
+        // y
+        // </li>
+        // </ul>
+        //会返回两次 li,li,而不是一次 ul ，
+        // 可能只是返回包含文字的段落概念？
+
         getNextParagraph : function(blockTag) {
             // The block element to be returned.
             var block;
@@ -9079,7 +9091,7 @@ KISSY.Editor.add("font", function(editor) {
                         items:self.get("html")
                     });
 
-                    self.el.on("click", self._vChange, self);
+                    self.el.on("offClick onClick", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
                     KE.Utils.sourceDisable(editor, self);
                 },
@@ -12496,6 +12508,7 @@ KISSY.Editor.add("justify", function(editor) {
                         iterator = ranges[ i ].createIterator();
                         iterator.enlargeBr = true;
                         while (( block = iterator.getNextParagraph() )) {
+
                             block.removeAttr('align');
                             if (state == TripleButton.OFF)
                                 block.css('text-align', self.v);
@@ -12510,8 +12523,21 @@ KISSY.Editor.add("justify", function(editor) {
                 _selectionChange:function(ev) {
                     var self = this,
                         el = self.el,
-                        path = ev.path,elements = path.elements,block = path.block || path.blockLimit;
-                    if (!block)return;
+                        path = ev.path,
+                        //elements = path.elements,
+                        block = path.block || path.blockLimit;
+                    //如果block是body，就不要设置，
+                    // <body>
+                    // <ul>
+                    // <li style='text-align:center'>
+                    // </li>
+                    // </ul>
+                    // </body>
+                    if (!block || block._4e_name() === "body") {
+                        el.set("state", TripleButton.OFF);
+                        return;
+                    }
+
                     var align = block.css("text-align").replace(alignRemoveRegex, "");
                     if (align == self.v || (!align && self.v == default_align)) {
                         el.set("state", TripleButton.ON);
@@ -12808,7 +12834,7 @@ KISSY.Editor.add("list", function(editor) {
         listNodeNames_arr = ["ol","ul"],
         S = KISSY,
         KER = KE.RANGE,
-        KEP = KE.POSITION,
+        //KEP = KE.POSITION,
         ElementPath = KE.ElementPath,
         Walker = KE.Walker,
         KEN = KE.NODE,
@@ -12827,7 +12853,11 @@ KISSY.Editor.add("list", function(editor) {
                  * markers to the list item nodes when database is specified.
                  * 扁平化处理，深度遍历，利用 indent 和顺序来表示一棵树
                  */
-                listToArray : function(listNode, database, baseArray, baseIndentLevel, grandparentNode) {
+                listToArray : function(listNode,
+                                       database,
+                                       baseArray,
+                                       baseIndentLevel,
+                                       grandparentNode) {
                     if (!listNodeNames[ listNode._4e_name() ])
                         return [];
 
@@ -12837,14 +12867,17 @@ KISSY.Editor.add("list", function(editor) {
                         baseArray = [];
 
                     // Iterate over all list items to and look for inner lists.
-                    for (var i = 0, count = listNode[0].childNodes.length; i < count; i++) {
+                    for (var i = 0, count = listNode[0].childNodes.length;
+                         i < count; i++) {
                         var listItem = new Node(listNode[0].childNodes[i]);
 
                         // It may be a text node or some funny stuff.
                         if (listItem._4e_name() != 'li')
                             continue;
 
-                        var itemObj = { 'parent' : listNode, indent : baseIndentLevel, element : listItem, contents : [] };
+                        var itemObj = { 'parent' : listNode,
+                            indent : baseIndentLevel,
+                            element : listItem, contents : [] };
                         if (!grandparentNode) {
                             itemObj.grandparent = listNode.parent();
                             if (itemObj.grandparent && itemObj.grandparent._4e_name() == 'li')
@@ -12854,15 +12887,20 @@ KISSY.Editor.add("list", function(editor) {
                             itemObj.grandparent = grandparentNode;
 
                         if (database)
-                            listItem._4e_setMarker(database, 'listarray_index', baseArray.length);
+                            listItem._4e_setMarker(database,
+                                'listarray_index',
+                                baseArray.length);
                         baseArray.push(itemObj);
 
-                        for (var j = 0, itemChildCount = listItem[0].childNodes.length, child; j < itemChildCount; j++) {
+                        for (var j = 0, itemChildCount = listItem[0].childNodes.length, child;
+                             j < itemChildCount; j++) {
                             child = new Node(listItem[0].childNodes[j]);
-                            if (child[0].nodeType == KEN.NODE_ELEMENT && listNodeNames[ child._4e_name() ])
+                            if (child[0].nodeType == KEN.NODE_ELEMENT &&
+                                listNodeNames[ child._4e_name() ])
                             // Note the recursion here, it pushes inner list items with
                             // +1 indentation in the correct order.
-                                list.listToArray(child, database, baseArray, baseIndentLevel + 1, itemObj.grandparent);
+                                list.listToArray(child, database, baseArray,
+                                    baseIndentLevel + 1, itemObj.grandparent);
                             else
                                 itemObj.contents.push(child);
                         }
@@ -12872,7 +12910,8 @@ KISSY.Editor.add("list", function(editor) {
 
                 // Convert our internal representation of a list back to a DOM forest.
                 //根据包含indent属性的元素数组来生成树
-                arrayToList : function(listArray, database, baseIndex, paragraphMode) {
+                arrayToList : function(listArray, database,
+                                       baseIndex, paragraphMode) {
                     if (!baseIndex)
                         baseIndex = 0;
                     if (!listArray || listArray.length < baseIndex + 1)
@@ -12882,8 +12921,9 @@ KISSY.Editor.add("list", function(editor) {
                         rootNode = null,
                         currentIndex = baseIndex,
                         indentLevel = Math.max(listArray[ baseIndex ].indent, 0),
-                        currentListItem = null,
-                        paragraphName = paragraphMode;
+                        currentListItem = null;
+                    //,paragraphName = paragraphMode;
+
                     while (true) {
                         var item = listArray[ currentIndex ];
                         if (item.indent == indentLevel) {
@@ -12901,23 +12941,29 @@ KISSY.Editor.add("list", function(editor) {
                             currentIndex++;
                         } else if (item.indent == Math.max(indentLevel, 0) + 1) {
                             //进入一个li里面，里面的嵌套li递归构造父亲ul/ol
-                            var listData = list.arrayToList(listArray, null, currentIndex, paragraphMode);
+                            var listData = list.arrayToList(listArray, null,
+                                currentIndex, paragraphMode);
                             currentListItem.appendChild(listData.listNode);
                             currentIndex = listData.nextIndex;
-                        } else if (item.indent == -1 && !baseIndex && item.grandparent) {
-                            currentListItem;
+                        } else if (item.indent == -1 && !baseIndex &&
+                            item.grandparent) {
+
                             if (listNodeNames[ item.grandparent._4e_name() ])
                                 currentListItem = item.element._4e_clone(false, true)[0];
                             else {
                                 // Create completely new blocks here, attributes are dropped.
-                                if (item.grandparent._4e_name() != 'td')
-                                    currentListItem = doc.createElement(paragraphName);
+                                //为什么要把属性去掉？？？#3857
+                                if (item.grandparent._4e_name() != 'td') {
+                                    currentListItem = doc.createElement(paragraphMode);
+                                    item.element._4e_copyAttributes(new Node(currentListItem));
+                                }
                                 else
                                     currentListItem = doc.createDocumentFragment();
                             }
 
                             for (i = 0; i < item.contents.length; i++)
-                                currentListItem.appendChild(item.contents[i]._4e_clone(true, true)[0]);
+                                currentListItem
+                                    .appendChild(item.contents[i]._4e_clone(true, true)[0]);
 
                             if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT
                                 && currentIndex != listArray.length - 1) {
@@ -12929,7 +12975,7 @@ KISSY.Editor.add("list", function(editor) {
                             }
 
                             if (currentListItem.nodeType == KEN.NODE_ELEMENT &&
-                                DOM._4e_name(currentListItem) == paragraphName &&
+                                DOM._4e_name(currentListItem) == paragraphMode &&
                                 currentListItem.firstChild) {
                                 DOM._4e_trim(currentListItem);
                                 var firstChild = currentListItem.firstChild;
@@ -12943,7 +12989,8 @@ KISSY.Editor.add("list", function(editor) {
                             }
 
                             var currentListItemName = DOM._4e_name(currentListItem);
-                            if (!UA.ie && ( currentListItemName == 'div' || currentListItemName == 'p' ))
+                            if (!UA.ie && ( currentListItemName == 'div' ||
+                                currentListItemName == 'p' ))
                                 DOM._4e_appendBogus(currentListItem);
                             retval.appendChild(currentListItem);
                             rootNode = null;
@@ -12952,7 +12999,8 @@ KISSY.Editor.add("list", function(editor) {
                         else
                             return null;
 
-                        if (listArray.length <= currentIndex || Math.max(listArray[ currentIndex ].indent, 0) < indentLevel)
+                        if (listArray.length <= currentIndex ||
+                            Math.max(listArray[ currentIndex ].indent, 0) < indentLevel)
                             break;
                     }
 
@@ -12977,11 +13025,11 @@ KISSY.Editor.add("list", function(editor) {
             var headerTagRegex = /^h[1-6]$/;
 
 
-            function listCommand(type) {
+            function ListCommand(type) {
                 this.type = type;
             }
 
-            listCommand.prototype = {
+            ListCommand.prototype = {
                 changeListType:function(editor, groupObj, database, listsCreated) {
                     // This case is easy...
                     // 1. Convert the whole list into a one-dimensional array.
@@ -12994,7 +13042,8 @@ KISSY.Editor.add("list", function(editor) {
                     for (var i = 0; i < groupObj.contents.length; i++) {
                         var itemNode = groupObj.contents[i];
                         itemNode = itemNode._4e_ascendant('li', true);
-                        if ((!itemNode || !itemNode[0]) || itemNode._4e_getData('list_item_processed'))
+                        if ((!itemNode || !itemNode[0]) ||
+                            itemNode._4e_getData('list_item_processed'))
                             continue;
                         selectedListItems.push(itemNode);
                         itemNode._4e_setMarker(database, 'list_item_processed', true);
@@ -13007,7 +13056,8 @@ KISSY.Editor.add("list", function(editor) {
                     }
                     var newList = list.arrayToList(listArray, database, null, "p");
                     var child, length = newList.listNode.childNodes.length;
-                    for (i = 0; i < length && ( child = new Node(newList.listNode.childNodes[i]) ); i++) {
+                    for (i = 0; i < length &&
+                        ( child = new Node(newList.listNode.childNodes[i]) ); i++) {
                         if (child._4e_name() == this.type)
                             listsCreated.push(child);
                     }
@@ -13024,7 +13074,8 @@ KISSY.Editor.add("list", function(editor) {
                     // In such a case, enclose the childNodes of contents[0] into a <div>.
                     if (contents.length == 1 && contents[0][0] === groupObj.root[0]) {
                         var divBlock = new Node(doc.createElement('div'));
-                        contents[0][0].nodeType != KEN.NODE_TEXT && contents[0]._4e_moveChildren(divBlock);
+                        contents[0][0].nodeType != KEN.NODE_TEXT &&
+                        contents[0]._4e_moveChildren(divBlock);
                         contents[0][0].appendChild(divBlock[0]);
                         contents[0] = divBlock;
                     }
@@ -13034,7 +13085,8 @@ KISSY.Editor.add("list", function(editor) {
                     for (var i = 0; i < contents.length; i++)
                         commonParent = commonParent._4e_commonAncestor(contents[i].parent());
 
-                    // We want to insert things that are in the same tree level only, so calculate the contents again
+                    // We want to insert things that are in the same tree level only,
+                    // so calculate the contents again
                     // by expanding the selected blocks to the same tree level.
                     for (i = 0; i < contents.length; i++) {
                         var contentNode = contents[i],
@@ -13126,23 +13178,26 @@ KISSY.Editor.add("list", function(editor) {
 
                     function compensateBrs(isStart) {
                         if (( boundaryNode = new Node(docFragment[ isStart ? 'firstChild' : 'lastChild' ]) )
-                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT && boundaryNode._4e_isBlockBoundary() )
+                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
+                            boundaryNode._4e_isBlockBoundary() )
                             && ( siblingNode = groupObj.root[ isStart ? '_4e_previous' : '_4e_next' ]
                             (Walker.whitespaces(true)) )
-                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT && siblingNode._4e_isBlockBoundary({ br : 1 }) ))
+                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
+                            siblingNode._4e_isBlockBoundary({ br : 1 }) ))
 
-                            DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'), boundaryNode[0]);
+                            DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
+                                boundaryNode[0]);
                     }
 
                     compensateBrs(true);
-                    compensateBrs();
+                    compensateBrs(undefined);
 
                     DOM.insertBefore(docFragment, groupObj.root);
                     groupObj.root._4e_remove();
                 },
 
                 exec : function(editor) {
-                    var doc = editor.document,
+                    var //doc = editor.document,
                         selection = editor.getSelection(),
                         ranges = selection && selection.getRanges();
 
@@ -13156,7 +13211,6 @@ KISSY.Editor.add("list", function(editor) {
                     // or multiple lists have to be cancelled.
                     var listGroups = [],
                         database = {};
-
                     while (ranges.length > 0) {
                         var range = ranges.shift();
 
@@ -13185,7 +13239,8 @@ KISSY.Editor.add("list", function(editor) {
                                 element;
 
                             // First, try to group by a list ancestor.
-                            for (var i = pathElementsCount - 1; i >= 0 && ( element = pathElements[ i ] ); i--) {
+                            for (var i = pathElementsCount - 1; i >= 0 &&
+                                ( element = pathElements[ i ] ); i--) {
                                 if (listNodeNames[ element._4e_name() ]
                                     && blockLimit.contains(element))     // Don't leak outside block limit (#3940).
                                 {
@@ -13213,7 +13268,7 @@ KISSY.Editor.add("list", function(editor) {
                                 continue;
 
                             // No list ancestor? Group by block limit.
-                            var root = blockLimit;
+                            var root = blockLimit || path.block;
                             if (root._4e_getData('list_group_object'))
                                 root._4e_getData('list_group_object').contents.push(block);
                             else {
@@ -13278,16 +13333,16 @@ KISSY.Editor.add("list", function(editor) {
             function List(cfg) {
                 var self = this;
                 List.superclass.constructor.call(self, cfg);
-                var editor = self.get("editor"),toolBarDiv = editor.toolBarDiv,
-                    el = self.el;
+                var editor = self.get("editor"),
+                    toolBarDiv = editor.toolBarDiv;
                 self.el = new TripleButton({
                     //text:this.get("type"),
                     contentCls:self.get("contentCls"),
                     title:self.get("title"),
                     container:toolBarDiv
                 });
-                self.listCommand = new listCommand(this.get("type"));
-                self.listCommand.state = self.get("status");
+                self.listCommand = new ListCommand(self['get']("type"));
+                self.listCommand.state = self['get']("status");
                 //this._selectionChange({path:1});
                 self._init();
             }
@@ -13304,8 +13359,8 @@ KISSY.Editor.add("list", function(editor) {
                     var self = this,editor = self.get("editor"),
                         toolBarDiv = editor.toolBarDiv,
                         el = self.el;
-                    var self = self;
-                    el.on("offClick", self._change, self);
+
+                    el.on("offClick onClick", self._change, self);
                     editor.on("selectionChange", self._selectionChange, self);
                     KE.Utils.sourceDisable(editor, self);
                 },

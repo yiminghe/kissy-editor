@@ -55,6 +55,7 @@ KISSY.Editor.add("justify", function(editor) {
                         iterator = ranges[ i ].createIterator();
                         iterator.enlargeBr = true;
                         while (( block = iterator.getNextParagraph() )) {
+                            console.log(block._4e_name());
                             block.removeAttr('align');
                             if (state == TripleButton.OFF)
                                 block.css('text-align', self.v);
@@ -69,8 +70,21 @@ KISSY.Editor.add("justify", function(editor) {
                 _selectionChange:function(ev) {
                     var self = this,
                         el = self.el,
-                        path = ev.path,elements = path.elements,block = path.block || path.blockLimit;
-                    if (!block)return;
+                        path = ev.path,
+                        //elements = path.elements,
+                        block = path.block || path.blockLimit;
+                    //如果block是body，就不要设置，
+                    // <body>
+                    // <ul>
+                    // <li style='text-align:center'>
+                    // </li>
+                    // </ul>
+                    // </body>
+                    if (!block || block._4e_name() === "body") {
+                        el.set("state", TripleButton.OFF);
+                        return;
+                    }
+
                     var align = block.css("text-align").replace(alignRemoveRegex, "");
                     if (align == self.v || (!align && self.v == default_align)) {
                         el.set("state", TripleButton.ON);

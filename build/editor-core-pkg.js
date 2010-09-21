@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-21 09:53:56
+ * @buildtime: 2010-09-21 11:15:05
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -4644,6 +4644,18 @@ KISSY.Editor.add("domiterator", function(KE) {
         isBookmark = Walker.bookmark();
 
     S.augment(Iterator, {
+        //奇怪点：
+        //<ul>
+        // <li>
+        // x
+        // </li>
+        // <li>
+        // y
+        // </li>
+        // </ul>
+        //会返回两次 li,li,而不是一次 ul ，
+        // 可能只是返回包含文字的段落概念？
+
         getNextParagraph : function(blockTag) {
             // The block element to be returned.
             var block;
