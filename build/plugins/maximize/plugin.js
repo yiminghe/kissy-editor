@@ -45,8 +45,8 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         editor = self.editor;
                     Event.remove(window, "resize", self._maximize, self);
-                    //editor.focus();
-                    //console.log(editor.iframeFocus);
+                    //self._domEditorParent
+                    //    .insertBefore(editor.editorWrap[0], self._domEditorPre);
 
                     this._saveEditorStatus();
                     editor.wrap.css({
@@ -85,6 +85,11 @@ KISSY.Editor.add("maximize", function(editor) {
                     self.scrollLeft = DOM.scrollLeft();
                     self.scrollTop = DOM.scrollTop();
                     window.scrollTo(0, 0);
+
+                    /*将编辑器移到body直接下层*/
+                    //self._domEditorParent = editor.editorWrap.parent()[0];
+                    //self._domEditorPre = editor.editorWrap[0].previousSibling;
+                    //document.body.appendChild(editor.editorWrap[0]);
                 },
                 //firefox修正，iframe layout变化时，range丢了
                 _saveEditorStatus:function() {

@@ -3,11 +3,12 @@ KISSY.Editor.add("progressbar", function() {
     if (KE.ProgressBar) return;
 
     (function() {
-        var DOM = S.DOM;
+        var DOM = S.DOM,Node = S.Node;
         DOM.addStyleSheet("" +
             "" +
             ".ke-progressbar {" +
             "border:1px solid #8F8F73;" +
+            "position:relative;" +
             "}" +
             "" +
             ".ke-progressbar-inner {" +
@@ -16,7 +17,8 @@ KISSY.Editor.add("progressbar", function() {
             "}" +
             "" +
             ".ke-progressbar-title {" +
-            "width:50px;" +
+            "width:30px;" +
+            "top:0;" +
             "left:50%;" +
             "position:absolute;" +
             "}" +
@@ -27,12 +29,18 @@ KISSY.Editor.add("progressbar", function() {
         }
 
         ProgressBar.ATTRS = {
+            container:{},
             width:{},
             height:{},
             //0-100
-            progress:{}
+            progress:{value:0}
         };
         S.extend(ProgressBar, S.Base, {
+            destroy:function() {
+                var self = this;
+                self.detach();
+                self.el._4e_remove();
+            },
             _init:function() {
                 var self = this,el = new Node("<div" +
                     " class='ke-progressbar' " +
@@ -40,13 +48,15 @@ KISSY.Editor.add("progressbar", function() {
                     "height:"
                     + self.get("height") + ";'" +
                     ">"),
-
+                    container = self.get("container"),
                     p = new Node("<div class='ke-progressbar-inner'>").appendTo(el),
                     title = new Node("<span class='ke-progressbar-title'>").appendTo(el);
+                if (container)
+                    el.appendTo(container);
                 self.el = el;
                 self._title = title;
                 self._p = p;
-
+                self._progressChange({newVal:self.get("progress")});
             },
 
             _progressChange:function(ev) {
@@ -55,7 +65,7 @@ KISSY.Editor.add("progressbar", function() {
                 self._title.html(v + "%");
             }
         });
-
+        KE.ProgressBar = ProgressBar;
     })();
 
 });

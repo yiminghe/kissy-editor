@@ -203,6 +203,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {name:"button"},
             {name:"dd"},
+            {name:"progressbar"},
             {
                 name:"overlay",
                 requires:["dd"]
