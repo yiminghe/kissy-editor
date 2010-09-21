@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-21 11:15:05
+ * @buildtime: 2010-09-21 11:25:58
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -12508,7 +12508,7 @@ KISSY.Editor.add("justify", function(editor) {
                         iterator = ranges[ i ].createIterator();
                         iterator.enlargeBr = true;
                         while (( block = iterator.getNextParagraph() )) {
-
+                            //console.log(block._4e_name());
                             block.removeAttr('align');
                             if (state == TripleButton.OFF)
                                 block.css('text-align', self.v);
