@@ -129,7 +129,7 @@ KISSY.Editor.add("flashutils", function() {
             }
 
 
-            var holder = new Node(
+            var holder = cfg.holder || (new Node(
                 "<div " +
                     "style='" + (
                     cfg.style ? cfg.style : (
@@ -140,7 +140,7 @@ KISSY.Editor.add("flashutils", function() {
                     +
                     "'>", null, doc
                 ).
-                appendTo(doc.body);
+                appendTo(doc.body));
             holder.html(outerHTML);
             return doc.getElementById(attrs.id);
         }

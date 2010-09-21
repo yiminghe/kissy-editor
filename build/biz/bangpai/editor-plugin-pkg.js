@@ -490,26 +490,34 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     holderEl = bangpaiCfg.holder,
 
                     bangpaiUploaderHolder = S.isString(holderEl) ? S.one(holderEl) : holderEl,
-                    btn = new Node("<p><button disabled='disabled'>选择文件</button></p>")
-                        .appendTo(bangpaiUploaderHolder).one("button"),
-                    list = new Node("<div>").appendTo(bangpaiUploaderHolder),
+                    flashHolder = new Node("<div style='position:relative'>").appendTo(bangpaiUploaderHolder),
+                    btn = new Node("<button disabled='disabled'>选择文件</button>")
+                        .appendTo(flashHolder),
+
+                    boffset = btn.offset(),
+                    flashHolderOffset = flashHolder.offset(),
+                    flashPos = new Node("<div style='" +
+                        ("position:absolute;" +
+                            "top:"
+                            + (flashHolderOffset.top - boffset.top) +
+                            "px;" +
+                            "left:"
+                            + (flashHolderOffset.left - boffset.left) + "px;" +
+                            "width:" + btn.width() + "px;" +
+                            "height:" + btn.height() + "px;" +
+                            "z-index:9999;")
+                        + "'>").appendTo(flashHolder),
+                    list = new Node("<table>").appendTo(bangpaiUploaderHolder),
                     up = new Node("<p><button>开始上传</button></p>")
                         .appendTo(bangpaiUploaderHolder),
-                    fid = S.guid(name),
-                    boffset = btn.offset();
-
+                    fid = S.guid(name);
+                list = new Node("<tbody>").appendTo(list);
                 holder[fid] = self;
                 self.btn = btn;
                 self.up = up;
                 self.on("contentReady", self._ready, self);
                 var flash = KE.Utils.flash.createSWFRuntime(movie, {
-                    style:("position:absolute;top:"
-                        + boffset.top +
-                        "px;left:"
-                        + boffset.left + "px;" +
-                        "width:" + btn.width() + "px;" +
-                        "height:" + btn.height() + "px;" +
-                        "z-index:9999;"),
+                    holder:flashPos,
                     attrs:{
                         allowScriptAccess:'always',
                         allowNetworking:'all',
@@ -537,9 +545,18 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     list = self._list,
                     files = ev.files;
                 if (files) {
-
-                    
-
+                    for (var i = 0; i < files.length; i++) {
+                        var f = files[i];
+                        //console.log(f);
+                        new Node("<tr>"
+                            + "<td>"
+                            + f.name
+                            + "</td>"
+                            + "<td>"
+                            + f.name
+                            + "</td>"
+                            + "</tr>").appendTo(list);
+                    }
                 }
             },
 

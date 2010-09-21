@@ -135,9 +135,14 @@ KISSY.Editor.add("list", function(editor) {
                                     currentListItem = doc.createDocumentFragment();
                             }
 
-                            for (i = 0; i < item.contents.length; i++)
-                                currentListItem
-                                    .appendChild(item.contents[i]._4e_clone(true, true)[0]);
+                            for (i = 0; i < item.contents.length; i++) {
+                                var ic = item.contents[i]._4e_clone(true, true);
+                                //如果是list中，应该只退出ul，保留margin-left
+                                if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT) {
+                                    item.element._4e_copyAttributes(new Node(ic));
+                                }
+                                currentListItem.appendChild(ic[0]);
+                            }
 
                             if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT
                                 && currentIndex != listArray.length - 1) {

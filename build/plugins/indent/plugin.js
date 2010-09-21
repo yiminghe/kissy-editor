@@ -32,9 +32,11 @@ KISSY.Editor.add("indent", function(editor) {
                 // So before playing with the iterator, we need to expand the block to include the list items.
                 var startContainer = range.startContainer,
                     endContainer = range.endContainer;
-                while (startContainer && startContainer.parent()[0] !== listNode[0])
+                while (startContainer &&
+                    !startContainer.parent()._4e_equals(listNode))
                     startContainer = startContainer.parent();
-                while (endContainer && endContainer.parent()[0] !== listNode[0])
+                while (endContainer &&
+                    !endContainer.parent()._4e_equals(listNode))
                     endContainer = endContainer.parent();
 
                 if (!startContainer || !endContainer)
@@ -45,7 +47,7 @@ KISSY.Editor.add("indent", function(editor) {
                     itemsToMove = [],
                     stopFlag = false;
                 while (!stopFlag) {
-                    if (block[0] === endContainer[0])
+                    if (block._4e_equals(endContainer))
                         stopFlag = true;
                     itemsToMove.push(block);
                     block = block.next();
@@ -74,11 +76,13 @@ KISSY.Editor.add("indent", function(editor) {
 
                 // Apply indenting or outdenting on the array.
                 var baseIndent = listArray[ lastItem._4e_getData('listarray_index') ].indent;
-                for (i = startItem._4e_getData('listarray_index'); i <= lastItem._4e_getData('listarray_index'); i++) {
+                for (i = startItem._4e_getData('listarray_index');
+                     i <= lastItem._4e_getData('listarray_index'); i++) {
                     listArray[ i ].indent += indentOffset;
                     // Make sure the newly created sublist get a brand-new element of the same type. (#5372)
                     var listRoot = listArray[ i ].parent;
-                    listArray[ i ].parent = new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
+                    listArray[ i ].parent =
+                        new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
                 }
 
                 for (i = lastItem._4e_getData('listarray_index') + 1;
@@ -87,20 +91,25 @@ KISSY.Editor.add("indent", function(editor) {
 
                 // Convert the array back to a DOM forest (yes we might have a few subtrees now).
                 // And replace the old list with the new forest.
-                var newList = KE.ListUtils.arrayToList(listArray, database, null, "p", 0);
+                var newList = KE.ListUtils.arrayToList(listArray, 
+                    database, null,
+                    "p",
+                    0);
 
                 // Avoid nested <li> after outdent even they're visually same,
                 // recording them for later refactoring.(#3982)
                 var pendingList = [];
                 if (this.type == 'outdent') {
                     var parentLiElement;
-                    if (( parentLiElement = listNode.parent() ) && parentLiElement._4e_name() == ('li')) {
+                    if (( parentLiElement = listNode.parent() ) &&
+                        parentLiElement._4e_name() == ('li')) {
                         var children = newList.listNode.childNodes
                             ,count = children.length,
                             child;
 
                         for (i = count - 1; i >= 0; i--) {
-                            if (( child = new Node(children[i]) ) && child._4e_name() == 'li')
+                            if (( child = new Node(children[i]) ) &&
+                                child._4e_name() == 'li')
                                 pendingList.push(child);
                         }
                     }
@@ -134,13 +143,13 @@ KISSY.Editor.add("indent", function(editor) {
                 }
 
                 // Clean up the markers.
-                for (var i in database)
+                for (i in database)
                     database[i]._4e_clearMarkers(database, true);
             }
 
             function indentBlock(editor, range) {
-                var iterator = range.createIterator(),
-                    enterMode = "p";
+                var iterator = range.createIterator();
+                //  enterMode = "p";
                 iterator.enforceRealBlocks = true;
                 iterator.enlargeBr = true;
                 var block;
@@ -226,8 +235,9 @@ KISSY.Editor.add("indent", function(editor) {
             function Indent(cfg) {
                 Indent.superclass.constructor.call(this, cfg);
 
-                var editor = this.get("editor"),toolBarDiv = editor.toolBarDiv,
-                    el = this.el;
+                var editor = this.get("editor"),
+                    toolBarDiv = editor.toolBarDiv;
+                // el = this.el;
 
                 var self = this;
                 self.el = new TripleButton({
