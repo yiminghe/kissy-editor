@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-21 11:25:58
+ * @buildtime: 2010-09-21 11:32:52
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14138,17 +14138,12 @@ KISSY.Editor.add("overlay", function() {
                  */
                 if (self.get("draggable")) {
                     head[0].id = id;
-                    var drag = new KE.Drag({
+                    self._drag = new KE.Drag({
                         node:el,
                         handlers:{
                             id:head
                         }
                     });
-                    if (self._d_iframe) {
-                        drag.on("move", function() {
-                            self._d_iframe.offset(el.offset());
-                        });
-                    }
                 }
             }
 
@@ -14266,10 +14261,11 @@ KISSY.Editor.add("overlay", function() {
                 var self = this,el = self.el,d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'" +
                     "></iframe>");
                 d_iframe.css(S.mix({
-                    "z-index":(self.get("zIndex") - 1)
+                    "z-index":(self.get("zIndex") - 1),
+                    opacity:0.4
                 }, noVisibleStyle));
                 d_iframe.appendTo(document.body);
-                self._d_iframe = d_iframe;
+
                 /**
                  * ie6 窗口垫片同步
                  */
@@ -14285,6 +14281,13 @@ KISSY.Editor.add("overlay", function() {
                 self.on("hide", function() {
                     d_iframe.css(noVisibleStyle);
                 });
+
+
+                if (self._drag) {
+                    self._drag.on("move", function() {
+                        d_iframe.offset(el.offset());
+                    });
+                }
             }
         },
 
