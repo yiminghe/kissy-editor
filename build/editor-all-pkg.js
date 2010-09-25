@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-25 10:05:52
+ * @buildtime: 2010-09-25 10:27:18
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -9093,7 +9093,7 @@ KISSY.Editor.add("font", function(editor) {
                         items:self.get("html")
                     });
 
-                    self.el.on("offClick onClick", self._vChange, self);
+                    self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
                     KE.Utils.sourceDisable(editor, self);
                 },

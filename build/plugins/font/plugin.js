@@ -96,7 +96,7 @@ KISSY.Editor.add("font", function(editor) {
                         items:self.get("html")
                     });
 
-                    self.el.on("offClick onClick", self._vChange, self);
+                    self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);
                     KE.Utils.sourceDisable(editor, self);
                 },
