@@ -490,10 +490,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             "width:100%;" +
             "" +
             "}" +
-            ".ke-upload-list thead{" +
+
+            ".ke-upload-list th {" +
             "border-top:1px solid #c1c8d1;" +
             "background-color:#EBEDF1;" +
-
             "}" +
             ".ke-upload-list td,.ke-upload-list th {" +
             "padding:0.5em;" +
