@@ -9,10 +9,11 @@ KISSY.Editor.add("progressbar", function() {
             ".ke-progressbar {" +
             "border:1px solid #8F8F73;" +
             "position:relative;" +
+            "margin-left:auto;margin-right:auto;" +
             "}" +
             "" +
             ".ke-progressbar-inner {" +
-            "background-color:#FF8C00;" +
+            "background-color:#4f8ed2;" +
             "height:100%;" +
             "}" +
             "" +
@@ -56,11 +57,13 @@ KISSY.Editor.add("progressbar", function() {
                 self.el = el;
                 self._title = title;
                 self._p = p;
+                self.on("afterProgressChange", self._progressChange, self);
                 self._progressChange({newVal:self.get("progress")});
             },
 
             _progressChange:function(ev) {
                 var self = this,v = ev.newVal;
+                //console.log("_progressChange:" + v);
                 self._p.css("width", v + "%");
                 self._title.html(v + "%");
             }

@@ -178,7 +178,16 @@
     </textarea>
 </div>
 <h2>插入图片到编辑器1</h2>
-<div style="border:1px solid red;" id="imgup1">
+<div style="border:1px solid #c1c8d1;
+background-color:#fafafa;
+
+width:700px;
+margin:0 auto;
+
+-moz-box-shadow:2px 2px 0.5em #888888;
+-webkit-box-shadow:2px 2px 0.5em #888888;
+box-shadow:2px 2px 0.5em #888888;
+" id="imgup1">
 
 </div>
 
@@ -248,7 +257,9 @@
 <!--格式-->
 <script src="../src/plugins/format/plugin.js"></script>
 <!--颜色-->
-<script src="../src/plugins/color/plugin.js"></script>
+<script src="../src/plugins/colorsupport/plugin.js"></script>
+<script src="../src/plugins/forecolor/plugin.js"></script>
+<script src="../src/plugins/bgcolor/plugin.js"></script>
 <!--列表-->
 <script src="../src/plugins/list/plugin.js"></script>
 <!--缩进-->
@@ -338,7 +349,7 @@ xiami 音乐
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "templates,separator," +
-                "undo,separator,removeformat,font,format,color,separator," +
+                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
                 "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                 );

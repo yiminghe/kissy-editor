@@ -26,6 +26,9 @@
     color: #000000;
     padding: 4px;
     font-size: 13px;
+    -moz-box-shadow: 2px 2px 0.5em #888888;
+    -webkit-box-shadow: 2px 2px 0.5em #888888;
+    box-shadow: 2px 2px 0.5em #888888;
 }
 
 .ke-dialog-iframe {

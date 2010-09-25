@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-25 10:27:18
+ * @buildtime: 2010-09-25 16:03:07
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -22,7 +22,7 @@ KISSY.add("editor", function(S, undefined) {
         cfg.pluginConfig = cfg.pluginConfig || {};
         self.cfg = cfg;
         S.app(self, S.EventTarget);
-        self.use = function(mods) {
+        self.use = function(mods, callback) {
             if (S.isString(mods)) {
                 mods = mods.split(",");
             }
@@ -39,10 +39,11 @@ KISSY.add("editor", function(S, undefined) {
                         });
                     }
                     //继续加载剩余插件
-                    self.use(left);
+                    self.use(left, callback);
                 }, { order:  true, global:  Editor });
             } else {
                 self.on("dataReady", function() {
+                    callback && callback.call(self);
                     self.setData(textarea.val());
                     self.fire("save");
                 });
@@ -87,12 +88,19 @@ KISSY.add("editor", function(S, undefined) {
             "flashutils",
             "clipboard",
             {
-                name: "color"//,
-                //useCss: true
+                name: "colorsupport",
+                requires:["overlay"]
             },
             {
-                name: "elementpaths"//,
-                //useCss: true
+                name: "forecolor",
+                requires:["colorsupport"]
+            },
+            {
+                name: "bgcolor",
+                requires:["colorsupport"]
+            },
+            {
+                name: "elementpaths"
             },
             "enterkey",
             {

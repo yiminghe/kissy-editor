@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-25 10:27:18
+ * @buildtime: 2010-09-25 16:03:07
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -22,7 +22,7 @@ KISSY.add("editor", function(S, undefined) {
         cfg.pluginConfig = cfg.pluginConfig || {};
         self.cfg = cfg;
         S.app(self, S.EventTarget);
-        self.use = function(mods) {
+        self.use = function(mods, callback) {
             if (S.isString(mods)) {
                 mods = mods.split(",");
             }
@@ -39,10 +39,11 @@ KISSY.add("editor", function(S, undefined) {
                         });
                     }
                     //继续加载剩余插件
-                    self.use(left);
+                    self.use(left, callback);
                 }, { order:  true, global:  Editor });
             } else {
                 self.on("dataReady", function() {
+                    callback && callback.call(self);
                     self.setData(textarea.val());
                     self.fire("save");
                 });
@@ -87,12 +88,19 @@ KISSY.add("editor", function(S, undefined) {
             "flashutils",
             "clipboard",
             {
-                name: "color"//,
-                //useCss: true
+                name: "colorsupport",
+                requires:["overlay"]
             },
             {
-                name: "elementpaths"//,
-                //useCss: true
+                name: "forecolor",
+                requires:["colorsupport"]
+            },
+            {
+                name: "bgcolor",
+                requires:["colorsupport"]
+            },
+            {
+                name: "elementpaths"
             },
             "enterkey",
             {
@@ -6915,6 +6923,43 @@ KISSY.Editor.add("styles", function(KE) {
     KE.Style = KEStyle;
 });
 /**
+ * background-color support for kissy editor
+ * @author : yiminghe@gmail.com
+ */
+KISSY.Editor.add("bgcolor", function(editor) {
+    var S = KISSY,
+        KE = S.Editor,
+        ColorSupport = KE.ColorSupport,
+        VALID_COLORS = ColorSupport.VALID_COLORS,
+        BACK_STYLES = {},
+        colorButton_backStyle = {
+            element        : 'span',
+            styles        : { 'background-color' : '#(color)' }
+        };
+    // Value 'inherit'  is treated as a wildcard,
+    // which will match any value.
+    //清除已设格式
+    BACK_STYLES["inherit"] = new KE.Style(colorButton_backStyle, {
+        color:"inherit"
+    });
+    for (var i = 0; i < VALID_COLORS.length; i++) {
+        var currentColor = VALID_COLORS[i];
+        BACK_STYLES[currentColor] = new KE.Style(colorButton_backStyle, {
+            color:currentColor
+        });
+    }
+
+    editor.addPlugin(function() {
+        new ColorSupport({
+            editor:editor,
+            styles:BACK_STYLES,
+            title:"背景颜色",
+            contentCls:"ke-toolbar-bgcolor",
+            text:"bgcolor"
+        });
+    });
+});
+/**
  * bubble or tip view for kissy editor
  * @author:yiminghe@gmail.com
  */
@@ -7219,24 +7264,25 @@ KISSY.Editor.add("clipboard", function(editor) {
     });
 });
 /**
- * forecolor and background-color support for kissy editor
+ * color support for kissy editor
  * @author : yiminghe@gmail.com
  */
-KISSY.Editor.add("color", function(editor) {
+KISSY.Editor.add("colorsupport", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
         Node = S.Node,
         Event = S.Event,
         Overlay = KE.SimpleOverlay,
+        TripleButton = KE.TripleButton,
         KEStyle = KE.Style,
         DOM = S.DOM;
+    if (KE.ColorSupport) return;
 
     function padding2(str) {
         return ("0" + str).slice(str.length - 1, str.length + 1);
     }
 
     var rgbColorReg = /^rgb\((\d+),(\d+),(\d+)\)$/i;
-    //simpleColorReg = /^[0-9a-f]{3,3}$/i;
 
     function normalColor(color) {
         color = S.trim(color);
@@ -7269,24 +7315,11 @@ KISSY.Editor.add("color", function(editor) {
             'B22222,A52A2A,DAA520,006400,40E0D0,0000CD,800080,808080,' +
             'F00,FF8C00,FFD700,008000,0FF,00F,EE82EE,A9A9A9,' +
             'FFA07A,FFA500,FFFF00,00FF00,AFEEEE,ADD8E6,DDA0DD,D3D3D3,' +
-            'FFF0F5,FAEBD7,FFFFE0,F0FFF0,F0FFFF,F0F8FF,E6E6FA,FFF').split(/,/);
-    var colorButton_foreStyle = {
-        element        : 'span',
-        styles        : { 'color' : '#(color)' },
-        overrides    : [
-            { element : 'font', attributes : { 'color' : null } }
-        ]
-    };
-
-    var colorButton_backStyle = {
-        element        : 'span',
-        styles        : { 'background-color' : '#(color)' }
-    };
-
-    var html = "<div class='ke-popup-wrap ke-color-wrap'>" +
-        "<a class='ke-color-remove' href=\"javascript:void('清除');\"><span>清除</span></a>" +
-        "<table>";
-    var BACK_STYLES = {},FORE_STYLES = {};
+            'FFF0F5,FAEBD7,FFFFE0,F0FFF0,F0FFFF,F0F8FF,E6E6FA,FFF').split(/,/),
+        VALID_COLORS = [],
+        html = "<div class='ke-popup-wrap ke-color-wrap'>" +
+            "<a class='ke-color-remove' href=\"javascript:void('清除');\"><span>清除</span></a>" +
+            "<table>";
     for (var i = 0; i < 5; i++) {
         html += "<tr>";
         for (var j = 0; j < 8; j++) {
@@ -7296,142 +7329,106 @@ KISSY.Editor.add("color", function(editor) {
                 + currentColor
                 + "'></span></a>";
             html += "</td>";
-
-            BACK_STYLES[currentColor] = new KEStyle(colorButton_backStyle, {
-                color:currentColor
-            });
-            FORE_STYLES[currentColor] = new KEStyle(colorButton_foreStyle, {
-                color:currentColor
-            });
+            VALID_COLORS.push(currentColor);
         }
         html += "</tr>";
     }
-    // Value 'inherit'  is treated as a wildcard,
-    // which will match any value.
-    //清除已设格式
-    BACK_STYLES["inherit"] = new KEStyle(colorButton_backStyle, {
-        color:"inherit"
-    });
-    FORE_STYLES["inherit"] = new KEStyle(colorButton_foreStyle, {
-        color:"inherit"
-    });
+
     html += "</table></div>";
 
-    if (!KE.ColorSupport) {
-        (function() {
 
-
-            var TripleButton = KE.TripleButton;
-
-            function ColorSupport(cfg) {
-                ColorSupport.superclass.constructor.call(this, cfg);
-                this._init();
-            }
-
-            ColorSupport.ATTRS = {
-                editor:{},
-                styles:{},
-                contentCls:{},
-                text:{}
-            };
-
-            S.extend(ColorSupport, S.Base, {
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        toolBarDiv = editor.toolBarDiv,
-                        el = new TripleButton({
-                            container:toolBarDiv,
-                            title:self.get("title"),
-                            contentCls:self.get("contentCls")
-                            //text:this.get("text")
-                        });
-
-                    el.on("offClick", self._showColors, self);
-                    self.el = el;
-                    KE.Utils.lazyRun(self, "_prepare", "_real");
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _hidePanel:function(ev) {
-                    var self = this;
-                    //多窗口管理
-                    if (DOM._4e_ascendant(ev.target, function(node) {
-                        return node[0] === self.el.el[0];
-                    }, true))return;
-                    this.colorWin.hide();
-                },
-                _selectColor:function(ev) {
-                    ev.halt();
-                    var editor = this.get("editor");
-                    var t = ev.target;
-                    if (DOM._4e_name(t) == "span" || DOM._4e_name(t) == "a") {
-                        t = new Node(t);
-                        if (t._4e_name() == "a")
-                            t = t.one("span");
-                        var styles = this.get("styles");
-                        editor.fire("save");
-                        if (t._4e_style("background-color")) {
-                            styles[normalColor(t._4e_style("background-color"))].apply(editor.document);
-                        }
-                        else {
-                            styles["inherit"].remove(editor.document);
-                        }
-                        editor.fire("save");
-                        this.colorWin.hide();
-                    }
-                },
-                _prepare:function() {
-                    var self = this;
-                    self.colorPanel = new Node(html);
-                    self.colorWin = new Overlay({
-                        el:this.colorPanel,
-                        mask:false,
-                        focusMgr:false
-                    });
-                    document.body.appendChild(self.colorPanel[0]);
-                    self.colorPanel.on("click", self._selectColor, self);
-                    Event.on(document, "click", self._hidePanel, self);
-                    Event.on(editor.document, "click", self._hidePanel, self);
-                },
-                _real:function() {
-                    var xy = this.el.el.offset();
-                    xy.top += this.el.el.height() + 5;
-                    if (xy.left + this.colorPanel.width() > DOM.viewportWidth() - 60) {
-                        xy.left = DOM.viewportWidth() - this.colorPanel.width() - 60;
-                    }
-                    this.colorWin.show(xy);
-                },
-                _showColors:function(ev) {
-                    var self = this;
-                    self._prepare(ev);
-                }
-            });
-            KE.ColorSupport = ColorSupport;
-        })();
+    function ColorSupport(cfg) {
+        var self = this;
+        ColorSupport.superclass.constructor.call(self, cfg);
+        self._init();
     }
-    editor.addPlugin(function() {
-        new KE.ColorSupport({
-            editor:editor,
-            styles:BACK_STYLES,
-            title:"背景颜色",
-            contentCls:"ke-toolbar-bgcolor",
-            text:"bgcolor"
-        });
 
-        new KE.ColorSupport({
-            editor:editor,
-            styles:FORE_STYLES,
-            title:"文本颜色",
-            contentCls:"ke-toolbar-color",
-            text:"color"
-        });
+    ColorSupport.VALID_COLORS = VALID_COLORS;
+
+    ColorSupport.ATTRS = {
+        editor:{},
+        styles:{},
+        contentCls:{},
+        text:{}
+    };
+    S.extend(ColorSupport, S.Base, {
+        _init:function() {
+            var self = this,
+                editor = self.get("editor"),
+                toolBarDiv = editor.toolBarDiv,
+                el = new TripleButton({
+                    container:toolBarDiv,
+                    title:self.get("title"),
+                    contentCls:self.get("contentCls")
+                    //text:this.get("text")
+                });
+
+            el.on("offClick", self._showColors, self);
+            self.el = el;
+            KE.Utils.lazyRun(self, "_prepare", "_real");
+            KE.Utils.sourceDisable(editor, self);
+        },
+        disable:function() {
+            this.el.set("state", TripleButton.DISABLED);
+        },
+        enable:function() {
+            this.el.set("state", TripleButton.OFF);
+        },
+        _hidePanel:function(ev) {
+            var self = this;
+            //多窗口管理
+            if (DOM._4e_ascendant(ev.target, function(node) {
+                return node._4e_equals(self.el.el);
+            }, true))return;
+            self.colorWin.hide();
+        },
+        _selectColor:function(ev) {
+            ev.halt();
+            var self = this,editor = self.get("editor"),
+                t = ev.target;
+            if (DOM._4e_name(t) == "span" || DOM._4e_name(t) == "a") {
+                t = new Node(t);
+                if (t._4e_name() == "a")
+                    t = t.one("span");
+                var styles = self.get("styles");
+                editor.fire("save");
+                if (t._4e_style("background-color")) {
+                    styles[normalColor(t._4e_style("background-color"))].apply(editor.document);
+                }
+                else {
+                    styles["inherit"].remove(editor.document);
+                }
+                editor.fire("save");
+                self.colorWin.hide();
+            }
+        },
+        _prepare:function() {
+            var self = this;
+            self.colorPanel = new Node(html);
+            self.colorWin = new Overlay({
+                el:this.colorPanel,
+                mask:false,
+                focusMgr:false
+            });
+            document.body.appendChild(self.colorPanel[0]);
+            self.colorPanel.on("click", self._selectColor, self);
+            Event.on(document, "click", self._hidePanel, self);
+            Event.on(editor.document, "click", self._hidePanel, self);
+        },
+        _real:function() {
+            var self = this,xy = self.el.el.offset();
+            xy.top += self.el.el.height() + 5;
+            if (xy.left + self.colorPanel.width() > DOM.viewportWidth() - 60) {
+                xy.left = DOM.viewportWidth() - self.colorPanel.width() - 60;
+            }
+            this.colorWin.show(xy);
+        },
+        _showColors:function(ev) {
+            var self = this;
+            self._prepare(ev);
+        }
     });
+    KE.ColorSupport = ColorSupport;
 });
 /**
  * contextmenu for kissy editor
@@ -9305,6 +9302,47 @@ KISSY.Editor.add("font", function(editor) {
 
 })
     ;
+/**
+ * forecolor support for kissy editor
+ * @author : yiminghe@gmail.com
+ */
+KISSY.Editor.add("forecolor", function(editor) {
+    var S = KISSY,
+        KE = S.Editor,
+        ColorSupport = KE.ColorSupport,
+        VALID_COLORS = ColorSupport.VALID_COLORS,
+        FORE_STYLES = {},
+        colorButton_foreStyle = {
+            element        : 'span',
+            styles        : { 'color' : '#(color)' },
+            overrides    : [
+                { element : 'font', attributes : { 'color' : null } }
+            ]
+        };
+    // Value 'inherit'  is treated as a wildcard,
+    // which will match any value.
+    //清除已设格式
+
+    FORE_STYLES["inherit"] = new KE.Style(colorButton_foreStyle, {
+        color:"inherit"
+    });
+    for (var i = 0; i < VALID_COLORS.length; i++) {
+        var currentColor = VALID_COLORS[i];
+        FORE_STYLES[currentColor] = new KE.Style(colorButton_foreStyle, {
+            color:currentColor
+        });
+    }
+
+    editor.addPlugin(function() {
+        new ColorSupport({
+            editor:editor,
+            styles:FORE_STYLES,
+            title:"文本颜色",
+            contentCls:"ke-toolbar-color",
+            text:"color"
+        });
+    });
+});
 /**
  * format formatting,modified from ckeditor
  * @modifier: yiminghe@gmail.com
@@ -11229,7 +11267,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 if (v.toLowerCase() == fontFamilies[i].toLowerCase()) return v;
             }
             return false;
-        } ,'font-family'        ],
+        } ,'font-family'],
         //qc 3701，去除行高，防止乱掉
         [/line-height/i],
 
@@ -14498,10 +14536,11 @@ KISSY.Editor.add("progressbar", function() {
             ".ke-progressbar {" +
             "border:1px solid #8F8F73;" +
             "position:relative;" +
+            "margin-left:auto;margin-right:auto;" +
             "}" +
             "" +
             ".ke-progressbar-inner {" +
-            "background-color:#FF8C00;" +
+            "background-color:#4f8ed2;" +
             "height:100%;" +
             "}" +
             "" +
@@ -14545,11 +14584,13 @@ KISSY.Editor.add("progressbar", function() {
                 self.el = el;
                 self._title = title;
                 self._p = p;
+                self.on("afterProgressChange", self._progressChange, self);
                 self._progressChange({newVal:self.get("progress")});
             },
 
             _progressChange:function(ev) {
                 var self = this,v = ev.newVal;
+                //console.log("_progressChange:" + v);
                 self._p.css("width", v + "%");
                 self._title.html(v + "%");
             }

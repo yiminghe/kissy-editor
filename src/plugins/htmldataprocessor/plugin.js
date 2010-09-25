@@ -136,7 +136,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 if (v.toLowerCase() == fontFamilies[i].toLowerCase()) return v;
             }
             return false;
-        } ,'font-family'        ],
+        } ,'font-family'],
         //qc 3701，去除行高，防止乱掉
         [/line-height/i],
 
