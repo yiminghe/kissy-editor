@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-25 16:12:06
+ * @buildtime: 2010-09-25 20:51:32
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "flashbridge",
             "flashutils",
             "clipboard",
             {
@@ -207,7 +208,7 @@ KISSY.add("editor", function(S, undefined) {
         mis_mods = [
             {
                 name:"localStorage",
-                requires:["flashutils"]
+                requires:["flashutils","flashbridge"]
             },
             {name:"button"},
             {name:"dd"},

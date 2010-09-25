@@ -133,9 +133,13 @@ KISSY.Editor.add("flashutils", function() {
                 "<div " +
                     "style='" + (
                     cfg.style ? cfg.style : (
-                        "width:0;" +
-                            "height:0;" +
-                            "overflow:hidden;"
+                        "width:1px;" +
+                            "height:1px;" +
+                            "position:absolute;" +
+                            //firefox 必须使创建的flash可见，才会触发contentReady
+                            "left:" + DOM.scrollLeft() + "px;" +
+                            "top:" + DOM.scrollTop() + "px;"
+                            + "overflow:hidden;"
                         ))
                     +
                     "'>", null, doc

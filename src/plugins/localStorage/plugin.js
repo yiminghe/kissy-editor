@@ -5,7 +5,7 @@
 KISSY.Editor.add("localStorage", function() {
     var S = KISSY,
         KE = S.Editor,STORE;
-    STORE = KE.STORE = "localStorage";
+    STORE = KE.STORE = "localStorage2";
     if (!KE.storeReady) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
@@ -32,48 +32,23 @@ KISSY.Editor.add("localStorage", function() {
         return;
     }
 
-    var Node = S.Node,
-        UA = S.UA,
-        movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf")
-        ,flash,name = "ke-localstorage-";
+    var movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf");
 
-    function init() {
-        flash = KE.Utils.flash.createSWFRuntime(movie, {
-            attrs:{
-                allowScriptAccess:'always',
-                allowNetworking:'all',
-                scale:'noScale'
-            },
-            flashVars:{
-                allowedDomain : location.hostname,
-                shareData: true,
-                YUISwfId:S.guid(name),
-                YUIBridgeCallback:STORE + ".ready",
-                browser: name,
-                useCompression: true
-            }
-        });
-    }
 
-    window[STORE] = {
+    window[STORE] = new KE.FlashBridge({
+        movie:movie,
+        methods:["setItem","removeItem"]
+    });
+
+    S.mix(window[STORE], {
         _ke:1,
         getItem:function(key) {
-            return flash.getValueOf(key);
-        },
-        setItem:function(key, data) {
-            return flash.setItem(key, data);
-        },
-        removeItem:function(key) {
-            return flash.removeItem(key);
-        },
-        //非原生，等待flash通知
-        ready:function(id, event) {
-            if (event.type == "contentReady") {
-                complete();
-                this.ready = function() {
-                };
-            }
+            return this.getValueOf(key);
         }
-    };
-    init();
+    });
+
+    //非原生，等待flash通知
+    window[STORE].on("contentReady", function() {
+        complete();
+    });
 });

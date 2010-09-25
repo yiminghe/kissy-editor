@@ -5,15 +5,15 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     (function() {
 
         function BangPaiUpload(editor) {
-            this.editor = editor;
-            this._init();
+            var self = this;
+            self.editor = editor;
+            self._init();
         }
 
         var DOM = S.DOM,
             Node = S.Node,
             holder = [],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
-            Node = S.Node,
             progressBars = {};
         name = "ke-bangpai-upload";
 
@@ -82,37 +82,39 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "</table>" +
                         "</div>").appendTo(bangpaiUploaderHolder)
                         .one("tbody"),
-                    up = new Node("<p style='margin:10px;" +
-                        "text-align:right;'><button>确定上传</button></p>")
+                    up = new Node("<p " +
+                        "style='margin:10px;" +
+                        "text-align:right;'>" +
+                        "<button>确定上传</button>" +
+                        "</p>")
                         .appendTo(bangpaiUploaderHolder).one("button"),
                     fid = S.guid(name);
                 holder[fid] = self;
                 self.btn = btn;
                 self.up = up;
-                self.on("swfReady", self._ready, self);
+                
+                //swfready 要求可见
                 flashPos.offset(boffset);
 
-                var flash = KE.Utils.flash.createSWFRuntime(movie, {
+                var uploader = new KE.FlashBridge({
+                    movie:movie,
+                    methods:["removeFile",
+                        "cancel",
+                        "removeFile",
+                        "setAllowMultipleFiles",
+                        "setFileFilters",
+                        "uploadAll"],
                     holder:flashPos,
                     attrs:{
-                        allowScriptAccess:'always',
-                        allowNetworking:'all',
-                        scale:'noScale',
                         width:btn.width() ,
                         height:btn.height()
                     },
                     flashVars:{
-                        allowedDomain : location.hostname,
-                        shareData: true,
-                        YUISwfId:fid,
-                        YUIBridgeCallback:"KISSY.Editor.BangPaiUpload.EventHandler",
-                        browser: name,
-                        useCompression: true,
                         menu:true
                     }
                 });
 
-                self.flash = flash;
+                self.uploader = uploader;
                 self._list = list;
                 self._ds = bangpaiCfg.serverUrl;
                 self._dsp = bangpaiCfg.serverParams || {};
@@ -127,44 +129,27 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     } else if (target.hasClass("ke-upload-delete")) {
                         tr = target.parent("tr"),fid = tr.attr("fid");
                         try {
-                            flash.cancel(fid);
+                            uploader.cancel(fid);
                         } catch(e) {
                         }
-                        flash.removeFile(fid);
+                        uploader.removeFile(fid);
                         progressBars[fid].destroy();
                         delete progressBars[fid];
                         tr._4e_remove();
                     }
                 });
-                /*
-                 clearList.on("click", function() {
-                 var c;
-                 for (var p in progressBars) {
-                 if (progressBars.hasOwnProperty(p))
-                 progressBars[p].destroy();
-                 try {
-                 flash.cancel(p);
-                 } catch(e) {
-                 }
-                 }
-                 flash.clearFileList();
-                 progressBars = {};
-                 while (c = list[0].firstChild) {
-                 DOM._4e_remove(c)
-                 }
-                 });
-                 */
-                self.on("fileSelect", self._onSelect, self);
-                self.on("uploadStart", self._onUploadStart, self);
-                self.on("uploadProgress", self._onProgress, self);
-                self.on("uploadComplete", self._onComplete, self);
-                self.on("uploadCompleteData", self._onUploadCompleteData, self);
 
+                uploader.on("fileSelect", self._onSelect, self);
+                uploader.on("uploadStart", self._onUploadStart, self);
+                uploader.on("uploadProgress", self._onProgress, self);
+                uploader.on("uploadComplete", self._onComplete, self);
+                uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
+                uploader.on("swfReady", self._ready, self);
             },
             _onUploadStart:function(ev) {
                 //console.log("_onUploadStart", ev);
-                var id = ev.id,flash = this.flash;
-                flash.removeFile(id);
+                var id = ev.id,uploader = this.uploader;
+                uploader.removeFile(id);
             },
             _onComplete:function() {
                 //console.log("_onComplete", ev);
@@ -239,12 +224,13 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             _ready:function() {
 
                 var self = this,
-                    flash = self.flash,
+                    uploader = self.uploader,
                     up = self.up,
                     btn = self.btn;
+                //self.flashPos.offset(self.boffset);
                 btn[0].disabled = false;
-                flash.setAllowMultipleFiles(true);
-                flash.setFileFilters([
+                uploader.setAllowMultipleFiles(true);
+                uploader.setFileFilters([
                     {
                         extensions:"*.jpeg;*.jpg;*.png;*.gif",
                         description:"图片文件( png,jpg,jpeg,gif )"
@@ -252,26 +238,14 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     }
                 ]);
                 up.on("click", function() {
-                    flash.uploadAll(self._ds, "POST",
+                    uploader.uploadAll(self._ds, "POST",
                         self._dsp,
                         "Filedata");
                 })
 
-            },
-            _eventHandler:function(event) {
-                var self = this,
-                    type = event.type;
-                //console.log(type);
-                if (type === 'log') {
-                    S.log(event.message);
-                } else if (type) {
-                    self.fire(type, event);
-                }
             }
         });
-        BangPaiUpload.EventHandler = function(fid, event) {
-            holder[fid]._eventHandler.call(holder[fid], event);
-        };
+
         KE.BangPaiUpload = BangPaiUpload;
     })();
     editor.addPlugin(function() {
@@ -280,5 +254,5 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 },
 {
     attach:false,
-    requires : ["flashutils","progressbar"]
+    requires : ["flashutils","progressbar","flashbridge"]
 });

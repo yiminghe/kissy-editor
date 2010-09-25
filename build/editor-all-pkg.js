@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-25 16:12:06
+ * @buildtime: 2010-09-25 20:51:32
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "flashbridge",
             "flashutils",
             "clipboard",
             {
@@ -207,7 +208,7 @@ KISSY.add("editor", function(S, undefined) {
         mis_mods = [
             {
                 name:"localStorage",
-                requires:["flashutils"]
+                requires:["flashutils","flashbridge"]
             },
             {name:"button"},
             {name:"dd"},
@@ -8399,6 +8400,104 @@ KISSY.Editor.add("flash", function(editor) {
     });
 });
 /**
+ * simplified flash bridge for yui swf
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("flashbridge", function() {
+    var S = KISSY,KE = S.Editor;
+    if (KE.FlashBridge) return;
+
+    var instances = {};
+
+    function FlashBridge(cfg) {
+        this._init(cfg);
+    }
+
+    S.augment(FlashBridge, S.EventTarget, {
+        _init:function(cfg) {
+            var self = this,
+                id = S.guid("flashbridge-"),
+                callback = "KISSY.Editor.FlashBridge.EventHandler";
+            cfg.flashVars = cfg.flashVars || {};
+            cfg.attrs = cfg.attrs || {};
+            var flashVars = cfg.flashVars,
+                attrs = cfg.attrs;
+            S.mix(attrs, {
+                id:id,
+                width:100,
+                height:100,
+                allowScriptAccess:'always',
+                allowNetworking:'all',
+                scale:'noScale'
+            }, false);
+            S.mix(flashVars, {
+                allowedDomain : location.hostname,
+                shareData: true,
+                YUISwfId:id,
+                YUIBridgeCallback:callback,
+                useCompression:true
+            }, false);
+            instances[id] = self;
+            self.swf = KE.Utils.flash.createSWFRuntime(cfg.movie, cfg);
+            self.id = id;
+            self._expose(cfg.methods);
+        },
+        _expose:function(methods) {
+            var self = this;
+            for (var i = 0; i < methods.length; i++) {
+                var m = methods[i];
+                (function(m) {
+                    self[m] = function() {
+                        self._callSWF(m, S.makeArray(arguments));
+                    };
+                })(m);
+            }
+        },
+        /**
+         * Calls a specific function exposed by the SWF's ExternalInterface.
+         * @param func {String} the name of the function to call
+         * @param args {Array} the set of arguments to pass to the function.
+         */
+        _callSWF: function (func, args) {
+            var self = this;
+            args = args || [];
+            try {
+                if (self.swf[func]) {
+                    return self.swf[func].apply(self.swf, args);
+                }
+            }
+                // some version flash function is odd in ie: property or method not supported by object
+            catch(e) {
+                var params = '';
+                if (args.length !== 0) {
+                    params = '\'' + args.join('', '') + '\'';
+                }
+                //avoid eval for compressiong
+                return (new Function('self', 'return self.swf.' + func + '(' + params + ');'))(self);
+            }
+        },
+        _eventHandler:function(event) {
+            var self = this,
+                type = event.type;
+            if (type === 'log') {
+                S.log(event.message);
+            } else if (type) {
+                self.fire(type, event);
+            }
+        },
+        _destroy:function() {
+            delete instances[this.id];
+        }
+    });
+
+    FlashBridge.EventHandler = function(id, event) {
+        var instance = instances[id];
+        instance && instance._eventHandler.call(instance, event);
+    };
+
+    KE.FlashBridge = FlashBridge;
+
+});/**
  * flash base for all flash-based plugin
  * @author:yiminghe@gmail.com
  */
@@ -8976,9 +9075,13 @@ KISSY.Editor.add("flashutils", function() {
                 "<div " +
                     "style='" + (
                     cfg.style ? cfg.style : (
-                        "width:0;" +
-                            "height:0;" +
-                            "overflow:hidden;"
+                        "width:1px;" +
+                            "height:1px;" +
+                            "position:absolute;" +
+                            //firefox 必须使创建的flash可见，才会触发contentReady
+                            "left:" + DOM.scrollLeft() + "px;" +
+                            "top:" + DOM.scrollTop() + "px;"
+                            + "overflow:hidden;"
                         ))
                     +
                     "'>", null, doc
@@ -13493,7 +13596,7 @@ KISSY.Editor.add("list", function(editor) {
 KISSY.Editor.add("localStorage", function() {
     var S = KISSY,
         KE = S.Editor,STORE;
-    STORE = KE.STORE = "localStorage";
+    STORE = KE.STORE = "localStorage2";
     if (!KE.storeReady) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
@@ -13520,50 +13623,25 @@ KISSY.Editor.add("localStorage", function() {
         return;
     }
 
-    var Node = S.Node,
-        UA = S.UA,
-        movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf")
-        ,flash,name = "ke-localstorage-";
+    var movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf");
 
-    function init() {
-        flash = KE.Utils.flash.createSWFRuntime(movie, {
-            attrs:{
-                allowScriptAccess:'always',
-                allowNetworking:'all',
-                scale:'noScale'
-            },
-            flashVars:{
-                allowedDomain : location.hostname,
-                shareData: true,
-                YUISwfId:S.guid(name),
-                YUIBridgeCallback:STORE + ".ready",
-                browser: name,
-                useCompression: true
-            }
-        });
-    }
 
-    window[STORE] = {
+    window[STORE] = new KE.FlashBridge({
+        movie:movie,
+        methods:["setItem","removeItem"]
+    });
+
+    S.mix(window[STORE], {
         _ke:1,
         getItem:function(key) {
-            return flash.getValueOf(key);
-        },
-        setItem:function(key, data) {
-            return flash.setItem(key, data);
-        },
-        removeItem:function(key) {
-            return flash.removeItem(key);
-        },
-        //非原生，等待flash通知
-        ready:function(id, event) {
-            if (event.type == "contentReady") {
-                complete();
-                this.ready = function() {
-                };
-            }
+            return this.getValueOf(key);
         }
-    };
-    init();
+    });
+
+    //非原生，等待flash通知
+    window[STORE].on("contentReady", function() {
+        complete();
+    });
 });/**
  * maximize editor
  * @author:yiminghe@gmail.com

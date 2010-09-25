@@ -63,7 +63,9 @@ build file for kissy editor
     "run git from windows command prompt"
     when install
     -->
-    <target name="git" depends="minify">
+    <target
+            name="git"
+            depends="native2ascii">
 
         <input addproperty="git.commit.message">
             git commit message :
@@ -189,6 +191,7 @@ build file for kissy editor
             <fileset dir="${build.dir}"
                      includes="**/*.js"/>
         </replaceregexp>
+
         <replaceregexp match="@TIMESTAMP@"
                        replace="${timestamp.isoformat}"
                        flags="g"
@@ -282,6 +285,39 @@ build file for kissy editor
                 </concat>
             </sequential>
         </ac:for>
+
+    </target>
+
+    <!-- 对 JS 文件 ASCII 化 -->
+    <target name="native2ascii"
+            depends="minify">
+        <native2ascii
+                encoding="${charset}"
+                src="${build.dir}"
+                dest="${build.dir}"
+                includes="**/*-pkg-min.js"
+                >
+            <mapper type="regexp" from="^(.*)\.js$" to="\1-ascii.js"/>
+        </native2ascii>
+
+        <!--
+        先要删除
+        -->
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="**/*-pkg-min.js"/>
+            </fileset>
+        </delete>
+        <!--
+        才能移动
+        -->
+        <move todir="${build.dir}">
+            <fileset dir="${build.dir}">
+                <include name="**/*-ascii.js"/>
+            </fileset>
+            <mapper type="regexp" from="^(.*)-ascii\.js$" to="\1.js"/>
+        </move>
+
 
     </target>
 

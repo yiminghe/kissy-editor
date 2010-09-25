@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "flashbridge",
             "flashutils",
             "clipboard",
             {
@@ -207,7 +208,7 @@ KISSY.add("editor", function(S, undefined) {
         mis_mods = [
             {
                 name:"localStorage",
-                requires:["flashutils"]
+                requires:["flashutils","flashbridge"]
             },
             {name:"button"},
             {name:"dd"},
