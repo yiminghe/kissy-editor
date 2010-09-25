@@ -98,7 +98,7 @@ KISSY.Editor.add("range", function(KE) {
             this.setEnd(node.parent(), node._4e_index());
         },
         optimizeBookmark: function() {
-            var self=this,startNode = self.startContainer,
+            var self = this,startNode = self.startContainer,
                 endNode = self.endContainer;
 
             if (startNode && startNode._4e_name() == 'span'
@@ -563,7 +563,7 @@ KISSY.Editor.add("range", function(KE) {
             }
         },
         getTouchedStartNode : function() {
-            var self=this,container = self.startContainer;
+            var self = this,container = self.startContainer;
 
             if (self.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
                 return container;
@@ -1305,13 +1305,13 @@ KISSY.Editor.add("range", function(KE) {
             return walker.checkForward();
         },
         deleteContents:function() {
-            var self=this;
+            var self = this;
             if (self.collapsed)
                 return;
             self.execContentsAction(0);
         },
         extractContents : function() {
-            var self=this, docFrag = self.document.createDocumentFragment();
+            var self = this, docFrag = self.document.createDocumentFragment();
             if (!self.collapsed)
                 self.execContentsAction(1, docFrag);
             return docFrag;
@@ -1416,7 +1416,7 @@ KISSY.Editor.add("range", function(KE) {
                 endBlock = endPath.block,
                 elementPath = null;
             // Do nothing if the boundaries are in different block limits.
-            if (startBlockLimit[0] !== endBlockLimit[0])
+            if (!startBlockLimit._4e_equals(endBlockLimit))
                 return null;
 
             // Get or fix current blocks.

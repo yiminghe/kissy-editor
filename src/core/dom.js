@@ -767,13 +767,14 @@ KISSY.Editor.add("dom", function(KE) {
                 // Ignore empty/spaces text.
                 while (lastChild && lastChild.nodeType == KEN.NODE_TEXT && !S.trim(lastChild.nodeValue))
                     lastChild = lastChild.previousSibling;
-                if (!lastChild || lastChild.nodeType == KEN.NODE_TEXT || DOM._4e_name(lastChild) !== 'br') {
+                if (!lastChild ||
+                    lastChild.nodeType == KEN.NODE_TEXT || 
+                    DOM._4e_name(lastChild) !== 'br') {
                     var bogus = UA.opera ?
                         el.ownerDocument.createTextNode('') :
                         el.ownerDocument.createElement('br');
 
                     UA.gecko && bogus.setAttribute('type', '_moz');
-
                     el.appendChild(bogus);
                 }
             },

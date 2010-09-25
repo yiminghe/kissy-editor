@@ -116,7 +116,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                         newBlock = nextBlock._4e_clone();
 
                     if (!newBlock)
-                        newBlock = new Node(blockTag, null, doc);
+                        newBlock = new Node("<" + blockTag + ">", null, doc);
 
                     // Recreate the inline elements tree, which was available
                     // before hitting enter, so the same styles will be available in
