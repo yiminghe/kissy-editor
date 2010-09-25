@@ -92,7 +92,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 holder[fid] = self;
                 self.btn = btn;
                 self.up = up;
-                
+
                 //swfready 要求可见
                 flashPos.offset(boffset);
 
@@ -178,7 +178,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             _onProgress:function(ev) {
                 //console.log("_onProgress", ev);
                 var fid = ev.id,
-                    progess = ev.bytesLoaded * 100 / ev.bytesTotal,
+                    progess = Math.floor(ev.bytesLoaded * 100 / ev.bytesTotal),
                     bar = progressBars[fid];
                 bar && bar.set("progress", progess);
 
