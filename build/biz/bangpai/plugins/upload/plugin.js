@@ -237,7 +237,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 
                     }
                 ]);
-                up.on("click", function() {
+                up.on("click", function(ev) {
+                    ev.halt();
                     uploader.uploadAll(self._ds, "POST",
                         self._dsp,
                         "Filedata");

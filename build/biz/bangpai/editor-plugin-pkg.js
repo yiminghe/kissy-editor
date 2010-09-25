@@ -705,7 +705,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
                     }
                 ]);
-                up.on("click", function() {
+                up.on("click", function(ev) {
+                    ev.halt();
                     uploader.uploadAll(self._ds, "POST",
                         self._dsp,
                         "Filedata");
