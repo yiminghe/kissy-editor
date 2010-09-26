@@ -23,6 +23,9 @@ KISSY.Editor.add("flashbridge", function() {
                 attrs = cfg.attrs;
             S.mix(attrs, {
                 id:id,
+                //http://yiminghe.javaeye.com/blog/764872
+                //firefox 必须使创建的flash以及容器可见，才会触发contentReady
+                //默认给flash自身很大的宽高，容器小点就可以了，
                 width:100,
                 height:100,
                 allowScriptAccess:'always',

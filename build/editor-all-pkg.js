@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 11:36:15
+ * @buildtime: 2010-09-26 11:46:09
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8424,6 +8424,9 @@ KISSY.Editor.add("flashbridge", function() {
                 attrs = cfg.attrs;
             S.mix(attrs, {
                 id:id,
+                //http://yiminghe.javaeye.com/blog/764872
+                //firefox 必须使创建的flash以及容器可见，才会触发contentReady
+                //默认给flash自身很大的宽高，容器小点就可以了，
                 width:100,
                 height:100,
                 allowScriptAccess:'always',
@@ -9084,10 +9087,11 @@ KISSY.Editor.add("flashutils", function() {
                     "<div " +
                         "style='" + (
                         cfg.style ? cfg.style : (
+                            //http://yiminghe.javaeye.com/blog/764872
+                            //firefox 必须使创建的flash以及容器可见，才会触发contentReady
                             "width:1px;" +
                                 "height:1px;" +
                                 "position:absolute;" +
-                                //firefox 必须使创建的flash可见，才会触发contentReady
                                 //"left:" + DOM.scrollLeft() + "px;" +
                                 //"top:" + DOM.scrollTop() + "px;"
                                 + "overflow:hidden;"
@@ -9096,7 +9100,7 @@ KISSY.Editor.add("flashutils", function() {
                         "'>", null, doc
                     ).
                     appendTo(doc.body);
-
+                //不能初始化时设置，防止刷新,scrollLeft 一开始为0，等会,wait is virtue
                 setTimeout(function() {
                     holder.offset({left:DOM.scrollLeft(),top:DOM.scrollTop()})
                 }, 100);
