@@ -176,6 +176,19 @@
         <p>3</p>
         <p>4</p>
     </textarea>
+    <h2>插入图片到编辑器1</h2>
+    <div style="border:1px solid #c1c8d1;
+background-color:#fafafa;
+
+width:700px;
+margin:0 auto;
+
+-moz-box-shadow:2px 2px 0.5em #888888;
+-webkit-box-shadow:2px 2px 0.5em #888888;
+box-shadow:2px 2px 0.5em #888888;
+" id="imgup1">
+
+    </div>
 </div>
 
 <div style="width: 60%; margin: 50px auto">
@@ -215,7 +228,7 @@
                 //,"font-family":["song"]
                 ,"bangpai-upload":{
                     holder:"#imgup1",
-                    serverUrl:"",
+                    serverUrl:"/code/upload/upload.jsp",
                     serverParams:{
                     }
                 },
@@ -237,8 +250,9 @@
                 "templates,separator," +
                 "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,pagebreak,separator,maximize"
+                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                 );
+
 
         KE("#editor2", {
             disableObjectResizing:true,

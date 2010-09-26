@@ -13,7 +13,7 @@
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
-           <script>alert(1);</script>
+        <script>alert(1);</script>
         <p>
             我是虾米音乐
         </p>
@@ -153,7 +153,19 @@
         <p>3</p>
         <p>4</p>
     </textarea>
+    <h2>插入图片到编辑器1</h2>
+    <div style="border:1px solid #c1c8d1;
+background-color:#fafafa;
 
+width:700px;
+margin:0 auto;
+
+-moz-box-shadow:2px 2px 0.5em #888888;
+-webkit-box-shadow:2px 2px 0.5em #888888;
+box-shadow:2px 2px 0.5em #888888;
+" id="imgup1">
+
+    </div>
 </div>
 
 
@@ -174,6 +186,7 @@
         KE.Config.base = base + "build/";
 
         var k = KE("#editor", {
+
             pluginConfig: {
                 "templates": [
                     {
@@ -187,15 +200,35 @@
                 ],
                 "font-size":["13px","16px","20px"]
                 //,"font-family":["song"]
+                ,"bangpai-upload":{
+                    holder:"#imgup1",
+                    serverUrl:"/code/upload/upload.jsp",
+                    serverParams:{
+                    }
+                },
+                "bangpai-video":{
+                    urlCfg:[
+                        {
+                            reg:/tudou\.com/i,
+                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        }
+                    ]
+                },
+                "draft":{
+                    interval:5,
+                    limit:10
+                }
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "templates,separator," +
-                "undo,separator,removeformat,font,format,color,separator," +
+                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,pagebreak,separator,maximize"
+                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                 );
 
-        var TripleButton=KE.TripleButton;
+
+        var TripleButton = KE.TripleButton;
         //最简单的自己写插件
         k.on("dataReady", function() {
 

@@ -801,7 +801,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 if (m) {
                     return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                 }
-                //if (/\.swf$/.test(url))
+                m = url.match(/v_playlist\/([^.]+)\.html$/);
+                if (m) {
+                    //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                }
                 return url;
             }
         },
@@ -810,11 +813,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             width:480,
             height:400,
             detect:function(url) {
-                var m = url.match(/\/view\/([^/]+)\/$/);
-                if (m) {
-                    return "http://www.tudou.com/v/" + m[1] + "/v.swf";
-                }
-                //if (/\.swf$/.test(url))
                 return url;
             }
         },
@@ -827,7 +825,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 if (m) {
                     return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
                 }
-                //if (/\.swf$/.test(url))
                 return url;
             }
         }

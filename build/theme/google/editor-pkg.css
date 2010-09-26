@@ -804,12 +804,6 @@ taobao smiley plugin style
     border: 1px solid #808080;
 }
 /**
-  table plugin style
-**/
-.ke-table-config td {
-    padding: 4px 0;
-}
-/**
 templates plugin style
 **/
 .ke-tpl {

@@ -5,6 +5,7 @@
 KISSY.Editor.add("image", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        DOM = S.DOM,
         UA = S.UA,
         Node = S.Node,
         Event = S.Event,
@@ -27,18 +28,57 @@ KISSY.Editor.add("image", function(editor) {
                 this._init();
             }
 
+            DOM.addStyleSheet(".ke-image-tabs {" +
+                "padding-left:10px;" +
+                "}" +
+                ".ke-image-tabs li {" +
+                "background-color:#F6F6F6;" +
+                "border-color:#CCCCCC #CCCCCC -moz-use-text-color;" +
+                "border-style:solid solid none;" +
+                "border-width:1px 1px medium;" +
+                "cursor:pointer;" +
+                "float:left;" +
+                "height:21px;" +
+                "line-height:21px;" +
+                "margin-left:5px;" +
+                "position:relative;" +
+                "text-align:center;" +
+                "top:1px;" +
+                "width:60px;" +
+                "}" +
+                "li.ke-image-tab-selected {" +
+                "border-bottom:1px solid #FFFFFF;" +
+                "border-color:#CCCCCC #CCCCCC #FFFFFF;" +
+                "cursor:default;" +
+                "}", "ke-image");
+
             var TripleButton = KE.TripleButton,
-                bodyHtml = "<table>" +
+                bodyHtml = "" +
+                    "<ul class='ke-image-tabs ks-clear'>" +
+                    "<li class='ke-image-tab-selected' rel='remote'>网络图片" +
+                    "</li>" +
+                    "<li rel='local'>本地上传" +
+                    "</li>" +
+                    "</ul>" +
+                    "" +
+                    "<div style='border-top:1px solid #CCCCCC;" +
+                    "padding:10px 0 0 0;'>" +
+                    "<table>" +
                     "<tr>" +
                     "<td colspan='2'>" +
                     "<label>" +
-                    "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
+                    "<span " +
+                    "class='ke-image-title'" +
+                    "style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "class='ke-img-url' " +
+                    "style='width:180px;margin-right:5px;' " +
+                    "value='" + TIP + "'/>" +
                     "</label>" +
+                    "<button class='ke-image-up'>浏览...</button>" +
                     "</td>" +
                     "</tr>" +
                     "<tr>" +
@@ -86,7 +126,8 @@ KISSY.Editor.add("image", function(editor) {
                     "</label>" +
                     "</td>" +
                     "</tr>" +
-                    "</table>",
+                    "</table>" +
+                    "</div>",
                 footHtml = "<button class='ke-img-insert'>确定</button> " +
                     "<button class='ke-img-cancel'>取消</button>";
 
@@ -180,10 +221,20 @@ KISSY.Editor.add("image", function(editor) {
                         self.d.hide();
                         ev.halt();
                     });
-
                     ok.on("click", function() {
                         self._insert();
                     });
+                    var tab = d.body.all("ul");
+                    tab.on("click", function(ev) {
+                        var li = new Node(ev.target);
+                        if (li = li._4e_ascendant(function(n) {
+                            n._4e_name() === "li" && tab._4e_contains(n);
+                        }, true)) {
+                            var rel = li.attr("rel");
+                            
+                        }
+                    });
+
                 },
                 _updateTip:function(tipurl, a) {
                     tipurl.html(a.attr("src"));

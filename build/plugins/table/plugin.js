@@ -191,6 +191,9 @@ KISSY.Editor.add("table", function(editor, undefined) {
     if (!KE.TableUI) {
         (function() {
 
+            DOM.addStyleSheet(".ke-table-config td {" +
+                "padding: 4px 0;" +
+                "}", "ke-table");
 
             function TableUI(editor) {
                 var self = this;

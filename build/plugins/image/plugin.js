@@ -5,6 +5,7 @@
 KISSY.Editor.add("image", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
+        DOM = S.DOM,
         UA = S.UA,
         Node = S.Node,
         Event = S.Event,
@@ -27,8 +28,41 @@ KISSY.Editor.add("image", function(editor) {
                 this._init();
             }
 
+            DOM.addStyleSheet(".ke-image-tabs {" +
+                "padding-left:10px;" +
+                "}" +
+                "" +
+                ".ke-image-tabs li {" +
+                "background-color:#F6F6F6;" +
+                "border-color:#CCCCCC #CCCCCC -moz-use-text-color;" +
+                "border-style:solid solid none;" +
+                "border-width:1px 1px medium;" +
+                "cursor:pointer;" +
+                "float:left;" +
+                "height:21px;" +
+                "line-height:21px;" +
+                "margin-left:5px;" +
+                "position:relative;" +
+                "text-align:center;" +
+                "top:1px;" +
+                "width:60px;" +
+                "}" +
+                "li.ke-image-tab-selected {" +
+                "border-bottom:1px solid #FFFFFF;" +
+                "border-color:#CCCCCC #CCCCCC #FFFFFF;" +
+                "cursor:default;" +
+                "}", "ke-image");
+
             var TripleButton = KE.TripleButton,
-                bodyHtml = "<table>" +
+                bodyHtml = "" +
+                    "<ul class='ke-image-tabs'>" +
+                    "<li class='ke-image-tab-selected'>网络图片" +
+                    "</li>" +
+                    "<li >本地上传" +
+                    "</li>" +
+                    "<ul>" +
+                    "" +
+                    "<table>" +
                     "<tr>" +
                     "<td colspan='2'>" +
                     "<label>" +
