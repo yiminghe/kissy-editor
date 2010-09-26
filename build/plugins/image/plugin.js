@@ -30,8 +30,8 @@ KISSY.Editor.add("image", function(editor) {
 
             DOM.addStyleSheet(".ke-image-tabs {" +
                 "padding-left:10px;" +
+                "border-bottom:1px solid #CCCCCC;" +
                 "}" +
-                "" +
                 ".ke-image-tabs li {" +
                 "background-color:#F6F6F6;" +
                 "border-color:#CCCCCC #CCCCCC -moz-use-text-color;" +
@@ -55,24 +55,31 @@ KISSY.Editor.add("image", function(editor) {
 
             var TripleButton = KE.TripleButton,
                 bodyHtml = "" +
-                    "<ul class='ke-image-tabs'>" +
-                    "<li class='ke-image-tab-selected'>网络图片" +
+                    "<ul class='ke-image-tabs ks-clear'>" +
+                    "<li class='ke-image-tab-selected' rel='remote'>网络图片" +
                     "</li>" +
-                    "<li >本地上传" +
+                    "<li rel='local'>本地上传" +
                     "</li>" +
-                    "<ul>" +
+                    "</ul>" +
                     "" +
+                    "<div style='" +
+                    "padding:10px 0 0 0;'>" +
                     "<table>" +
                     "<tr>" +
                     "<td colspan='2'>" +
                     "<label>" +
-                    "<span style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
+                    "<span " +
+                    "class='ke-image-title'" +
+                    "style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-img-url' style='width:230px' value='" + TIP + "'/>" +
+                    "class='ke-img-url' " +
+                    "style='width:180px;margin-right:5px;' " +
+                    "value='" + TIP + "'/>" +
                     "</label>" +
+                    "<button class='ke-image-up' style='visibility:hidden;'>浏览...</button>" +
                     "</td>" +
                     "</tr>" +
                     "<tr>" +
@@ -120,7 +127,8 @@ KISSY.Editor.add("image", function(editor) {
                     "</label>" +
                     "</td>" +
                     "</tr>" +
-                    "</table>",
+                    "</table>" +
+                    "</div>",
                 footHtml = "<button class='ke-img-insert'>确定</button> " +
                     "<button class='ke-img-cancel'>取消</button>";
 
@@ -214,19 +222,119 @@ KISSY.Editor.add("image", function(editor) {
                         self.d.hide();
                         ev.halt();
                     });
-
                     ok.on("click", function() {
                         self._insert();
                     });
+                    var cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"];
+
+
+                    var tab = content.one("ul"),lis = tab.all("li"),
+                        ke_image_title = content.one(".ke-image-title"),
+                        ke_image_up = content.one(".ke-image-up");
+                    if (cfg) {
+
+                        tab.on("click", function(ev) {
+                            var li = new Node(ev.target);
+                            if (li = li._4e_ascendant(function(n) {
+                                return n._4e_name() === "li" && tab._4e_contains(n);
+                            }, true)) {
+                                lis.removeClass("ke-image-tab-selected");
+                                var rel = li.attr("rel");
+                                li.addClass("ke-image-tab-selected");
+                                if (rel == "local") {
+                                    ke_image_title.html("上传图片：");
+                                    ke_image_up.css("visibility", "");
+                                    flashPos.css("visibility", "");
+                                } else {
+                                    ke_image_title.html("图片网址：");
+                                    ke_image_up.css("visibility", "hidden");
+                                    flashPos.css("visibility", "hidden");
+                                }
+
+                            }
+                        });
+                        var flashPos = new Node("<div style='" +
+                            ("position:absolute;" +
+                                "width:" + (ke_image_up.width() + 8) + "px;" +
+                                "height:" + (ke_image_up.height() + 8) + "px;" +
+                                "z-index:9999;")
+                            + "'>").appendTo(content);
+                        flashPos.offset(ke_image_up.offset());
+                        var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
+                            uploader = new KE.FlashBridge({
+                                movie:movie,
+                                methods:["removeFile",
+                                    "cancel",
+                                    "removeFile",
+                                    "disable",
+                                    "enable",
+                                    "upload",
+                                    "setAllowMultipleFiles",
+                                    "setFileFilters",
+                                    "uploadAll"],
+                                holder:flashPos,
+                                attrs:{
+                                    width:ke_image_up.width() ,
+                                    height:ke_image_up.height()
+                                },
+                                flashVars:{
+                                    menu:true
+                                }
+                            });
+                        ke_image_up[0].disabled = true;
+                        uploader.on("swfReady", function() {
+                            ke_image_up[0].disabled = false;
+                            flashPos.css("visibility", "hidden");
+                            uploader.setAllowMultipleFiles(false);
+                            uploader.setFileFilters([
+                                {
+                                    extensions:"*.jpeg;*.jpg;*.png;*.gif",
+                                    description:"图片文件( png,jpg,jpeg,gif )"
+
+                                }
+                            ]);
+                        });
+
+                        uploader.on("fileSelect", function() {
+                            uploader.uploadAll(cfg.serverUrl, "POST",
+                                cfg.serverParams,
+                                cfg.fileInput);
+                            d.loading();
+                        }
+                            )
+                            ;
+
+                        uploader.on("uploadCompleteData", function(ev) {
+                            var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                            if (!data) return;
+                            data = JSON.parse(data);
+                            if (data.error) {
+                                alert(data.error);
+                                return;
+                            }
+                            self.imgUrl.val(data.imgUrl);
+                            d.unloading();
+                        });
+
+                    }
+                    else {
+                        tab.hide();
+                    }
+
                 },
-                _updateTip:function(tipurl, a) {
-                    tipurl.html(a.attr("src"));
-                    tipurl.attr("href", a.attr("src"));
-                },
+                _updateTip
+                    :
+                    function(tipurl, a) {
+                        tipurl.html(a.attr("src"));
+                        tipurl.attr("href", a.attr("src"));
+                    }
+
+                ,
 
                 _real:function() {
                     this.d.show();
-                },
+                }
+                ,
                 _insert:function() {
                     var self = this,
                         url = self.imgUrl.val(),re;
@@ -271,7 +379,8 @@ KISSY.Editor.add("image", function(editor) {
                     }
                     self.d.hide();
                     editor.notifySelectionChange();
-                },
+                }
+                ,
                 _updateD:function(_selectedEl) {
                     var self = this;
                     self._selectedEl = _selectedEl;
@@ -290,13 +399,16 @@ KISSY.Editor.add("image", function(editor) {
                         self.imgMargin.val("5");
 
                     }
-                },
+                }
+                ,
                 show:function(ev, _selectedEl) {
                     var self = this;
                     self._prepare();
                     self._updateD(_selectedEl);
                 }
-            });
+            }
+                )
+                ;
             KE.ImageInserter = ImageInserter;
 
 
@@ -359,4 +471,5 @@ KISSY.Editor.add("image", function(editor) {
 
     });
 
-});
+})
+    ;

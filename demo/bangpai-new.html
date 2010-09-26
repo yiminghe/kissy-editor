@@ -200,7 +200,14 @@ box-shadow:2px 2px 0.5em #888888;
         window.editor = KE("#editor", {
 
             pluginConfig: {
-               
+                "image":{
+                    upload:{
+                        serverUrl:"/code/upload/upload.jsp",
+                        serverParams:{
+                        },
+                        fileInput:"Filedata"
+                    }
+                },
                 "font-size":["13px","16px","20px"]
                 //,"font-family":["song"]
                 ,"bangpai-upload":{

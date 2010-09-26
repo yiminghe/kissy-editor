@@ -188,6 +188,14 @@ box-shadow:2px 2px 0.5em #888888;
         var k = KE("#editor", {
 
             pluginConfig: {
+                "image":{
+                    upload:{
+                        serverUrl:"/code/upload/upload.jsp",
+                        serverParams:{
+                        },
+                        fileInput:"Filedata"
+                    }
+                },
                 "templates": [
                     {
                         demo: "模板1效果演示html"  ,
