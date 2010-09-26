@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 16:21:44
+ * @buildtime: 2010-09-26 18:10:09
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -13858,8 +13858,16 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         editor = self.editor;
                     Event.remove(window, "resize", self._maximize, self);
-                    //self._domEditorParent
-                    //    .insertBefore(editor.editorWrap[0], self._domEditorPre);
+
+                    //恢复父节点的position原状态 bugfix:最大化被父元素限制
+                    var _savedParents = self._savedParents;
+                    if (_savedParents) {
+                        for (var i = 0; i < _savedParents.length; i++) {
+                            var po = _savedParents[i];
+                            po.el.css("position", po.position);
+                        }
+                    }
+
 
                     this._saveEditorStatus();
                     editor.wrap.css({
@@ -13899,10 +13907,21 @@ KISSY.Editor.add("maximize", function(editor) {
                     self.scrollTop = DOM.scrollTop();
                     window.scrollTo(0, 0);
 
-                    /*将编辑器移到body直接下层*/
-                    //self._domEditorParent = editor.editorWrap.parent()[0];
-                    //self._domEditorPre = editor.editorWrap[0].previousSibling;
-                    //document.body.appendChild(editor.editorWrap[0]);
+                    //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
+                    self._savedParents = [];
+                    var p = editor.editorWrap.parent();
+                    while (p) {
+                        if (p.css("position") != "static") {
+                            self._savedParents.push({
+                                el:p,
+                                position:p.css("position")
+                            });
+                            p.css("position", "static");
+                        }
+                        p = p.parent();
+                    }
+
+
                 },
                 //firefox修正，iframe layout变化时，range丢了
                 _saveEditorStatus:function() {
@@ -15325,7 +15344,9 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,editor = self.editor;
                     var t = ev.target,icon;
                     if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img alt='' src='" + icon + "'/>", null, editor.document);
+                        var img = new Node("<img " +
+                            "class='ke_smiley'" +
+                            "alt='' src='" + icon + "'/>", null, editor.document);
                         editor.insertElement(img);
                         this.smileyWin.hide();
                     }

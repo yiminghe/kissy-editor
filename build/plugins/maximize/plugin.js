@@ -45,8 +45,16 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         editor = self.editor;
                     Event.remove(window, "resize", self._maximize, self);
-                    //self._domEditorParent
-                    //    .insertBefore(editor.editorWrap[0], self._domEditorPre);
+
+                    //恢复父节点的position原状态 bugfix:最大化被父元素限制
+                    var _savedParents = self._savedParents;
+                    if (_savedParents) {
+                        for (var i = 0; i < _savedParents.length; i++) {
+                            var po = _savedParents[i];
+                            po.el.css("position", po.position);
+                        }
+                    }
+
 
                     this._saveEditorStatus();
                     editor.wrap.css({
@@ -86,10 +94,21 @@ KISSY.Editor.add("maximize", function(editor) {
                     self.scrollTop = DOM.scrollTop();
                     window.scrollTo(0, 0);
 
-                    /*将编辑器移到body直接下层*/
-                    //self._domEditorParent = editor.editorWrap.parent()[0];
-                    //self._domEditorPre = editor.editorWrap[0].previousSibling;
-                    //document.body.appendChild(editor.editorWrap[0]);
+                    //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
+                    self._savedParents = [];
+                    var p = editor.editorWrap.parent();
+                    while (p) {
+                        if (p.css("position") != "static") {
+                            self._savedParents.push({
+                                el:p,
+                                position:p.css("position")
+                            });
+                            p.css("position", "static");
+                        }
+                        p = p.parent();
+                    }
+
+
                 },
                 //firefox修正，iframe layout变化时，range丢了
                 _saveEditorStatus:function() {

@@ -60,7 +60,9 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,editor = self.editor;
                     var t = ev.target,icon;
                     if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img alt='' src='" + icon + "'/>", null, editor.document);
+                        var img = new Node("<img " +
+                            "class='ke_smiley'" +
+                            "alt='' src='" + icon + "'/>", null, editor.document);
                         editor.insertElement(img);
                         this.smileyWin.hide();
                     }

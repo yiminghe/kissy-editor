@@ -170,7 +170,7 @@ box-shadow:2px 2px 0.5em #888888;
 
 </div>
 
-
+<h1>回复配置</h1>
 <div style="width: 60%; margin: 50px auto">
     <label for="editor2">Editor Instance 2:</label>
     <textarea id="editor2" style="width:100%;height:400px;margin:0 auto;"></textarea>
@@ -209,7 +209,7 @@ box-shadow:2px 2px 0.5em #888888;
                     }
                 },
                 "font-size":["13px","16px","20px"]
-                //,"font-family":["song"]
+                ,"font-family":["宋体","黑体","微软雅黑","TimeNewRoman","Arial","Verdana"]
                 ,"bangpai-upload":{
                     holder:"#imgup1",
                     serverUrl:"/code/upload/upload.jsp",
@@ -236,7 +236,7 @@ box-shadow:2px 2px 0.5em #888888;
                 "separator," +
                 "undo,separator,removeformat,font,forecolor,separator," +
                 "list,indent,justify,separator,link,image,bangpai-video,bangpai-music,smiley," +
-                "separator,table,resize,draft,bangpai-upload"
+                "separator,table,resize,draft,bangpai-upload,maximize"
                 , function() {
             var self = this,
                     htmlDataProcessor = self.htmlDataProcessor,
@@ -256,9 +256,69 @@ box-shadow:2px 2px 0.5em #888888;
         });
 
         KE("#editor2", {
-            disableObjectResizing:true,
-            disableInlineTableEditing:true
-        }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates");
+
+            pluginConfig: {
+                "image":{
+                    upload:{
+                        serverUrl:"/code/upload/upload.jsp",
+                        serverParams:{
+                        },
+                        fileInput:"Filedata"
+                    }
+                },
+                "font-size":["13px","16px","20px"]
+                ,"font-family":["宋体","黑体","微软雅黑","TimeNewRoman","Arial","Verdana"]
+                ,"bangpai-upload":{
+                    holder:"#imgup1",
+                    serverUrl:"/code/upload/upload.jsp",
+                    serverParams:{
+                    },
+                    fileInput:"Filedata"
+                },
+                "bangpai-video":{
+                    urlCfg:[
+                        {
+                            reg:/tudou\.com/i,
+                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        }
+                    ]
+                },
+                "draft":{
+                    interval:5,
+                    limit:10
+                }
+            }
+        }).use("htmldataprocessor,enterkey,clipboard," +
+                "preview," +
+                "separator," +
+                "undo,separator,removeformat,font,forecolor,separator," +
+                "list,indent,justify,separator,link,bangpai-video,bangpai-music,smiley," +
+                "separator,table,resize,draft,bangpai-upload,maximize"
+                , function() {
+            var self = this,
+                    htmlDataProcessor = self.htmlDataProcessor,
+                    dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
+            if (dataFilter) {
+                dataFilter.addRules({
+                    elements : {
+                        img:function(el) {
+                            if (!el.attributes.class||el.attributes.class.indexOf("ke_") == -1)
+                                return false;
+                            return el;
+                        }
+                    },
+                    attributes:{
+                        style:function(value) {
+                            value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
+                                    .replace(/background\s*:[^;]+(;|$)/g, "");
+                            if (!value) return false;
+                            return value;
+                        }
+                    }
+                });
+            }
+        });
 
     });
 
