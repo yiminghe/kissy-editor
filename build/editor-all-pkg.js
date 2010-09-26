@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 15:45:44
+ * @buildtime: 2010-09-26 16:21:44
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -12274,6 +12274,7 @@ KISSY.Editor.add("image", function(editor) {
 
                         uploader.on("uploadCompleteData", function(ev) {
                             var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                            d.unloading();
                             if (!data) return;
                             data = JSON.parse(data);
                             if (data.error) {
@@ -12281,9 +12282,12 @@ KISSY.Editor.add("image", function(editor) {
                                 return;
                             }
                             self.imgUrl.val(data.imgUrl);
-                            d.unloading();
-                        });
 
+                        });
+                        uploader.on("uploadError", function(ev) {
+                            d.unloading();
+                            alert(ev.status);
+                        });
                     }
                     else {
                         tab.hide();

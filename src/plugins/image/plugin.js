@@ -306,6 +306,7 @@ KISSY.Editor.add("image", function(editor) {
 
                         uploader.on("uploadCompleteData", function(ev) {
                             var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                            d.unloading();
                             if (!data) return;
                             data = JSON.parse(data);
                             if (data.error) {
@@ -313,9 +314,12 @@ KISSY.Editor.add("image", function(editor) {
                                 return;
                             }
                             self.imgUrl.val(data.imgUrl);
-                            d.unloading();
-                        });
 
+                        });
+                        uploader.on("uploadError", function(ev) {
+                            d.unloading();
+                            alert(ev.status);
+                        });
                     }
                     else {
                         tab.hide();

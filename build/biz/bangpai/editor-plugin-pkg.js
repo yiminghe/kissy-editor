@@ -517,6 +517,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         "margin:10px;'>批量上传图片：" +
                         "</div>")
                         .appendTo(bangpaiUploaderHolder),
+                    listWrap = new Node("<div style='display:none'>")
+                        .appendTo(bangpaiUploaderHolder),
                     btn = new Node("<button disabled='disabled'>浏览</button>")
                         .appendTo(flashHolder),
                     boffset = btn.offset(),
@@ -548,14 +550,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         "<tbody>" +
                         "</tbody>" +
                         "</table>" +
-                        "</div>").appendTo(bangpaiUploaderHolder)
+                        "</div>").appendTo(listWrap)
                         .one("tbody"),
                     up = new Node("<p " +
                         "style='margin:10px;" +
                         "text-align:right;'>" +
                         "<button>确定上传</button>" +
                         "</p>")
-                        .appendTo(bangpaiUploaderHolder).one("button"),
+                        .appendTo(listWrap).one("button"),
                     fid = S.guid(name);
                 holder[fid] = self;
                 self.btn = btn;
@@ -584,6 +586,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
                 self.uploader = uploader;
                 self._list = list;
+                self._listWrap = listWrap;
                 self._ds = bangpaiCfg.serverUrl;
                 self._dsp = bangpaiCfg.serverParams || {};
                 self._fileInput = bangpaiCfg.fileInput || "Filedata";
@@ -614,6 +617,30 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 uploader.on("uploadComplete", self._onComplete, self);
                 uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
                 uploader.on("swfReady", self._ready, self);
+                uploader.on("uploadError", self._uploadError, self);
+            },
+            _uploadError:function(ev) {
+                var self = this,
+                    id = ev.id,
+                    tr = self._getFileTr(id),
+                    bar = progressBars[id];
+                if (tr) {
+                    bar.destroy();
+                    tr.one(".ke-upload-progress").html("<span style='color:red'>" +
+                        ev.status +
+                        "</span>");
+                }
+            },
+            _getFileTr:function(id) {
+                var self = this,
+                    list = self._list,
+                    trs = list.all("tr");
+                for (var i = 0; i < trs.length; i++) {
+                    var tr = new Node(trs[i]);
+                    if (tr.attr("fid") == id) {
+                        return tr;
+                    }
+                }
             },
             _onUploadStart:function(ev) {
                 //console.log("_onUploadStart", ev);
@@ -626,21 +653,20 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             _onUploadCompleteData:function(ev) {
                 var self = this,
                     data = S.trim(ev.data).replace(/\\r||\\n/g, ""),
-                    id = ev.id,
-                    list = self._list,
-                    trs = list.all("tr");
+                    id = ev.id;
                 if (!data) return;
                 data = JSON.parse(data);
                 if (data.error) {
-                    alert(data.error);
+                    self._uploadError({
+                        id:id,
+                        status:data.error
+                    });
                     return;
                 }
-                for (var i = 0; i < trs.length; i++) {
-                    var tr = new Node(trs[i]);
-                    if (tr.attr("fid") == id) {
-                        tr.one(".ke-upload-insert").show();
-                        tr.attr("url", data.imgUrl);
-                    }
+                var tr = self._getFileTr(id);
+                if (tr) {
+                    tr.one(".ke-upload-insert").show();
+                    tr.attr("url", data.imgUrl);
                 }
 
             },
@@ -658,28 +684,29 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     list = self._list,
                     files = ev.fileList;
                 if (files) {
+                    self._listWrap.show();
                     for (var i in files) {
                         if (!files.hasOwnProperty(i)) continue;
-                        var f = files[i],
-                            //console.log(f);
-                            n = new Node("<tr fid='" + f.id + "'>"
-                                + "<td>"
-                                + f.name
-                                + "</td>"
-                                + "<td>"
-                                + Math.floor(f.size / 1000)
-                                + "k</td>" +
-                                "<td class='ke-upload-progress'>" +
-                                "</td>" +
-                                "<td>" +
-                                "<a href='#' " +
-                                "class='ke-upload-insert' " +
-                                "style='display:none'>" +
-                                "[插入]</a> &nbsp; " +
-                                "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
-                                +
-                                "</td>"
-                                + "</tr>").appendTo(list);
+                        var f = files[i];
+                        if (self._getFileTr(f.id)) continue;
+                        var n = new Node("<tr fid='" + f.id + "'>"
+                            + "<td>"
+                            + f.name
+                            + "</td>"
+                            + "<td>"
+                            + Math.floor(f.size / 1000)
+                            + "k</td>" +
+                            "<td class='ke-upload-progress'>" +
+                            "</td>" +
+                            "<td>" +
+                            "<a href='#' " +
+                            "class='ke-upload-insert' " +
+                            "style='display:none'>" +
+                            "[插入]</a> &nbsp; " +
+                            "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
+                            +
+                            "</td>"
+                            + "</tr>").appendTo(list);
 
                         progressBars[f.id] = new KE.ProgressBar({
                             container:n.one(".ke-upload-progress") ,
