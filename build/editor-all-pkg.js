@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 10:15:05
+ * @buildtime: 2010-09-26 10:31:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8479,6 +8479,7 @@ KISSY.Editor.add("flashbridge", function() {
         _eventHandler:function(event) {
             var self = this,
                 type = event.type;
+            //console.log(type);
             if (type === 'log') {
                 S.log(event.message);
             } else if (type) {
@@ -9071,22 +9072,29 @@ KISSY.Editor.add("flashutils", function() {
             }
 
 
-            var holder = cfg.holder || (new Node(
-                "<div " +
-                    "style='" + (
-                    cfg.style ? cfg.style : (
-                        "width:1px;" +
-                            "height:1px;" +
-                            "position:absolute;" +
-                            //firefox 必须使创建的flash可见，才会触发contentReady
-                            "left:" + DOM.scrollLeft() + "px;" +
-                            "top:" + DOM.scrollTop() + "px;"
-                            + "overflow:hidden;"
-                        ))
-                    +
-                    "'>", null, doc
-                ).
-                appendTo(doc.body));
+            var holder = cfg.holder;
+            if (!holder) {
+                holder = new Node(
+                    "<div " +
+                        "style='" + (
+                        cfg.style ? cfg.style : (
+                            "width:1px;" +
+                                "height:1px;" +
+                                "position:absolute;" +
+                                //firefox 必须使创建的flash可见，才会触发contentReady
+                                //"left:" + DOM.scrollLeft() + "px;" +
+                                //"top:" + DOM.scrollTop() + "px;"
+                                + "overflow:hidden;"
+                            ))
+                        +
+                        "'>", null, doc
+                    ).
+                    appendTo(doc.body);
+
+                setTimeout(function() {
+                    holder.offset({left:DOM.scrollLeft(),top:DOM.scrollTop()})
+                }, 100);
+            }
             holder.html(outerHTML);
             return doc.getElementById(attrs.id);
         }
@@ -13596,7 +13604,7 @@ KISSY.Editor.add("list", function(editor) {
 KISSY.Editor.add("localStorage", function() {
     var S = KISSY,
         KE = S.Editor,STORE;
-    STORE = KE.STORE = "localStorage2";
+    STORE = KE.STORE = "localStorage";
     if (!KE.storeReady) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
@@ -13628,7 +13636,7 @@ KISSY.Editor.add("localStorage", function() {
 
     window[STORE] = new KE.FlashBridge({
         movie:movie,
-        methods:["setItem","removeItem"]
+        methods:["setItem","removeItem","getValueOf"]
     });
 
     S.mix(window[STORE], {

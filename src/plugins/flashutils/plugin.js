@@ -129,22 +129,29 @@ KISSY.Editor.add("flashutils", function() {
             }
 
 
-            var holder = cfg.holder || (new Node(
-                "<div " +
-                    "style='" + (
-                    cfg.style ? cfg.style : (
-                        "width:1px;" +
-                            "height:1px;" +
-                            "position:absolute;" +
-                            //firefox 必须使创建的flash可见，才会触发contentReady
-                            "left:" + DOM.scrollLeft() + "px;" +
-                            "top:" + DOM.scrollTop() + "px;"
-                            + "overflow:hidden;"
-                        ))
-                    +
-                    "'>", null, doc
-                ).
-                appendTo(doc.body));
+            var holder = cfg.holder;
+            if (!holder) {
+                holder = new Node(
+                    "<div " +
+                        "style='" + (
+                        cfg.style ? cfg.style : (
+                            "width:1px;" +
+                                "height:1px;" +
+                                "position:absolute;" +
+                                //firefox 必须使创建的flash可见，才会触发contentReady
+                                //"left:" + DOM.scrollLeft() + "px;" +
+                                //"top:" + DOM.scrollTop() + "px;"
+                                + "overflow:hidden;"
+                            ))
+                        +
+                        "'>", null, doc
+                    ).
+                    appendTo(doc.body);
+
+                setTimeout(function() {
+                    holder.offset({left:DOM.scrollLeft(),top:DOM.scrollTop()})
+                }, 100);
+            }
             holder.html(outerHTML);
             return doc.getElementById(attrs.id);
         }

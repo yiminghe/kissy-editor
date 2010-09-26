@@ -5,7 +5,7 @@
 KISSY.Editor.add("localStorage", function() {
     var S = KISSY,
         KE = S.Editor,STORE;
-    STORE = KE.STORE = "localStorage2";
+    STORE = KE.STORE = "localStorage";
     if (!KE.storeReady) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
@@ -37,7 +37,7 @@ KISSY.Editor.add("localStorage", function() {
 
     window[STORE] = new KE.FlashBridge({
         movie:movie,
-        methods:["setItem","removeItem"]
+        methods:["setItem","removeItem","getValueOf"]
     });
 
     S.mix(window[STORE], {
