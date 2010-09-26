@@ -586,6 +586,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 self._list = list;
                 self._ds = bangpaiCfg.serverUrl;
                 self._dsp = bangpaiCfg.serverParams || {};
+                self._fileInput = bangpaiCfg.fileInput || "Filedata";
 
                 list.on("click", function(ev) {
                     var target = new Node(ev.target),tr;
@@ -709,7 +710,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     ev.halt();
                     uploader.uploadAll(self._ds, "POST",
                         self._dsp,
-                        "Filedata");
+                        self._fileInput);
                 })
 
             }
