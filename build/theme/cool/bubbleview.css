@@ -10,7 +10,6 @@ google tip or bubble style for kissy editor
     margin: 2px;
     padding: 4px;
     position: absolute;
-    z-index: 998;
 }
 
 .ke-bubbleview-link, .ke-bubbleview-url {

@@ -275,14 +275,18 @@ KISSY.Editor.add("overlay", function() {
                     //webkit 滚动到页面顶部
                     self._getFocusEl()[0].focus();
                 }
-                var input = self.el.one("input");
-                if (input) {
+                var input = self.el.all("input");
+                if (input && input.length) {
                     setTimeout(function() {
                         //ie 不可聚焦会错哦 disabled ?
-                        try {
-                            input[0].focus();
-                            input[0].select();
-                        } catch(e) {
+                        for (var i = 0; i < input.length; i++) {
+                            var inp = input[i];
+                            try {
+                                inp.focus();
+                                inp.select();
+                                break;
+                            } catch(e) {
+                            }
                         }
                         //必须延迟！选中第一个input
                     }, 0);

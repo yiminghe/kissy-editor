@@ -82,7 +82,8 @@ KISSY.Editor.add("bubbleview", function() {
         },
         draggable:{
             value:false
-        }
+        },
+        "zIndex":{value:998}
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
         /**
