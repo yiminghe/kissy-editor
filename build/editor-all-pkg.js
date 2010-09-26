@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 10:31:48
+ * @buildtime: 2010-09-26 11:23:49
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8438,8 +8438,8 @@ KISSY.Editor.add("flashbridge", function() {
                 useCompression:true
             }, false);
             instances[id] = self;
-            self.swf = KE.Utils.flash.createSWFRuntime(cfg.movie, cfg);
             self.id = id;
+            self.swf = KE.Utils.flash.createSWFRuntime(cfg.movie, cfg);
             self._expose(cfg.methods);
         },
         _expose:function(methods) {
@@ -8479,7 +8479,7 @@ KISSY.Editor.add("flashbridge", function() {
         _eventHandler:function(event) {
             var self = this,
                 type = event.type;
-            //console.log(type);
+            //console.log(self.id + " : " + type);
             if (type === 'log') {
                 S.log(event.message);
             } else if (type) {
@@ -8493,7 +8493,13 @@ KISSY.Editor.add("flashbridge", function() {
 
     FlashBridge.EventHandler = function(id, event) {
         var instance = instances[id];
-        instance && instance._eventHandler.call(instance, event);
+        if (instance) {
+            //防止ie同步触发事件，后面还没on呢，另外给 swf 喘息机会
+            //否则同步后触发事件，立即调用swf方法会出错
+            setTimeout(function() {
+                instance._eventHandler.call(instance, event);
+            }, 100);
+        }
     };
 
     KE.FlashBridge = FlashBridge;
