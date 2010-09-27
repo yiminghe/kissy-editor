@@ -238,26 +238,28 @@ link
 **/
 .ke-triplebutton {
     display: inline-block;
-    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    margin: 0 2px;
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px; /* height: 18px;*/
-    text-decoration: none; /*border: 1px solid #A3D7FF;*/
-    border: 1px solid transparent; /* margin: 2px;*/
-    _border: none;
+    zoom: 1;
+    *display: inline;
+    margin: 2px 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    _border-color: tomato;
+    _filter: chroma(color = tomato);
     vertical-align: middle;
-    white-space: nowrap; /*outline: none;*/
+    white-space: nowrap;
 }
 
 .ke-triplebutton-on {
-    background-color: #A3D7FF;
+    border: 1px solid rgb(206, 213, 224);
+    background: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-disabled {
     opacity: 0.3;
-    filter: alpha(opacity = 30);
+    filter: chroma(color = tomato) alpha(opacity = 30) ;
     cursor: default;
 }
 
@@ -272,22 +274,21 @@ hover
 **/
 .ke-triplebutton:hover {
     text-decoration: none;
+
 }
 
 .ke-triplebutton-off:hover {
-    background-color: #a3d7ff;
-    opacity: 0.7;
-    filter: alpha(opacity = 70);
+    border: 1px solid rgb(206, 213, 224);
+    background: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-on:hover {
-    background-color: #86caff;
 }
 
 .ke-triplebutton-disabled:hover {
     background-color: transparent;
     opacity: 0.3;
-    filter: alpha(opacity = 30);
+    filter: chroma(color = tomato) alpha(opacity = 30) ;
 }
 
 /**
@@ -329,7 +330,7 @@ a.ke-color-a span {
     width: 130px;
 }
 /**
-kissy editor google theme
+kissy editor cool theme
 @author :yiminghe@gmail.com
 **/
 /*
@@ -337,7 +338,7 @@ kissy editor google theme
 */
 .ke-editor-wrap {
     background: white;
-    border: 1px solid #DFDFDF; /*line-height: 1 !important;*/
+    border: 1px solid rgb(206, 213, 224);
     font-size: 13px;
     line-height: 1.2;
     _font-size: 12px;
@@ -358,21 +359,26 @@ textarea,iframe包装
 工具栏
 */
 .ke-editor-tools {
-    background: url("editor-bg.png") repeat-x scroll 0 -192px #E5E5E5;
-    border-bottom: 1px solid #DFDFDF;
-    overflow: hidden;
-    padding: 3px 3px 2px;
+    background-color: rgb(245, 247, 250);
+    background: -webkit-gradient(linear, left top, left bottom, from(#f8fafd), to(#f2f5f8));
+    background: -moz-linear-gradient(center top, #f8fafd, #f2f5f8) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f8fafd', endColorstr = '#f2f5f8');
+    border-bottom: 1px solid rgb(206, 213, 224);
+    zoom:1;
 }
 
 /*
 状态栏
 */
 .ke-editor-status {
-    background-color: #E5E5E5;
-    border-top: 1px solid #DFDFDF;
-    height: 16px;
-    line-height: 16px;
-    padding: 4px 0 5px;
+    background-color: rgb(235, 238, 242);
+    background: -webkit-gradient(linear, left top, left bottom, from(#e7e9ed), to(#f1f4f7));
+    background: -moz-linear-gradient(center top, #e7e9ed, #f1f4f7) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e7e9ed', endColorstr = '#f1f4f7');
+    border-top: 1px solid rgb(206, 213, 224);
+    height: 22px;
+    line-height: 22px;
+    padding: 2px 0;
     overflow: hidden;
     position: relative;
 }
@@ -387,16 +393,16 @@ textarea,iframe包装
     overflow: hidden;
     text-indent: -999999px;
     vertical-align: middle;
-    width: 15px;
-    margin: 3px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
+    width: 16px;
+    margin: 2px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
 }
 
 .ke-toolbar-separator {
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    border-left: 1px solid #D6D6D6;
-    border-right: 1px solid #F7F7F7;
+    *display: inline;
+    border-left: 1px solid rgb(215, 215, 215);
+    border-right: 1px solid #ffffff;
     font-size: 120%;
     margin: 0 2px;
     overflow: hidden;
@@ -407,12 +413,10 @@ textarea,iframe包装
 
 .ke-toolbar-source {
     background-position: -22px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-preview {
     background-position: -43px 50%;
-    width: 18px;
 }
 
 .ke-toolbar-bold {
@@ -428,8 +432,7 @@ textarea,iframe包装
 }
 
 .ke-toolbar-strikeThrough {
-    background-position: -221px 50%;    
-    width:19px;
+    background-position: -221px 50%;
 }
 
 .ke-toolbar-ol {
@@ -462,7 +465,6 @@ textarea,iframe包装
 
 .ke-toolbar-image {
     background-position: -463px 50%;
-    width: 18px;
 }
 
 .ke-toolbar-bgcolor {
@@ -495,12 +497,10 @@ textarea,iframe包装
 
 .ke-toolbar-flash {
     background-position: -483px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-link {
     background-position: -443px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-music {
@@ -517,14 +517,53 @@ textarea,iframe包装
 
 .ke-toolbar-removeformat {
     background-position: -282px 50%;
-    width: 17px;
 }
 
 .ke-toolbar-pagebreak {
     background-position: -623px 50%;
-    width: 17px;
 }
-/**
+
+.ke-button {
+    padding: 3px 18px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color = '#e4e4e4', Direction = 135, Strength = 3);
+    box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    border: 1px solid rgb(193, 200, 209);
+    background-color: rgb(232, 235, 238);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(250, 250, 250)), to(rgb(232, 235, 238)));
+    background: -moz-linear-gradient(center top, rgb(250, 250, 250), rgb(232, 235, 238)) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fafafa', endColorstr = '#e8ebee');
+
+}
+
+.ke-button:active {
+    border-color: rgb(232, 204, 160);
+    background-color: rgb(245, 231, 206);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 246, 228)), to(rgb(245, 231, 206)));
+    background: -moz-linear-gradient(center top, rgb(255, 246, 228), rgb(245, 231, 206)) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fff6e4', endColorstr = '#f5e7ce');
+}
+
+.ke-input {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    background: none repeat-x scroll 0 0 transparent;
+    background-color: #FFFFFF;
+    background-image: url("text-bg.gif");
+    border: 1px solid #B5B8C8;
+    height: 22px;
+    line-height: 22px;
+}
+
+.ke-input-tip {
+    color: #969696;
+}/**
 element path plugin style
 @author:yiminghe@gmail.com
 **/
@@ -543,8 +582,8 @@ menu style for kissy editor ,include contextmenu and select menu
 **/
 .ke-menu {
     z-index: 10000;
-    background: none repeat scroll 0 0 #FFFFFF;
-    border-color: #CCCCCC #666666 #666666 #CCCCCC;
+    background: none repeat scroll 0 0 #fcfcfc;
+    border-color: rgb(206, 213, 224);
     border-style: solid;
     border-width: 1px;
     cursor: default;
@@ -554,14 +593,16 @@ menu style for kissy editor ,include contextmenu and select menu
     padding: 4px 0;
     position: absolute;
     overflow: hidden;
-    -moz-box-shadow: 3px 3px 3px #808080;
-    -webkit-box-shadow: 3px 3px 3px #808080;
-    box-shadow: 3px 3px 3px #808080;
+    -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color = '#e4e4e4', Direction = 135, Strength = 3);
+    box-shadow: 0px 1px 1px rgb(228, 228, 228);
 }
 
 .ke-menu a, .ke-menu-title {
     display: block;
-    color: #000000;
+    color: rgb(102,102,102);
     margin: 0;
     border-width: 0;
     padding: 4px 7em 4px 28px;
@@ -601,10 +642,9 @@ menu style for kissy editor ,include contextmenu and select menu
 
 .ke-dialog {
     position: absolute;
-    background: none repeat scroll 0 0 #C1D9FF;
-    border: 1px solid #3A5774;
+    background: #ffffff;
+    border: 1px solid rgb(206, 213, 224);
     color: #000000;
-    padding: 4px;
     font-size: 13px;
     -moz-box-shadow: 2px 2px 0.5em #888888;
     -webkit-box-shadow: 2px 2px 0.5em #888888;
@@ -617,43 +657,61 @@ menu style for kissy editor ,include contextmenu and select menu
 }
 
 .ke-hd-x {
-    height: 15px;
-    width: 15px;
-    right: 10px;
-    top: 12px;
+    height: 18px;
+    width: 18px;
+    border: 1px solid transparent;
+    right: 6px;
+    top: 6px;
     vertical-align: middle;
     position: absolute;
-}
-
-.ke-hd-x a {
-    display: block;
     text-decoration: none;
-    background: url("toolbar-sprite.png") no-repeat scroll -643px 0 #E0EDFE;
-    height: 16px;
-    text-indent: -9999px;
     outline: none;
-    width: 15px;
 }
 
-.ke-hd-x a:hover {
-    background-position: -663px 0;
+.ke-hd-x .ke-close {
+    display: block;
+    background: url("close.png") no-repeat;
+    height: 13px;
+    text-indent: -9999px;
+    width: 13px;
+    margin: 2.5px;
+}
+
+a.ke-hd-x:hover {
+    border: 1px solid rgb(206, 213, 224);
+}
+
+a.ke-hd-x:active {
+    background-color: rgb(229, 234, 242);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(229, 234, 242)), to(rgb(252, 252, 253)));
+    background: -moz-linear-gradient(top, rgb(229, 234, 242), rgb(252, 252, 253));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = 'rgb(229, 234, 242)', endColorstr = 'rgb(252,252,253)');
+
 }
 
 .ke-hd {
-    background: none repeat scroll 0 0 #E0EDFE;
+    background-color: #f4f7fc;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));
+    background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');
     color: #000000;
     font-size: 120%;
     font-weight: bold;
-    padding: 8px 15px 8px 8px;
+    padding: 0px 0px 0px 18px;
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid rgb(206, 213, 224);
 }
 
 .ke-bd, .ke-ft {
-    background-color: #FFFFFF;
-    padding: 8px;
+    background-color: rgb(252, 252, 252);
+    padding: 20px;
+    padding-bottom: 0;
 }
 
 .ke-ft {
-    text-align: right;
+    padding-top: 5px;
+    padding-bottom: 30px;
 }
 
 .ke-bd td {
@@ -728,18 +786,20 @@ select style for kissy editor
 }
 
 .ke-select {
-    border: 1px solid #BFCBDF;
-    padding: 3px 4px;
+    border: 1px solid rgb(193, 200, 209);
+    height: 16px;
+    margin:2px 0;
+    padding: 2px 4px;
     color: #000;
     display: inline-block;
-    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px; /* height: 18px;*/
-    text-decoration: none; /*border: 1px solid #A3D7FF;*/
+    zoom: 1;
+    *display: inline;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    text-decoration: none;
     vertical-align: middle;
-    white-space: nowrap; /*outline: none;*/
+    white-space: nowrap;
 }
 
 .ke-select:hover {
@@ -754,7 +814,7 @@ select style for kissy editor
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
-    /*vertical-align: middle; chrome 不居中*/
+/*vertical-align: middle; chrome 不居中*/
 }
 
 .ke-select-drop {

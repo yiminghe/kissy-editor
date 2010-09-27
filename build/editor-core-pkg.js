@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 20:06:05
+ * @buildtime: @TIMESTAMP@
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -512,6 +512,31 @@ KISSY.Editor.add("utils", function(KE) {
         sourceDisable:function(editor, plugin) {
             editor.on("sourcemode", plugin.disable, plugin);
             editor.on("wysiwygmode", plugin.enable, plugin);
+        },
+        resetInput:function(inp) {
+            var placeholder = inp.attr("placeholder");
+            if (placeholder && !UA.webkit) {
+                inp.val(placeholder);
+                inp.addClass(".ke-input-tip");
+            }
+        },
+        placeholder:function(inp, tip) {
+            inp.attr("placeholder", tip);
+            if (UA.webkit) {
+                return;
+            }
+            inp.on("blur", function() {
+                if (!S.trim(inp.val())) {
+                    inp.val(tip);
+                    inp.addClass(".ke-input-tip");
+                }
+            });
+            inp.on("focus", function() {
+                if (S.trim(inp.val()) == tip) {
+                    inp.val("");
+                }
+                inp.removeClass(".ke-input-tip");
+            });
         }
     }
 });

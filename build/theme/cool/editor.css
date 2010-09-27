@@ -1,5 +1,5 @@
 /**
-kissy editor google theme
+kissy editor cool theme
 @author :yiminghe@gmail.com
 **/
 /*
@@ -7,7 +7,7 @@ kissy editor google theme
 */
 .ke-editor-wrap {
     background: white;
-    border: 1px solid #DFDFDF; /*line-height: 1 !important;*/
+    border: 1px solid rgb(206, 213, 224);
     font-size: 13px;
     line-height: 1.2;
     _font-size: 12px;
@@ -28,21 +28,26 @@ textarea,iframe包装
 工具栏
 */
 .ke-editor-tools {
-    background: url("editor-bg.png") repeat-x scroll 0 -192px #E5E5E5;
-    border-bottom: 1px solid #DFDFDF;
-    overflow: hidden;
-    padding: 3px 3px 2px;
+    background-color: rgb(245, 247, 250);
+    background: -webkit-gradient(linear, left top, left bottom, from(#f8fafd), to(#f2f5f8));
+    background: -moz-linear-gradient(center top, #f8fafd, #f2f5f8) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f8fafd', endColorstr = '#f2f5f8');
+    border-bottom: 1px solid rgb(206, 213, 224);
+    zoom:1;
 }
 
 /*
 状态栏
 */
 .ke-editor-status {
-    background-color: #E5E5E5;
-    border-top: 1px solid #DFDFDF;
-    height: 16px;
-    line-height: 16px;
-    padding: 4px 0 5px;
+    background-color: rgb(235, 238, 242);
+    background: -webkit-gradient(linear, left top, left bottom, from(#e7e9ed), to(#f1f4f7));
+    background: -moz-linear-gradient(center top, #e7e9ed, #f1f4f7) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e7e9ed', endColorstr = '#f1f4f7');
+    border-top: 1px solid rgb(206, 213, 224);
+    height: 22px;
+    line-height: 22px;
+    padding: 2px 0;
     overflow: hidden;
     position: relative;
 }
@@ -57,16 +62,16 @@ textarea,iframe包装
     overflow: hidden;
     text-indent: -999999px;
     vertical-align: middle;
-    width: 15px;
-    margin: 3px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
+    width: 16px;
+    margin: 2px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
 }
 
 .ke-toolbar-separator {
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    border-left: 1px solid #D6D6D6;
-    border-right: 1px solid #F7F7F7;
+    *display: inline;
+    border-left: 1px solid rgb(215, 215, 215);
+    border-right: 1px solid #ffffff;
     font-size: 120%;
     margin: 0 2px;
     overflow: hidden;
@@ -77,12 +82,10 @@ textarea,iframe包装
 
 .ke-toolbar-source {
     background-position: -22px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-preview {
     background-position: -43px 50%;
-    width: 18px;
 }
 
 .ke-toolbar-bold {
@@ -98,8 +101,7 @@ textarea,iframe包装
 }
 
 .ke-toolbar-strikeThrough {
-    background-position: -221px 50%;    
-    width:19px;
+    background-position: -221px 50%;
 }
 
 .ke-toolbar-ol {
@@ -132,7 +134,6 @@ textarea,iframe包装
 
 .ke-toolbar-image {
     background-position: -463px 50%;
-    width: 18px;
 }
 
 .ke-toolbar-bgcolor {
@@ -165,12 +166,10 @@ textarea,iframe包装
 
 .ke-toolbar-flash {
     background-position: -483px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-link {
     background-position: -443px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-music {
@@ -187,10 +186,50 @@ textarea,iframe包装
 
 .ke-toolbar-removeformat {
     background-position: -282px 50%;
-    width: 17px;
 }
 
 .ke-toolbar-pagebreak {
     background-position: -623px 50%;
-    width: 17px;
+}
+
+.ke-button {
+    padding: 3px 18px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color = '#e4e4e4', Direction = 135, Strength = 3);
+    box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    border: 1px solid rgb(193, 200, 209);
+    background-color: rgb(232, 235, 238);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(250, 250, 250)), to(rgb(232, 235, 238)));
+    background: -moz-linear-gradient(center top, rgb(250, 250, 250), rgb(232, 235, 238)) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fafafa', endColorstr = '#e8ebee');
+
+}
+
+.ke-button:active {
+    border-color: rgb(232, 204, 160);
+    background-color: rgb(245, 231, 206);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 246, 228)), to(rgb(245, 231, 206)));
+    background: -moz-linear-gradient(center top, rgb(255, 246, 228), rgb(245, 231, 206)) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fff6e4', endColorstr = '#f5e7ce');
+}
+
+.ke-input {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    background: none repeat-x scroll 0 0 transparent;
+    background-color: #FFFFFF;
+    background-image: url("text-bg.gif");
+    border: 1px solid #B5B8C8;
+    height: 22px;
+    line-height: 22px;
+}
+
+.ke-input-tip {
+    color: #969696;
 }
