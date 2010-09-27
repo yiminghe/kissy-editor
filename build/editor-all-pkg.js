@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 20:06:05
+ * @buildtime: 2010-09-27 16:25:08
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -13865,10 +13865,12 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         doc = document,
                         editor = self.editor;
+                    //body overflow 变化也会引起 resize 变化！！！！先去除
+                    Event.remove(window, "resize", self._maximize, self);
                     self._saveEditorStatus();
                     self._restoreState();
-                    Event.remove(window, "resize", self._maximize, self);
                     self.el.set("state", TripleButton.OFF);
+
                     //firefox 必须timeout
                     setTimeout(function() {
                         self._restoreEditorStatus();
@@ -14066,8 +14068,7 @@ KISSY.Editor.add("maximize", function(editor) {
     editor.addPlugin(function() {
         new KE.Maximize(editor);
     });
-});
-/**
+});/**
  * insert music for kissy editor
  * @author: yiminghe@gmail.com
  */

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-26 20:06:05
+ * @buildtime: 2010-09-27 16:25:08
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;

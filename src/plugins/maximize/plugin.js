@@ -254,4 +254,4 @@ KISSY.Editor.add("maximize", function(editor) {
     editor.addPlugin(function() {
         new KE.Maximize(editor);
     });
-});
+});git 
