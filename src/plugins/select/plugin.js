@@ -105,6 +105,7 @@ KISSY.Editor.add("select", function() {
                 menuNode = new Node(menu_markup),
                 menu = new KE.SimpleOverlay({
                     el:menuNode,
+                    zIndex:990,
                     focusMgr:false
                 }),
                 items = self.get("items");
