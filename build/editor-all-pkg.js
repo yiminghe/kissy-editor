@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: @TIMESTAMP@
+ * @buildtime: 2010-09-27 20:48:03
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7861,11 +7861,7 @@ KISSY.Editor.add("draft", function(editor) {
                     self.draftLimit = cfg.draft.limit
                         = cfg.draft.limit || LIMIT;
                     var holder = new Node(
-                        "<div style='" +
-                            "position:absolute;" +
-                            "right:30px;" +
-                            "bottom:0;" +
-                            "width:600px'>" +
+                        "<div class='ke-draft'>" +
                             "<span style='" + MIDDLE + "'>" +
                             "内容正文每" +
                             cfg.draft.interval
@@ -7876,18 +7872,17 @@ KISSY.Editor.add("draft", function(editor) {
                         "margin:0 10px;" +
                         "'>").appendTo(holder);
 
-                    var versions = new KE.Select({
+                    var save = new KE.TripleButton({
+                        text:"立即保存",
+                        title:"立即保存",
+                        container: holder
+                    }),versions = new KE.Select({
                         container: holder,
                         doc:editor.document,
                         width:"100px",
                         popUpWidth:"220px",
                         title:"恢复编辑历史"
                     }),
-                        save = new KE.TripleButton({
-                            text:"立即保存",
-                            title:"立即保存",
-                            container: holder
-                        }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
                     self.versions = versions;
@@ -13890,10 +13885,12 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         doc = document,
                         editor = self.editor;
+                    //body overflow 变化也会引起 resize 变化！！！！先去除
+                    Event.remove(window, "resize", self._maximize, self);
                     self._saveEditorStatus();
                     self._restoreState();
-                    Event.remove(window, "resize", self._maximize, self);
                     self.el.set("state", TripleButton.OFF);
+
                     //firefox 必须timeout
                     setTimeout(function() {
                         self._restoreEditorStatus();
@@ -14054,7 +14051,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:0
                     });
                     editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight - 14) + "px"
+                        height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
                     });
                 },
                 _real:function() {
@@ -15270,15 +15267,26 @@ KISSY.Editor.add("select", function() {
                 xy = self.el.offset(),
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
-                menuWidth = self.menu.el.width();
-            xy.top += self.el.height();
-            if ((xy.top + menuHeight) > (DOM.scrollTop() + DOM.viewportHeight())) {
+                menuWidth = self.menu.el.width(),
+                te = xy.top,
+                wt = DOM.scrollTop(),
+                wh = DOM.viewportHeight() ,
+                ww = DOM.viewportWidth();
+            xy.top += self.el.height() - 2;
+            if (
+                (xy.top + menuHeight) >
+                    (wt + wh)
+                    &&
+
+                    (te - wt)
+                        >
+                        (wt + wh - xy.top)) {
                 xy = orixy;
-                xy.top -= menuHeight + 12;
+                xy.top -= menuHeight + 9;
             }
-            xy.left += 1;
-            if (xy.left + menuWidth > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - menuWidth - 60;
+            //xy.left += 1;
+            if (xy.left + menuWidth > ww - 60) {
+                xy.left = ww - menuWidth - 60;
             }
             self.menu.show(xy);
         },

@@ -43,19 +43,19 @@
     top: 12px;
     vertical-align: middle;
     position: absolute;
+    outline: none;
+    text-decoration: none;
 }
 
-.ke-hd-x a {
+.ke-hd-x .ke-close {
     display: block;
-    text-decoration: none;
     background: url("toolbar-sprite.png") no-repeat scroll -784px 0 #E0EDFE;
     height: 15px;
     text-indent: -9999px;
-    outline: none;
     width: 15px;
 }
 
-.ke-hd-x a:hover {
+a.ke-hd-x:hover .ke-close {
     background-position: -768px 0;
 }
 

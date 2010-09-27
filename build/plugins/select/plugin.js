@@ -179,15 +179,26 @@ KISSY.Editor.add("select", function() {
                 xy = self.el.offset(),
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
-                menuWidth = self.menu.el.width();
-            xy.top += self.el.height();
-            if ((xy.top + menuHeight) > (DOM.scrollTop() + DOM.viewportHeight())) {
+                menuWidth = self.menu.el.width(),
+                te = xy.top,
+                wt = DOM.scrollTop(),
+                wh = DOM.viewportHeight() ,
+                ww = DOM.viewportWidth();
+            xy.top += self.el.height() - 2;
+            if (
+                (xy.top + menuHeight) >
+                    (wt + wh)
+                    &&
+
+                    (te - wt)
+                        >
+                        (wt + wh - xy.top)) {
                 xy = orixy;
-                xy.top -= menuHeight + 12;
+                xy.top -= menuHeight + 9;
             }
-            xy.left += 1;
-            if (xy.left + menuWidth > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - menuWidth - 60;
+            //xy.left += 1;
+            if (xy.left + menuWidth > ww - 60) {
+                xy.left = ww - menuWidth - 60;
             }
             self.menu.show(xy);
         },

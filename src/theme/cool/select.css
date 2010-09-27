@@ -13,7 +13,7 @@ select style for kissy editor
 .ke-select {
     border: 1px solid rgb(193, 200, 209);
     height: 16px;
-    margin:2px 0;
+    margin: 2px 0;
     padding: 2px 4px;
     color: #000;
     display: inline-block;
@@ -53,7 +53,7 @@ select style for kissy editor
 }
 
 .ke-select-active {
-    background-color: #DDE1EB !important;
+    background-color: #ffffff;
 }
 
 .ke-select-disabled,

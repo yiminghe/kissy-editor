@@ -51,10 +51,12 @@ KISSY.Editor.add("maximize", function(editor) {
                     var self = this,
                         doc = document,
                         editor = self.editor;
+                    //body overflow 变化也会引起 resize 变化！！！！先去除
+                    Event.remove(window, "resize", self._maximize, self);
                     self._saveEditorStatus();
                     self._restoreState();
-                    Event.remove(window, "resize", self._maximize, self);
                     self.el.set("state", TripleButton.OFF);
+
                     //firefox 必须timeout
                     setTimeout(function() {
                         self._restoreEditorStatus();
@@ -215,7 +217,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:0
                     });
                     editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight - 14) + "px"
+                        height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
                     });
                 },
                 _real:function() {

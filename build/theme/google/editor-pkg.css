@@ -242,9 +242,10 @@ link
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
     *display: inline; /*vertical-align: baseline;*/
     margin: 0 2px;
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px; /* height: 18px;*/
+    color: black;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px; /* height: 18px;*/
     text-decoration: none; /*border: 1px solid #A3D7FF;*/
     border: 1px solid transparent; /* margin: 2px;*/
     _border: none;
@@ -329,7 +330,23 @@ a.ke-color-a span {
     height: 136px;
     width: 130px;
 }
-/**
+.ke-draft {
+    position: absolute;
+    right: 15px;
+    height: 22px;
+    bottom: 4px;
+    width: 600px;
+}
+
+.ke-draft .ke-select {
+    background-color: #ffffff;
+}
+
+.ke-draft .ke-triplebutton {
+    background-color: #ffffff;
+    padding: 2px 5px;
+    border: 1px solid #C1C8D1;
+}/**
 kissy editor google theme
 @author :yiminghe@gmail.com
 **/
@@ -361,8 +378,6 @@ textarea,iframe包装
 .ke-editor-tools {
     background: url("editor-bg.png") repeat-x scroll 0 -192px #E5E5E5;
     border-bottom: 1px solid #DFDFDF;
-    overflow: hidden;
-    padding: 3px 3px 2px;
 }
 
 /*
@@ -371,9 +386,8 @@ textarea,iframe包装
 .ke-editor-status {
     background-color: #E5E5E5;
     border-top: 1px solid #DFDFDF;
-    height: 16px;
-    line-height: 16px;
-    padding: 4px 0 5px;
+    height: 22px;
+    padding: 2px 0;
     overflow: hidden;
     position: relative;
 }
@@ -388,16 +402,16 @@ textarea,iframe包装
     overflow: hidden;
     text-indent: -999999px;
     vertical-align: middle;
-    width: 15px;
+    width: 16px;
     margin: 3px 4px; /*扩大可点击区域，不能在a加padding，ie问题*/
 }
 
 .ke-toolbar-separator {
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    border-left: 1px solid #D6D6D6;
-    border-right: 1px solid #F7F7F7;
+    *display: inline;
+    border-left: 1px solid rgb(215, 215, 215);
+    border-right: 1px solid #ffffff;
     font-size: 120%;
     margin: 0 2px;
     overflow: hidden;
@@ -408,12 +422,10 @@ textarea,iframe包装
 
 .ke-toolbar-source {
     background-position: -1013px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-preview {
-    background-position: -897px 50%;
-    width: 15px;
+    background-position: -896px 50%;
 }
 
 .ke-toolbar-bold {
@@ -461,8 +473,7 @@ textarea,iframe包装
 }
 
 .ke-toolbar-image {
-    background-position: -978px 50%;
-    width: 18px;
+    background-position: -979px 50%;
 }
 
 .ke-toolbar-bgcolor {
@@ -495,12 +506,10 @@ textarea,iframe包装
 
 .ke-toolbar-flash,.ke-toolbar-video {
     background-position: -736px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-link {
     background-position: -560px 50%;
-    width: 16px;
 }
 
 .ke-toolbar-music {
@@ -513,12 +522,13 @@ textarea,iframe包装
 
 .ke-toolbar-removeformat {
     background-position: -255px 50%;
-    width: 17px;
 }
 
 .ke-toolbar-pagebreak {
     background-position: -656px 50%;
-    width: 17px;
+}
+.ke-input-tip {
+    color: #969696;
 }
 /**
 element path plugin style
@@ -619,19 +629,19 @@ menu style for kissy editor ,include contextmenu and select menu
     top: 12px;
     vertical-align: middle;
     position: absolute;
+    outline: none;
+    text-decoration: none;
 }
 
-.ke-hd-x a {
+.ke-hd-x .ke-close {
     display: block;
-    text-decoration: none;
     background: url("toolbar-sprite.png") no-repeat scroll -784px 0 #E0EDFE;
     height: 15px;
     text-indent: -9999px;
-    outline: none;
     width: 15px;
 }
 
-.ke-hd-x a:hover {
+a.ke-hd-x:hover .ke-close {
     background-position: -768px 0;
 }
 
@@ -725,17 +735,19 @@ select style for kissy editor
 
 .ke-select {
     border: 1px solid #BFCBDF;
-    padding: 3px 4px;
+    height: 16px;
+    margin: 2px 0;
+    padding: 2px 4px;
     color: #000;
     display: inline-block;
-    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px; /* height: 18px;*/
-    text-decoration: none; /*border: 1px solid #A3D7FF;*/
+    zoom: 1;
+    *display: inline;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    text-decoration: none;
     vertical-align: middle;
-    white-space: nowrap; /*outline: none;*/
+    white-space: nowrap;
 }
 
 .ke-select:hover {

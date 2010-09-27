@@ -65,11 +65,7 @@ KISSY.Editor.add("draft", function(editor) {
                     self.draftLimit = cfg.draft.limit
                         = cfg.draft.limit || LIMIT;
                     var holder = new Node(
-                        "<div style='" +
-                            "position:absolute;" +
-                            "right:30px;" +
-                            "bottom:0;" +
-                            "width:600px'>" +
+                        "<div class='ke-draft'>" +
                             "<span style='" + MIDDLE + "'>" +
                             "内容正文每" +
                             cfg.draft.interval
@@ -80,18 +76,17 @@ KISSY.Editor.add("draft", function(editor) {
                         "margin:0 10px;" +
                         "'>").appendTo(holder);
 
-                    var versions = new KE.Select({
+                    var save = new KE.TripleButton({
+                        text:"立即保存",
+                        title:"立即保存",
+                        container: holder
+                    }),versions = new KE.Select({
                         container: holder,
                         doc:editor.document,
                         width:"100px",
                         popUpWidth:"220px",
                         title:"恢复编辑历史"
                     }),
-                        save = new KE.TripleButton({
-                            text:"立即保存",
-                            title:"立即保存",
-                            container: holder
-                        }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
                     self.versions = versions;

@@ -217,7 +217,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:0
                     });
                     editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight - 14) + "px"
+                        height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
                     });
                 },
                 _real:function() {

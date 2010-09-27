@@ -237,6 +237,7 @@ LoVe F HAte
 link
 **/
 .ke-triplebutton {
+    color: black;
     display: inline-block;
     zoom: 1;
     *display: inline;
@@ -329,7 +330,23 @@ a.ke-color-a span {
     height: 136px;
     width: 130px;
 }
-/**
+.ke-draft {
+    position: absolute;
+    right: 15px;
+    height: 22px;
+    bottom: 4px;
+    width: 600px;
+}
+
+.ke-draft .ke-select {
+    background-color: #ffffff;
+}
+
+.ke-draft .ke-triplebutton {
+    background-color: #ffffff;
+    padding: 2px 5px;
+    border: 1px solid #C1C8D1;
+}/**
 kissy editor cool theme
 @author :yiminghe@gmail.com
 **/
@@ -377,7 +394,6 @@ textarea,iframe包装
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e7e9ed', endColorstr = '#f1f4f7');
     border-top: 1px solid rgb(206, 213, 224);
     height: 22px;
-    line-height: 22px;
     padding: 2px 0;
     overflow: hidden;
     position: relative;
@@ -593,30 +609,35 @@ menu style for kissy editor ,include contextmenu and select menu
     padding: 4px 0;
     position: absolute;
     overflow: hidden;
+    zoom: 1;
     -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
     -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
-    zoom: 1;
+    /*
+    有了阴影，就hover失效？
     filter: progid:DXImageTransform.Microsoft.Shadow(color = '#e4e4e4', Direction = 135, Strength = 3);
+    */
     box-shadow: 0px 1px 1px rgb(228, 228, 228);
 }
 
 .ke-menu a, .ke-menu-title {
     display: block;
-    color: rgb(102,102,102);
+    color: rgb(102, 102, 102);
     margin: 0;
     border-width: 0;
     padding: 4px 7em 4px 28px;
     white-space: nowrap;
+    zoom: 1;
     text-decoration: none;
 }
 
 .ke-menu-title {
     background-color: #dcdcdc;
     padding: 3px;
+    display: none;
 }
 
 .ke-menu a:hover, .ke-menu-selected {
-    background-color: #D6E9F8;
+    background: #D6E9F8;
     text-decoration: none;
 }
 /**
@@ -788,7 +809,7 @@ select style for kissy editor
 .ke-select {
     border: 1px solid rgb(193, 200, 209);
     height: 16px;
-    margin:2px 0;
+    margin: 2px 0;
     padding: 2px 4px;
     color: #000;
     display: inline-block;
@@ -828,7 +849,7 @@ select style for kissy editor
 }
 
 .ke-select-active {
-    background-color: #DDE1EB !important;
+    background-color: #ffffff;
 }
 
 .ke-select-disabled,
