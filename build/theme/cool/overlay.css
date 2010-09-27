@@ -21,10 +21,9 @@
 
 .ke-dialog {
     position: absolute;
-    background: none repeat scroll 0 0 #C1D9FF;
-    border: 1px solid #3A5774;
+    background: #ffffff;
+    border: 1px solid rgb(206, 213, 224);
     color: #000000;
-    padding: 4px;
     font-size: 13px;
     -moz-box-shadow: 2px 2px 0.5em #888888;
     -webkit-box-shadow: 2px 2px 0.5em #888888;
@@ -37,43 +36,64 @@
 }
 
 .ke-hd-x {
-    height: 15px;
-    width: 15px;
-    right: 10px;
-    top: 12px;
+    height: 18px;
+    width: 18px;
+    border: 1px solid transparent;
+    right: 6px;
+    top: 6px;
     vertical-align: middle;
     position: absolute;
-}
-
-.ke-hd-x a {
-    display: block;
     text-decoration: none;
-    background: url("toolbar-sprite.png") no-repeat scroll -643px 0 #E0EDFE;
-    height: 16px;
-    text-indent: -9999px;
     outline: none;
-    width: 15px;
+    _border-color: tomato;
+    _filter: chroma(color = tomato);
+    overflow:hidden;
 }
 
-.ke-hd-x a:hover {
-    background-position: -663px 0;
+.ke-hd-x .ke-close {
+    display: block;
+    background: url("close.png") no-repeat;
+    height: 13px;
+    text-indent: -9999px;
+    width: 13px;
+    margin: 2.5px;
+}
+
+a.ke-hd-x:hover {
+    border: 1px solid rgb(206, 213, 224);
+}
+
+a.ke-hd-x:active {
+    background-color: rgb(229, 234, 242);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(229, 234, 242)), to(rgb(252, 252, 253)));
+    background: -moz-linear-gradient(top, rgb(229, 234, 242), rgb(252, 252, 253));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e5eaf2', endColorstr = '#fcfcfd');
+
 }
 
 .ke-hd {
-    background: none repeat scroll 0 0 #E0EDFE;
+    background-color: #f4f7fc;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));
+    background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');
     color: #000000;
     font-size: 120%;
     font-weight: bold;
-    padding: 8px 15px 8px 8px;
+    padding: 0px 0px 0px 18px;
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid rgb(206, 213, 224);
 }
 
 .ke-bd, .ke-ft {
-    background-color: #FFFFFF;
-    padding: 8px;
+    background-color: rgb(252, 252, 252);
+    padding: 20px;
+    padding-bottom: 0;
 }
 
 .ke-ft {
-    text-align: right;
+    padding-top: 5px;
+    padding-bottom: 30px;
 }
 
 .ke-bd td {

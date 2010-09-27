@@ -16,7 +16,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         BTIP = "搜 索 ",
-        TIP = "输入想要添加的歌曲名、专辑名、艺人名";
+        TIP = "输入歌曲名、专辑名、艺人名";
 
     function checkXiami(url) {
         return /xiami\.com/i.test(url);
@@ -139,18 +139,17 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "" +
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
-                "<input class='ke-xiami-url' " +
-
-                "style='width:300px' value='"
-                + TIP
-                + "'/> &nbsp; " +
-                " <input " +
-                "class='ke-xiami-submit' " +
+                "<input class='ke-xiami-url ke-input' " +
+                "style='width:300px'" +
+                "/> &nbsp; " +
+                " <button " +
+                "class='ke-xiami-submit ke-button' " +
                 "type='submit' " +
-                "style='vertical-align:middle;' value='" + BTIP + "' />" +
+                ">"
+                + BTIP + "</button>" +
                 "</p>" +
                 "<p " +
-                "style='margin:5px 0'>" +
+                "style='margin:10px 0'>" +
                 "<label>对 齐： " +
                 "<select " +
                 "class='ke-xiami-align'>" +
@@ -158,15 +157,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
-                "" +
-                KE.Utils.duplicateStr("&nbsp;", 1) +
-                "<label>间距： " +
+                "<label style='margin-left:45px;'>间距： " +
                 "</span> " +
                 "<input " +
                 "" +
                 " data-verify='^\\d+(.\\d+)?$' " +
                 " data-warning='间距请输入非负数字' " +
-                "class='ke-xiami-margin' style='width:60px' value='"
+                "class='ke-xiami-margin ke-input' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</p>" +
@@ -175,7 +172,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "class='ke-xiami-list'>" +
                 "</div>" +
                 "",
-                footHtml = "<button class='ke-xiami-ok'>确定</button>";
+                footHtml = "<button class='ke-xiami-ok ke-button'>确&nbsp;定</button>" +
+                    "<button class='ke-xiami-cancel ke-button' style='margin-left:20px;'>取&nbsp;消</button>";
 
 
             function BangPaiMusic(editor) {
@@ -212,7 +210,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._tip = "插入虾米音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_XIAMI];
-                    self._config_dwidth = "400px";
+                    self._config_dwidth = "430px";
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
@@ -230,6 +228,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         input = d.el.one(".ke-xiami-url");
                     self.dAlign = d.el.one(".ke-xiami-align");
                     self._xiami_input = input;
+                    KE.Utils.placeholder(input, TIP);
                     self._xiamia_list = d.el.one(".ke-xiami-list");
                     self._xiami_submit = d.el.one(".ke-xiami-submit");
                     self.dMargin = d.el.one(".ke-xiami-margin");
@@ -237,6 +236,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._xiamia_title = d.el.one(".ke-xiami-title");
 
                     var _xiami_ok = d.foot.one(".ke-xiami-ok");
+                    d.foot.one(".ke-xiami-cancel").on("click", function() {
+                        d.hide();
+                    });
                     _xiami_ok.on("click", function() {
                         var f = self.selectedFlash,
                             r = editor.restoreRealElement(f);
@@ -406,7 +408,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         self.d.foot.show();
                         self._xiamia_title.show();
                     } else {
-                        self._xiami_input.val(TIP);
+                        KE.Utils.resetInput(self._xiami_input);
                         self.dAlign.val("");
                         self.dMargin.val("5");
                         self._xiami_url_wrap.show();

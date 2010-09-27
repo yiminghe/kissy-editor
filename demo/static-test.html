@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base.css" rel="stylesheet"/>
-<link href="../build/theme/google/editor-pkg.css" rel="stylesheet" id="theme"/>
+<link href="../build/theme/cool/editor-pkg.css" rel="stylesheet" id="theme"/>
 <script src="http://github.com/kissyteam/kissy/raw/master/build/kissy.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
     <script>
         KISSY.ready(function(S) {
             var theme = S.one("#theme"),themes = S.one("#themes");
-            themes.val("google");
+            themes.val("cool");
             themes.on("change", function() {
                 var v = themes.val();
                 theme.attr("href", "../build/theme/" + v + "/editor-pkg.css");

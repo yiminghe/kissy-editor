@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-27 16:25:08
+ * @buildtime: 2010-09-27 21:26:56
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -512,6 +512,31 @@ KISSY.Editor.add("utils", function(KE) {
         sourceDisable:function(editor, plugin) {
             editor.on("sourcemode", plugin.disable, plugin);
             editor.on("wysiwygmode", plugin.enable, plugin);
+        },
+        resetInput:function(inp) {
+            var placeholder = inp.attr("placeholder");
+            if (placeholder && !UA.webkit) {
+                inp.val(placeholder);
+                inp.addClass(".ke-input-tip");
+            }
+        },
+        placeholder:function(inp, tip) {
+            inp.attr("placeholder", tip);
+            if (UA.webkit) {
+                return;
+            }
+            inp.on("blur", function() {
+                if (!S.trim(inp.val())) {
+                    inp.val(tip);
+                    inp.addClass(".ke-input-tip");
+                }
+            });
+            inp.on("focus", function() {
+                if (S.trim(inp.val()) == tip) {
+                    inp.val("");
+                }
+                inp.removeClass(".ke-input-tip");
+            });
         }
     }
 });
@@ -7836,11 +7861,7 @@ KISSY.Editor.add("draft", function(editor) {
                     self.draftLimit = cfg.draft.limit
                         = cfg.draft.limit || LIMIT;
                     var holder = new Node(
-                        "<div style='" +
-                            "position:absolute;" +
-                            "right:30px;" +
-                            "bottom:0;" +
-                            "width:600px'>" +
+                        "<div class='ke-draft'>" +
                             "<span style='" + MIDDLE + "'>" +
                             "内容正文每" +
                             cfg.draft.interval
@@ -7851,18 +7872,17 @@ KISSY.Editor.add("draft", function(editor) {
                         "margin:0 10px;" +
                         "'>").appendTo(holder);
 
-                    var versions = new KE.Select({
+                    var save = new KE.TripleButton({
+                        text:"立即保存",
+                        title:"立即保存",
+                        container: holder
+                    }),versions = new KE.Select({
                         container: holder,
                         doc:editor.document,
                         width:"100px",
                         popUpWidth:"220px",
                         title:"恢复编辑历史"
                     }),
-                        save = new KE.TripleButton({
-                            text:"立即保存",
-                            title:"立即保存",
-                            container: holder
-                        }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
                     self.versions = versions;
@@ -14031,7 +14051,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:0
                     });
                     editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight - 14) + "px"
+                        height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
                     });
                 },
                 _real:function() {
@@ -14304,9 +14324,9 @@ KISSY.Editor.add("overlay", function() {
             "<span class='ke-hd-title'>" +
             "@title@" +
             "</span>"
-            + "<span class='ke-hd-x'>" +
-            "<a class='ke-close' href='#'>X</a>" +
-            "</span>"
+            + "<a class='ke-hd-x' href='#'>" +
+            "<span class='ke-close'>X</span>" +
+            "</a>"
             + "</div>" +
             "<div class='ke-bd'>" +
             "</div>" +
@@ -14557,22 +14577,7 @@ KISSY.Editor.add("overlay", function() {
                     //webkit 滚动到页面顶部
                     self._getFocusEl()[0].focus();
                 }
-                var input = self.el.all("input");
-                if (input && input.length) {
-                    setTimeout(function() {
-                        //ie 不可聚焦会错哦 disabled ?
-                        for (var i = 0; i < input.length; i++) {
-                            var inp = input[i];
-                            try {
-                                inp.focus();
-                                inp.select();
-                                break;
-                            } catch(e) {
-                            }
-                        }
-                        //必须延迟！选中第一个input
-                    }, 0);
-                } else {
+                {
                     /*
                      * IE BUG: If the initial focus went into a non-text element (e.g. button),
                      * then IE would still leave the caret inside the editing area.
@@ -15261,15 +15266,26 @@ KISSY.Editor.add("select", function() {
                 xy = self.el.offset(),
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
-                menuWidth = self.menu.el.width();
-            xy.top += self.el.height();
-            if ((xy.top + menuHeight) > (DOM.scrollTop() + DOM.viewportHeight())) {
+                menuWidth = self.menu.el.width(),
+                te = xy.top,
+                wt = DOM.scrollTop(),
+                wh = DOM.viewportHeight() ,
+                ww = DOM.viewportWidth();
+            xy.top += self.el.height() - 2;
+            if (
+                (xy.top + menuHeight) >
+                    (wt + wh)
+                    &&
+
+                    (te - wt)
+                        >
+                        (wt + wh - xy.top)) {
                 xy = orixy;
-                xy.top -= menuHeight + 12;
+                xy.top -= menuHeight + 9;
             }
-            xy.left += 1;
-            if (xy.left + menuWidth > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - menuWidth - 60;
+            //xy.left += 1;
+            if (xy.left + menuWidth > ww - 60) {
+                xy.left = ww - menuWidth - 60;
             }
             self.menu.show(xy);
         },
