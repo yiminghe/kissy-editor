@@ -98,6 +98,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 '' +
                 '.ke-xiami-list .ke-xiami-song {' +
                 'float:left;' +
+                'width:300px;' +
+                'white-space:nowrap;' +
+                'overflow:hidden;' +
                 '}\n' +
                 '' +
                 '' +
