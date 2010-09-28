@@ -225,7 +225,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         d = self.d,
                         action = d.el.one(".ke-xiami-form"),
                         input = d.el.one(".ke-xiami-url");
-                    self.dAlign = d.el.one(".ke-xiami-align");
+                    self.dAlign = KE.Select.decorate(d.el.one(".ke-xiami-align"));
                     self._xiami_input = input;
                     KE.Utils.placeholder(input, TIP);
                     self._xiamia_list = d.el.one(".ke-xiami-list");

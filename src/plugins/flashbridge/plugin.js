@@ -74,7 +74,7 @@ KISSY.Editor.add("flashbridge", function() {
             }
                 // some version flash function is odd in ie: property or method not supported by object
             catch(e) {
-                var params = '';
+                var params = "";
                 if (args.length !== 0) {
                     params = "'" + args.join("', '") + "'";
                 }

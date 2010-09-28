@@ -124,8 +124,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         //qc 3711，只能出现我们规定的字体
         [ /font-size/i,'',function(v) {
             var fontSizes = editor.cfg.pluginConfig["font-size"];
-            for (var i = 0; i < fontSizes.length; i++) {
-                if (v.toLowerCase() == fontSizes[i]) return v;
+            for (var i = 0; i < fontSizes.items.length; i++) {
+                if (v.toLowerCase() == fontSizes.items[i].size) return v;
             }
             return false;
         },'font-size'],
