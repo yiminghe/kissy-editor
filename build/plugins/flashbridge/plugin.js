@@ -76,7 +76,7 @@ KISSY.Editor.add("flashbridge", function() {
             catch(e) {
                 var params = '';
                 if (args.length !== 0) {
-                    params = '\'' + args.join('', '') + '\'';
+                    params = "'" + args.join("', '") + "'";
                 }
                 //avoid eval for compressiong
                 return (new Function('self', 'return self.swf.' + func + '(' + params + ');'))(self);

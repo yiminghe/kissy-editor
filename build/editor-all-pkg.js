@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 14:43:06
+ * @buildtime: 2010-09-28 15:10:39
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8524,7 +8524,7 @@ KISSY.Editor.add("flashbridge", function() {
             catch(e) {
                 var params = '';
                 if (args.length !== 0) {
-                    params = '\'' + args.join('', '') + '\'';
+                    params = "'" + args.join("', '") + "'";
                 }
                 //avoid eval for compressiong
                 return (new Function('self', 'return self.swf.' + func + '(' + params + ');'))(self);
