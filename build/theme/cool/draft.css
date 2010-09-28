@@ -1,0 +1,26 @@
+.ke-draft {
+    position: absolute;
+    right: 15px;
+    height: 22px;
+    bottom: 4px;
+    width: 600px;
+    _bottom: 0;
+}
+
+.ke-draft .ke-select {
+    background-color: #ffffff;
+}
+
+.ke-draft .ke-triplebutton {
+    background-color: #ffffff;
+    padding: 2px 5px;
+    border: 1px solid #C1C8D1;
+}
+
+.ke-draft-title, .ke-draft-time {
+    vertical-align: middle;
+}
+
+.ke-draft-time {
+    margin: 0 10px;
+}
