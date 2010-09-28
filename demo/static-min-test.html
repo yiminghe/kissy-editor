@@ -250,28 +250,28 @@ box-shadow:2px 2px 0.5em #888888;
                     ],
                     width:"100px"
                 }
-            }
-            //,"font-family":["song"]
-            ,"bangpai-upload":{
-                holder:"#imgup1",
-                serverUrl:"/code/upload/upload.jsp",
-                serverParams:{
-                }
-            },
-            "bangpai-video":{
-                urlCfg:[
-                    {
-                        reg:/tudou\.com/i,
-                        url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
-                                "url=@url@&callback=@callback@"//"&rand=@rand@"
-                    }
-                ]
-            },
-            "draft":{
-                interval:5,
-                limit:10
-            }
 
+                //,"font-family":["song"]
+                ,"bangpai-upload":{
+                    holder:"#imgup1",
+                    serverUrl:"/code/upload/upload.jsp",
+                    serverParams:{
+                    }
+                },
+                "bangpai-video":{
+                    urlCfg:[
+                        {
+                            reg:/tudou\.com/i,
+                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        }
+                    ]
+                },
+                "draft":{
+                    interval:5,
+                    limit:10
+                }
+            }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
                 "templates,separator," +
                 "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
