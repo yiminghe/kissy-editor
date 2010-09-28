@@ -44,6 +44,11 @@ KISSY.Editor.add("select", function() {
         width:{},
         title:{},
         items:{},
+        menuContainer:{
+            valueFn:function() {
+                return this.el.parent();
+            }
+        },
         state:{value:ENABLED}
     };
     Select.decorate = function(el) {
@@ -182,7 +187,7 @@ KISSY.Editor.add("select", function() {
                 menuNode.css("width", el.width());
             }
             //要在适当位置插入 !!!
-            menuNode.insertAfter(el);
+            menuNode.appendTo(self.get("menuContainer"));
 
 
             menu.on("show", function() {

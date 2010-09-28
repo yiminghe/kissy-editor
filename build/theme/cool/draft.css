@@ -5,11 +5,12 @@
     bottom: 4px;
     width: 600px;
     _bottom: 0;
-    text-align:right;
+    text-align: right;
 }
 
 .ke-draft .ke-select {
     background-color: #ffffff;
+    text-align: left;
 }
 
 .ke-draft .ke-triplebutton {

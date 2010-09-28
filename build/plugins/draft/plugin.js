@@ -81,6 +81,7 @@ KISSY.Editor.add("draft", function(editor) {
                         container: holder
                     }),versions = new KE.Select({
                         container: holder,
+                        menuContainer:document.body,
                         doc:editor.document,
                         width:"100px",
                         popUpWidth:"220px",

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 20:13:05
+ * @buildtime: 2010-09-28 21:06:04
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7907,6 +7907,7 @@ KISSY.Editor.add("draft", function(editor) {
                         container: holder
                     }),versions = new KE.Select({
                         container: holder,
+                        menuContainer:document.body,
                         doc:editor.document,
                         width:"100px",
                         popUpWidth:"220px",
@@ -15187,6 +15188,11 @@ KISSY.Editor.add("select", function() {
         width:{},
         title:{},
         items:{},
+        menuContainer:{
+            valueFn:function() {
+                return this.el.parent();
+            }
+        },
         state:{value:ENABLED}
     };
     Select.decorate = function(el) {
@@ -15325,7 +15331,7 @@ KISSY.Editor.add("select", function() {
                 menuNode.css("width", el.width());
             }
             //要在适当位置插入 !!!
-            menuNode.insertAfter(el);
+            menuNode.appendTo(self.get("menuContainer"));
 
 
             menu.on("show", function() {
