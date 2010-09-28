@@ -833,12 +833,36 @@ select style for kissy editor
     zoom: 1;
 }
 
+.ke-combox .ke-select-text {
+    background: #FFFFFF repeat-x scroll 0 0;
+}
+
 .ke-select-text {
     padding-left: 4px;
+    height: 20px;
+    line-height: 20px;
+    position: relative;
+}
+
+.ie8 .ke-combox .ke-select-text {
+    top: -1px;
+}
+
+.ie7 .ke-combox .ke-select-text {
+    top: -3px;
+}
+
+.ie6 .ke-combox .ke-select-text {
+    top: -2px;
 }
 
 .ke-select-drop-wrap {
     padding-right: 4px;
+}
+
+.ie6 .ke-combox .ke-select-drop-wrap {
+    padding-bottom: 1px;
+    vertical-align: middle;
 }
 
 .ke-combox .ke-select-drop-wrap {
@@ -846,6 +870,7 @@ select style for kissy editor
     padding-right: 6px;
     border-left: 1px solid rgb(193, 200, 209);
     background: #e8ebee repeat-x left top;
+    height: 20px;
 }
 
 .ke-combox .ke-select-text {
