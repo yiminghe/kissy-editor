@@ -356,6 +356,7 @@ a.ke-color-a span {
     bottom: 4px;
     width: 600px;
     _bottom: 0;
+    text-align:right;
 }
 
 .ke-draft .ke-select {

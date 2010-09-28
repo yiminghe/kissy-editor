@@ -233,7 +233,8 @@ KISSY.Editor.add("select", function() {
         },
         _real:function() {
             var self = this,
-                xy = self.el.offset(),
+                el = self.el,
+                xy = el.offset(),
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
                 menuWidth = self.menu.el.width(),
@@ -241,7 +242,7 @@ KISSY.Editor.add("select", function() {
                 wt = DOM.scrollTop(),
                 wh = DOM.viewportHeight() ,
                 ww = DOM.viewportWidth();
-            xy.top += self.el.height() - 2;
+            xy.top += el.height() - 2;
             if (
                 (xy.top + menuHeight) >
                     (wt + wh)
@@ -255,7 +256,7 @@ KISSY.Editor.add("select", function() {
             }
             //xy.left += 1;
             if (xy.left + menuWidth > ww - 60) {
-                xy.left = ww - menuWidth - 60;
+                xy.left -= menuWidth - el.width();
             }
             self.menu.show(xy);
         },

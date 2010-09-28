@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 17:00:13
+ * @buildtime: 2010-09-28 17:50:16
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -15374,7 +15374,8 @@ KISSY.Editor.add("select", function() {
         },
         _real:function() {
             var self = this,
-                xy = self.el.offset(),
+                el = self.el,
+                xy = el.offset(),
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
                 menuWidth = self.menu.el.width(),
@@ -15382,7 +15383,7 @@ KISSY.Editor.add("select", function() {
                 wt = DOM.scrollTop(),
                 wh = DOM.viewportHeight() ,
                 ww = DOM.viewportWidth();
-            xy.top += self.el.height() - 2;
+            xy.top += el.height() - 2;
             if (
                 (xy.top + menuHeight) >
                     (wt + wh)
@@ -15396,7 +15397,7 @@ KISSY.Editor.add("select", function() {
             }
             //xy.left += 1;
             if (xy.left + menuWidth > ww - 60) {
-                xy.left = ww - menuWidth - 60;
+                xy.left -= menuWidth - el.width();
             }
             self.menu.show(xy);
         },

@@ -11,6 +11,10 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
         }
 
         var DOM = S.DOM,
+            PIC_NUM_LIMIT = 15,
+            PIC_NUM_LIMIT_WARNING = "系统将只保留15张",
+            PIC_SIZE_LIMIT = 1000,
+            PIC_SIZE_LIMIT_WARNING = "图片不能超过1M",
             Node = S.Node,
             holder = [],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
@@ -66,17 +70,20 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "<thead>" +
                         "<tr>" +
                         "<th>" +
+                        "序号" +
+                        "</th>" +
+                        "<th>" +
                         "图片" +
-                        "</td>" +
+                        "</th>" +
                         "<th>" +
                         "大小" +
-                        "</td>" +
+                        "</th>" +
                         "<th>" +
                         "上传进度" +
-                        "</td>" +
+                        "</th>" +
                         "<th>" +
                         "图片操作" +
-                        "</td>" +
+                        "</th>" +
                         "</tr>" +
                         "</thead>" +
                         "<tbody>" +
@@ -103,6 +110,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     methods:["removeFile",
                         "cancel",
                         "removeFile",
+                        "disable",
+                        "enable",
                         "setAllowMultipleFiles",
                         "setFileFilters",
                         "uploadAll"],
@@ -144,6 +153,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         progressBars[fid].destroy();
                         delete progressBars[fid];
                         tr._4e_remove();
+                        self.enable();
+                        self._seqPics();
                     }
                 });
 
@@ -161,7 +172,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     tr = self._getFileTr(id),
                     bar = progressBars[id];
                 if (tr) {
-                    bar.destroy();
+                    bar && bar.destroy();
                     tr.one(".ke-upload-progress").html("<span style='color:red'>" +
                         ev.status +
                         "</span>");
@@ -214,23 +225,63 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 bar && bar.set("progress", progess);
 
             },
+            disable:function() {
+                var self = this;
+                self.uploader.disable();
+                self.btn[0].disabled = true;
+            },
+            enable:function() {
+                var self = this;
+                self.uploader.enable();
+                self.btn[0].disabled = false;
+            },
+            _seqPics:function() {
+                var self = this, list = self._list,seq = 1;
+                list.all(".ke-upload-seq").each(function(n) {
+                    n.html(seq++);
+                });
+            },
+            _getFilesSize:function(files) {
+                var n = 0;
+                for (var i in files) n++;
+                return n;
+            },
             _onSelect:function(ev) {
-                //console.log("_onSelect", ev);
                 var self = this,
+                    uploader = self.uploader,
                     list = self._list,
-                    files = ev.fileList;
+                    curNum = 0,
+                    files = ev.fileList,
+                    available = PIC_NUM_LIMIT - list.all("tr").length;
                 if (files) {
+                    var l = self._getFilesSize(files);
+
+                    if (l > available) {
+                        alert(PIC_NUM_LIMIT_WARNING);
+                    }
+                    if (l >= available) {
+                        self.disable();
+
+                    }
                     self._listWrap.show();
                     for (var i in files) {
                         if (!files.hasOwnProperty(i)) continue;
                         var f = files[i];
                         if (self._getFileTr(f.id)) continue;
-                        var n = new Node("<tr fid='" + f.id + "'>"
+                        var size = Math.floor(f.size / 1000),id = f.id;
+                        curNum ++;
+                        if (curNum > available) {
+                            uploader.removeFile(id);
+                            continue;
+                        }
+                        var n = new Node("<tr fid='" + id + "'>"
+                            + "<td class='ke-upload-seq'>"
+                            + "</td>"
                             + "<td>"
                             + f.name
                             + "</td>"
                             + "<td>"
-                            + Math.floor(f.size / 1000)
+                            + size
                             + "k</td>" +
                             "<td class='ke-upload-progress'>" +
                             "</td>" +
@@ -243,14 +294,26 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             +
                             "</td>"
                             + "</tr>").appendTo(list);
+                        var prog = n.one(".ke-upload-progress");
+                        if (size > PIC_SIZE_LIMIT) {
+                            self._uploadError({
+                                id:id,
+                                status:PIC_SIZE_LIMIT_WARNING
+                            });
+                            uploader.removeFile(id);
 
-                        progressBars[f.id] = new KE.ProgressBar({
-                            container:n.one(".ke-upload-progress") ,
-                            width:"100px",
-                            height:"18px"
-                        });
+                        } else {
+                            progressBars[id] = new KE.ProgressBar({
+                                container:n.one(".ke-upload-progress") ,
+                                width:"100px",
+                                height:"18px"
+                            });
+                        }
                     }
+                    self._seqPics();
                 }
+
+
             },
 
             _ready:function() {
