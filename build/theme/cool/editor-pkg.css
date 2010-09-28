@@ -260,7 +260,7 @@ link
 
 .ke-triplebutton-disabled {
     opacity: 0.3;
-    filter: chroma(color = tomato) alpha(opacity = 30) ;
+    filter: chroma(color = tomato) alpha(opacity = 30);
     cursor: default;
 }
 
@@ -275,7 +275,7 @@ hover
 **/
 .ke-triplebutton:hover {
     text-decoration: none;
-
+    color: black;
 }
 
 .ke-triplebutton-off:hover {
@@ -287,9 +287,10 @@ hover
 }
 
 .ke-triplebutton-disabled:hover {
+
     background-color: transparent;
     opacity: 0.3;
-    filter: chroma(color = tomato) alpha(opacity = 30) ;
+    filter: chroma(color = tomato) alpha(opacity = 30);
 }
 
 /**
@@ -298,7 +299,25 @@ active
 .ke-triplebutton:active {
     color: black;
 }
-/**
+
+.ke-button {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    box-shadow: 0px 1px 1px rgb(228, 228, 228);
+    border: 1px solid rgb(193, 200, 209);
+    background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+    padding: 3px 18px;
+    _padding-bottom: 2px;
+    *padding-bottom: 2px;
+}
+
+.ke-button:hover {
+    border-color: rgb(232, 204, 160);
+    background: #f5e7ce url("ke-button-bg-active.png") repeat-x left top;
+}/**
 color plugin style for kissy editor
 @author:yiminghe@gmail.com
 **/
@@ -540,35 +559,6 @@ textarea,iframe包装
     background-position: -623px 50%;
 }
 
-.ke-button {
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0px 1px 1px rgb(228, 228, 228);
-    -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
-    box-shadow: 0px 1px 1px rgb(228, 228, 228);
-    border: 1px solid rgb(193, 200, 209);
-    background-color: rgb(232, 235, 238);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(250, 250, 250)), to(rgb(232, 235, 238)));
-    background: -moz-linear-gradient(center top, rgb(250, 250, 250), rgb(232, 235, 238)) repeat scroll 0 0 transparent;
-    /*filter: progid:DXImageTransform.Microsoft.Shadow(color = '#e4e4e4', Direction = 135, Strength = 3) progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fafafa', endColorstr = '#e8ebee');
-    */
-    padding: 3px 18px;
-    _padding: 3px 9px 3px 9px;
-    *padding: 3px 9px 0px 9px;
-    _line-height: 18px;
-    *line-height: 18px;
-}
-
-.ke-button:active {
-    border-color: rgb(232, 204, 160);
-    background: #fff6e4;
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 246, 228)), to(rgb(245, 231, 206)));
-    background: -moz-linear-gradient(center top, rgb(255, 246, 228), rgb(245, 231, 206)) repeat scroll 0 0 transparent;
-    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fff6e4', endColorstr = '#f5e7ce');
-    */
-}
-
 .ke-input {
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -693,7 +683,7 @@ menu style for kissy editor ,include contextmenu and select menu
     outline: none;
     _border-color: tomato;
     _filter: chroma(color = tomato);
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .ke-hd-x .ke-close {
@@ -714,7 +704,6 @@ a.ke-hd-x:active {
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(229, 234, 242)), to(rgb(252, 252, 253)));
     background: -moz-linear-gradient(top, rgb(229, 234, 242), rgb(252, 252, 253));
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e5eaf2', endColorstr = '#fcfcfd');
-
 }
 
 .ke-hd {
@@ -828,9 +817,11 @@ select style for kissy editor
     text-decoration: none;
     vertical-align: middle;
     white-space: nowrap;
+    color: black;
 }
 
 .ke-select:hover {
+    color: black;
     text-decoration: none;
 }
 

@@ -111,7 +111,11 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         width:btn.width() ,
                         height:btn.height()
                     },
+                    params:{
+                        wmode:"transparent"
+                    },
                     flashVars:{
+                        allowedDomain : location.hostname,
                         menu:true
                     }
                 });

@@ -47,7 +47,7 @@
     outline: none;
     _border-color: tomato;
     _filter: chroma(color = tomato);
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .ke-hd-x .ke-close {
@@ -68,7 +68,6 @@ a.ke-hd-x:active {
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(229, 234, 242)), to(rgb(252, 252, 253)));
     background: -moz-linear-gradient(top, rgb(229, 234, 242), rgb(252, 252, 253));
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e5eaf2', endColorstr = '#fcfcfd');
-
 }
 
 .ke-hd {

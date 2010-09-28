@@ -25,9 +25,11 @@ select style for kissy editor
     text-decoration: none;
     vertical-align: middle;
     white-space: nowrap;
+    color: black;
 }
 
 .ke-select:hover {
+    color: black;
     text-decoration: none;
 }
 

@@ -19,25 +19,29 @@ KISSY.Editor.add("flashbridge", function() {
                 callback = "KISSY.Editor.FlashBridge.EventHandler";
             cfg.flashVars = cfg.flashVars || {};
             cfg.attrs = cfg.attrs || {};
+            cfg.params = cfg.params || {};
             var flashVars = cfg.flashVars,
-                attrs = cfg.attrs;
+                attrs = cfg.attrs,
+                params = cfg.params;
             S.mix(attrs, {
                 id:id,
                 //http://yiminghe.javaeye.com/blog/764872
                 //firefox 必须使创建的flash以及容器可见，才会触发contentReady
                 //默认给flash自身很大的宽高，容器小点就可以了，
-                width:100,
-                height:100,
+                width:'100%',
+                height:'100%'
+            }, false);
+            //这几个要放在 param 里面，主要是允许 flash js沟通
+            S.mix(params, {
                 allowScriptAccess:'always',
                 allowNetworking:'all',
                 scale:'noScale'
             }, false);
             S.mix(flashVars, {
-                allowedDomain : location.hostname,
-                shareData: true,
+                shareData: false,
                 YUISwfId:id,
                 YUIBridgeCallback:callback,
-                useCompression:true
+                useCompression:false
             }, false);
             instances[id] = self;
             self.id = id;
@@ -50,7 +54,7 @@ KISSY.Editor.add("flashbridge", function() {
                 var m = methods[i];
                 (function(m) {
                     self[m] = function() {
-                        self._callSWF(m, S.makeArray(arguments));
+                        return self._callSWF(m, S.makeArray(arguments));
                     };
                 })(m);
             }

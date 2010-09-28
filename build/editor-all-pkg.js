@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 10:21:01
+ * @buildtime: 2010-09-28 12:42:30
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7141,25 +7141,42 @@ KISSY.Editor.add("button", function(editor) {
         container:{},
         text:{},
         contentCls:{},
-        cls:{}
+        cls:{},
+        el:{}
     };
 
 
     S.extend(TripleButton, S.Base, {
         _init:function() {
-            var self = this,container = self.get("container")[0] || self.get("container");
+            var self = this,
+                container = self.get("container"),
+                elHolder = self.get("el"),
+                title = self.get("title"),
+                text = self.get("text"),
+                contentCls = self.get("contentCls");
             self.el = new Node(BUTTON_HTML);
-            self.el._4e_unselectable();
+            var el = self.el;
+            el._4e_unselectable();
             self._attachCls();
-            if (this.get("text"))
-                self.el.html(this.get("text"));
-            else if (this.get("contentCls")) {
-                self.el.html("<span class='ke-toolbar-item " + this.get("contentCls") + "'></span>");
-                self.el.one("span")._4e_unselectable();
+            //button有文子
+            if (text) {
+                el.html(text);
+                //直接上图标
+            } else if (contentCls) {
+                el.html("<span class='ke-toolbar-item " +
+                    contentCls + "'></span>");
+                el.one("span")._4e_unselectable();
             }
-            if (self.get("title")) self.el.attr("title", self.get("title"));
-            container.appendChild(self.el[0]);
-            self.el.on("click", self._action, self);
+            if (title) el.attr("title", title);
+            //替换已有元素
+            if (elHolder) {
+                elHolder[0].parentNode.replaceChild(el[0], elHolder[0]);
+            }
+            //加入容器
+            else if (container) {
+                container.append(self.el);
+            }
+            el.on("click", self._action, self);
             self.on("afterStateChange", self._stateChange, self);
         },
         _attachCls:function() {
@@ -7168,14 +7185,24 @@ KISSY.Editor.add("button", function(editor) {
         },
 
         _stateChange:function(ev) {
-            var n = ev.newVal;
-            this["_" + n]();
-            this._attachCls();
+            var n = ev.newVal,self = this;
+            self["_" + n]();
+            self._attachCls();
         },
-
+        disable:function() {
+            var self = this;
+            self._savedState = self.get("state");
+            self.set("state", DISABLED);
+        },
+        enable:function() {
+            var self = this;
+            if (self.get("state") == DISABLED)
+                self.set("state", self._savedState);
+        },
         _action:function(ev) {
-            this.fire(this.get("state") + "Click", ev);
-            this.fire("click", ev);
+            var self = this;
+            self.fire(self.get("state") + "Click", ev);
+            self.fire("click", ev);
             ev.preventDefault();
         },
         _on:function() {
@@ -7928,7 +7955,6 @@ KISSY.Editor.add("draft", function(editor) {
                     }
                     versions.set("items", items.reverse());
                     timeTip.html(tip);
-
                     localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
                 },
 
@@ -7951,7 +7977,8 @@ KISSY.Editor.add("draft", function(editor) {
                 recover:function(ev) {
                     var self = this,
                         editor = self.editor,
-                        versions = self.versions,drafts = self.drafts,
+                        versions = self.versions,
+                        drafts = self.drafts,
                         v = ev.newVal;
                     versions.reset("value");
                     if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
@@ -8441,25 +8468,29 @@ KISSY.Editor.add("flashbridge", function() {
                 callback = "KISSY.Editor.FlashBridge.EventHandler";
             cfg.flashVars = cfg.flashVars || {};
             cfg.attrs = cfg.attrs || {};
+            cfg.params = cfg.params || {};
             var flashVars = cfg.flashVars,
-                attrs = cfg.attrs;
+                attrs = cfg.attrs,
+                params = cfg.params;
             S.mix(attrs, {
                 id:id,
                 //http://yiminghe.javaeye.com/blog/764872
                 //firefox 必须使创建的flash以及容器可见，才会触发contentReady
                 //默认给flash自身很大的宽高，容器小点就可以了，
-                width:100,
-                height:100,
+                width:'100%',
+                height:'100%'
+            }, false);
+            //这几个要放在 param 里面，主要是允许 flash js沟通
+            S.mix(params, {
                 allowScriptAccess:'always',
                 allowNetworking:'all',
                 scale:'noScale'
             }, false);
             S.mix(flashVars, {
-                allowedDomain : location.hostname,
-                shareData: true,
+                shareData: false,
                 YUISwfId:id,
                 YUIBridgeCallback:callback,
-                useCompression:true
+                useCompression:false
             }, false);
             instances[id] = self;
             self.id = id;
@@ -8472,7 +8503,7 @@ KISSY.Editor.add("flashbridge", function() {
                 var m = methods[i];
                 (function(m) {
                     self[m] = function() {
-                        self._callSWF(m, S.makeArray(arguments));
+                        return self._callSWF(m, S.makeArray(arguments));
                     };
                 })(m);
             }
@@ -9061,30 +9092,33 @@ KISSY.Editor.add("flashutils", function() {
 
         },
         createSWFRuntime:function(movie, cfg, doc) {
-            var attrs = cfg.attrs,
-                flashVars = cfg.flashVars,
+            var attrs = cfg.attrs || {},
+                flashVars = cfg.flashVars || {},
+                params = cfg.params || {},
                 attrs_str = "",
+                params_str = "",
                 vars_str = "";
             doc = doc || document;
-            attrs = attrs || {};
             attrs.id = attrs.id || S.guid("ke-runtimeflash-");
             for (var a in attrs) {
                 if (attrs.hasOwnProperty(a))
                     attrs_str += a + "='" + attrs[a] + "' ";
             }
-            if (flashVars) {
-                for (var f in flashVars) {
-                    if (flashVars.hasOwnProperty(f))
-                        vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
-                }
-                vars_str = vars_str.substring(1);
+            for (var p in params) {
+                if (params.hasOwnProperty(p))
+                    params_str += "<param name='" + p + "' value='" + params[p] + "'/>";
             }
+            for (var f in flashVars) {
+                if (flashVars.hasOwnProperty(f))
+                    vars_str += "&" + f + "=" + encodeURIComponent(flashVars[f]);
+            }
+            vars_str = vars_str.substring(1);
+
             if (UA.ie) {
                 var outerHTML = '<object ' +
                     attrs_str +
                     ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +
-                    '<param name="quality" value="high" />' +
-                    '<param name="wmode" value="transparent" /> ' +
+                    params_str +
                     '<param name="movie" value="' + movie + '" />' +
                     (vars_str ? '<param name="flashVars" value="' + vars_str + '" />' : '') +
                     '</object>';
@@ -9095,8 +9129,7 @@ KISSY.Editor.add("flashutils", function() {
                     " data='" + movie + "'" +
                     " " + attrs_str +
                     ">" +
-                    '<param name="wmode" value="transparent"/> '
-                    +
+                    params_str +
                     (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '')
                     + '</object>';
             }
@@ -12065,7 +12098,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url' " +
-                    "style='width:180px;margin-right:5px;' " +
+                    "style='width:150px;margin-right:5px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "<button class='ke-image-up' style='visibility:hidden;'>浏览...</button>" +
@@ -12266,7 +12299,11 @@ KISSY.Editor.add("image", function(editor) {
                                     width:ke_image_up.width() ,
                                     height:ke_image_up.height()
                                 },
+                                params:{
+                                    wmode:"transparent"
+                                },
                                 flashVars:{
+                                    allowedDomain : location.hostname,
                                     menu:true
                                 }
                             });

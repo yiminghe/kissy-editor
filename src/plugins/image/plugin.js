@@ -76,7 +76,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url' " +
-                    "style='width:180px;margin-right:5px;' " +
+                    "style='width:150px;margin-right:5px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "<button class='ke-image-up' style='visibility:hidden;'>浏览...</button>" +
@@ -277,7 +277,11 @@ KISSY.Editor.add("image", function(editor) {
                                     width:ke_image_up.width() ,
                                     height:ke_image_up.height()
                                 },
+                                params:{
+                                    wmode:"transparent"
+                                },
                                 flashVars:{
+                                    allowedDomain : location.hostname,
                                     menu:true
                                 }
                             });

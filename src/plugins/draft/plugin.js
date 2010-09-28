@@ -132,7 +132,6 @@ KISSY.Editor.add("draft", function(editor) {
                     }
                     versions.set("items", items.reverse());
                     timeTip.html(tip);
-
                     localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
                 },
 
@@ -155,7 +154,8 @@ KISSY.Editor.add("draft", function(editor) {
                 recover:function(ev) {
                     var self = this,
                         editor = self.editor,
-                        versions = self.versions,drafts = self.drafts,
+                        versions = self.versions,
+                        drafts = self.drafts,
                         v = ev.newVal;
                     versions.reset("value");
                     if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {

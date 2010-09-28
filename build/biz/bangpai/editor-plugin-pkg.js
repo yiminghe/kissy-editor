@@ -140,11 +140,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
                 "<input class='ke-xiami-url ke-input' " +
-                "style='width:300px'" +
+                "style='width:300px;vertical-align:middle;'" +
                 "/> &nbsp; " +
                 " <button " +
-                "class='ke-xiami-submit ke-button' " +
-                "type='submit' " +
+                "class='ke-xiami-submit'" +
                 ">"
                 + BTIP + "</button>" +
                 "</p>" +
@@ -230,7 +229,19 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._xiami_input = input;
                     KE.Utils.placeholder(input, TIP);
                     self._xiamia_list = d.el.one(".ke-xiami-list");
-                    self._xiami_submit = d.el.one(".ke-xiami-submit");
+                    self._xiami_submit = new KE.TripleButton({
+                        el:d.el.one(".ke-xiami-submit"),
+                        cls:'ke-button',
+                        text:"搜&nbsp;索"
+                    });
+                    self._xiami_submit.on("offClick", function() {
+                        loadRecordsByPage(1);
+                    });
+                    input.on("keydown", function(ev) {
+                        if (ev.keyCode === 13) {
+                            loadRecordsByPage(1);
+                        }
+                    });
                     self.dMargin = d.el.one(".ke-xiami-margin");
                     self._xiami_url_wrap = d.el.one(".ke-xiami-url-wrap");
                     self._xiamia_title = d.el.one(".ke-xiami-title");
@@ -265,7 +276,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             alert("不能为空！");
                             return;
                         }
-                        self._xiami_submit[0].disabled = true;
+                        self._xiami_submit.disable();
                         var params = {
                             key:encodeURIComponent(input.val()),
                             page:page,
@@ -285,7 +296,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             },
                             error:function() {
                                 node.src = '';
-                                self._xiami_submit[0].disabled = false;
+                                self._xiami_submit.enable();
                                 var html = "<p style='text-align:center;margin:10px 0;'>" +
                                     "不好意思，超时了，请重试！" +
                                     "</p>";
@@ -295,12 +306,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
 
                     }
-
-                    action.on("submit", function(ev) {
-                        loadRecordsByPage(1);
-                        ev.halt();
-                    }, self);
-
 
                     self._xiamia_list.on("click", function(ev) {
                         ev.preventDefault();
@@ -338,7 +343,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         html = "";
                     //xiami 返回结果自动trim了
                     if (data.key == S.trim(self._xiami_input.val())) {
-                        self._xiami_submit[0].disabled = false;
+                        self._xiami_submit.enable();
                         if (re && re.length) {
                             html = "<ul>";
                             for (i = 0; i < re.length; i++) {
@@ -415,7 +420,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         self.d.foot.hide();
                         self._xiamia_title.hide();
                     }
-                    self._xiami_submit[0].disabled = false;
+                    //self._xiami_submit.disable();
                     self._xiamia_list.html("");
                 },
 
@@ -581,7 +586,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         width:btn.width() ,
                         height:btn.height()
                     },
+                    params:{
+                        wmode:"transparent"
+                    },
                     flashVars:{
+                        allowedDomain : location.hostname,
                         menu:true
                     }
                 });

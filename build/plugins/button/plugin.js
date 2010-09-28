@@ -43,25 +43,42 @@ KISSY.Editor.add("button", function(editor) {
         container:{},
         text:{},
         contentCls:{},
-        cls:{}
+        cls:{},
+        el:{}
     };
 
 
     S.extend(TripleButton, S.Base, {
         _init:function() {
-            var self = this,container = self.get("container")[0] || self.get("container");
+            var self = this,
+                container = self.get("container"),
+                elHolder = self.get("el"),
+                title = self.get("title"),
+                text = self.get("text"),
+                contentCls = self.get("contentCls");
             self.el = new Node(BUTTON_HTML);
-            self.el._4e_unselectable();
+            var el = self.el;
+            el._4e_unselectable();
             self._attachCls();
-            if (this.get("text"))
-                self.el.html(this.get("text"));
-            else if (this.get("contentCls")) {
-                self.el.html("<span class='ke-toolbar-item " + this.get("contentCls") + "'></span>");
-                self.el.one("span")._4e_unselectable();
+            //button有文子
+            if (text) {
+                el.html(text);
+                //直接上图标
+            } else if (contentCls) {
+                el.html("<span class='ke-toolbar-item " +
+                    contentCls + "'></span>");
+                el.one("span")._4e_unselectable();
             }
-            if (self.get("title")) self.el.attr("title", self.get("title"));
-            container.appendChild(self.el[0]);
-            self.el.on("click", self._action, self);
+            if (title) el.attr("title", title);
+            //替换已有元素
+            if (elHolder) {
+                elHolder[0].parentNode.replaceChild(el[0], elHolder[0]);
+            }
+            //加入容器
+            else if (container) {
+                container.append(self.el);
+            }
+            el.on("click", self._action, self);
             self.on("afterStateChange", self._stateChange, self);
         },
         _attachCls:function() {
@@ -70,14 +87,24 @@ KISSY.Editor.add("button", function(editor) {
         },
 
         _stateChange:function(ev) {
-            var n = ev.newVal;
-            this["_" + n]();
-            this._attachCls();
+            var n = ev.newVal,self = this;
+            self["_" + n]();
+            self._attachCls();
         },
-
+        disable:function() {
+            var self = this;
+            self._savedState = self.get("state");
+            self.set("state", DISABLED);
+        },
+        enable:function() {
+            var self = this;
+            if (self.get("state") == DISABLED)
+                self.set("state", self._savedState);
+        },
         _action:function(ev) {
-            this.fire(this.get("state") + "Click", ev);
-            this.fire("click", ev);
+            var self = this;
+            self.fire(self.get("state") + "Click", ev);
+            self.fire("click", ev);
             ev.preventDefault();
         },
         _on:function() {
