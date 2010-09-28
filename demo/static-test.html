@@ -334,7 +334,24 @@ xiami 音乐
                         html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                     }
                 ],
-                "font-size":["13px","16px","20px"]
+                "font-size":{
+                    items:[
+                        {
+                            value:"14px",
+                            name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                        },
+                        {
+                            value:"16px",
+                            name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                        },
+
+                        {
+                            value:"20px",
+                            name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                        }
+                    ],
+                    width:"100px"
+                }
                 //,"font-family":["song"]
                 ,"bangpai-upload":{
                     holder:"#imgup1",
@@ -367,7 +384,8 @@ xiami 音乐
             disableObjectResizing:true,
             disableInlineTableEditing:true
         }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates,maximize");
-    });
+    })
+            ;
 
 </script>
 </body>

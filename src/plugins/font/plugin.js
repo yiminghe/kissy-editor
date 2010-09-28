@@ -8,10 +8,14 @@ KISSY.Editor.add("font", function(editor) {
         KEStyle = KE.Style,
         TripleButton = KE.TripleButton,
         Node = S.Node,
-        FONT_SIZES = editor.cfg.pluginConfig["font-size"] ||
-            ["8px","10px","12px",
-                "14px","18px","24px","36px","48px","60px","72px","84px","96px","108px"],
-        FONT_SIZE_STYLES = {},
+        FONT_SIZES = editor.cfg.pluginConfig["font-size"] || {};
+    S.mix(FONT_SIZES, {   items:["8px","10px","12px",
+        "14px","18px","24px",
+        "36px","48px","60px","72px","84px","96px",
+        "108px"],
+        width:"55px"
+    }, false);
+    var FONT_SIZE_STYLES = {},
         FONT_SIZE_ITEMS = [
 
         ],
@@ -38,13 +42,17 @@ KISSY.Editor.add("font", function(editor) {
     editor.cfg.pluginConfig["font-size"] = FONT_SIZES;
     editor.cfg.pluginConfig["font-family"] = FONT_FAMILIES;
 
-    for (i = 0; i < FONT_SIZES.length; i++) {
-        var size = FONT_SIZES[i];
+    for (i = 0; i < FONT_SIZES.items.length; i++) {
+        var size = FONT_SIZES.items[i],name = size;
+        if (!S.isString(size)) {
+            name = size.name;
+            size = size.value;
+        }
         FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
             size:size
         });
         FONT_SIZE_ITEMS.push({
-            name:size,
+            name:name,
             value:size
         })
     }
@@ -235,7 +243,7 @@ KISSY.Editor.add("font", function(editor) {
             editor:editor,
             title:"大小",
             width:"30px",
-            popUpWidth:"55px",
+            popUpWidth:FONT_SIZES.width,
             styles:FONT_SIZE_STYLES,
             html:FONT_SIZE_ITEMS
         });

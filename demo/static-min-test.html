@@ -232,41 +232,60 @@ box-shadow:2px 2px 0.5em #888888;
                         html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                     }
                 ],
-                "font-size":["13px","16px","20px"]
-                //,"font-family":["song"]
-                ,"bangpai-upload":{
-                    holder:"#imgup1",
-                    serverUrl:"/code/upload/upload.jsp",
-                    serverParams:{
-                    }
-                },
-                "bangpai-video":{
-                    urlCfg:[
+                "font-size":{
+                    items:[
                         {
-                            reg:/tudou\.com/i,
-                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
-                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+                            value:"14px",
+                            name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                        },
+                        {
+                            value:"16px",
+                            name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                        },
+
+                        {
+                            value:"20px",
+                            name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
                         }
-                    ]
-                },
-                "draft":{
-                    interval:5,
-                    limit:10
+                    ],
+                    width:"100px"
                 }
             }
-        }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,separator," +
-                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                );
+            //,"font-family":["song"]
+            ,"bangpai-upload":{
+                holder:"#imgup1",
+                serverUrl:"/code/upload/upload.jsp",
+                serverParams:{
+                }
+            },
+            "bangpai-video":{
+                urlCfg:[
+                    {
+                        reg:/tudou\.com/i,
+                        url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                "url=@url@&callback=@callback@"//"&rand=@rand@"
+                    }
+                ]
+            },
+            "draft":{
+                interval:5,
+                limit:10
+            }
+        }
+    }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
+            "templates,separator," +
+            "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+            "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+            "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+            );
 
 
-        KE("#editor2", {
-            disableObjectResizing:true,
-            disableInlineTableEditing:true
-        }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
-    });
+    KE("#editor2", {
+        disableObjectResizing:true,
+        disableInlineTableEditing:true
+    }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
+    })
+    ;
 
 </script>
 </body>
