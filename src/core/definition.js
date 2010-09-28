@@ -85,6 +85,9 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
+            if (UA.ie)DOM.addClass(document.body,"ie" + UA.ie)
+            else if (UA.gecko) DOM.addClass(document.body,"gecko");
+            else if (UA.webkit) DOM.addClass(document.body,"webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?

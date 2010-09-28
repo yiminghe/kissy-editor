@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 17:56:06
+ * @buildtime: 2010-09-28 19:52:35
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -691,6 +691,9 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
+            if (UA.ie)DOM.addClass(document.body,"ie" + UA.ie)
+            else if (UA.gecko) DOM.addClass(document.body,"gecko");
+            else if (UA.webkit) DOM.addClass(document.body,"webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?

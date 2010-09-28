@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-28 17:56:06
+ * @buildtime: 2010-09-28 19:52:35
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -691,6 +691,9 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
+            if (UA.ie)DOM.addClass(document.body,"ie" + UA.ie)
+            else if (UA.gecko) DOM.addClass(document.body,"gecko");
+            else if (UA.webkit) DOM.addClass(document.body,"webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?
@@ -14545,9 +14548,8 @@ KISSY.Editor.add("overlay", function() {
                     id = S.guid("ke-overlay-head-");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
-                self._close = el.one(".ke-close");
                 self._title = head.one("h1");
-                self._close.on("click", function(ev) {
+                el.one(".ke-hd-x").on("click", function(ev) {
                     ev.preventDefault();
                     self.hide();
                 });
@@ -15188,7 +15190,7 @@ KISSY.Editor.add("select", function() {
         state:{value:ENABLED}
     };
     Select.decorate = function(el) {
-        var width = el.width() - (12 + 4 + 7),
+        var width = el.width() ,
             items = [],
             options = el.all("option");
         for (var i = 0; i < options.length; i++) {
@@ -15199,7 +15201,7 @@ KISSY.Editor.add("select", function() {
             });
         }
         return new Select({
-            width:width,
+            width:width + "px",
             el:el,
             items:items,
             cls:"ke-combox",
@@ -15219,7 +15221,7 @@ KISSY.Editor.add("select", function() {
                 text = el.one(".ke-select-text"),
                 drop = el.one(".ke-select-drop");
 
-            if (self.get("value")) {
+            if (self.get("value") !== undefined) {
                 text.html(self._findNameByV(self.get("value")));
             } else {
                 text.html(title);
@@ -15288,7 +15290,7 @@ KISSY.Editor.add("select", function() {
         },
         val:function(v) {
             var self = this;
-            if (v) {
+            if (v !== undefined) {
                 self.set("value", v);
                 return self;
             }
@@ -15297,6 +15299,7 @@ KISSY.Editor.add("select", function() {
         _prepare:function() {
             var self = this,
                 el = self.el,
+                popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
                 menuNode = new Node(menu_markup),
                 menu = new KE.SimpleOverlay({
@@ -15316,9 +15319,13 @@ KISSY.Editor.add("select", function() {
             self._selectList = new Node("<div>").appendTo(menuNode);
 
             self._itemsChange({newVal:items});
-            self.get("popUpWidth") && menuNode.css("width", self.get("popUpWidth"));
+            if (popUpWidth) {
+                menuNode.css("width", popUpWidth);
+            } else {
+                menuNode.css("width", el.width());
+            }
             //要在适当位置插入 !!!
-            menuNode.appendTo(document.body);
+            menuNode.insertAfter(el);
 
 
             menu.on("show", function() {

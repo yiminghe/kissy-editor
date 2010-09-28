@@ -47,7 +47,7 @@ KISSY.Editor.add("select", function() {
         state:{value:ENABLED}
     };
     Select.decorate = function(el) {
-        var width = el.width() - (12 + 4 + 7),
+        var width = el.width() ,
             items = [],
             options = el.all("option");
         for (var i = 0; i < options.length; i++) {
@@ -58,7 +58,7 @@ KISSY.Editor.add("select", function() {
             });
         }
         return new Select({
-            width:width,
+            width:width + "px",
             el:el,
             items:items,
             cls:"ke-combox",
@@ -78,7 +78,7 @@ KISSY.Editor.add("select", function() {
                 text = el.one(".ke-select-text"),
                 drop = el.one(".ke-select-drop");
 
-            if (self.get("value")) {
+            if (self.get("value") !== undefined) {
                 text.html(self._findNameByV(self.get("value")));
             } else {
                 text.html(title);
@@ -147,7 +147,7 @@ KISSY.Editor.add("select", function() {
         },
         val:function(v) {
             var self = this;
-            if (v) {
+            if (v !== undefined) {
                 self.set("value", v);
                 return self;
             }
@@ -156,6 +156,7 @@ KISSY.Editor.add("select", function() {
         _prepare:function() {
             var self = this,
                 el = self.el,
+                popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
                 menuNode = new Node(menu_markup),
                 menu = new KE.SimpleOverlay({
@@ -175,9 +176,13 @@ KISSY.Editor.add("select", function() {
             self._selectList = new Node("<div>").appendTo(menuNode);
 
             self._itemsChange({newVal:items});
-            self.get("popUpWidth") && menuNode.css("width", self.get("popUpWidth"));
+            if (popUpWidth) {
+                menuNode.css("width", popUpWidth);
+            } else {
+                menuNode.css("width", el.width());
+            }
             //要在适当位置插入 !!!
-            menuNode.appendTo(document.body);
+            menuNode.insertAfter(el);
 
 
             menu.on("show", function() {

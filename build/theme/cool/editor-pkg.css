@@ -572,7 +572,7 @@ textarea,iframe包装
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0 transparent;   
+    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;   
     border: 1px solid #B5B8C8;
     height: 22px;
     line-height: 22px;
@@ -815,7 +815,7 @@ select style for kissy editor
     margin: 0 2px;
     cursor: pointer;
     line-height: 1.5;
-    vertical-align:middle;
+    vertical-align: middle;
 }
 
 .ke-select {
@@ -867,18 +867,38 @@ select style for kissy editor
 
 .ke-select-text {
     padding-left: 4px;
+    height: 20px;
+    line-height: 20px;
+    position: relative;
+}
+
+.ie8 .ke-combox .ke-select-text {
+    top: -1px;
+}
+
+.ie7 .ke-combox .ke-select-text {
+    top: -3px;
+}
+
+.ie6 .ke-combox .ke-select-text {
+    top: -2px;
 }
 
 .ke-select-drop-wrap {
     padding-right: 4px;
 }
 
+.ie6 .ke-combox .ke-select-drop-wrap {
+    padding-bottom: 1px;
+    vertical-align: middle;
+}
+
 .ke-combox .ke-select-drop-wrap {
     padding-left: 6px;
     padding-right: 6px;
     border-left: 1px solid rgb(193, 200, 209);
-    padding-bottom: 1px;
     background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+    height: 20px;
 }
 
 .ke-combox .ke-select-text {

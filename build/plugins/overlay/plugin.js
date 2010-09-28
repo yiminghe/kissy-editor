@@ -189,9 +189,8 @@ KISSY.Editor.add("overlay", function() {
                     id = S.guid("ke-overlay-head-");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
-                self._close = el.one(".ke-close");
                 self._title = head.one("h1");
-                self._close.on("click", function(ev) {
+                el.one(".ke-hd-x").on("click", function(ev) {
                     ev.preventDefault();
                     self.hide();
                 });
