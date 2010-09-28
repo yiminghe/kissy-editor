@@ -10,7 +10,7 @@ KISSY.Editor.add("draft", function(editor) {
                 LIMIT = 5,
                 INTERVAL = 5,
                 JSON = S.JSON,
-                MIDDLE = " vertical-align:middle;",
+
                 DRAFT_SAVE = "ke-draft-save",
                 localStorage = window[KE.STORE];
 
@@ -66,14 +66,13 @@ KISSY.Editor.add("draft", function(editor) {
                         = cfg.draft.limit || LIMIT;
                     var holder = new Node(
                         "<div class='ke-draft'>" +
-                            "<span style='" + MIDDLE + "'>" +
+                            "<spa class='ke-draft-title'>" +
                             "内容正文每" +
                             cfg.draft.interval
                             + "分钟自动保存一次。" +
                             "</span>" +
                             "</div>").appendTo(statusbar);
-                    self.timeTip = new Node("<span style='" + MIDDLE + "" +
-                        "margin:0 10px;" +
+                    self.timeTip = new Node("<span class='ke-draft-time'" +
                         "'>").appendTo(holder);
 
                     var save = new KE.TripleButton({

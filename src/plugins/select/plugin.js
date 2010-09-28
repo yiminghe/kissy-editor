@@ -11,8 +11,11 @@ KISSY.Editor.add("select", function() {
         TITLE = "title",
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
-        markup = "<span class='ke-select-wrap'><a onclick='return false;' class='ke-select'><span class='ke-select-text'></span>" +
-            "<span class='ke-select-drop'></span></a></span>",
+        markup = "<span class='ke-select-wrap'>" +
+            "<a onclick='return false;' class='ke-select'>" +
+            "<span class='ke-select-text'></span>" +
+            "<span class='ke-select-drop-wrap'><span class='ke-select-drop'></span></span>" +
+            "</a></span>",
         menu_markup = "<div class='ke-menu' onmousedown='return false;'></div>";
 
     if (KE.Select) return;
@@ -30,6 +33,7 @@ KISSY.Editor.add("select", function() {
 
 
     Select.ATTRS = {
+        cls:{},
         container:{},
         doc:{},
         value:{},
@@ -46,6 +50,7 @@ KISSY.Editor.add("select", function() {
                 container = self.get("container"),
                 el = new Node(markup),
                 title = self.get(TITLE),
+                cls = self.get("cls"),
                 text = el.one(".ke-select-text"),
                 drop = el.one(".ke-select-drop");
             text.html(title);
@@ -53,6 +58,9 @@ KISSY.Editor.add("select", function() {
             //ie6,7 不失去焦点
             el._4e_unselectable();
             el.attr(TITLE, title);
+            if (cls) {
+                el.addClass(cls);
+            }
             el.appendTo(container);
             el.on("click", self._click, self);
             self.el = el;

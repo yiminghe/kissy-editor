@@ -2,28 +2,32 @@
 select style for kissy editor
 @author:yiminghe@gmail.com        
 **/
-.ke-select-wrap {
+.ke-select-text,
+.ke-select-drop-wrap,
+.ke-select-drop,
+.ke-select-wrap,
+.ke-select {
     display: inline-block;
     zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
+    *display: inline;
+}
+
+.ke-select-wrap {
     margin: 0 2px;
     cursor: pointer;
+    line-height: 1.5;
+    vertical-align:middle;
 }
 
 .ke-select {
     border: 1px solid rgb(193, 200, 209);
-    height: 16px;
+    height: 20px;
     margin: 2px 0;
-    padding: 2px 4px;
     color: #000;
-    display: inline-block;
-    zoom: 1;
-    *display: inline;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
     text-decoration: none;
-    vertical-align: middle;
     white-space: nowrap;
     color: black;
 }
@@ -37,21 +41,11 @@ select style for kissy editor
     color: #000;
 }
 
-.ke-select-text {
-    display: inline-block;
-    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
-/*vertical-align: middle; chrome 不居中*/
-}
-
 .ke-select-drop {
-    display: inline-block;
-    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
-    *display: inline; /*vertical-align: baseline;*/
     background: url("toolbar-sprite.png") no-repeat scroll -8px 50% transparent;
-    vertical-align: middle;
     width: 7px;
     height: 16px;
+    vertical-align: text-top;
 }
 
 .ke-select-active {
@@ -70,4 +64,24 @@ select style for kissy editor
     padding-left: 12px;
     padding-right: 20px;
     zoom: 1;
+}
+
+.ke-select-text {
+    padding-left: 4px;
+}
+
+.ke-select-drop-wrap {
+    padding-right: 4px;
+}
+
+.ke-combox .ke-select-drop-wrap {
+    padding-left: 6px;
+    padding-right: 6px;
+    border-left: 1px solid rgb(193, 200, 209);
+    padding-bottom: 1px;
+    background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+}
+
+.ke-combox .ke-select-text {
+    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;
 }
