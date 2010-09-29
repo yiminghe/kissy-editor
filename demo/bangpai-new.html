@@ -179,23 +179,18 @@ box-shadow:2px 2px 0.5em #888888;
 <script src="http://github.com/kissyteam/kissy/raw/master/build/json/json-pkg-min.js"></script>
 
 <script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
+<script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
+<script src="../build/editor-all-pkg.js?t=20100827a"></script>
+<script src="../build/biz/bangpai/editor-plugin-pkg.js"></script>
 <script>
-    //document.domain="taobao.com";
     // just for test
     var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
     KISSY.Config.base = base;
-    KISSY.Config.debug = "dev";
-</script>
-<script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
-<script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
-<script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
-<script>
-
     KISSY.use('editor', function(S) {
 
-        var KE = KISSY.Editor;
+        var KE = S.Editor;
 
-        KE.Config.base = base + "src/";
+        KE.Config.base = base + "build/";
 
         window.editor = KE("#editor", {
 
@@ -333,11 +328,15 @@ box-shadow:2px 2px 0.5em #888888;
             var self = this,
                     htmlDataProcessor = self.htmlDataProcessor,
                     dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
+
             if (dataFilter) {
                 dataFilter.addRules({
                     elements : {
                         img:function(el) {
-                            if (!el.attributes.class || el.attributes.class.indexOf("ke_") == -1)
+                            if (!el.attributes ||
+                                    !el.attributes['class']
+                                    ||
+                                    el.attributes['class'].indexOf("ke_") == -1)
                                 return false;
                             return el;
                         }
@@ -353,6 +352,7 @@ box-shadow:2px 2px 0.5em #888888;
                 });
             }
         });
+
 
     });
 
