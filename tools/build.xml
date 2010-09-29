@@ -27,6 +27,11 @@ build file for kissy editor
     <property name="git.wait" value="10"/>
     <property name="git.url" value="http://www.github.com"/>
 
+    <fileset dir="${build.dir}/${theme.dir}"
+             includes="cool/editor-pkg-min.css"
+             id="cssembed_files">
+    </fileset>
+
     <filelist dir="${src.dir}/core"
               id="core_js"
               files="../editor.js,utils.js,focusmanager.js,definition.js,
@@ -65,7 +70,7 @@ build file for kissy editor
     -->
     <target
             name="git"
-            depends="native2ascii">
+            depends="cssembed">
 
         <input addproperty="git.commit.message">
             git commit message :
@@ -200,6 +205,88 @@ build file for kissy editor
             <fileset dir="${build.dir}"
                      includes="**/*.js"/>
         </replaceregexp>
+
+    </target>
+
+    <!--
+    embed css for icon
+    -->
+    <target name="cssembed" depends="native2ascii">
+
+        <apply executable="java"
+               verbose="true"
+               dest="${build.dir}/${theme.dir}"
+               failonerror="true"
+               parallel="false"
+                >
+            <fileset refid="cssembed_files"/>
+            <arg line="-jar"/>
+            <arg path="cssembed-0.3.3.jar"/>
+            <arg line="--charset ${charset}"/>
+            <srcfile/>
+            <arg line="-o"/>
+            <targetfile/>
+            <arg line="-v"/>
+            <mapper type="regexp" from="^(.*)\.css$" to="\1-datauri.css"/>
+        </apply>
+        <apply executable="java"
+               verbose="true"
+               dest="${build.dir}/${theme.dir}"
+               failonerror="true"
+               parallel="false"
+                >
+            <fileset refid="cssembed_files"/>
+            <arg line="-jar"/>
+            <arg path="cssembed-0.3.3.jar"/>
+            <arg line="--charset ${charset}"/>
+            <srcfile/>
+            <arg line="--mhtml"/>
+            <arg line="--mhtmlroot"/>
+            <arg line="MHTMLROOT"/>
+            <arg line="-o"/>
+            <targetfile/>
+            <arg line="-v"/>
+            <mapper type="regexp" from="^(.*)\.css$" to="\1-mhtml.css"/>
+        </apply>
+
+
+        <ac:for param="embedFile">
+            <fileset refid="cssembed_files"/>
+            <sequential>
+                <ac:var name="var.embed.dirname" unset="true"/>
+                <dirname property="var.embed.dirname" file="@{embedFile}"/>
+                <ac:var name="var.embed.basename" unset="true"/>
+                <basename property="var.embed.basename" file="${var.embed.dirname}"/>
+
+                <echo>
+                    build ${var.embed.basename} for @{embedFile}
+                </echo>
+                <replaceregexp match="background-image:[^!;]+!([^)]+)\)"
+                               replace="background-image:\
+                       expression(function(el){\
+                       if(window.KISSY&amp;&amp;\
+                       window.KISSY.Editor\
+                       &amp;&amp;\
+                       window.KISSY.Editor.Config\
+                       &amp;&amp;\
+                       window.KISSY.Editor.Config.base)\
+                       el.style.backgroundImage=\
+                       'url(mhtml:'+window.KISSY.Editor.Config.base+\
+                       'theme/${var.embed.basename}/editor-pkg-min-mhtml.css!\1)';}(this))"
+                               flags="g"
+                               byline="false"
+                               encoding="${charset}">
+                    <fileset dir="${build.dir}/${theme.dir}/${var.embed.basename}"
+                             includes="**/*-mhtml.css"/>
+                </replaceregexp>
+            </sequential>
+        </ac:for>
+
+        <fixcrlf includes="**/*-mhtml.css"
+                 srcdir="${build.dir}/${theme.dir}"
+                 encoding="${charset}"
+                 eol="crlf">
+        </fixcrlf>
 
     </target>
 
