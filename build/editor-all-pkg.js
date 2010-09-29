@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-29 11:29:02
+ * @buildtime: 2010-09-29 13:54:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7903,15 +7903,21 @@ KISSY.Editor.add("draft", function(editor) {
 
                     var save = new KE.TripleButton({
                         text:"立即保存",
+                        cls:"ke-draft-mansave",
                         title:"立即保存",
                         container: holder
                     }),versions = new KE.Select({
                         container: holder,
                         menuContainer:document.body,
                         doc:editor.document,
-                        width:"100px",
+                        width:"85px",
                         popUpWidth:"220px",
                         title:"恢复编辑历史"
+                    }),help = new KE.TripleButton({
+                        cls:"ke-draft-help",
+                        title:"帮助",
+                        text:"帮助",
+                        container: holder
                     }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
@@ -12050,6 +12056,7 @@ KISSY.Editor.add("image", function(editor) {
         S = KISSY,
         DOM = S.DOM,
         UA = S.UA,
+        JSON = S.JSON,
         Node = S.Node,
         Event = S.Event,
         TYPE_IMG = 'image',
@@ -15461,6 +15468,26 @@ KISSY.Editor.add("smiley", function(editor) {
         TripleButton = KE.TripleButton;
     if (!KE.Smiley) {
         (function() {
+
+            DOM.addStyleSheet('.ke-smiley-sprite {'
+                + ' background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;'
+                + ' height: 235px;'
+                + ' width: 288px;'
+                + ' margin: 5px;'
+                + 'zoom: 1;'
+                + ' overflow: hidden;'
+                + '}'
+                + '.ke-smiley-sprite a {'
+                + '   width: 24px;'
+                + 'height: 24px;'
+                + ' border: 1px solid white;'
+                + ' float: left;'
+                + '}'
+                + '.ke-smiley-sprite a:hover {'
+                + ' border: 1px solid #808080;'
+                + '}'
+                , "smiley");
+
             var
                 smiley_markup = "<div class='ke-popup-wrap'>" +
                     "<div class='ke-smiley-sprite'>";

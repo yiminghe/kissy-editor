@@ -26,7 +26,7 @@ link
 
 .ke-triplebutton-on {
     border: 1px solid rgb(206, 213, 224);
-    background: rgb(252, 252, 252);
+    background-color: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-disabled {
@@ -51,7 +51,7 @@ hover
 
 .ke-triplebutton-off:hover {
     border: 1px solid rgb(206, 213, 224);
-    background: rgb(252, 252, 252);
+    background-color: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-on:hover {

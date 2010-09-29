@@ -41,7 +41,7 @@ select style for kissy editor
 }
 
 .ke-select-drop {
-    background: url("toolbar-sprite.png") no-repeat scroll -8px 50% transparent;
+    background: url("arrow.png") no-repeat scroll center center transparent;
     width: 7px;
     height: 16px;
     vertical-align: text-top;

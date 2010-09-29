@@ -77,15 +77,21 @@ KISSY.Editor.add("draft", function(editor) {
 
                     var save = new KE.TripleButton({
                         text:"立即保存",
+                        cls:"ke-draft-mansave",
                         title:"立即保存",
                         container: holder
                     }),versions = new KE.Select({
                         container: holder,
                         menuContainer:document.body,
                         doc:editor.document,
-                        width:"100px",
+                        width:"85px",
                         popUpWidth:"220px",
                         title:"恢复编辑历史"
+                    }),help = new KE.TripleButton({
+                        cls:"ke-draft-help",
+                        title:"帮助",
+                        text:"帮助",
+                        container: holder
                     }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;

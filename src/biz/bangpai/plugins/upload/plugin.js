@@ -11,6 +11,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
         }
 
         var DOM = S.DOM,
+            JSON = S.JSON,
             PIC_NUM_LIMIT = 15,
             PIC_NUM_LIMIT_WARNING = "系统将只保留15张",
             PIC_SIZE_LIMIT = 1000,

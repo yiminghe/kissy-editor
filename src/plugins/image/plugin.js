@@ -7,6 +7,7 @@ KISSY.Editor.add("image", function(editor) {
         S = KISSY,
         DOM = S.DOM,
         UA = S.UA,
+        JSON = S.JSON,
         Node = S.Node,
         Event = S.Event,
         TYPE_IMG = 'image',

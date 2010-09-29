@@ -12,6 +12,26 @@ KISSY.Editor.add("smiley", function(editor) {
         TripleButton = KE.TripleButton;
     if (!KE.Smiley) {
         (function() {
+
+            DOM.addStyleSheet('.ke-smiley-sprite {'
+                + ' background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;'
+                + ' height: 235px;'
+                + ' width: 288px;'
+                + ' margin: 5px;'
+                + 'zoom: 1;'
+                + ' overflow: hidden;'
+                + '}'
+                + '.ke-smiley-sprite a {'
+                + '   width: 24px;'
+                + 'height: 24px;'
+                + ' border: 1px solid white;'
+                + ' float: left;'
+                + '}'
+                + '.ke-smiley-sprite a:hover {'
+                + ' border: 1px solid #808080;'
+                + '}'
+                , "smiley");
+
             var
                 smiley_markup = "<div class='ke-popup-wrap'>" +
                     "<div class='ke-smiley-sprite'>";

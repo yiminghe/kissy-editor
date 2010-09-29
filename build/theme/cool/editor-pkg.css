@@ -255,7 +255,7 @@ link
 
 .ke-triplebutton-on {
     border: 1px solid rgb(206, 213, 224);
-    background: rgb(252, 252, 252);
+    background-color: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-disabled {
@@ -280,7 +280,7 @@ hover
 
 .ke-triplebutton-off:hover {
     border: 1px solid rgb(206, 213, 224);
-    background: rgb(252, 252, 252);
+    background-color: rgb(252, 252, 252);
 }
 
 .ke-triplebutton-on:hover {
@@ -354,7 +354,7 @@ a.ke-color-a span {
     right: 15px;
     height: 22px;
     bottom: 4px;
-    width: 600px;
+    width: 650px;
     _bottom: 0;
     text-align: right;
 }
@@ -364,9 +364,9 @@ a.ke-color-a span {
     text-align: left;
 }
 
-.ke-draft .ke-triplebutton {
-    background-color: #ffffff;
-    padding: 2px 5px;
+.ke-draft-mansave {
+    background: url("icon_save.png") no-repeat scroll 5px 3px #FFFFFF;
+    padding: 2px 5px 2px 25px;
     border: 1px solid #C1C8D1;
 }
 
@@ -376,6 +376,15 @@ a.ke-color-a span {
 
 .ke-draft-time {
     margin: 0 10px;
+}
+
+.ke-draft-help {
+    background: url("icon_help.png") no-repeat scroll center center transparent;
+    width: 14px;
+    overflow:hidden;
+    height: 14px;
+    text-indent: 9999px;
+    outline: none;
 }/**
 kissy editor cool theme
 @author :yiminghe@gmail.com
@@ -432,7 +441,7 @@ textarea,iframe包装
 工具按钮 
 */
 .ke-toolbar-item {
-    background: url("toolbar-sprite.png") no-repeat scroll 0 0 transparent;
+    background: no-repeat scroll center center transparent;
     display: block;
     height: 16px;
     overflow: hidden;
@@ -457,122 +466,124 @@ textarea,iframe包装
 }
 
 .ke-toolbar-source {
-    background-position: -22px 50%;
+    background-image: url("sourcearea.png");
 }
 
 .ke-toolbar-preview {
-    background-position: -43px 50%;
+    background-image: url("preview.png");
 }
 
 .ke-toolbar-bold {
-    background-position: -162px 50%;
+    background-image: url("bold.png");
 }
 
 .ke-toolbar-italic {
-    background-position: -185px 50%;
+    background-image: url("italic.png");
 }
 
 .ke-toolbar-underline {
-    background-position: -205px 50%;
+    background-image: url("underline.png");
 }
 
 .ke-toolbar-strikeThrough {
-    background-position: -221px 50%;
+    background-image: url("strike.png");
 }
 
 .ke-toolbar-ol {
-    background-position: -324px 50%;
+    background-image: url("ol.png");
 }
 
 .ke-toolbar-ul {
-    background-position: -304px 50%;
+    background-image: url("ul.png");
 }
 
 .ke-toolbar-outdent {
-    background-position: -363px 50%;
+    background-image: url("outdent.png");
 }
 
 .ke-toolbar-indent {
-    background-position: -343px 50%;
+    background-image: url("indent.png");
 }
 
 .ke-toolbar-alignleft {
-    background-position: -383px 50%;
+    background-image: url("align-left.png");
 }
 
 .ke-toolbar-aligncenter {
-    background-position: -403px 50%;
+    background-image: url("align-center.png");
 }
 
 .ke-toolbar-alignright {
-    background-position: -423px 50%;
+    background-image: url("align-right.png");
 }
 
 .ke-toolbar-image {
-    background-position: -463px 50%;
+    background-image: url("image.png");
 }
 
 .ke-toolbar-bgcolor {
-    background-position: -263px 50%;
+    background-image: url("bgcolor.png");
+    width: 24px;
 }
 
 .ke-toolbar-color {
-    background-position: -243px 50%;
+    background-image: url("color.png");
+    width: 24px;
 }
 
 .ke-toolbar-undo {
-    background-position: -122px 50%;
+    background-image: url("undo.png");
 }
 
 .ke-toolbar-redo {
-    background-position: -102px 50%;
+    background-image: url("redo.png");
 }
 
 .ke-toolbar-table {
-    background-position: -543px 50%;
+    background-image: url("table.png");
 }
 
 .ke-toolbar-template {
-    background-position: -63px 50%;
+    background-image: url("templates.png");
 }
 
 .ke-toolbar-maximize {
-    background-position: -584px 50%;
+    background-image: url("maximize.png");
 }
 
 .ke-toolbar-flash {
-    background-position: -483px 50%;
+    background-image: url("flash.png");
 }
 
 .ke-toolbar-link {
-    background-position: -443px 50%;
+    background-image: url("link.png");
 }
 
 .ke-toolbar-music {
-    background-position: -523px 50%;
+    background-image: url("music.png");
 }
 
 .ke-toolbar-video {
-    background-position: -503px 50%;
+    background-image: url("video.png");
 }
 
 .ke-toolbar-smiley {
-    background-position: -563px 50%;
+    background-image: url("smiley.png");
 }
 
 .ke-toolbar-removeformat {
-    background-position: -282px 50%;
+    background-image: url("removeformat.png");
 }
 
 .ke-toolbar-pagebreak {
-    background-position: -623px 50%;
+    background-image: url("pagebreak.png");
 }
 
 .ke-input {
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;   
+    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;
     border: 1px solid #B5B8C8;
     height: 22px;
     line-height: 22px;
@@ -840,7 +851,7 @@ select style for kissy editor
 }
 
 .ke-select-drop {
-    background: url("toolbar-sprite.png") no-repeat scroll -8px 50% transparent;
+    background: url("arrow.png") no-repeat scroll center center transparent;
     width: 7px;
     height: 16px;
     vertical-align: text-top;
@@ -904,29 +915,6 @@ select style for kissy editor
 .ke-combox .ke-select-text {
     background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;
 }/**
-taobao smiley plugin style
-@author:yiminghe@gmail.com
-**/
-.ke-smiley-sprite {
-    background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;
-    height: 235px;
-    width: 288px;
-    margin: 5px;
-    zoom: 1;
-    overflow: hidden;
-}
-
-.ke-smiley-sprite a {
-    width: 24px;
-    height: 24px;
-    border: 1px solid white;
-    float: left;
-}
-
-.ke-smiley-sprite a:hover {
-    border: 1px solid #808080;
-}
-/**
 templates plugin style
 **/
 .ke-tpl {
