@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
+
 </head>
 <body>
 
@@ -151,8 +152,20 @@
         <p>2</p>
         <p>3</p>
         <p>4</p>
-
     </textarea>
+    <h2>插入图片到编辑器1</h2>
+    <div style="border:1px solid #c1c8d1;
+background-color:#fafafa;
+
+width:700px;
+margin:0 auto;
+
+-moz-box-shadow:2px 2px 0.5em #888888;
+-webkit-box-shadow:2px 2px 0.5em #888888;
+box-shadow:2px 2px 0.5em #888888;
+" id="imgup1">
+
+    </div>
 </div>
 
 <div style="width: 60%; margin: 50px auto">
@@ -164,53 +177,103 @@
 <script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
 
 <script>
-    // just for test
-    var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1'),
-            S = KISSY;
 
-    //S.Config.debug = true;"dev";
-    S.Config.base = base;
 
-    S.add({
-        'editor': {
-            path: 'build/editor-core-pkg-min.js',
-            csspath: "build/theme/google/editor-pkg-min.css"
-        }
-    });
+    KISSY.ready(function(S) {
+        // just for test
+        var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
+        S.Config.base = base;
+        S.add({
+            editor:{
+                csspath:"/build/theme/cool/editor-pkg-min-" + (S.UA.ie < 8 ? "mhtml" : "datauri") + ".css",
+                path:"/build/editor-all-pkg-min.js"
+            },
+            "bangpai-editor":{
+                requires:["editor"],
+                path:"/build/biz/bangpai/editor-plugin-pkg-min.js"
+            }
+        });
 
-    S.use('editor', function() {
+        S.use('bangpai-editor', function() {
 
-        var KE = KISSY.Editor;
-        KE.Config.base = base+"build/";
+            var KE = S.Editor;
+            KE.Config.base = base + "build/";
 
-        KE("#editor", {
-            pluginConfig: {
-                "image":{
-                    upload:{
+            window.editor = KE("#editor", {
+
+                pluginConfig: {
+                    "image":{
+                        upload:{
+                            serverUrl:"/code/upload/upload.jsp",
+                            serverParams:{
+                            },
+                            fileInput:"Filedata"
+                        }
+                    },
+                    "templates": [
+                        {
+                            demo: "模板1效果演示html"  ,
+                            html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
+                        },
+                        {
+                            demo: "模板2效果演示html",
+                            html: "<div style='border:1px solid red'>模板2效果演示html</div>"
+                        }
+                    ],
+                    "font-size":{
+                        items:[
+                            {
+                                value:"14px",
+                                name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                            },
+                            {
+                                value:"16px",
+                                name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                            },
+
+                            {
+                                value:"20px",
+                                name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                            }
+                        ],
+                        width:"100px"
+                    }
+
+                    //,"font-family":["song"]
+                    ,"bangpai-upload":{
+                        holder:"#imgup1",
                         serverUrl:"/code/upload/upload.jsp",
                         serverParams:{
-                        },
-                        fileInput:"Filedata"
-                    }
-                },
-                "templates": [
-                    {
-                        demo: "模板1",
-                        html: "<div style='border: 1px solid #999'>边框线效果</div>"
+                        }
                     },
-                    {
-                        demo: "模板2",
-                        html: "<div style='background: #ffc'>背景色效果</div>"
+                    "bangpai-video":{
+                        urlCfg:[
+                            {
+                                reg:/tudou\.com/i,
+                                url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                        "url=@url@&callback=@callback@"//"&rand=@rand@"
+                            }
+                        ]
+                    },
+                    "draft":{
+                        interval:5,
+                        limit:10
                     }
-                ]
-            }
-        }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,undo,removeformat,font,format,forecolor,bgcolor," +
-                "list,indent,justify,link,image,flash,music," +
-                "table,smiley,maximize"
-                );
+                }
+            }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
+                    "templates,separator," +
+                    "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+                    "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+                    );
 
-        KE("#editor2").use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,undo,font");
+
+            KE("#editor2", {
+                disableObjectResizing:true,
+                disableInlineTableEditing:true
+            }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
+        })
+                ;
     });
 
 </script>

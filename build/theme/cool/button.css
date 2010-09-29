@@ -79,7 +79,8 @@ active
     -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
     box-shadow: 0px 1px 1px rgb(228, 228, 228);
     border: 1px solid rgb(193, 200, 209);
-    background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+    background: #e8ebee repeat-x left top;
+    background-image: url("ke-button-bg.png");
     padding: 3px 18px;
     _padding-bottom: 2px;
     *padding-bottom: 2px;
@@ -87,5 +88,6 @@ active
 
 .ke-button:hover {
     border-color: rgb(232, 204, 160);
-    background: #f5e7ce url("ke-button-bg-active.png") repeat-x left top;
+    background: #f5e7ce repeat-x left top;
+    background-image: url("ke-button-bg-active.png");
 }

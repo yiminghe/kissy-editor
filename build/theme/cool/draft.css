@@ -14,7 +14,8 @@
 }
 
 .ke-draft-mansave {
-    background: url("icon_save.png") no-repeat scroll 5px 3px #FFFFFF;
+    background: no-repeat scroll 5px 3px #FFFFFF;
+    background-image: url("icon_save.png");
     padding: 2px 5px 2px 25px;
     border: 1px solid #C1C8D1;
 }
@@ -28,9 +29,10 @@
 }
 
 .ke-draft-help {
-    background: url("icon_help.png") no-repeat scroll center center transparent;
+    background: no-repeat scroll center center transparent;
+    background-image: url("icon_help.png");
     width: 14px;
-    overflow:hidden;
+    overflow: hidden;
     height: 14px;
     text-indent: 9999px;
     outline: none;

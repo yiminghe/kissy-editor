@@ -305,86 +305,88 @@ xiami 音乐
 -->
 <script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
 <script>
+    KISSY.ready(function(S) {
+        S.use('editor', function() {
 
-    KISSY.use('editor', function(S) {
+            var KE = KISSY.Editor;
 
-        var KE = KISSY.Editor;
+            KE.Config.base = base + "src/";
 
-        KE.Config.base = base + "src/";
+            window.editor = KE("#editor", {
 
-        window.editor = KE("#editor", {
-
-            pluginConfig: {
-                "image":{
-                    upload:{
-                        serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{
-                        },
-                        fileInput:"Filedata"
-                    }
-                },
-                "templates": [
-                    {
-                        demo: "模板1效果演示html"  ,
-                        html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
+                pluginConfig: {
+                    "image":{
+                        upload:{
+                            serverUrl:"/code/upload/upload.jsp",
+                            serverParams:{
+                            },
+                            fileInput:"Filedata"
+                        }
                     },
-                    {
-                        demo: "模板2效果演示html",
-                        html: "<div style='border:1px solid red'>模板2效果演示html</div>"
-                    }
-                ],
-                "font-size":{
-                    items:[
+                    "templates": [
                         {
-                            value:"14px",
-                            name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                            demo: "模板1效果演示html"  ,
+                            html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
                         },
                         {
-                            value:"16px",
-                            name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
-                        },
-
-                        {
-                            value:"20px",
-                            name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                            demo: "模板2效果演示html",
+                            html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                         }
                     ],
-                    width:"100px"
-                }
-                //,"font-family":["song"]
-                ,"bangpai-upload":{
-                    holder:"#imgup1",
-                    serverUrl:"/code/upload/upload.jsp",
-                    serverParams:{
-                    }
-                },
-                "bangpai-video":{
-                    urlCfg:[
-                        {
-                            reg:/tudou\.com/i,
-                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
-                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
-                        }
-                    ]
-                },
-                "draft":{
-                    interval:5,
-                    limit:10
-                }
-            }
-        }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,separator," +
-                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                );
+                    "font-size":{
+                        items:[
+                            {
+                                value:"14px",
+                                name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                            },
+                            {
+                                value:"16px",
+                                name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                            },
 
-        KE("#editor2", {
-            disableObjectResizing:true,
-            disableInlineTableEditing:true
-        }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates,maximize");
-    })
-            ;
+                            {
+                                value:"20px",
+                                name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                            }
+                        ],
+                        width:"100px"
+                    }
+                    //,"font-family":["song"]
+                    ,"bangpai-upload":{
+                        holder:"#imgup1",
+                        serverUrl:"/code/upload/upload.jsp",
+                        serverParams:{
+                        }
+                    },
+                    "bangpai-video":{
+                        urlCfg:[
+                            {
+                                reg:/tudou\.com/i,
+                                url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                        "url=@url@&callback=@callback@"//"&rand=@rand@"
+                            }
+                        ]
+                    },
+                    "draft":{
+                        interval:5,
+                        limit:10
+                    }
+                }
+            }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
+                    "templates,separator," +
+                    "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+                    "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+                    );
+
+            KE("#editor2", {
+                disableObjectResizing:true,
+                disableInlineTableEditing:true
+            }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates,maximize");
+        })
+                ;
+    });
+
 
 </script>
 </body>

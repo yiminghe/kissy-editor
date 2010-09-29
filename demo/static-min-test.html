@@ -4,35 +4,12 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
-<link href="../build/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet" id="theme"/>
-<script src="http://github.com/kissyteam/kissy/raw/master/build/kissy-min.js"></script>
+
 </head>
 <body>
 
 <h1>KISSY Editor Demo</h1>
 
-<p>
-    <label>选择主题：
-        <select id="themes">
-            <option value="cool">
-                taobao - 清爽
-            </option>
-            <option value="google">
-                google
-            </option>
-
-        </select></label>
-    <script>
-        KISSY.ready(function(S) {
-            var theme = S.one("#theme"),themes = S.one("#themes");
-            themes.val("google");
-            themes.on("change", function() {
-                var v = themes.val();
-                theme.attr("href", "../build/theme/" + v + "/editor-pkg-min.css");
-            });
-        })
-    </script>
-</p>
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
@@ -196,96 +173,100 @@ box-shadow:2px 2px 0.5em #888888;
     <textarea id="editor2" style="width:100%;height:400px;margin:0 auto;"></textarea>
 </div>
 
-<script src="http://github.com/kissyteam/kissy/raw/master/build/json/json-pkg-min.js"></script>
+<script src="http://github.com/kissyteam/kissy/raw/master/build/kissy-min.js"></script>
 <script src="http://github.com/yiminghe/kissy-sandbox/raw/master/attribute/attribute.js"></script>
-<script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
-<script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
-
+<script src="../build/editor-all-pkg.js?t=20100827a"></script>
+<script src="../build/biz/bangpai/editor-plugin-pkg.js"></script>
 <script>
-    // just for test 
-    var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
-    KISSY.Config.base = base;
 
-    KISSY.use('editor', function() {
 
-        var KE = KISSY.Editor;
-        KE.Config.base = base + "build/";
+    KISSY.ready(function(S) {
+        // just for test
+        var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
+        S.Config.base = base;
+        S.getScript(base + "/build/theme/cool/editor-pkg-min-" + (S.UA.ie < 8 ? "mhtml" : "datauri") + ".css");
 
-        window.editor = KE("#editor", {
+        S.use('editor', function() {
 
-            pluginConfig: {
-                "image":{
-                    upload:{
-                        serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{
-                        },
-                        fileInput:"Filedata"
-                    }
-                },
-                "templates": [
-                    {
-                        demo: "模板1效果演示html"  ,
-                        html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
+            var KE = S.Editor;
+            KE.Config.base = base + "build/";
+
+            window.editor = KE("#editor", {
+
+                pluginConfig: {
+                    "image":{
+                        upload:{
+                            serverUrl:"/code/upload/upload.jsp",
+                            serverParams:{
+                            },
+                            fileInput:"Filedata"
+                        }
                     },
-                    {
-                        demo: "模板2效果演示html",
-                        html: "<div style='border:1px solid red'>模板2效果演示html</div>"
-                    }
-                ],
-                "font-size":{
-                    items:[
+                    "templates": [
                         {
-                            value:"14px",
-                            name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                            demo: "模板1效果演示html"  ,
+                            html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
                         },
                         {
-                            value:"16px",
-                            name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
-                        },
-
-                        {
-                            value:"20px",
-                            name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                            demo: "模板2效果演示html",
+                            html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                         }
                     ],
-                    width:"100px"
-                }
+                    "font-size":{
+                        items:[
+                            {
+                                value:"14px",
+                                name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                            },
+                            {
+                                value:"16px",
+                                name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                            },
 
-                //,"font-family":["song"]
-                ,"bangpai-upload":{
-                    holder:"#imgup1",
-                    serverUrl:"/code/upload/upload.jsp",
-                    serverParams:{
+                            {
+                                value:"20px",
+                                name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                            }
+                        ],
+                        width:"100px"
                     }
-                },
-                "bangpai-video":{
-                    urlCfg:[
-                        {
-                            reg:/tudou\.com/i,
-                            url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
-                                    "url=@url@&callback=@callback@"//"&rand=@rand@"
+
+                    //,"font-family":["song"]
+                    ,"bangpai-upload":{
+                        holder:"#imgup1",
+                        serverUrl:"/code/upload/upload.jsp",
+                        serverParams:{
                         }
-                    ]
-                },
-                "draft":{
-                    interval:5,
-                    limit:10
+                    },
+                    "bangpai-video":{
+                        urlCfg:[
+                            {
+                                reg:/tudou\.com/i,
+                                url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                        "url=@url@&callback=@callback@"//"&rand=@rand@"
+                            }
+                        ]
+                    },
+                    "draft":{
+                        interval:5,
+                        limit:10
+                    }
                 }
-            }
-        }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,separator," +
-                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                );
+            }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
+                    "templates,separator," +
+                    "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+                    "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+                    );
 
 
-        KE("#editor2", {
-            disableObjectResizing:true,
-            disableInlineTableEditing:true
-        }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
-    })
-            ;
+            KE("#editor2", {
+                disableObjectResizing:true,
+                disableInlineTableEditing:true
+            }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
+        })
+                ;
+    });
 
 </script>
 </body>

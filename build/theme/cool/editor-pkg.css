@@ -308,7 +308,8 @@ active
     -webkit-box-shadow: 0px 1px 1px rgb(228, 228, 228);
     box-shadow: 0px 1px 1px rgb(228, 228, 228);
     border: 1px solid rgb(193, 200, 209);
-    background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+    background: #e8ebee repeat-x left top;
+    background-image: url("ke-button-bg.png");
     padding: 3px 18px;
     _padding-bottom: 2px;
     *padding-bottom: 2px;
@@ -316,7 +317,8 @@ active
 
 .ke-button:hover {
     border-color: rgb(232, 204, 160);
-    background: #f5e7ce url("ke-button-bg-active.png") repeat-x left top;
+    background: #f5e7ce repeat-x left top;
+    background-image: url("ke-button-bg-active.png");
 }/**
 color plugin style for kissy editor
 @author:yiminghe@gmail.com
@@ -365,7 +367,8 @@ a.ke-color-a span {
 }
 
 .ke-draft-mansave {
-    background: url("icon_save.png") no-repeat scroll 5px 3px #FFFFFF;
+    background: no-repeat scroll 5px 3px #FFFFFF;
+    background-image: url("icon_save.png");
     padding: 2px 5px 2px 25px;
     border: 1px solid #C1C8D1;
 }
@@ -379,9 +382,10 @@ a.ke-color-a span {
 }
 
 .ke-draft-help {
-    background: url("icon_help.png") no-repeat scroll center center transparent;
+    background: no-repeat scroll center center transparent;
+    background-image: url("icon_help.png");
     width: 14px;
-    overflow:hidden;
+    overflow: hidden;
     height: 14px;
     text-indent: 9999px;
     outline: none;
@@ -583,7 +587,8 @@ textarea,iframe包装
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;
+    background: #FFFFFF repeat-x scroll 0 0;
+    background-image: url("text-bg.gif");
     border: 1px solid #B5B8C8;
     height: 22px;
     line-height: 22px;
@@ -670,7 +675,8 @@ menu style for kissy editor ,include contextmenu and select menu
     top: -9999px;
     border: 1px solid #3A5774;
     padding: 4px;
-    background: #000000 url('loading_mask.gif') center center no-repeat;
+    background: #000000 center center no-repeat;
+    background-image: url('loading_mask.gif');
 }
 
 .ke-dialog {
@@ -706,7 +712,8 @@ menu style for kissy editor ,include contextmenu and select menu
 
 .ke-hd-x .ke-close {
     display: block;
-    background: url("close.png") no-repeat;
+    background: no-repeat;
+    background-image: url("close.png");
     height: 13px;
     text-indent: -9999px;
     width: 13px;
@@ -800,7 +807,8 @@ a.ke-hd-x:active {
     @author:yiminghe@gmail.com
 **/
 .ke-resizer {
-    background: url("resizer.png") no-repeat right bottom;
+    background: no-repeat right bottom;
+    background-image: url("resizer.png");
     height: 20px;
     width: 10px;
     position: absolute;
@@ -851,7 +859,8 @@ select style for kissy editor
 }
 
 .ke-select-drop {
-    background: url("arrow.png") no-repeat scroll center center transparent;
+    background: no-repeat scroll center center transparent;
+    background-image: url("arrow.png");
     width: 7px;
     height: 16px;
     vertical-align: text-top;
@@ -908,12 +917,14 @@ select style for kissy editor
     padding-left: 6px;
     padding-right: 6px;
     border-left: 1px solid rgb(193, 200, 209);
-    background: #e8ebee url("ke-button-bg.png") repeat-x left top;
+    background: #e8ebee repeat-x left top;
+    background-image: url("ke-button-bg.png");
     height: 20px;
 }
 
 .ke-combox .ke-select-text {
-    background: #FFFFFF url("text-bg.gif") repeat-x scroll 0 0;
+    background: #FFFFFF repeat-x scroll 0 0;
+    background-image: url("text-bg.gif");
 }/**
 templates plugin style
 **/
@@ -929,7 +940,7 @@ templates plugin style
     padding: 7px;
     display: block;
     text-decoration: none;
-    zoom:1;
+    zoom: 1;
 }
 
 .ke-tpl-list:hover, .ke-tpl-selected {

@@ -16,7 +16,8 @@
     top: -9999px;
     border: 1px solid #3A5774;
     padding: 4px;
-    background: #000000 url('loading_mask.gif') center center no-repeat;
+    background: #000000 center center no-repeat;
+    background-image: url('loading_mask.gif');
 }
 
 .ke-dialog {
@@ -52,7 +53,8 @@
 
 .ke-hd-x .ke-close {
     display: block;
-    background: url("close.png") no-repeat;
+    background: no-repeat;
+    background-image: url("close.png");
     height: 13px;
     text-indent: -9999px;
     width: 13px;
