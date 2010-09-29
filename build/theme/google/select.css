@@ -63,6 +63,7 @@ select style for kissy editor
     cursor: default;
     opacity: 0.3;
     filter: alpha(opacity = 30);
+    color: gray;
 }
 
 .ke-menu .ke-select-menu-item {
