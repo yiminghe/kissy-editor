@@ -305,8 +305,9 @@ KISSY.Editor.add("image", function(editor) {
                         uploader.on("fileSelect", function(ev) {
                             var fileList = ev.fileList;
                             for (var f in fileList) {
-                                var file = fileList[f];
-                                if (file.size > sizeLimit) {
+                                var file = fileList[f],
+                                    size = Math.floor(file.size / 1000);
+                                if (size > sizeLimit) {
                                     alert("最大上传大小上限：" + (sizeLimit) + "KB");
                                     uploader.clearFileList();
                                     return;
@@ -341,19 +342,14 @@ KISSY.Editor.add("image", function(editor) {
                     }
 
                 },
-                _updateTip
-                    :
-                    function(tipurl, a) {
-                        tipurl.html(a.attr("src"));
-                        tipurl.attr("href", a.attr("src"));
-                    }
-
-                ,
+                _updateTip:function(tipurl, a) {
+                    tipurl.html(a.attr("src"));
+                    tipurl.attr("href", a.attr("src"));
+                },
 
                 _real:function() {
                     this.d.show();
-                }
-                ,
+                },
                 _insert:function() {
                     var self = this,
                         url = self.imgUrl.val(),re;
