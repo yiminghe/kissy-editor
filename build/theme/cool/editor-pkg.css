@@ -382,7 +382,7 @@ a.ke-color-a span {
 }
 
 .ke-draft-help {
-    background: no-repeat scroll center center transparent;
+    background: no-repeat fixed center center transparent;
     background-image: url("icon_help.png");
     width: 14px;
     overflow: hidden;
