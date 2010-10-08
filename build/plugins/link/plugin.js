@@ -38,23 +38,23 @@ KISSY.Editor.add("link", function(editor) {
                     'class="ke-bubbleview-link ke-bubbleview-remove">' +
                     '去除' +
                     '</span>',
-                bodyHtml = "<div>" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
                     "<span " +
-                    "style='color:#0066CC;font-weight:bold;'>" +
-                    "网址： " +
+                    ">" +
+                    "链接网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-link-url' " +
-                    "style='width:220px' " +
+                    "class='ke-link-url ke-input' " +
+                    "style='width:230px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
-                    "style='margin-top: 5px;padding-left:45px'>" +
+                    "style='margin: 15px 0 10px 70px;'>" +
                     "<label>" +
                     "<input " +
                     "class='ke-link-blank' " +
@@ -64,8 +64,9 @@ KISSY.Editor.add("link", function(editor) {
                     "</p>" +
 
                     "</div>",
-                footHtml = "<button class='ke-link-ok'>确定</button> " +
-                    "<button class='ke-link-cancel'>取消</button>";
+                footHtml = "<button class='ke-link-ok ke-button' " +
+                    "style='margin-left:65px;margin-right:20px;'>确定</button> " +
+                    "<button class='ke-link-cancel ke-button'>取消</button>";
 
 
             function Link(editor) {
@@ -82,7 +83,7 @@ KISSY.Editor.add("link", function(editor) {
                     d = new Overlay({
                         title:"链接属性",
                         mask:true,
-                        width:"300px"
+                        width:"350px"
                     });
                 self.dialog = d;
                 d.body.html(bodyHtml);

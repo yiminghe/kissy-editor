@@ -24,30 +24,29 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
         (function() {
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<table>" +
-                    "<tr>" +
-                    "<td colspan='2'>" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
+                    "<p>" +
                     "<label>网址： " +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url' style='width:280px' value='"
-                    + TIP
-                    + "'/></label>" +
-                    "</td></tr>" +
+                    "class='ke-flash-url ke-input' style='width:310px' />" +
+                    "</label>" +
+                    "</p>" +
+                    "<table style='margin:10px 0 5px  40px;width:100%;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +
                     "<input " +
                     " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='宽度请输入正数' " +
-                    "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "class='ke-flash-width ke-input' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
                     " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='高度请输入正数' " +
-                    "class='ke-flash-height' " +
+                    "class='ke-flash-height ke-input' " +
                     "style='width:60px' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
@@ -64,14 +63,16 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' "
-                    + "class='ke-flash-margin' style='width:60px' value='"
+                    + "class='ke-flash-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +
-                    "</table>",
+                    "</table>" +
+                    "</div>",
 
-                footHtml = "<button class='ke-flash-ok'>确定</button> " +
-                    "<button class='ke-flash-cancel'>取消</button>";
+                footHtml = "<button class='ke-flash-ok ke-button' " +
+                    "style='margin-left:40px;margin-right:20px;'>确定</button> " +
+                    "<a style='cursor:pointer'  class='ke-flash-cancel'>取消</a>";
 
             /**
              * 所有基于 flash 的插件基类，使用 template 模式抽象
@@ -109,6 +110,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_FLASH];
+                    self._config_dwidth = "400px";
+                    self._urlTip = TIP;
                 },
                 _init:function() {
                     this._config();
@@ -184,7 +187,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
-                    if(!r) return;
+                    if (!r) return;
                     var url = self._getFlashUrl(r);
                     tipurl.html(url);
                     tipurl.attr("href", url);
@@ -228,7 +231,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
-                        if(!r) return;
+                        if (!r) return;
                         if (r.attr("width")) {
                             self.dWidth.val(parseInt(r.attr("width")));
                         }
@@ -239,7 +242,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
-                        self.dUrl.val(TIP);
+                        KE.Utils.resetInput(self.dUrl);
                         self.dWidth.val("");
                         self.dHeight.val("");
                         self.dAlign.val("");
@@ -258,18 +261,22 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * @override
                  */
                 _initD:function() {
-                    var self = this,editor = self.editor,d = self.d;
-                    self.dHeight = d.el.one(".ke-flash-height");
-                    self.dWidth = d.el.one(".ke-flash-width");
-                    self.dUrl = d.el.one(".ke-flash-url");
-                    self.dAlign = d.el.one(".ke-flash-align");
-                    self.dMargin = d.el.one(".ke-flash-margin");
-                    var action = d.el.one(".ke-flash-ok"),
-                        cancel = d.el.one(".ke-flash-cancel");
+                    var self = this,
+                        editor = self.editor,
+                        d = self.d,
+                        el = d.el;
+                    self.dHeight = el.one(".ke-flash-height");
+                    self.dWidth = el.one(".ke-flash-width");
+                    self.dUrl = el.one(".ke-flash-url");
+                    self.dAlign = KE.Select.decorate(el.one(".ke-flash-align"));
+                    self.dMargin = el.one(".ke-flash-margin");
+                    var action = el.one(".ke-flash-ok"),
+                        cancel = el.one(".ke-flash-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
-                        self.d.hide();
+                        d.hide();
                     });
+                    KE.Utils.placeholder(self.dUrl, self._urlTip);
                 },
 
                 /**

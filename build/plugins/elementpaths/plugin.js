@@ -7,6 +7,15 @@ KISSY.Editor.add("elementpaths", function(editor) {
     if (!KE.ElementPaths) {
 
         (function() {
+
+            DOM.addStyleSheet(".elementpath {" +
+                "   padding: 0 5px;" +
+                "    text-decoration: none;" +
+                "}" +
+                ".elementpath:hover {" +
+                "    background: #CCFFFF;" +
+                "    text-decoration: none;" +
+                "}", "ke-ElementPaths");
             function ElementPaths(cfg) {
                 this.cfg = cfg;
                 this._cache = [];

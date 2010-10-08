@@ -37,6 +37,9 @@ KISSY.Editor.add("select", function() {
 
 
     Select.ATTRS = {
+        //title标题栏显示值value还是name
+        //默认false，显示name
+        showValue:{},
         el:{},
         cls:{},
         container:{},
@@ -118,9 +121,14 @@ KISSY.Editor.add("select", function() {
             self.on("afterStateChange", self._stateChange, self);
         },
         _findNameByV:function(v) {
+
             var self = this,
                 name = self.get(TITLE) || "",
                 items = self.get("items");
+            //显示值，防止下拉描述过多
+            if (self.get("showValue")) {
+                return v || name;
+            }
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 if (item.value == v) {

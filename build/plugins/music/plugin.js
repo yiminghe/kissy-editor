@@ -68,40 +68,37 @@ KISSY.Editor.add("music", function(editor) {
     if (!KE.MusicInserter) {
         (function() {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
-                bodyHtml = "" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
-                    "<span style='color:#0066CC;font-weight:bold;'>网址： " +
+                    "<span>网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url' style='width:230px' " +
-                    "value='"
-                    + TIP
-                    + "'/>" +
+                    "class='ke-music-url ke-input' style='width:310px'  />" +
                     "</label>" +
                     "</p>" +
-                    "<p style='margin:5px 0'>" +
-                    "<label>对" +
-                    KE.Utils.duplicateStr("&nbsp;", 8) + "齐： " +
+                    "<p style='margin: 10px 0 10px 40px;'>" +
+                    "<label>对齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 1) +
+                    KE.Utils.duplicateStr("&nbsp;", 10) +
                     "<label>间距： " +
                     "</span> <input " +
                     " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' " +
-                    "class='ke-music-margin' style='width:60px' value='"
+                    "class='ke-music-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
-                    "<p>",
-                footHtml = "<button class='ke-music-ok'>确定</button> " +
-                    "<button class='ke-music-cancel'>取消</button>",
+                    "<p>" +
+                    "</div>",
+                footHtml = "<button class='ke-music-ok ke-button' " +
+                    "style='margin:0 20px 0 40px;'>确定</button> " +
+                    "<a style='cursor:pointer;' class='ke-music-cancel'>取消</a>",
                 music_reg = /#\(music\)/g,
                 flashRules = ["img." + CLS_MUSIC];
 
@@ -136,20 +133,24 @@ KISSY.Editor.add("music", function(editor) {
                     self._tip = "插入音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
+                    self._config_dwidth = "400px";
+                    self._urlTip = TIP;
                 },
                 _initD:function() {
                     var self = this,
                         editor = self.editor,
-                        d = self.d;
-                    self.dUrl = d.el.one(".ke-music-url");
-                    self.dAlign = d.el.one(".ke-music-align");
-                    self.dMargin = d.el.one(".ke-music-margin");
-                    var action = d.el.one(".ke-music-ok"),
-                        cancel = d.el.one(".ke-music-cancel");
+                        d = self.d,
+                        el = d.el;
+                    self.dUrl = el.one(".ke-music-url");
+                    self.dAlign = KE.Select.decorate(el.one(".ke-music-align"));
+                    self.dMargin = el.one(".ke-music-margin");
+                    var action = el.one(".ke-music-ok"),
+                        cancel = el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
-                        self.d.hide();
+                        d.hide();
                     });
+                    KE.Utils.placeholder(self.dUrl, self._urlTip);
                 },
 
                 _getDInfo:function() {
@@ -179,7 +180,7 @@ KISSY.Editor.add("music", function(editor) {
                         self.dAlign.val(f.attr("align"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
-                        self.dUrl.val(TIP);
+                        KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("");
                         self.dMargin.val("5");
                     }

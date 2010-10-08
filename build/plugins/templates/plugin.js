@@ -9,13 +9,37 @@ KISSY.Editor.add("templates", function(editor) {
         //Event = S.Event,
         //KEN = KE.NODE,
         //UA = S.UA,
-        //DOM = S.DOM,
+        DOM = S.DOM,
         TripleButton = KE.TripleButton,
         Overlay = KE.SimpleOverlay;
 
     if (!KE.TplUI) {
 
         (function() {
+            DOM.addStyleSheet(
+                ".ke-tpl {" +
+                    "    border: 2px solid #EEEEEE;" +
+                    "    width: 95%;" +
+                    "    margin: 20px auto 0 auto;" +
+                    "}" +
+
+                    ".ke-tpl-list {" +
+                    "    border: 1px solid #EEEEEE;" +
+                    "    margin: 5px;" +
+                    "    padding: 7px;" +
+                    "    display: block;" +
+                    "    text-decoration: none;" +
+                    "    zoom: 1;" +
+                    "}" +
+
+                    ".ke-tpl-list:hover, .ke-tpl-selected {" +
+                    "    background-color: #FFFACD;" +
+                    "    text-decoration: none;" +
+                    "    border: 1px solid #FF9933;" +
+                    "}"
+                , "ke-templates");
+
+
             function TplUI(editor) {
                 this.editor = editor;
                 this._init();
@@ -31,7 +55,7 @@ KISSY.Editor.add("templates", function(editor) {
                     });
                     el.on("offClick", self._show, self);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
-                    self.el=el;
+                    self.el = el;
                     KE.Utils.sourceDisable(editor, self);
                 },
                 disable:function() {

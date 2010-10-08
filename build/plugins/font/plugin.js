@@ -56,14 +56,16 @@ KISSY.Editor.add("font", function(editor) {
     for (i = 0; i < FONT_SIZES.items.length; i++) {
         var item = FONT_SIZES.items[i],
             name = item.name,
-            size = item.size;
+            attrs = item.attrs,
+            size = item.value;
 
         FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
             size:size
         });
         FONT_SIZE_ITEMS.push({
             name:name,
-            value:size
+            value:size,
+            attrs:attrs
         })
     }
 
@@ -111,7 +113,8 @@ KISSY.Editor.add("font", function(editor) {
                         width:self.get("width"),
                         popUpWidth:self.get("popUpWidth"),
                         title:self.get("title"),
-                        items:self.get("html")
+                        items:self.get("html"),
+                        showValue:self.get("showValue")
                     });
 
                     self.el.on("click", self._vChange, self);
@@ -253,6 +256,7 @@ KISSY.Editor.add("font", function(editor) {
             editor:editor,
             title:"大小",
             width:"30px",
+            showValue:true,
             popUpWidth:FONT_SIZES.width,
             styles:FONT_SIZE_STYLES,
             html:FONT_SIZE_ITEMS

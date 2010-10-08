@@ -601,19 +601,6 @@ textarea,iframe包装
 .ke-input-tip {
     color: #969696;
 }/**
-element path plugin style
-@author:yiminghe@gmail.com
-**/
-.elementpath {
-    padding: 0 5px;
-    text-decoration: none;
-}
-
-.elementpath:hover {
-    background: #CCFFFF;
-    text-decoration: none;
-}
-/**
 menu style for kissy editor ,include contextmenu and select menu
 @author:yiminghe@gmail.com
 **/
@@ -627,7 +614,7 @@ menu style for kissy editor ,include contextmenu and select menu
     font: 13px Arial, sans-serif;
     margin: 0;
     outline: medium none;
-    padding: 4px 0;
+    /*padding: 4px 0;*/
     position: absolute;
     overflow: hidden;
     zoom: 1;
@@ -896,7 +883,7 @@ select style for kissy editor
     position: relative;
 }
 
-.ie6 .ke-select-text-inner {
+.ie6 .ke-combox .ke-select-text-inner {
     zoom: 1;
     position: relative;
     top: 2px;
@@ -963,26 +950,4 @@ li.ke-tab-selected {
     cursor: default;
     margin-bottom: -1px;
     padding-bottom: 1px;
-}/**
-templates plugin style
-**/
-.ke-tpl {
-    border: 2px solid #EEEEEE;
-    width: 95%;
-    margin: 0px auto;
-}
-
-.ke-tpl-list {
-    border: 1px solid #EEEEEE;
-    margin: 5px;
-    padding: 7px;
-    display: block;
-    text-decoration: none;
-    zoom: 1;
-}
-
-.ke-tpl-list:hover, .ke-tpl-selected {
-    background-color: #FFFACD;
-    text-decoration: none;
-    border: 1px solid #FF9933;
 }

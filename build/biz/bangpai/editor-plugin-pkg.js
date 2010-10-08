@@ -869,8 +869,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         Flash = KE.Flash,
         DTIP = "自动",
         dataProcessor = editor.htmlDataProcessor,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "http://";
+        dataFilter = dataProcessor && dataProcessor.dataFilter;
 
     dataFilter && dataFilter.addRules({
         elements : {
@@ -964,39 +963,35 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
     if (!KE.BangPaiVideo) {
         (function() {
-            var bodyHtml = "" +
-                "<table>" +
-                "<tr><td colspan='2'>" +
-                "需要分享的视频链接：支持 土豆，优酷，ku6 视频分享" +
-                "</td></tr>" +
-                "<tr><td colspan='2'>" +
-                "<label><span style='color:#0066CC;font-weight:bold;'>视频链接： " +
-                "</span><input " +
-
-                "class='ke-video-url' style='width:230px' value='"
-                + TIP
-                + "'/></label>" +
-                "</td></tr>" +
+            var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
+                "<p>" +
+                "<label>" +
+                "<span>链接： " +
+                "</span>" +
+                "<input " +
+                "class='ke-video-url ke-input' style='width:310px'/>" +
+                "</label>" +
+                "</p>" +
+                "<table style='margin:10px 0 5px  40px;width:100%;'>" +
                 "<tr><td>" +
                 "<label>宽度： " +
-                "</span> <input " +
-                "" +
+                "</span> " +
+                "<input " +
                 " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                 " data-warning='宽度请输入正数' " +
-                "class='ke-video-width' style='width:60px' value='"
-                + DTIP + "'/> 像素 " +
+                "class='ke-video-width ke-input' style='width:60px' value='"
+                + DTIP + "'/> 像素" +
                 "</label>" +
                 "</td>" +
                 "<td>" +
                 "<label> 高度： " +
-                "</span> <input " +
-                "" +
+                "</span>" +
+                " <input " +
                 " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                 " data-warning='高度请输入正数' " +
-                "class='ke-video-height' style='width:60px' value='"
-                + DTIP + "'/> 像素 " +
+                "class='ke-video-height ke-input' style='width:60px' value='"
+                + DTIP + "'/> 像素" +
                 "</label>" +
-
                 "</td></tr>" +
                 "<tr>" +
                 "<td>" +
@@ -1008,19 +1003,21 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</select>" +
                 "</td>" +
                 "<td>" +
-
                 "<label>间距： " +
                 "</span> <input " +
                 "" +
                 " data-verify='^\\d+(.\\d+)?$' " +
                 " data-warning='间距请输入非负数字' " +
-                "class='ke-video-margin' style='width:60px' value='"
+                "class='ke-video-margin ke-input' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +
-                "</table>",
-                footHtml = "<button class='ke-video-ok'>确定</button> " +
-                    "<button class='ke-video-cancel'>取消</button>",
+                "</table>" +
+                "</div>",
+
+                footHtml = "<button class='ke-video-ok ke-button' " +
+                    "style='margin-left:40px;margin-right:20px;'>确定</button> " +
+                    "<a style='cursor:pointer' class='ke-video-cancel'>取消</a>",
                 flashRules = ["img." + CLS_VIDEO];
 
 
@@ -1044,22 +1041,26 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self._flashRules = flashRules;
                     self.urlCfg = cfg["bangpai-video"] &&
                         cfg["bangpai-video"].urlCfg;
+                    self._urlTip = "支持 土豆，优酷，ku6 视频分享";
+                    self._config_dwidth = "400px";
                 },
                 _initD:function() {
                     var self = this,
                         editor = self.editor,
-                        d = self.d;
-                    self.dUrl = d.el.one(".ke-video-url");
-                    self.dAlign = d.el.one(".ke-video-align");
-                    self.dMargin = d.el.one(".ke-video-margin");
-                    self.dWidth = d.el.one(".ke-video-width");
-                    self.dHeight = d.el.one(".ke-video-height");
-                    var action = d.el.one(".ke-video-ok"),
-                        cancel = d.el.one(".ke-video-cancel");
+                        d = self.d,
+                        el = d.el;
+                    self.dUrl = el.one(".ke-video-url");
+                    self.dAlign = KE.Select.decorate(el.one(".ke-video-align"));
+                    self.dMargin = el.one(".ke-video-margin");
+                    self.dWidth = el.one(".ke-video-width");
+                    self.dHeight = el.one(".ke-video-height");
+                    var action = el.one(".ke-video-ok"),
+                        cancel = el.one(".ke-video-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
-                        self.d.hide();
+                        d.hide();
                     });
+                    KE.Utils.placeholder(self.dUrl, self._urlTip);
                 },
 
                 _getDInfo:function() {
@@ -1071,7 +1072,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     } else {
                         var re = p.detect(url);
                         if (!re) {
-                            alert(TIP);
                             return;
                         }
                         return {
@@ -1130,7 +1130,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         self.dWidth.val(r.attr("width"));
                         self.dHeight.val(r.attr("height"));
                     } else {
-                        self.dUrl.val(TIP);
+                        KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("");
                         self.dMargin.val("5");
                         self.dWidth.val(DTIP);

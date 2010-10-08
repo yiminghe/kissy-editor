@@ -12,7 +12,7 @@ menu style for kissy editor ,include contextmenu and select menu
     font: 13px Arial, sans-serif;
     margin: 0;
     outline: medium none;
-    padding: 4px 0;
+    /*padding: 4px 0;*/
     position: absolute;
     overflow: hidden;
     zoom: 1;

@@ -74,7 +74,7 @@ select style for kissy editor
     position: relative;
 }
 
-.ie6 .ke-select-text-inner {
+.ie6 .ke-combox .ke-select-text-inner {
     zoom: 1;
     position: relative;
     top: 2px;

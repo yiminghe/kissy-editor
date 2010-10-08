@@ -207,23 +207,46 @@ box-shadow:2px 2px 0.5em #888888;
                         }
                     },
                 "font-size":{
-                    items:[
-                        {
-                            value:"14px",
-                            name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
-                        },
-                        {
-                            value:"16px",
-                            name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
-                        },
-
-                        {
-                            value:"20px",
-                            name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
-                        }
-                    ],
-                    width:"100px"
-                }
+                        items:[
+                            {
+                                value:"14px",
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:14px'>标准</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>14px</span>"
+                            },
+                            {
+                                value:"16px",
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:16px'>大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>16px</span>"
+                            },
+                            {
+                                value:"18px",
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:18px'>特大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>18px</span>"
+                            },
+                            {
+                                value:"20px",
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:20px'>极大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>20px</span>"
+                            }
+                        ],
+                        width:"115px"
+                    }
                 ,"font-family":["宋体","黑体","微软雅黑","TimeNewRoman","Arial","Verdana"]
                 ,"bangpai-upload":{
                     holder:"#imgup1",

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-08 16:36:03
+ * @buildtime: 2010-10-08 18:28:55
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -518,9 +518,12 @@ KISSY.Editor.add("utils", function(KE) {
             var placeholder = inp.attr("placeholder");
             if (placeholder && !UA.webkit) {
                 inp.val(placeholder);
-                inp.addClass(".ke-input-tip");
+                inp.addClass("ke-input-tip");
+            } else if (UA.webkit) {
+                inp.val("");
             }
         },
+
         placeholder:function(inp, tip) {
             inp.attr("placeholder", tip);
             if (UA.webkit) {
@@ -529,14 +532,14 @@ KISSY.Editor.add("utils", function(KE) {
             inp.on("blur", function() {
                 if (!S.trim(inp.val())) {
                     inp.val(tip);
-                    inp.addClass(".ke-input-tip");
+                    inp.addClass("ke-input-tip");
                 }
             });
             inp.on("focus", function() {
                 if (S.trim(inp.val()) == tip) {
                     inp.val("");
                 }
-                inp.removeClass(".ke-input-tip");
+                inp.removeClass("ke-input-tip");
             });
         },
         clean:function(node) {
@@ -8050,6 +8053,15 @@ KISSY.Editor.add("elementpaths", function(editor) {
     if (!KE.ElementPaths) {
 
         (function() {
+
+            DOM.addStyleSheet(".elementpath {" +
+                "   padding: 0 5px;" +
+                "    text-decoration: none;" +
+                "}" +
+                ".elementpath:hover {" +
+                "    background: #CCFFFF;" +
+                "    text-decoration: none;" +
+                "}", "ke-ElementPaths");
             function ElementPaths(cfg) {
                 this.cfg = cfg;
                 this._cache = [];
@@ -8627,30 +8639,29 @@ KISSY.Editor.add("flashsupport", function(editor) {
 
         (function() {
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
-                bodyHtml = "<table>" +
-                    "<tr>" +
-                    "<td colspan='2'>" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
+                    "<p>" +
                     "<label>网址： " +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url' style='width:280px' value='"
-                    + TIP
-                    + "'/></label>" +
-                    "</td></tr>" +
+                    "class='ke-flash-url ke-input' style='width:310px' />" +
+                    "</label>" +
+                    "</p>" +
+                    "<table style='margin:10px 0 5px  40px;width:100%;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +
                     "<input " +
                     " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='宽度请输入正数' " +
-                    "class='ke-flash-width' style='width:60px' /> 像素 </label>" +
+                    "class='ke-flash-width ke-input' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
                     " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
                     " data-warning='高度请输入正数' " +
-                    "class='ke-flash-height' " +
+                    "class='ke-flash-height ke-input' " +
                     "style='width:60px' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
@@ -8667,14 +8678,16 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' "
-                    + "class='ke-flash-margin' style='width:60px' value='"
+                    + "class='ke-flash-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +
-                    "</table>",
+                    "</table>" +
+                    "</div>",
 
-                footHtml = "<button class='ke-flash-ok'>确定</button> " +
-                    "<button class='ke-flash-cancel'>取消</button>";
+                footHtml = "<button class='ke-flash-ok ke-button' " +
+                    "style='margin-left:40px;margin-right:20px;'>确定</button> " +
+                    "<a style='cursor:pointer'  class='ke-flash-cancel'>取消</a>";
 
             /**
              * 所有基于 flash 的插件基类，使用 template 模式抽象
@@ -8712,6 +8725,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_FLASH];
+                    self._config_dwidth = "400px";
+                    self._urlTip = TIP;
                 },
                 _init:function() {
                     this._config();
@@ -8787,7 +8802,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         editor = self.editor,
                         r = editor.restoreRealElement(selectedFlash);
-                    if(!r) return;
+                    if (!r) return;
                     var url = self._getFlashUrl(r);
                     tipurl.html(url);
                     tipurl.attr("href", url);
@@ -8831,7 +8846,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
-                        if(!r) return;
+                        if (!r) return;
                         if (r.attr("width")) {
                             self.dWidth.val(parseInt(r.attr("width")));
                         }
@@ -8842,7 +8857,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
-                        self.dUrl.val(TIP);
+                        KE.Utils.resetInput(self.dUrl);
                         self.dWidth.val("");
                         self.dHeight.val("");
                         self.dAlign.val("");
@@ -8861,18 +8876,22 @@ KISSY.Editor.add("flashsupport", function(editor) {
                  * @override
                  */
                 _initD:function() {
-                    var self = this,editor = self.editor,d = self.d;
-                    self.dHeight = d.el.one(".ke-flash-height");
-                    self.dWidth = d.el.one(".ke-flash-width");
-                    self.dUrl = d.el.one(".ke-flash-url");
-                    self.dAlign = d.el.one(".ke-flash-align");
-                    self.dMargin = d.el.one(".ke-flash-margin");
-                    var action = d.el.one(".ke-flash-ok"),
-                        cancel = d.el.one(".ke-flash-cancel");
+                    var self = this,
+                        editor = self.editor,
+                        d = self.d,
+                        el = d.el;
+                    self.dHeight = el.one(".ke-flash-height");
+                    self.dWidth = el.one(".ke-flash-width");
+                    self.dUrl = el.one(".ke-flash-url");
+                    self.dAlign = KE.Select.decorate(el.one(".ke-flash-align"));
+                    self.dMargin = el.one(".ke-flash-margin");
+                    var action = el.one(".ke-flash-ok"),
+                        cancel = el.one(".ke-flash-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
-                        self.d.hide();
+                        d.hide();
                     });
+                    KE.Utils.placeholder(self.dUrl, self._urlTip);
                 },
 
                 /**
@@ -9267,14 +9286,16 @@ KISSY.Editor.add("font", function(editor) {
     for (i = 0; i < FONT_SIZES.items.length; i++) {
         var item = FONT_SIZES.items[i],
             name = item.name,
-            size = item.size;
+            attrs = item.attrs,
+            size = item.value;
 
         FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
             size:size
         });
         FONT_SIZE_ITEMS.push({
             name:name,
-            value:size
+            value:size,
+            attrs:attrs
         })
     }
 
@@ -9322,7 +9343,8 @@ KISSY.Editor.add("font", function(editor) {
                         width:self.get("width"),
                         popUpWidth:self.get("popUpWidth"),
                         title:self.get("title"),
-                        items:self.get("html")
+                        items:self.get("html"),
+                        showValue:self.get("showValue")
                     });
 
                     self.el.on("click", self._vChange, self);
@@ -9464,6 +9486,7 @@ KISSY.Editor.add("font", function(editor) {
             editor:editor,
             title:"大小",
             width:"30px",
+            showValue:true,
             popUpWidth:FONT_SIZES.width,
             styles:FONT_SIZE_STYLES,
             html:FONT_SIZE_ITEMS
@@ -13070,23 +13093,23 @@ KISSY.Editor.add("link", function(editor) {
                     'class="ke-bubbleview-link ke-bubbleview-remove">' +
                     '去除' +
                     '</span>',
-                bodyHtml = "<div>" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
                     "<span " +
-                    "style='color:#0066CC;font-weight:bold;'>" +
-                    "网址： " +
+                    ">" +
+                    "链接网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-link-url' " +
-                    "style='width:220px' " +
+                    "class='ke-link-url ke-input' " +
+                    "style='width:230px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
-                    "style='margin-top: 5px;padding-left:45px'>" +
+                    "style='margin: 15px 0 10px 70px;'>" +
                     "<label>" +
                     "<input " +
                     "class='ke-link-blank' " +
@@ -13096,8 +13119,9 @@ KISSY.Editor.add("link", function(editor) {
                     "</p>" +
 
                     "</div>",
-                footHtml = "<button class='ke-link-ok'>确定</button> " +
-                    "<button class='ke-link-cancel'>取消</button>";
+                footHtml = "<button class='ke-link-ok ke-button' " +
+                    "style='margin-left:65px;margin-right:20px;'>确定</button> " +
+                    "<button class='ke-link-cancel ke-button'>取消</button>";
 
 
             function Link(editor) {
@@ -13114,7 +13138,7 @@ KISSY.Editor.add("link", function(editor) {
                     d = new Overlay({
                         title:"链接属性",
                         mask:true,
-                        width:"300px"
+                        width:"350px"
                     });
                 self.dialog = d;
                 d.body.html(bodyHtml);
@@ -14297,40 +14321,37 @@ KISSY.Editor.add("music", function(editor) {
     if (!KE.MusicInserter) {
         (function() {
             var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
-                bodyHtml = "" +
+                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
-                    "<span style='color:#0066CC;font-weight:bold;'>网址： " +
+                    "<span>网址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url' style='width:230px' " +
-                    "value='"
-                    + TIP
-                    + "'/>" +
+                    "class='ke-music-url ke-input' style='width:310px'  />" +
                     "</label>" +
                     "</p>" +
-                    "<p style='margin:5px 0'>" +
-                    "<label>对" +
-                    KE.Utils.duplicateStr("&nbsp;", 8) + "齐： " +
+                    "<p style='margin: 10px 0 10px 40px;'>" +
+                    "<label>对齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    "" +
-                    KE.Utils.duplicateStr("&nbsp;", 1) +
+                    KE.Utils.duplicateStr("&nbsp;", 10) +
                     "<label>间距： " +
                     "</span> <input " +
                     " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' " +
-                    "class='ke-music-margin' style='width:60px' value='"
+                    "class='ke-music-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
-                    "<p>",
-                footHtml = "<button class='ke-music-ok'>确定</button> " +
-                    "<button class='ke-music-cancel'>取消</button>",
+                    "<p>" +
+                    "</div>",
+                footHtml = "<button class='ke-music-ok ke-button' " +
+                    "style='margin:0 20px 0 40px;'>确定</button> " +
+                    "<a style='cursor:pointer;' class='ke-music-cancel'>取消</a>",
                 music_reg = /#\(music\)/g,
                 flashRules = ["img." + CLS_MUSIC];
 
@@ -14365,20 +14386,24 @@ KISSY.Editor.add("music", function(editor) {
                     self._tip = "插入音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = flashRules;
+                    self._config_dwidth = "400px";
+                    self._urlTip = TIP;
                 },
                 _initD:function() {
                     var self = this,
                         editor = self.editor,
-                        d = self.d;
-                    self.dUrl = d.el.one(".ke-music-url");
-                    self.dAlign = d.el.one(".ke-music-align");
-                    self.dMargin = d.el.one(".ke-music-margin");
-                    var action = d.el.one(".ke-music-ok"),
-                        cancel = d.el.one(".ke-music-cancel");
+                        d = self.d,
+                        el = d.el;
+                    self.dUrl = el.one(".ke-music-url");
+                    self.dAlign = KE.Select.decorate(el.one(".ke-music-align"));
+                    self.dMargin = el.one(".ke-music-margin");
+                    var action = el.one(".ke-music-ok"),
+                        cancel = el.one(".ke-music-cancel");
                     action.on("click", self._gen, self);
                     cancel.on("click", function() {
-                        self.d.hide();
+                        d.hide();
                     });
+                    KE.Utils.placeholder(self.dUrl, self._urlTip);
                 },
 
                 _getDInfo:function() {
@@ -14408,7 +14433,7 @@ KISSY.Editor.add("music", function(editor) {
                         self.dAlign.val(f.attr("align"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
-                        self.dUrl.val(TIP);
+                        KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("");
                         self.dMargin.val("5");
                     }
@@ -15265,6 +15290,9 @@ KISSY.Editor.add("select", function() {
 
 
     Select.ATTRS = {
+        //title标题栏显示值value还是name
+        //默认false，显示name
+        showValue:{},
         el:{},
         cls:{},
         container:{},
@@ -15346,9 +15374,14 @@ KISSY.Editor.add("select", function() {
             self.on("afterStateChange", self._stateChange, self);
         },
         _findNameByV:function(v) {
+
             var self = this,
                 name = self.get(TITLE) || "",
                 items = self.get("items");
+            //显示值，防止下拉描述过多
+            if (self.get("showValue")) {
+                return v || name;
+            }
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 if (item.value == v) {
@@ -16671,13 +16704,37 @@ KISSY.Editor.add("templates", function(editor) {
         //Event = S.Event,
         //KEN = KE.NODE,
         //UA = S.UA,
-        //DOM = S.DOM,
+        DOM = S.DOM,
         TripleButton = KE.TripleButton,
         Overlay = KE.SimpleOverlay;
 
     if (!KE.TplUI) {
 
         (function() {
+            DOM.addStyleSheet(
+                ".ke-tpl {" +
+                    "    border: 2px solid #EEEEEE;" +
+                    "    width: 95%;" +
+                    "    margin: 20px auto 0 auto;" +
+                    "}" +
+
+                    ".ke-tpl-list {" +
+                    "    border: 1px solid #EEEEEE;" +
+                    "    margin: 5px;" +
+                    "    padding: 7px;" +
+                    "    display: block;" +
+                    "    text-decoration: none;" +
+                    "    zoom: 1;" +
+                    "}" +
+
+                    ".ke-tpl-list:hover, .ke-tpl-selected {" +
+                    "    background-color: #FFFACD;" +
+                    "    text-decoration: none;" +
+                    "    border: 1px solid #FF9933;" +
+                    "}"
+                , "ke-templates");
+
+
             function TplUI(editor) {
                 this.editor = editor;
                 this._init();
@@ -16693,7 +16750,7 @@ KISSY.Editor.add("templates", function(editor) {
                     });
                     el.on("offClick", self._show, self);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
-                    self.el=el;
+                    self.el = el;
                     KE.Utils.sourceDisable(editor, self);
                 },
                 disable:function() {
