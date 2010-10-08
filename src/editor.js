@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "tabs",
             "flashbridge",
             "flashutils",
             "clipboard",
@@ -136,7 +137,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "image",
-                requires: ["overlay","contextmenu","bubbleview"]
+                requires: ["overlay","contextmenu","bubbleview","tabs"]
             },
             "indent",
             "justify",

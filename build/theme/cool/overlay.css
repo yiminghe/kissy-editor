@@ -88,17 +88,17 @@ a.ke-hd-x:active {
 
 .ke-bd, .ke-ft {
     background-color: rgb(252, 252, 252);
-    padding: 20px;
     padding-bottom: 0;
 }
 
 .ke-ft {
+    padding: 20px;
     padding-top: 5px;
     padding-bottom: 30px;
 }
 
 .ke-bd td {
-    padding: 2px;
+    padding: 5px 2px;
 }
 
 .clearfix:after {

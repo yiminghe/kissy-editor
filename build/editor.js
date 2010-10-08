@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-29 16:26:08
+ * @buildtime: 2010-10-08 14:45:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "tabs",
             "flashbridge",
             "flashutils",
             "clipboard",
@@ -136,7 +137,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "image",
-                requires: ["overlay","contextmenu","bubbleview"]
+                requires: ["overlay","contextmenu","bubbleview","tabs"]
             },
             "indent",
             "justify",

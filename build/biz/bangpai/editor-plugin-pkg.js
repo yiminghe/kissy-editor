@@ -15,7 +15,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         TYPE_XIAMI = "bangpai-music",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
-        BTIP = "搜 索 ",
+        BTIP = "搜 索",
         TIP = "输入歌曲名、专辑名、艺人名";
 
     function checkXiami(url) {
@@ -77,8 +77,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
             var css = '' +
                 '.ke-xiami-list {' +
-                'margin:10px -20px 20px -20px;' +
-                'padding:10px 20px 0 20px;' +
+                'margin:10px 0 10px 0;' +
+                'padding:10px 40px 0 40px;' +
                 'border-top:1px solid #CED5E0;' +
                 'display:none;' +
                 '}' +
@@ -143,8 +143,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return str;
             }
 
-            var bodyHtml = "" +
-                "<form action='#' class='ke-xiami-form'>" +
+            var bodyHtml = "<div style='padding:20px 0;'>" +
+                "<form action='#' class='ke-xiami-form' style='margin:0 20px;'>" +
                 "<p class='ke-xiami-title'>" +
                 "" +
                 "</p>" +
@@ -180,7 +180,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<div " +
                 "class='ke-xiami-list'>" +
                 "</div>" +
-                "",
+                "</div>",
                 footHtml = "<button class='ke-xiami-ok ke-button'>确&nbsp;定</button>" +
                     "<button class='ke-xiami-cancel ke-button' style='margin-left:20px;'>取&nbsp;消</button>";
 
@@ -297,9 +297,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         bangpai_xiami.page = page;
                         self._xiamia_list.html("<img style='" +
                             "display:block;" +
-                            "width:108px;" +
+                            "width:32px;" +
+                            "height:32px;" +
                             "margin:5px auto 0 auto;" +
-                            "'src='" + loading + "'/>");
+                            "'src='" + loading + "'/>" +
+                            "<p style='width: 130px; margin: 15px auto 0; color: rgb(150, 150, 150);'>正在搜索，请稍候......</p>");
+                        self._xiamia_list.show();
                         var node = S.getScript(req, {
                             timeout:10,
                             success:function() {
@@ -381,7 +384,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
                             var page = data.page,
                                 totalpage = Math.floor(data.total / 8),
-                                start = page - 2,
+                                start = page - 1,
                                 end = page + 1;
 
                             if (totalpage > 1) {
@@ -417,12 +420,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             }
 
                         } else {
-                            html = "<p style='text-align:center;margin:10px 0;'>不好意思，没有找到结果！</p>";
+                            html = "<p style='text-align:center;margin:10px 0;'>" +
+                                "不好意思，没有找到结果！" +
+                                "</p>";
                         }
                         self._xiamia_list.html(html);
-                        self._xiamia_list.show();
                     }
                 },
+
                 _updateD : function() {
                     var self = this,
                         f = self.selectedFlash;
@@ -441,6 +446,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         self._xiami_url_wrap.show();
                         self.d.foot.hide();
                         self._xiamia_title.hide();
+                        self._xiami_submit.enable();
                     }
                     self._xiamia_list.hide();
                     self._xiamia_list.html("");

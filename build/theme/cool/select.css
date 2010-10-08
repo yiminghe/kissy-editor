@@ -74,6 +74,11 @@ select style for kissy editor
     position: relative;
 }
 
+.ie6 .ke-select-text-inner {
+    position: relative;
+    top: 2px;
+}
+
 .ie8 .ke-combox .ke-select-text {
     top: -1px;
 }

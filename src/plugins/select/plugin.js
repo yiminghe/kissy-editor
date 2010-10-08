@@ -13,7 +13,7 @@ KISSY.Editor.add("select", function() {
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
             "<a onclick='return false;' class='ke-select'>" +
-            "<span class='ke-select-text'></span>" +
+            "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +
             "</span>" +
@@ -81,12 +81,13 @@ KISSY.Editor.add("select", function() {
                 title = self.get(TITLE) || "",
                 cls = self.get("cls"),
                 text = el.one(".ke-select-text"),
+                innerText = el.one(".ke-select-text-inner"),
                 drop = el.one(".ke-select-drop");
 
             if (self.get("value") !== undefined) {
-                text.html(self._findNameByV(self.get("value")));
+                innerText.html(self._findNameByV(self.get("value")));
             } else {
-                text.html(title);
+                innerText.html(title);
             }
 
             text.css("width", self.get("width"));
@@ -103,7 +104,7 @@ KISSY.Editor.add("select", function() {
             }
             el.on("click", self._click, self);
             self.el = el;
-            self.title = text;
+            self.title = innerText;
             self._focusA = el.one("a.ke-select");
             KE.Utils.lazyRun(this, "_prepare", "_real");
             self.on("afterValueChange", self._valueChange, self);

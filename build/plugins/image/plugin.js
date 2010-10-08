@@ -21,117 +21,110 @@ KISSY.Editor.add("image", function(editor) {
 
             var checkImg = function (node) {
                 return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
-            },
-                labelStyle = "<label><span>";
+            };
 
             function ImageInserter(cfg) {
                 ImageInserter.superclass.constructor.call(this, cfg);
                 this._init();
             }
 
-            DOM.addStyleSheet(".ke-image-tabs {" +
-                "padding-left:10px;" +
-                "border-bottom:1px solid #CCCCCC;" +
-                "}" +
-                ".ke-image-tabs li {" +
-                "background-color:#F6F6F6;" +
-                "border-color:#CCCCCC #CCCCCC -moz-use-text-color;" +
-                "border-style:solid solid none;" +
-                "border-width:1px 1px medium;" +
-                "cursor:pointer;" +
-                "float:left;" +
-                "height:21px;" +
-                "line-height:21px;" +
-                "margin-left:5px;" +
-                "position:relative;" +
-                "text-align:center;" +
-                "top:1px;" +
-                "width:60px;" +
-                "}" +
-                "li.ke-image-tab-selected {" +
-                "border-bottom:1px solid #FFFFFF;" +
-                "border-color:#CCCCCC #CCCCCC #FFFFFF;" +
-                "cursor:default;" +
-                "}", "ke-image");
+            DOM.addStyleSheet(
+                ".ke-image-wrap {" +
+                    "margin:0;" +
+                    "}", "ke-image");
 
             var TripleButton = KE.TripleButton,
-                bodyHtml = "" +
-                    "<ul class='ke-image-tabs ks-clear'>" +
-                    "<li class='ke-image-tab-selected' rel='remote'>网络图片" +
+                bodyHtml = "<div class='ke-image-wrap'>" +
+                    "<ul class='ke-tabs ks-clear'>" +
+                    "<li rel='remote'>" +
+                    "网络图片" +
                     "</li>" +
-                    "<li rel='local'>本地上传" +
+                    "<li rel='local'>" +
+                    "本地上传" +
                     "</li>" +
                     "</ul>" +
-                    "" +
                     "<div style='" +
-                    "padding:10px 0 0 0;'>" +
-                    "<table>" +
-                    "<tr>" +
-                    "<td colspan='2'>" +
+                    "padding:10px 0pt 10px 20px;'>" +
+                    "<div class='kee-image-tabs-content-wrap' " +
+                    "style='height:60px;'>" +
+                    "<div>" +
                     "<label>" +
                     "<span " +
                     "class='ke-image-title'" +
-                    "style='color:#0066CC;font-weight:bold;'>" + "图片网址： " +
+                    ">" +
+                    "图片地址： " +
                     "</span>" +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-img-url' " +
-                    "style='width:150px;margin-right:5px;' " +
+                    "class='ke-img-url ke-input' " +
+                    "style='width:440px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
-                    "<button class='ke-image-up' style='visibility:hidden;'>浏览...</button>" +
-                    "</td>" +
-                    "</tr>" +
+                    "</div>" +
+                    "<div><p>" +
+                    "<input class='ke-input ke-img-local-url' " +
+                    "readonly='readonly' " +
+                    "style='margin-right: 15px; " +
+                    "vertical-align: middle; " +
+                    "width: 425px;" +
+                    "color:#969696;'/>" +
+                    "<button class='ke-image-up ke-button'>浏览...</button>" +
+                    "</p>" +
+                    "<div class='ke-img-up-extraHtml'>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "<table " +
+                    "style='width:100%;'>" +
                     "<tr>" +
                     "<td>" +
-                    labelStyle + "高度： " +
-                    "</span>" +
-                    "<input " +
-                    "" +
-                    "" +
-                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
-                    " data-warning='高度请输入正数' " +
-                    "class='ke-img-height' style='width:60px' " +
-                    "value='" + DTIP + "'/> 像素 </label>" +
-                    "</td>" +
-                    "<td>" +
                     "<label>" +
-                    "<span>" + "宽度： " +
-                    "</span>" +
+                    "宽度： " +
                     "<input " +
                     " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
                     " data-warning='宽度请输入正数' " +
-                    "class='ke-img-width' style='width:60px' value='" +
+                    "class='ke-img-width ke-input' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
                     "</td>" +
+                    "<td><label>" +
+                    "高度： " +
+                    "<input " +
+                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
+                    " data-warning='高度请输入正数' " +
+                    "class='ke-img-height ke-input' style='width:60px' " +
+                    "value='" + DTIP + "'/> 像素 </label>" +
+                    "</td>" +
+
                     "</tr>" +
                     "<tr>" +
                     "<td>" +
-                    labelStyle + "对齐： " +
-                    "</span>" +
+                    "<label>" +
+                    "对齐：" +
                     "<select class='ke-img-align'>" +
                     "<option value='none'>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
+                    "</label>" +
                     "</td>" +
-                    "<td>" +
-                    labelStyle + "间距： " +
-                    "</span> " +
+                    "<td><label>" +
+                    "间距： " +
                     "<input " +
                     "" +
                     " data-verify='^\\d+(.\\d+)?$' " +
                     " data-warning='间距请输入非负数字' " +
-                    "class='ke-img-margin' style='width:60px' value='"
+                    "class='ke-img-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
                     "</table>" +
+                    "</div>" +
                     "</div>",
-                footHtml = "<button class='ke-img-insert'>确定</button> " +
-                    "<button class='ke-img-cancel'>取消</button>";
+                footHtml = "<button class='ke-img-insert ke-button' " +
+                    "style='margin-right:30px;'>确定</button> " +
+                    "<a style='cursor:pointer;' class='ke-img-cancel'>取消</a>";
 
             ImageInserter.ATTRS = {
                 editor:{}
@@ -201,11 +194,15 @@ KISSY.Editor.add("image", function(editor) {
                     }
                 },
                 _prepare:function() {
-                    var self = this,editor = self.get("editor");
+                    var self = this,
+                        editor = self.get("editor"),
+                        uploader,
+                        warning,
+                        imgLocalUrl;
                     self.d = new Overlay({
                         title:"图片属性",
                         mask:true,
-                        width:"350px"
+                        width:"550px"
                     });
                     var d = self.d;
                     d.body.html(bodyHtml);
@@ -217,51 +214,70 @@ KISSY.Editor.add("image", function(editor) {
                     self.imgUrl = content.one(".ke-img-url");
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
-                    self.imgAlign = content.one(".ke-img-align");
+                    self.imgAlign = KE.Select.decorate(content.one(".ke-img-align"));
                     self.imgMargin = content.one(".ke-img-margin");
                     cancel.on("click", function(ev) {
                         self.d.hide();
                         ev.halt();
                     });
-                    ok.on("click", function() {
-                        self._insert();
-                    });
-                    var cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] || {};
 
+                    var cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] || null;
 
-                    var tab = content.one("ul"),lis = tab.all("li"),
+                    var tab = new KE.Tabs({
+                        tabs:content.one("ul.ke-tabs"),
+                        contents:content.one("div.kee-image-tabs-content-wrap")
+                    }),
                         ke_image_title = content.one(".ke-image-title"),
-                        ke_image_up = content.one(".ke-image-up");
-                    if (cfg) {
-
-                        tab.on("click", function(ev) {
-                            var li = new Node(ev.target);
-                            if (li = li._4e_ascendant(function(n) {
-                                return n._4e_name() === "li" && tab._4e_contains(n);
-                            }, true)) {
-                                lis.removeClass("ke-image-tab-selected");
-                                var rel = li.attr("rel");
-                                li.addClass("ke-image-tab-selected");
-                                if (rel == "local") {
-                                    ke_image_title.html("上传图片：");
-                                    ke_image_up.css("visibility", "");
-                                    flashPos.css("visibility", "");
-                                } else {
-                                    ke_image_title.html("图片网址：");
-                                    ke_image_up.css("visibility", "hidden");
-                                    flashPos.css("visibility", "hidden");
-                                }
-
-                            }
+                        ke_image_up = new KE.TripleButton({
+                            el:content.one(".ke-image-up"),
+                            cls:'ke-button',
+                            text:"浏&nbsp;览"
                         });
-                        var flashPos = new Node("<div style='" +
-                            ("position:absolute;" +
-                                "width:" + (ke_image_up.width() + 8) + "px;" +
-                                "height:" + (ke_image_up.height() + 8) + "px;" +
-                                "z-index:9999;")
-                            + "'>").appendTo(content);
-                        flashPos.offset(ke_image_up.offset());
-                        var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
+                    self.tab = tab;
+
+                    function normParams(params) {
+                        params = S.clone(params);
+                        for (var p in params) {
+                            if (params.hasOwnProperty(p)) {
+                                var v = params[p];
+                                if (S.isFunction(v)) {
+                                    params[p] = v();
+                                }
+                            }
+                        }
+                        return params;
+                    }
+
+                    ok.on("click", function() {
+                        if (tab.activate() == "local" && uploader && cfg) {
+                            if (imgLocalUrl.val() == warning) {
+                                alert("请先选择文件!");
+                                return;
+                            }
+                            uploader.uploadAll(cfg.serverUrl, "POST",
+                                normParams(cfg.serverParams),
+                                cfg.fileInput);
+                            d.loading();
+                        } else {
+                            self._insert();
+                        }
+                    });
+                    if (cfg) {
+                        var flashPos;
+                        if (cfg.extraHtml) {
+                            content.one(".ke-img-up-extraHtml").html(cfg.extraHtml);
+                        }
+                        function initUpload() {
+                            var w = ke_image_up.el.width() + 38,
+                                h = ke_image_up.el.height() + 8;
+                            flashPos = new Node("<div style='" +
+                                "position:absolute;" +
+                                "width:" + w + "px;" +
+                                "height:" + h + "px;" +
+                                "z-index:9999;"
+                                + "'>").appendTo(content);
+                            var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf");
+
                             uploader = new KE.FlashBridge({
                                 movie:movie,
                                 methods:["removeFile",
@@ -276,8 +292,8 @@ KISSY.Editor.add("image", function(editor) {
                                     "uploadAll"],
                                 holder:flashPos,
                                 attrs:{
-                                    width:ke_image_up.width() ,
-                                    height:ke_image_up.height()
+                                    width:w ,
+                                    height:h
                                 },
                                 params:{
                                     wmode:"transparent"
@@ -287,58 +303,72 @@ KISSY.Editor.add("image", function(editor) {
                                     menu:true
                                 }
                             });
-                        ke_image_up[0].disabled = true;
-                        uploader.on("swfReady", function() {
-                            ke_image_up[0].disabled = false;
-                            flashPos.css("visibility", "hidden");
-                            uploader.setAllowMultipleFiles(false);
-                            uploader.setFileFilters([
-                                {
-                                    extensions:"*.jpeg;*.jpg;*.png;*.gif",
-                                    description:"图片文件( png,jpg,jpeg,gif )"
 
+                            uploader.on("swfReady", function() {
+                                ke_image_up.enable();
+                                uploader.setAllowMultipleFiles(false);
+                                uploader.setFileFilters([
+                                    {
+                                        extensions:"*.jpeg;*.jpg;*.png;*.gif",
+                                        description:"图片文件( png,jpg,jpeg,gif )"
+
+                                    }
+                                ]);
+                            });
+                            var sizeLimit = (cfg.sizeLimit) || (Number.MAX_VALUE);
+                            warning = "单张图片容量不超过" + (sizeLimit) + "KB";
+                            imgLocalUrl = content.one(".ke-img-local-url");
+                            imgLocalUrl.val(warning);
+                            uploader.on("fileSelect", function(ev) {
+                                var fileList = ev.fileList;
+                                for (var f in fileList) {
+                                    var file = fileList[f],
+                                        size = Math.floor(file.size / 1000);
+                                    if (size > sizeLimit) {
+                                        alert(warning);
+                                        imgLocalUrl.val(warning);
+                                        uploader.clearFileList();
+                                        return;
+                                    }
+                                    imgLocalUrl.val(file.name);
                                 }
-                            ]);
-                        });
-                        var sizeLimit = (cfg.sizeLimit) || (Number.MAX_VALUE);
-
-                        uploader.on("fileSelect", function(ev) {
-                            var fileList = ev.fileList;
-                            for (var f in fileList) {
-                                var file = fileList[f],
-                                    size = Math.floor(file.size / 1000);
-                                if (size > sizeLimit) {
-                                    alert("最大上传大小上限：" + (sizeLimit) + "KB");
-                                    uploader.clearFileList();
+                            });
+                            uploader.on("uploadStart", function(ev) {
+                                uploader.clearFileList();
+                            });
+                            uploader.on("uploadCompleteData", function(ev) {
+                                var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                                d.unloading();
+                                if (!data) return;
+                                data = JSON.parse(data);
+                                if (data.error) {
+                                    alert(data.error);
                                     return;
                                 }
+                                self.imgUrl.val(data.imgUrl);
+                                imgLocalUrl.val(warning);
+                                self._insert();
+                            });
+                            uploader.on("uploadError", function(ev) {
+                                d.unloading();
+                                imgLocalUrl.val(warning);
+                                alert(ev.status);
+                            });
+                        }
+
+                        tab.on("local", function() {
+                            if (!flashPos) {
+                                initUpload();
                             }
-
-                            uploader.uploadAll(cfg.serverUrl, "POST",
-                                cfg.serverParams,
-                                cfg.fileInput);
-                            d.loading();
+                            flashPos.offset(ke_image_up.el.offset());
                         });
-
-                        uploader.on("uploadCompleteData", function(ev) {
-                            var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
-                            d.unloading();
-                            if (!data) return;
-                            data = JSON.parse(data);
-                            if (data.error) {
-                                alert(data.error);
-                                return;
-                            }
-                            self.imgUrl.val(data.imgUrl);
-
+                        tab.on("remote", function() {
+                            flashPos && flashPos.offset({left:-9999,top:-9999});
                         });
-                        uploader.on("uploadError", function(ev) {
-                            d.unloading();
-                            alert(ev.status);
-                        });
+                        ke_image_up.disable();
                     }
                     else {
-                        tab.hide();
+                        tab.remove("local");
                     }
 
                 },
@@ -350,10 +380,11 @@ KISSY.Editor.add("image", function(editor) {
                 _real:function() {
                     this.d.show();
                 },
+
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val(),re;
-
+                        url = self.imgUrl.val(),
+                        re;
                     re = KE.Utils.verifyInputs(self.d.el.all("input"));
                     if (!re) return;
                     var height = parseInt(self.imgHeight.val()),
@@ -399,31 +430,28 @@ KISSY.Editor.add("image", function(editor) {
                 _updateD:function(_selectedEl) {
                     var self = this;
                     self._selectedEl = _selectedEl;
+                    self.tab.activate("remote");
                     if (_selectedEl) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
-                        self.imgAlign.val(_selectedEl.css("float"));
+                        self.imgAlign.val(_selectedEl.css("float") || "none");
                         var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
                         self.imgMargin.val(margin);
                     } else {
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
-                        self.imgAlign.val("");
+                        self.imgAlign.val("none");
                         self.imgMargin.val("5");
-
                     }
-                }
-                ,
+                },
                 show:function(ev, _selectedEl) {
                     var self = this;
                     self._prepare();
                     self._updateD(_selectedEl);
                 }
-            }
-                )
-                ;
+            });
             KE.ImageInserter = ImageInserter;
 
 

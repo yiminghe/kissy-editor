@@ -251,6 +251,17 @@ KISSY.Editor.add("utils", function(KE) {
                 }
                 inp.removeClass(".ke-input-tip");
             });
+        },
+        clean:function(node) {
+            node = node[0] || node;
+            var cs = S.makeArray(node.childNodes);
+            for (var i = 0; i < cs.length; i++) {
+                var c = cs[i];
+                if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
+                    node.removeChild(c);
+                }
+            }
+
         }
     }
 });

@@ -310,11 +310,14 @@ KISSY.Editor.add("overlay", function() {
                 /**
                  * 窗口垫片-shim
                  */
-                var self = this,el = self.el,d_iframe = new Node("<" + "iframe class='ke-dialog-iframe'" +
-                    "></iframe>");
+                var self = this,
+                    el = self.el,
+                    d_iframe = new Node(
+                        "<" + "iframe class='ke-dialog-iframe'" +
+                            "></iframe>");
                 d_iframe.css(S.mix({
                     "z-index":(self.get("zIndex") - 1),
-                    opacity:0.4
+                    opacity:0
                 }, noVisibleStyle));
                 d_iframe.appendTo(document.body);
 

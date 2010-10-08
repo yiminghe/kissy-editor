@@ -189,13 +189,18 @@ box-shadow:2px 2px 0.5em #888888;
 
             pluginConfig: {
                 "image":{
-                    upload:{
-                        serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{
-                        },
-                        fileInput:"Filedata"
-                    }
-                },
+                        upload:{
+                            serverUrl:"/code/upload/upload.jsp",
+                            serverParams:{
+                                watermark:function() {
+                                    return S.one("#ke_img_up_watermark_1")[0].checked;
+                                }
+                            },
+                            fileInput:"Filedata",
+                            sizeLimit:1000,//k
+                            extraHtml:"<p style='margin-top:5px;'><input type='checkbox' id='ke_img_up_watermark_1'> 图片加水印，防止别人盗用</p>"
+                        }
+                    },
                 "templates": [
                     {
                         demo: "模板1效果演示html"  ,
