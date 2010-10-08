@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-09-30 17:13:11
+ * @buildtime: 2010-10-08 11:07:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7484,6 +7484,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:this.colorPanel,
+                zIndex:990,
                 mask:false,
                 focusMgr:false
             });
@@ -15581,6 +15582,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyPanel = new Node(smiley_markup);
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
+                        zIndex:990,
                         focusMgr:false,
                         mask:false
                     });

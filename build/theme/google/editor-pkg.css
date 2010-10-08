@@ -252,6 +252,7 @@ link
     _border: none;
     vertical-align: middle;
     white-space: nowrap; /*outline: none;*/
+    outline:none;
 }
 
 .ke-triplebutton-on {

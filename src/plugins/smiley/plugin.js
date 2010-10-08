@@ -92,6 +92,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyPanel = new Node(smiley_markup);
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
+                        zIndex:990,
                         focusMgr:false,
                         mask:false
                     });

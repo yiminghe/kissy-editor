@@ -77,22 +77,25 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 
             var css = '' +
                 '.ke-xiami-list {' +
-                'margin-top:10px;' +
+                'margin:10px -20px 20px -20px;' +
+                'padding:10px 20px 0 20px;' +
+                'border-top:1px solid #CED5E0;' +
+                'display:none;' +
                 '}' +
                 '' +
                 '' +
                 '.ke-xiami-list li{' +
-                'border:1px dotted gray;' +
+                'border:1px solid #CED5E0;' +
                 'border-width:0 0 1px 0;' +
                 'overflow:hidden;' +
                 'zoom:1;' +
                 'padding:2px;' +
-                '}\n' +
+                '}' +
                 '' +
                 '' +
                 '.ke-xiami-list .ke-xiami-add {' +
                 'float:right;' +
-                '}\n' +
+                '}' +
                 '' +
                 '' +
                 '' +
@@ -101,28 +104,32 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 'width:300px;' +
                 'white-space:nowrap;' +
                 'overflow:hidden;' +
-                '}\n' +
+                '}' +
                 '' +
                 '' +
                 '.ke-xiami-paging a{' +
                 'display: inline-block;'
                 + ' zoom: 1; '
-                + ' *display: inline; ' +
-                'border:1px solid gray;' +
-                'padding:0 5px;' +
-                'margin:0 2px;' +
-                '}\n' +
+                + ' *display: inline; '
+                + 'padding:1px 7px;'
+                + 'margin:0 3px;' +
+                '}' +
                 '' +
                 '' +
                 '.ke-xiami-paging a:hover,.ke-xiami-paging a.ke-xiami-curpage {' +
-                'background-color:orange;' +
-                '}\n' +
+                'color:red;' +
+                'text-decoration:none;' +
+                '}' +
                 '' +
                 '' +
                 '.ke-xiami-paging {' +
                 'text-align:center;' +
-                'margin-top:10px;' +
-                '}\n';
+                'margin-top:20px;' +
+                '}' +
+                '' +
+                '.ke-xiami-page-more {' +
+                'padding:0 10px;' +
+                '}';
             DOM.addStyleSheet(css, "BangPaiMusic");
             window.bangpai_xiami = function(data) {
                 var self = bangpai_xiami.instance;
@@ -143,7 +150,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
                 "<input class='ke-xiami-url ke-input' " +
-                "style='width:300px;vertical-align:middle;'" +
+                "style='width:350px;vertical-align:middle;'" +
                 "/> &nbsp; " +
                 " <button " +
                 "class='ke-xiami-submit'" +
@@ -212,7 +219,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._tip = "插入虾米音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_XIAMI];
-                    self._config_dwidth = "430px";
+                    self._config_dwidth = "480px";
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
@@ -367,33 +374,44 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                             + "_"
                                             + r.song_id
                                         )
-                                    + "'>选择</a>" +
+                                    + "'>添加</a>" +
                                     "</li>"
                             }
                             html += "</ul>";
 
                             var page = data.page,
                                 totalpage = Math.floor(data.total / 8),
-                                start = page - 3,
-                                end = page + 3;
+                                start = page - 2,
+                                end = page + 1;
 
                             if (totalpage > 1) {
+                                html += "<p class='ke-xiami-paging'>";
                                 if (start <= 2) {
                                     end = Math.min(2 - start + end, totalpage - 1);
                                     start = 2;
                                 }
                                 end = Math.min(end, totalpage - 1);
                                 if (end == totalpage - 1) {
-                                    start = Math.max(2, end - 6);
+                                    start = Math.max(2, end - 3);
                                 }
-
-                                html += "<p class='ke-xiami-paging'>" +
-                                    getXiamiPaging(page, 1, "1" + (start != 2 ? "..." : ""));
+                                if (page != 1) {
+                                    html += getXiamiPaging(page, page - 1, "上一页");
+                                }
+                                html += getXiamiPaging(page, 1, "1");
+                                if (start != 2) {
+                                    html += "<span class='ke-xiami-page-more'>...</span>";
+                                }
                                 for (i = start; i <= end; i++) {
                                     html += getXiamiPaging(page, i);
                                 }
                                 if (end != totalpage) {
-                                    html += getXiamiPaging(page, totalpage, (end != totalpage - 1 ? "..." : "") + totalpage);
+                                    if (end != totalpage - 1) {
+                                        html += "<span class='ke-xiami-page-more'>...</span>";
+                                    }
+                                    html += getXiamiPaging(page, totalpage, totalpage);
+                                }
+                                if (page != totalpage) {
+                                    html += getXiamiPaging(page, page + 1, "下一页");
                                 }
                                 html += "</p>";
                             }
@@ -402,6 +420,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             html = "<p style='text-align:center;margin:10px 0;'>不好意思，没有找到结果！</p>";
                         }
                         self._xiamia_list.html(html);
+                        self._xiamia_list.show();
                     }
                 },
                 _updateD : function() {
@@ -423,7 +442,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         self.d.foot.hide();
                         self._xiamia_title.hide();
                     }
-                    //self._xiami_submit.disable();
+                    self._xiamia_list.hide();
                     self._xiamia_list.html("");
                 },
 
@@ -437,7 +456,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 }
             });
             function getXiamiPaging(page, i, s) {
-                return "<a class='ke-xiami-page-item" +
+                return "<a class='ke-xiami-page-item ke-button" +
                     ((page == i) ? " ke-xiami-curpage" : "") +
                     "' data-value='" + i + "' href='#'>" + (s || i) + "</a>";
             }

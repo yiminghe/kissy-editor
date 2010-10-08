@@ -22,6 +22,7 @@ link
     _filter: chroma(color = tomato);
     vertical-align: middle;
     white-space: nowrap;
+    outline:none;
 }
 
 .ke-triplebutton-on {
