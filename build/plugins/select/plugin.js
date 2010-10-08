@@ -4,6 +4,7 @@
  */
 KISSY.Editor.add("select", function() {
     var S = KISSY,
+        UA = S.UA,
         Node = S.Node,
         Event = S.Event,
         DOM = S.DOM,
@@ -88,6 +89,12 @@ KISSY.Editor.add("select", function() {
                 innerText.html(self._findNameByV(self.get("value")));
             } else {
                 innerText.html(title);
+            }
+            if (UA.ie == 6) {
+                //odd ie ,字错位
+                setTimeout(function() {
+                    innerText.css("zoom", 1);
+                }, 0);
             }
 
             text.css("width", self.get("width"));

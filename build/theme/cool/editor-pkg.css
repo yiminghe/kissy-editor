@@ -897,6 +897,7 @@ select style for kissy editor
 }
 
 .ie6 .ke-select-text-inner {
+    zoom: 1;
     position: relative;
     top: 2px;
 }

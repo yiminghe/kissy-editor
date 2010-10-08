@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-08 16:25:23
+ * @buildtime: 2010-10-08 16:36:03
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -15232,6 +15232,7 @@ KISSY.Editor.add("removeformat", function(editor) {
  */
 KISSY.Editor.add("select", function() {
     var S = KISSY,
+        UA = S.UA,
         Node = S.Node,
         Event = S.Event,
         DOM = S.DOM,
@@ -15316,6 +15317,12 @@ KISSY.Editor.add("select", function() {
                 innerText.html(self._findNameByV(self.get("value")));
             } else {
                 innerText.html(title);
+            }
+            if (UA.ie == 6) {
+                //odd ie ,字错位
+                setTimeout(function() {
+                    innerText.css("zoom", 1);
+                }, 0);
             }
 
             text.css("width", self.get("width"));
