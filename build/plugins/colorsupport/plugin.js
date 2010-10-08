@@ -60,7 +60,9 @@ KISSY.Editor.add("colorsupport", function(editor) {
         for (var j = 0; j < 8; j++) {
             var currentColor = normalColor(colorButton_colors[8 * i + j]);
             html += "<td>";
-            html += "<a href='javascript:void(0);' class='ke-color-a'><span style='background-color:"
+            html += "<a href='javascript:void(0);' " +
+                "class='ke-color-a'" +
+                "><span style='background-color:"
                 + currentColor
                 + "'></span></a>";
             html += "</td>";
@@ -147,6 +149,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 focusMgr:false
             });
             document.body.appendChild(self.colorPanel[0]);
+            self.colorPanel._4e_unselectable();
             self.colorPanel.on("click", self._selectColor, self);
             Event.on(document, "click", self._hidePanel, self);
             Event.on(editor.document, "click", self._hidePanel, self);

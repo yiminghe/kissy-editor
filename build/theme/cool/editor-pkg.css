@@ -679,6 +679,7 @@ menu style for kissy editor ,include contextmenu and select menu
     -moz-box-shadow: 2px 2px 0.5em #888888;
     -webkit-box-shadow: 2px 2px 0.5em #888888;
     box-shadow: 2px 2px 0.5em #888888;
+    overflow: hidden;
 }
 
 .ke-dialog-iframe {

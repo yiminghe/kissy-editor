@@ -85,9 +85,9 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
-            if (UA.ie)DOM.addClass(document.body,"ie" + UA.ie)
-            else if (UA.gecko) DOM.addClass(document.body,"gecko");
-            else if (UA.webkit) DOM.addClass(document.body,"webkit");
+            if (UA.ie)DOM.addClass(document.body, "ie" + UA.ie)
+            else if (UA.gecko) DOM.addClass(document.body, "gecko");
+            else if (UA.webkit) DOM.addClass(document.body, "webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?
@@ -554,9 +554,9 @@ KISSY.Editor.add("definition", function(KE) {
             focusGrabber = new Node(DOM.insertAfter(new Node(
                 // Use 'span' instead of anything else to fly under the screen-reader radar. (#5049)
                 '<span ' +
-                    //'tabindex="-1" ' +
+                    'tabindex="-1" ' +
                     'style="position:absolute; left:-10000"' +
-                    //' role="presentation"' +
+                    ' role="presentation"' +
                     '></span>')[0], textarea));
             focusGrabber.on('focus', function() {
                 self.focus();
@@ -576,10 +576,15 @@ KISSY.Editor.add("definition", function(KE) {
                 // Setting focus directly on editor doesn't work, we
                 // have to use here a temporary element to 'redirect'
                 // the focus.
-
                 if (evt.target === htmlElement[0]) {
                     if (UA.gecko)
                         blinkCursor(false);
+                    //setTimeout(function() {
+                    //这种：html mousedown -> body beforedeactivate
+                    //    self.focus();
+                    //}, 30);
+
+                    //这种：body beforedeactivate -> html mousedown
                     focusGrabber[0].focus();
                 }
             });

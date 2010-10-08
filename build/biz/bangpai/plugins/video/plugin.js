@@ -110,7 +110,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<span>链接： " +
                 "</span>" +
                 "<input " +
-                "class='ke-video-url ke-input' style='width:310px'/>" +
+                "class='ke-video-url ke-input' style='width:300px'/>" +
                 "</label>" +
                 "</p>" +
                 "<table style='margin:10px 0 5px  40px;width:100%;'>" +
@@ -268,8 +268,12 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dAlign.val(r.attr("align"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
-                        self.dWidth.val(r.attr("width"));
-                        self.dHeight.val(r.attr("height"));
+                        if (f.css("width")) {
+                            self.dWidth.val(parseInt(f.css("width")));
+                        }
+                        if (f.css("height")) {
+                            self.dHeight.val(parseInt(f.css("height")));
+                        }
                     } else {
                         KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("");

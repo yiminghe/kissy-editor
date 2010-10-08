@@ -232,11 +232,11 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         if (!r) return;
-                        if (r.attr("width")) {
-                            self.dWidth.val(parseInt(r.attr("width")));
+                        if (f.css("width")) {
+                            self.dWidth.val(parseInt(f.css("width")));
                         }
-                        if (r.attr("height")) {
-                            self.dHeight.val(parseInt(r.attr("height")));
+                        if (f.css("height")) {
+                            self.dHeight.val(parseInt(f.css("height")));
                         }
                         self.dAlign.val(r.attr("align"));
                         self.dUrl.val(self._getFlashUrl(r));

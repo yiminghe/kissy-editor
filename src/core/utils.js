@@ -264,7 +264,23 @@ KISSY.Editor.add("utils", function(KE) {
                     node.removeChild(c);
                 }
             }
+        },
+        /**
+         * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
+         * @param {String} value The string to encode
+         * @return {String} The encoded text
+         */
+        htmlEncode : function(value) {
+            return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+        },
 
+        /**
+         * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+         * @param {String} value The string to decode
+         * @return {String} The decoded text
+         */
+        htmlDecode : function(value) {
+            return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
         }
     }
 });

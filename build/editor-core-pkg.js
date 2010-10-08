@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-08 18:28:55
+ * @buildtime: 2010-10-08 22:31:28
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -551,7 +551,23 @@ KISSY.Editor.add("utils", function(KE) {
                     node.removeChild(c);
                 }
             }
+        },
+        /**
+         * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
+         * @param {String} value The string to encode
+         * @return {String} The encoded text
+         */
+        htmlEncode : function(value) {
+            return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+        },
 
+        /**
+         * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+         * @param {String} value The string to decode
+         * @return {String} The decoded text
+         */
+        htmlDecode : function(value) {
+            return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
         }
     }
 });
@@ -706,9 +722,9 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
-            if (UA.ie)DOM.addClass(document.body,"ie" + UA.ie)
-            else if (UA.gecko) DOM.addClass(document.body,"gecko");
-            else if (UA.webkit) DOM.addClass(document.body,"webkit");
+            if (UA.ie)DOM.addClass(document.body, "ie" + UA.ie)
+            else if (UA.gecko) DOM.addClass(document.body, "gecko");
+            else if (UA.webkit) DOM.addClass(document.body, "webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?
@@ -1175,9 +1191,9 @@ KISSY.Editor.add("definition", function(KE) {
             focusGrabber = new Node(DOM.insertAfter(new Node(
                 // Use 'span' instead of anything else to fly under the screen-reader radar. (#5049)
                 '<span ' +
-                    //'tabindex="-1" ' +
+                    'tabindex="-1" ' +
                     'style="position:absolute; left:-10000"' +
-                    //' role="presentation"' +
+                    ' role="presentation"' +
                     '></span>')[0], textarea));
             focusGrabber.on('focus', function() {
                 self.focus();
@@ -1197,10 +1213,15 @@ KISSY.Editor.add("definition", function(KE) {
                 // Setting focus directly on editor doesn't work, we
                 // have to use here a temporary element to 'redirect'
                 // the focus.
-
                 if (evt.target === htmlElement[0]) {
                     if (UA.gecko)
                         blinkCursor(false);
+                    //setTimeout(function() {
+                    //这种：html mousedown -> body beforedeactivate
+                    //    self.focus();
+                    //}, 30);
+
+                    //这种：body beforedeactivate -> html mousedown
                     focusGrabber[0].focus();
                 }
             });
@@ -5478,27 +5499,24 @@ KISSY.Editor.add("selection", function(KE) {
         selectElement : function(element) {
             var range,self = this;
             if (UA.ie) {
-                //do not use empty()，滚动条重置了
+                //do not use empty()，编辑器内滚动条重置了
                 //选择的 img 内容前后莫名被清除
-                //self.getNative().clear();
+                //self.getNative().empty();
                 try {
                     // Try to select the node as a control.
                     range = self.document.body.createControlRange();
                     range.addElement(element[0]);
                     range.select();
-                }
-                catch(e) {
+                } catch(e) {
                     // If failed, select it as a text range.
                     range = self.document.body.createTextRange();
                     range.moveToElementText(element[0]);
                     range.select();
-                }
-                finally {
+                } finally {
                     //this.document.fire('selectionchange');
                 }
                 self.reset();
-            }
-            else {
+            } else {
                 // Create the range for the element.
                 range = self.document.createRange();
                 range.selectNode(element[0]);
@@ -5773,7 +5791,9 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //wokao,ie 焦点管理不行啊
+            //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域也丢失了
+
+
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
             //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
@@ -5796,23 +5816,56 @@ KISSY.Editor.add("selection", function(KE) {
             // than firing the selection change event.
 
             var savedRange,
-                saveEnabled;
+                saveEnabled,
+                //2010-10-08 import from ckeditor 3.4.1
+                //ie 点击(mousedown-focus-mouseup)空白处，不保留原有的 selection
+                restoreEnabled = 1;
+
+            // Listening on document element ensures that
+            // scrollbar is included. (#5280)
+            html.on('mousedown', function () {
+                // Lock restore selection now, as we have
+                // a followed 'click' event which introduce
+                // new selection. (#5735)
+                //点击时不要恢复了，点击就意味着原来的选择区域作废
+                restoreEnabled = 0;
+                //console.log("html mousedown");
+            });
+
+            html.on('mouseup', function () {
+                restoreEnabled = 1;
+                //console.log("html mouseup");
+            });
+            //事件顺序
+            // 1.body mousedown
+            // 2.html mousedown
+            // body  blur
+            // window blur
+            // 3.body focusin
+            // 4.body focus
+            // 5.window focus
+            // 6.body mouseup
+            // 7.body mousedown
+            // 8.body click
+            // 9.html click
+            // 10.doc click
 
             // "onfocusin" is fired before "onfocus". It makes it
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
+
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
-                if (evt.target.nodeName.toUpperCase() != 'BODY')
+                if (DOM._4e_name(evt.target) != 'body')
                     return;
-
+                //console.log("body focusin :" + restoreEnabled);
                 // If we have saved a range, restore it at this
                 // point.
                 if (savedRange) {
                     // Well not break because of this.
                     try {
-                        savedRange.select();
+                        restoreEnabled && savedRange.select();
                     }
                     catch (e) {
                     }
@@ -5822,33 +5875,60 @@ KISSY.Editor.add("selection", function(KE) {
             });
 
             body.on('focus', function() {
+                //console.log("body focus");
                 // Enable selections to be saved.
                 saveEnabled = true;
                 saveSelection();
             });
 
             body.on('beforedeactivate', function(evt) {
+
                 // Ignore this event if it's caused by focus switch between
                 // internal editable control type elements, e.g. layouted paragraph. (#4682)
                 if (evt.relatedTarget)
                     return;
-
+                //console.log("body beforedeactivate");
                 // Disable selections from being saved.
                 saveEnabled = false;
+                restoreEnabled = 1;
             });
 
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
-            if (UA.ie < 8) {
-                Event.on(DOM._4e_getWin(doc), 'blur', function() {
-                    doc.selection.empty();
-                });
-            }
+            //if (UA.ie < 8) {
+            Event.on(DOM._4e_getWin(doc), 'blur', function() {
+                //console.log("win blur");
+                //把选择区域与光标清除
+                //防止focus时，光标会出现移位，先移回原来再移过来
+                doc && doc.selection.empty();
+            });
+            /*
+             Event.on(body, 'blur', function() {
+
+             });
+
+             Event.on(DOM._4e_getWin(doc), 'focus', function() {
+
+             });
+             Event.on(doc, 'click', function() {
+
+             });
+             body.on('click', function() {
+
+             });
+             html.on('click', function() {
+
+             });*/
+            //}
 
             // IE fires the "selectionchange" event when clicking
             // inside a selection. We don't want to capture that.
-            body.on('mousedown', disableSave);
+            body.on('mousedown', function() {
+                //console.log("body mousedown");
+                disableSave();
+            });
             body.on('mouseup', function() {
+                //console.log("body mouseup");
                 saveEnabled = true;
                 setTimeout(function() {
                     saveSelection(true);
@@ -5876,7 +5956,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
-                        type = sel&&sel.getType(),
+                        type = sel && sel.getType(),
                         nativeSel = sel && sel.getNative();
 
                     // There is a very specific case, when clicking

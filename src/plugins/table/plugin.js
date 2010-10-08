@@ -181,7 +181,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     if (cssClass) {
                         attributes[ 'class' ] =
-                            S.trim(cssClass.replace(showBorderClassName, "").replace(/\s{2}/, " "));
+                            trim(cssClass.replace(showBorderClassName, "").replace(/\s{2}/, " "));
                     }
                 }
 
@@ -348,10 +348,11 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     else
                         selectedTable.css("height", "");
                     if (valid(d.tcaption.val())) {
+                        var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
                         if (caption && caption[0])
-                            caption.html(trim(d.tcaption.val()));
+                            caption.html(tcv);
                         else
-                            new Node("<caption><span>" + trim(d.tcaption.val()) + "</span></caption>")
+                            new Node("<caption><span>" + tcv + "</span></caption>")
                                 .insertBefore(selectedTable[0].firstChild);
                     } else if (caption) {
                         caption._4e_remove();
@@ -370,30 +371,30 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         editor = self.editor;
 
                     if (valid(d.talign.val()))
-                        html += "align='" + S.trim(d.talign.val()) + "' ";
+                        html += "align='" + trim(d.talign.val()) + "' ";
                     //if (S.trim(d.tcellspacing.val()).length != 0)
                     //    html += "cellspacing='" + S.trim(d.tcellspacing.val()) + "' ";
                     //if (S.trim(d.tcellpadding.val()).length != 0)
                     //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
                     if (valid(d.tborder.val()))
-                        html += "border='" + S.trim(d.tborder.val()) + "' ";
+                        html += "border='" + trim(d.tborder.val()) + "' ";
                     if (valid(d.twidth.val()) || valid(d.theight.val())) {
                         html += "style='";
                         if (valid(d.twidth.val())) {
-                            html += "width:" + S.trim(d.twidth.val()) + d.twidthunit.val() + ";"
+                            html += "width:" + trim(d.twidth.val()) + d.twidthunit.val() + ";"
                         }
                         if (valid(d.theight.val())) {
-                            html += "height:" + S.trim(d.theight.val()) + "px;"
+                            html += "height:" + trim(d.theight.val()) + "px;"
                         }
                         html += "' "
                     }
-                    if (!valid(d.tborder.val()) || S.trim(d.tborder.val()) == "0") {
+                    if (!valid(d.tborder.val()) || trim(d.tborder.val()) == "0") {
                         html += "class='" + showBorderClassName + "' "
                     }
 
                     html += ">";
                     if (valid(d.tcaption.val())) {
-                        html += "<caption><span>" + S.trim(d.tcaption.val())
+                        html += "<caption><span>" + KE.Utils.htmlEncode(trim(d.tcaption.val()))
                             + "</span></caption>";
                     }
                     if (d.thead.val()) {

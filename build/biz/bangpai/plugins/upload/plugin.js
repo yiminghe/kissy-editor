@@ -15,7 +15,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             PIC_NUM_LIMIT = 15,
             PIC_NUM_LIMIT_WARNING = "系统将只保留n张",
             PIC_SIZE_LIMIT = 1000,
-            PIC_SIZE_LIMIT_WARNING = "图片不能超过nM",
+            PIC_SIZE_LIMIT_WARNING = "图片不能超过nKB",
             Node = S.Node,
             holder = [],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
