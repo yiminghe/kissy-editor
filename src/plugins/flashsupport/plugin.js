@@ -30,10 +30,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url ke-input' style='width:310px' />" +
+                    "class='ke-flash-url ke-input' style='width:300px' />" +
                     "</label>" +
                     "</p>" +
-                    "<table style='margin:10px 0 5px  40px;width:100%;'>" +
+                    "<table style='margin:10px 0 5px  40px;width:300px;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +

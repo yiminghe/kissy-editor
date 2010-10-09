@@ -76,7 +76,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url ke-input' style='width:310px'  />" +
+                    "class='ke-music-url ke-input' style='width:300px'  />" +
                     "</label>" +
                     "</p>" +
                     "<p style='margin: 10px 0 10px 40px;'>" +
@@ -86,7 +86,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    KE.Utils.duplicateStr("&nbsp;", 10) +
+                    KE.Utils.duplicateStr("&nbsp;", 7) +
                     "<label>间距： " +
                     "</span> <input " +
                     " data-verify='^\\d+(.\\d+)?$' " +

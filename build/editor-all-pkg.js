@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-08 22:31:28
+ * @buildtime: 2010-10-09 09:48:29
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8728,10 +8728,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url ke-input' style='width:310px' />" +
+                    "class='ke-flash-url ke-input' style='width:300px' />" +
                     "</label>" +
                     "</p>" +
-                    "<table style='margin:10px 0 5px  40px;width:100%;'>" +
+                    "<table style='margin:10px 0 5px  40px;width:300px;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>宽度： " +
@@ -13187,7 +13187,7 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:230px' " +
+                    "style='width:220px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
@@ -14412,7 +14412,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url ke-input' style='width:310px'  />" +
+                    "class='ke-music-url ke-input' style='width:300px'  />" +
                     "</label>" +
                     "</p>" +
                     "<p style='margin: 10px 0 10px 40px;'>" +
@@ -14422,7 +14422,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    KE.Utils.duplicateStr("&nbsp;", 10) +
+                    KE.Utils.duplicateStr("&nbsp;", 7) +
                     "<label>间距： " +
                     "</span> <input " +
                     " data-verify='^\\d+(.\\d+)?$' " +
