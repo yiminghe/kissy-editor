@@ -166,12 +166,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
+                "</label>" +
                 "<label style='margin-left:45px;'>间距： " +
-                "</span> " +
+                " " +
                 "<input " +
                 "" +
-                " data-verify='^\\d+(.\\d+)?$' " +
-                " data-warning='间距请输入非负数字' " +
+                " data-verify='^\\d+$' " +
+                " data-warning='间距请输入非负整数' " +
                 "class='ke-xiami-margin ke-input' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +

@@ -71,8 +71,7 @@ KISSY.Editor.add("music", function(editor) {
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
-                    "<span>网址： " +
-                    "</span>" +
+                    "网址： " +
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
@@ -80,21 +79,21 @@ KISSY.Editor.add("music", function(editor) {
                     "</label>" +
                     "</p>" +
                     "<p style='margin: 10px 0 10px 40px;'>" +
-                    "<label>对齐： " +
+                    "<label style='vertical-align:middle;'>对齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
-                    KE.Utils.duplicateStr("&nbsp;", 7) +
-                    "<label>间距： " +
-                    "</span> <input " +
-                    " data-verify='^\\d+(.\\d+)?$' " +
-                    " data-warning='间距请输入非负数字' " +
+                    "</label>" +
+                    "<label style='margin-left:35px;'>间距： " +
+                    "<input " +
+                    " data-verify='^\\d+$' " +
+                    " data-warning='间距请输入非负整数' " +
                     "class='ke-music-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
-                    "<p>" +
+                    "</p>" +
                     "</div>",
                 footHtml = "<button class='ke-music-ok ke-button' " +
                     "style='margin:0 20px 0 40px;'>确定</button> " +

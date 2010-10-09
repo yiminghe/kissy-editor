@@ -82,16 +82,16 @@ KISSY.Editor.add("image", function(editor) {
                     "<label>" +
                     "宽度： " +
                     "<input " +
-                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
-                    " data-warning='宽度请输入正数' " +
+                    " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                    " data-warning='宽度请输入正整数' " +
                     "class='ke-img-width ke-input' style='width:60px' value='" +
                     DTIP + "'/> 像素 </label>" +
                     "</td>" +
                     "<td><label>" +
                     "高度： " +
                     "<input " +
-                    " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
-                    " data-warning='高度请输入正数' " +
+                    " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                    " data-warning='高度请输入正整数' " +
                     "class='ke-img-height ke-input' style='width:60px' " +
                     "value='" + DTIP + "'/> 像素 </label>" +
                     "</td>" +
@@ -112,8 +112,8 @@ KISSY.Editor.add("image", function(editor) {
                     "间距： " +
                     "<input " +
                     "" +
-                    " data-verify='^\\d+(.\\d+)?$' " +
-                    " data-warning='间距请输入非负数字' " +
+                    " data-verify='^\\d+$' " +
+                    " data-warning='间距请输入非负整数' " +
                     "class='ke-img-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
@@ -385,6 +385,7 @@ KISSY.Editor.add("image", function(editor) {
                     var self = this,
                         url = self.imgUrl.val(),
                         re;
+
                     re = KE.Utils.verifyInputs(self.d.el.all("input"));
                     if (!re) return;
                     var height = parseInt(self.imgHeight.val()),

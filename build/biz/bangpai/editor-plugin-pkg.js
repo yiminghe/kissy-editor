@@ -166,12 +166,13 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
+                "</label>" +
                 "<label style='margin-left:45px;'>间距： " +
-                "</span> " +
+                " " +
                 "<input " +
                 "" +
-                " data-verify='^\\d+(.\\d+)?$' " +
-                " data-warning='间距请输入非负数字' " +
+                " data-verify='^\\d+$' " +
+                " data-warning='间距请输入非负整数' " +
                 "class='ke-xiami-margin ke-input' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
@@ -966,8 +967,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                 "<p>" +
                 "<label>" +
-                "<span>链接： " +
-                "</span>" +
+                "链接： " +
+                "" +
                 "<input " +
                 "class='ke-video-url ke-input' style='width:300px'/>" +
                 "</label>" +
@@ -975,20 +976,20 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<table style='margin:10px 0 5px  40px;width:300px;'>" +
                 "<tr><td>" +
                 "<label>宽度： " +
-                "</span> " +
+                " " +
                 "<input " +
-                " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
-                " data-warning='宽度请输入正数' " +
+                " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                " data-warning='宽度请输入正整数' " +
                 "class='ke-video-width ke-input' style='width:60px' value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
                 "</td>" +
                 "<td>" +
                 "<label> 高度： " +
-                "</span>" +
+                "" +
                 " <input " +
-                " data-verify='^" + DTIP + "|((?!0$)\\d+(.\\d+)?)$' " +
-                " data-warning='高度请输入正数' " +
+                " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                " data-warning='高度请输入正整数' " +
                 "class='ke-video-height ke-input' style='width:60px' value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
@@ -1004,10 +1005,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</td>" +
                 "<td>" +
                 "<label>间距： " +
-                "</span> <input " +
+                "<input " +
                 "" +
-                " data-verify='^\\d+(.\\d+)?$' " +
-                " data-warning='间距请输入非负数字' " +
+                " data-verify='^\\d+$' " +
+                " data-warning='间距请输入非负整数' " +
                 "class='ke-video-margin ke-input' style='width:60px' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +

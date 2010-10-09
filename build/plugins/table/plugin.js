@@ -28,8 +28,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>宽度： <input " +
-            " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
-            " data-warning='宽度请输入正数' " +
+            " data-verify='^(?!0$)\\d+$' " +
+            " data-warning='宽度请输入正整数' " +
             "value='200' " +
             "class='ke-table-width' " +
             "size='" + IN_SIZE + "'/></label> " +
@@ -51,8 +51,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</td>" +
             "<td>" +
             "<label>高度： <input " +
-            " data-verify='^((?!0$)\\d+(.\\d+)?)?$' " +
-            " data-warning='高度请输入正数' " +
+            " data-verify='^((?!0$)\\d+)?$' " +
+            " data-warning='高度请输入正整数' " +
             "value='' " +
             "class='ke-table-height' " +
             "size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
@@ -103,8 +103,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
             "<td>" +
             "<label>边框： <input " +
-            " data-verify='^\\d+(.\\d+)?$' " +
-            " data-warning='边框请输入非负数字' " +
+            " data-verify='^\\d+$' " +
+            " data-warning='边框请输入非负整数' " +
             "value='1' " +
             "class='ke-table-border' " +
             "size='" + IN_SIZE + "'/>" +
@@ -117,12 +117,14 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "<tr>" +
             "<td colspan='2'>" +
             "<label>" +
-            "标题：<input class='ke-table-caption' style='width:270px'>" +
+            "标题：" +
+            "<input class='ke-table-caption' style='width:270px'>" +
             "</label>" +
             "</td>" +
             "</tr>" +
             "</table>",
-        footHtml = "<button class='ke-table-ok'>确定</button> <button class='ke-table-cancel'>取消</button>",
+        footHtml = "<button class='ke-table-ok'>确定</button> " +
+            "<button class='ke-table-cancel'>取消</button>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
 

@@ -38,14 +38,14 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>宽度： " +
                     "<input " +
-                    " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
-                    " data-warning='宽度请输入正数' " +
+                    " data-verify='^(?!0$)\\d+$' " +
+                    " data-warning='宽度请输入正整数' " +
                     "class='ke-flash-width ke-input' style='width:60px' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
-                    " data-verify='^(?!0$)\\d+(.\\d+)?$' " +
-                    " data-warning='高度请输入正数' " +
+                    " data-verify='^(?!0$)\\d+$' " +
+                    " data-warning='高度请输入正整数' " +
                     "class='ke-flash-height ke-input' " +
                     "style='width:60px' /> 像素 </label></td>" +
                     "</tr>" +
@@ -61,8 +61,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>间距：" +
                     "<input " +
-                    " data-verify='^\\d+(.\\d+)?$' " +
-                    " data-warning='间距请输入非负数字' "
+                    " data-verify='^\\d+$' " +
+                    " data-warning='间距请输入非负整数' "
                     + "class='ke-flash-margin ke-input' style='width:60px' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +

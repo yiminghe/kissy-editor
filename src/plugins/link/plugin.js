@@ -41,10 +41,9 @@ KISSY.Editor.add("link", function(editor) {
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
-                    "<span " +
-                    ">" +
+
                     "链接网址： " +
-                    "</span>" +
+
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
