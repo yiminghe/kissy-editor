@@ -174,6 +174,13 @@ KISSY.Editor.add("select", function() {
             }
             else return self.get("value");
         },
+        _resize:function() {
+            var self = this,
+                menu = self.menu;
+            if (menu.get("visible")) {
+                self._real();
+            }
+        },
         _prepare:function() {
             var self = this,
                 el = self.el,
@@ -187,6 +194,8 @@ KISSY.Editor.add("select", function() {
                 }),
                 items = self.get("items");
             self.menu = menu;
+            //缩放，下拉框跟随
+            Event.on(window, "resize", self._resize, self);
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -278,7 +287,7 @@ KISSY.Editor.add("select", function() {
                         >
                         (wt + wh - xy.top)) {
                 xy = orixy;
-                xy.top -= menuHeight + 9;
+                xy.top -= menuHeight;
             }
             //xy.left += 1;
             if (xy.left + menuWidth > ww - 60) {
