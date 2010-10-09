@@ -63,9 +63,9 @@ KISSY.Editor.add("link", function(editor) {
                     "</p>" +
 
                     "</div>",
-                footHtml = "<button class='ke-link-ok ke-button' " +
-                    "style='margin-left:65px;margin-right:20px;'>确定</button> " +
-                    "<button class='ke-link-cancel ke-button'>取消</button>";
+                footHtml = "<a class='ke-link-ok ke-button' " +
+                    "style='margin-left:65px;margin-right:20px;'>确定</a> " +
+                    "<a class='ke-link-cancel ke-button'>取消</a>";
 
 
             function Link(editor) {

@@ -182,8 +182,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "class='ke-xiami-list'>" +
                 "</div>" +
                 "</div>",
-                footHtml = "<button class='ke-xiami-ok ke-button'>确&nbsp;定</button>" +
-                    "<button class='ke-xiami-cancel ke-button' style='margin-left:20px;'>取&nbsp;消</button>";
+                footHtml = "<a " +
+                    "class='ke-xiami-ok ke-button' " +
+                    "style='margin-right:20px;'>确&nbsp;定</a>" +
+                    "<a class='ke-xiami-cancel ke-button'>取&nbsp;消</a>";
 
 
             function BangPaiMusic(editor) {

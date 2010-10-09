@@ -12,8 +12,8 @@ KISSY.Editor.add("definition", function(KE) {
         WIDTH = "width",
         HEIGHT = "height",
         NONE = "none",
-        VISIBILITY = "visibility",
-        HIDDEN = "hidden",
+        //VISIBILITY = "visibility",
+        //HIDDEN = "hidden",
         focusManager = KE.focusManager,
         tryThese = KE.Utils.tryThese,
         HTML5_DTD = '<!doctype html>',
@@ -85,7 +85,7 @@ KISSY.Editor.add("definition", function(KE) {
 
     S.augment(KE, {
         init:function(textarea) {
-            if (UA.ie)DOM.addClass(document.body, "ie" + UA.ie)
+            if (UA.ie)DOM.addClass(document.body, "ie" + UA.ie);
             else if (UA.gecko) DOM.addClass(document.body, "gecko");
             else if (UA.webkit) DOM.addClass(document.body, "webkit");
             var self = this,
@@ -148,10 +148,12 @@ KISSY.Editor.add("definition", function(KE) {
             return this._commands[name];
         },
         execCommand:function(name) {
-            var self = this;
+            var self = this,cmd = self._commands[name],args = S.makeArray(arguments);
+            args.shift();
+            args.unshift(self);
             //if (self._commands[name]) {
             self.fire("save");
-            var re = self._commands[name].exec(self);
+            var re = cmd.exec.apply(cmd, args);
             self.fire("save");
             return re;
             //}
@@ -183,40 +185,28 @@ KISSY.Editor.add("definition", function(KE) {
                 self.textarea.val(data);
             }
         },
+
         sync:function() {
             this.textarea.val(this.getData());
         },
+
         //撤销重做时，不需要格式化代码，直接取自身
         _getRawData:function() {
             return this.document.body.innerHTML;
         },
+
         //撤销重做时，不需要格式化代码，直接取自身
         _setRawData:function(data) {
             this.document.body.innerHTML = data;
         },
-        _hideSource:function() {
-            var self = this;
-            self.iframe.css(DISPLAY, "");
-            self.textarea.css(DISPLAY, NONE);
-            self.fire("wysiwygmode");
-        },
 
-        _showSource:    function() {
-            var self = this;
-            self.textarea.css(DISPLAY, "");
-            self.iframe.css(DISPLAY, NONE);
-            //ie textarea height:100%不起作用
-            if (UA.ie < 8) {
-                self.textarea.css(HEIGHT, self.wrap.css(HEIGHT));
-            }
-            self.fire("sourcemode");
-        },
         _prepareIFrameHtml:prepareIFrameHtml,
 
         getSelection:function() {
             var sel = new KE.Selection(this.document);
             return ( !sel || sel.isInvalid ) ? null : sel;
-        } ,
+        },
+
         focus:function() {
             //console.log("manually focus");
             var self = this,
@@ -561,6 +551,10 @@ KISSY.Editor.add("definition", function(KE) {
             focusGrabber.on('focus', function() {
                 self.focus();
             });
+            self.activateGecko = function() {
+                if (UA.gecko && self.iframeFocus)
+                    focusGrabber[0].focus();
+            };
             self.on('destroy', function() {
             });
         }

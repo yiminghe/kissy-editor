@@ -70,9 +70,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "</table>" +
                     "</div>",
 
-                footHtml = "<button class='ke-flash-ok ke-button' " +
-                    "style='margin-left:40px;margin-right:20px;'>确定</button> " +
-                    "<a style='cursor:pointer'  class='ke-flash-cancel'>取消</a>";
+                footHtml = "<a " +
+                    "class='ke-flash-ok ke-button' " +
+                    "style='margin-left:40px;margin-right:20px;'>确定</a> " +
+                    "<a class='ke-flash-cancel ke-button'>取消</a>";
 
             /**
              * 所有基于 flash 的插件基类，使用 template 模式抽象
@@ -332,7 +333,10 @@ KISSY.Editor.add("flashsupport", function(editor) {
              * tip初始化，所有共享一个tip
              */
             var tipHtml = ' '
-                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+                + ' <a ' +
+                'class="ke-bubbleview-url" ' +
+                'target="_blank" ' +
+                'href="#"></a> - '
                 + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
                 + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
                 + '';

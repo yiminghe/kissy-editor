@@ -4,7 +4,6 @@
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {
-
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -13,8 +12,6 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
-    //firefox 3.5 不支持，有bug
-    if(UA.gecko<1.92) return;
 
     if (!KE.Maximize) {
         (function() {
@@ -88,12 +85,11 @@ KISSY.Editor.add("maximize", function(editor) {
                     editor.wrap.css({
                         height:self.iframeHeight
                     });
-                    new Node(doc.body).css({
+                    DOM.css([doc.documentElement,doc.body], {
                         width:"",
                         height:"",
                         overflow:""
                     });
-                    doc.documentElement.style.overflow = "";
                     editor.editorWrap.css({
                         position:"static",
                         width:self.editorWrapWidth
@@ -142,6 +138,7 @@ KISSY.Editor.add("maximize", function(editor) {
                 _saveEditorStatus:function() {
                     var self = this,
                         editor = self.editor;
+                    self.savedRanges = null;
                     if (!UA.gecko || !editor.iframeFocus) return;
                     var sel = editor.getSelection();
                     //firefox 光标丢失bug,位置丢失，所以这里保存下
@@ -159,16 +156,15 @@ KISSY.Editor.add("maximize", function(editor) {
                         savedRanges = self.savedRanges;
 
                     //firefox焦点bug
-                    if (UA.gecko && editor.iframeFocus) {
-                        //原来是聚焦，现在刷新designmode
-                        //firefox 先失去焦点才行
-                        self.el.el[0].focus();
-                        editor.focus();
-                        if (savedRanges && sel) {
-                            sel.selectRanges(savedRanges);
-                        }
 
+                    //原来是聚焦，现在刷新designmode
+                    //firefox 先失去焦点才行
+                    editor.activateGecko();
+
+                    if (savedRanges && sel) {
+                        sel.selectRanges(savedRanges);
                     }
+
                     //firefox 有焦点时才重新聚焦
                     if (editor.iframeFocus && sel) {
                         var element = sel.getStartElement();
@@ -183,6 +179,7 @@ KISSY.Editor.add("maximize", function(editor) {
                  */
                 _maximize:function() {
                     var self = this,
+                        doc = document,
                         editor = self.editor,
                         editorWrap = editor.editorWrap,
                         viewportHeight = DOM.viewportHeight(),
@@ -190,17 +187,13 @@ KISSY.Editor.add("maximize", function(editor) {
                         statusHeight = editor.statusDiv ? editor.statusDiv.height() : 0,
                         toolHeight = editor.toolBarDiv.height();
 
-                    if (!UA.ie) {
-                        new Node(document.body).css({
-                            width:0,
-                            height:0,
-                            overflow:"hidden"
-                        });
-                    }
-                    else {
-                        document.documentElement.style.overflow = "hidden";
-                        document.body.style.overflow = "hidden";
-                    }
+
+                    DOM.css([doc.documentElement,doc.body], {
+                        width:0,
+                        height:0,
+                        overflow:"hidden"
+                    });
+
                     editorWrap.css({
                         position:"absolute",
                         zIndex:990,

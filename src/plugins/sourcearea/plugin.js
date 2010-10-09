@@ -11,6 +11,9 @@ KISSY.Editor.add("sourcearea", function(editor) {
     if (UA.gecko < 1.92) return;
     if (!KE.SourceArea) {
         (function() {
+            var SOURCE_MODE = KE.SOURCE_MODE ,
+                WYSIWYG_MODE = KE.WYSIWYG_MODE;
+
             function SourceArea(editor) {
                 this.editor = editor;
                 this._init();
@@ -23,39 +26,23 @@ KISSY.Editor.add("sourcearea", function(editor) {
                         container:editor.toolBarDiv,
                         title:"源码",
                         contentCls:"ke-toolbar-source"
-                        //text:"source"
                     });
                     self.el.on("offClick", self._show, self);
                     self.el.on("onClick", self._hide, self);
-
-                    //不被父容器阻止默认，可点击
-                    editor.textarea.on("mousedown", function(ev) {
-                        ev.stopPropagation();
-                    });
                 },
                 _show:function() {
                     var self = this,
-                        editor = self.editor,
-                        textarea = editor.textarea,
-                        iframe = editor.iframe,
-                        el = self.el;
-                    textarea.val(editor.getData());
-                    editor._showSource();
-                    el.set("state", TripleButton.ON);
+                        editor = self.editor;
+                    editor.execCommand("sourceAreaSupport", SOURCE_MODE);
+                    self.el.set("state", TripleButton.ON);
                 },
+
+
                 _hide:function() {
                     var self = this,
                         editor = self.editor,
-                        textarea = editor.textarea,
-                        iframe = editor.iframe,
                         el = self.el;
-                    editor._hideSource();
-                    editor.setData(textarea.val());
-                    //firefox 光标激活，强迫刷新
-                    if (UA.gecko && editor.iframeFocus) {
-                        el.el[0].focus();
-                        editor.focus();
-                    }
+                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);                    
                     el.set("state", TripleButton.OFF);
                 }
             });

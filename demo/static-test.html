@@ -240,6 +240,7 @@ box-shadow:2px 2px 0.5em #888888;
 <!--草稿-->
 <script src="../src/plugins/draft/plugin.js"></script>
 <!--源码--->
+<script src="../src/plugins/sourceareasupport/plugin.js"></script>
 <script src="../src/plugins/sourcearea/plugin.js"></script>
 <!--预览-->
 <script src="../src/plugins/preview/plugin.js"></script>
@@ -302,6 +303,8 @@ xiami 音乐
 xiami 音乐
 -->
 <script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
+
+<script src="../src/biz/bangpai/plugins/sourcearea/plugin.js"></script>
 <script>
     KISSY.ready(function(S) {
         S.use('editor', function() {
@@ -400,7 +403,7 @@ xiami 音乐
                         limit:10
                     }
                 }
-            }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
+            }).use("htmldataprocessor,enterkey,clipboard,elementpaths,bangpai-sourcearea,preview," +
                     "templates,separator," +
                     "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
                     "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +

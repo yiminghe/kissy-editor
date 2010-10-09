@@ -95,9 +95,9 @@ KISSY.Editor.add("music", function(editor) {
                     "</label>" +
                     "</p>" +
                     "</div>",
-                footHtml = "<button class='ke-music-ok ke-button' " +
-                    "style='margin:0 20px 0 40px;'>确定</button> " +
-                    "<a style='cursor:pointer;' class='ke-music-cancel'>取消</a>",
+                footHtml = "<a class='ke-music-ok ke-button' " +
+                    "style='margin:0 20px 0 40px;'>确定</a> " +
+                    "<a class='ke-music-cancel ke-button'>取消</a>",
                 music_reg = /#\(music\)/g,
                 flashRules = ["img." + CLS_MUSIC];
 

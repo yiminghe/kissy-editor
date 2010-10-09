@@ -14,7 +14,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
         TripleButton = KE.TripleButton,
         Overlay = KE.SimpleOverlay,
         IN_SIZE = 6,
-        TABLE_HTML = "<table class='ke-table-config'>" +
+        TABLE_HTML = "<div style='padding:20px 20px 10px 20px;'>" +
+            "<table class='ke-table-config' style='width:100%'>" +
             "<tr>" +
             "<td>" +
             "<label>行数： " +
@@ -22,17 +23,23 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='行数请输入正整数' " +
             " value='2' " +
-            " class='ke-table-rows ke-table-create-only' " +
-            " size='" + IN_SIZE + "'" +
-            " /></label>" +
+            " class='ke-table-rows ke-table-create-only ke-input' " +
+            " size='" +
+            IN_SIZE +
+            "'" +
+            " />" +
+            "</label>" +
             "</td>" +
             "<td>" +
-            "<label>宽度： <input " +
+            "<label>宽&nbsp;&nbsp;&nbsp;度： " +
+            "<input " +
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='宽度请输入正整数' " +
             "value='200' " +
-            "class='ke-table-width' " +
-            "size='" + IN_SIZE + "'/></label> " +
+            "style='vertical-align:middle;' " +
+            "class='ke-table-width ke-input' " +
+            "size='" + IN_SIZE + "'/>" +
+            "</label> " +
             "<select class='ke-table-width-unit'>" +
             "<option value='px'>像素</option>" +
             "<option value='%'>百分比</option>" +
@@ -41,90 +48,76 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "</tr>" +
             "<tr>" +
             "<td>" +
-            "<label>列数： <input " +
+            "<label>列数： " +
+            "<input " +
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='列数请输入正整数' " +
-            "" +
-            "class='ke-table-cols ke-table-create-only' " +
+            "class='ke-table-cols ke-table-create-only ke-input' " +
             "value='3' " +
-            "size='" + IN_SIZE + "'/></label>" +
+            "size='" +
+            IN_SIZE + "'/>" +
+            "</label>" +
             "</td>" +
             "<td>" +
-            "<label>高度： <input " +
+            "<label>高&nbsp;&nbsp;&nbsp;度： " +
+            "<input " +
             " data-verify='^((?!0$)\\d+)?$' " +
             " data-warning='高度请输入正整数' " +
             "value='' " +
-            "class='ke-table-height' " +
-            "size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
+            "class='ke-table-height ke-input' " +
+            "size='" + IN_SIZE + "'/>" +
+            "</label> &nbsp;像素" +
             "</td>" +
             "</tr>" +
             "<tr>" +
-
             "<td>" +
-            "<label>对齐： <select class='ke-table-align'>" +
+            "<label>对齐： " +
+            "<select class='ke-table-align'>" +
             "<option value=''>无</option>" +
             "<option value='left'>左对齐</option>" +
             "<option value='right'>右对齐</option>" +
             "<option value='center'>中间对齐</option>" +
             "</select>" +
-            "</label>" + "</td>" +
-            /*
-
-             "<td>" +
-             "<label>间距： <input value='1' class='ke-table-cellspacing' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
-             "</td>" +
-
-             */
+            "</label>" +
+            "</td>" +
             "<td>" +
-            "<label>标题格： <select class='ke-table-head ke-table-create-only'>" +
+            "<label>标题格： " +
+            "<select class='ke-table-head ke-table-create-only'>" +
             "<option value=''>无</option>" +
             "<option value='1'>有</option>" +
             "</select>" +
             "</td>" +
-
             "</tr>" +
-            /*
-             "<tr>" +
-
-
-
-
-             "<td>" +
-
-             "<label>边距： <input value='1' class='ke-table-cellpadding' size='" + IN_SIZE + "'/></label> &nbsp;像素</select>" +
-             "</td>" +
-
-
-
-             "</tr>" +
-             */
             "<tr>" +
-
-
             "<td>" +
-            "<label>边框： <input " +
+            "<label>边框： " +
+            "<input " +
             " data-verify='^\\d+$' " +
             " data-warning='边框请输入非负整数' " +
             "value='1' " +
-            "class='ke-table-border' " +
+            "class='ke-table-border ke-input' " +
             "size='" + IN_SIZE + "'/>" +
-            "</label> &nbsp;像素</select>" +
+            "</label> &nbsp;像素" +
             "</td>" +
             "<td>" +
             "</td>" +
-
             "</tr>" +
             "<tr>" +
             "<td colspan='2'>" +
             "<label>" +
-            "标题：" +
-            "<input class='ke-table-caption' style='width:270px'>" +
+            "标题： " +
+            "<input " +
+            "class='ke-table-caption ke-input' " +
+            "style='width:320px'>" +
             "</label>" +
             "</td>" +
             "</tr>" +
-            "</table>",
-        footHtml = "<button class='ke-table-ok'>确定</button> " +
-            "<button class='ke-table-cancel'>取消</button>",
+            "</table>" +
+            "</div>",
+        footHtml = "<a " +
+            "class='ke-table-ok ke-button' " +
+            "style='margin-right:20px;'>确定</a> " +
+            "<a class='ke-table-cancel ke-button'>取消</a>",
         ContextMenu = KE.ContextMenu,
         tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
 
@@ -255,7 +248,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     var self = this,
                         editor = self.editor,
                         d = new Overlay({
-                            width:"350px",
+                            width:"430px",
                             mask:true,
                             title:"表格属性"
                         }),
@@ -265,17 +258,15 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     var dbody = d.body;
                     d.twidth = dbody.one(".ke-table-width");
                     d.theight = dbody.one(".ke-table-height");
-                    // d.tcellspacing = d.body.one(".ke-table-cellspacing");
-                    //d.tcellpadding = d.body.one(".ke-table-cellpadding");
                     d.tborder = dbody.one(".ke-table-border");
                     d.tcaption = dbody.one(".ke-table-caption");
-                    d.talign = dbody.one(".ke-table-align");
+                    d.talign = KE.Select.decorate(dbody.one(".ke-table-align"));
                     d.trows = dbody.one(".ke-table-rows");
                     d.tcols = dbody.one(".ke-table-cols");
-                    d.thead = dbody.one(".ke-table-head");
+                    d.thead = KE.Select.decorate(dbody.one(".ke-table-head"));
                     var tok = d.foot.one(".ke-table-ok"),
                         tclose = d.foot.one(".ke-table-cancel");
-                    d.twidthunit = dbody.one(".ke-table-width-unit");
+                    d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
                     self.tableDialog = d;
                     tok.on("click", self._tableOk, self);
                     d.on("hide", function() {

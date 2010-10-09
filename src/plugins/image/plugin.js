@@ -122,9 +122,9 @@ KISSY.Editor.add("image", function(editor) {
                     "</table>" +
                     "</div>" +
                     "</div>",
-                footHtml = "<button class='ke-img-insert ke-button' " +
-                    "style='margin-right:30px;'>确定</button> " +
-                    "<a style='cursor:pointer;' class='ke-img-cancel'>取消</a>";
+                footHtml = "<a class='ke-img-insert ke-button' " +
+                    "style='margin-right:30px;'>确定</a> " +
+                    "<a  class='ke-img-cancel ke-button'>取消</a>";
 
             ImageInserter.ATTRS = {
                 editor:{}

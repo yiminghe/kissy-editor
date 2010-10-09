@@ -156,9 +156,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</table>" +
                 "</div>",
 
-                footHtml = "<button class='ke-video-ok ke-button' " +
+                footHtml = "<a " +
+                    "class='ke-video-ok ke-button' " +
                     "style='margin-left:40px;margin-right:20px;'>确定</button> " +
-                    "<a style='cursor:pointer' class='ke-video-cancel'>取消</a>",
+                    "<a class='ke-video-cancel ke-button'>取消</a>",
                 flashRules = ["img." + CLS_VIDEO];
 
 

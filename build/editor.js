@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-08 16:25:23
+ * @buildtime: 2010-10-09 17:05:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "sourceareasupport",
             "tabs",
             "flashbridge",
             "flashutils",
@@ -154,10 +155,12 @@ KISSY.add("editor", function(S, undefined) {
             "preview",
             "removeformat",
             {
-                name: "smiley"//,
-                //useCss: true
+                name: "smiley"
             },
-            "sourcearea",
+            {
+                name:"sourcearea",
+                requires:["sourceareasupport"]
+            },
             {
                 name: "table",
                 //useCss: true,

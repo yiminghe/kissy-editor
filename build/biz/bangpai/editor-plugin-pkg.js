@@ -182,8 +182,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "class='ke-xiami-list'>" +
                 "</div>" +
                 "</div>",
-                footHtml = "<button class='ke-xiami-ok ke-button'>确&nbsp;定</button>" +
-                    "<button class='ke-xiami-cancel ke-button' style='margin-left:20px;'>取&nbsp;消</button>";
+                footHtml = "<a " +
+                    "class='ke-xiami-ok ke-button' " +
+                    "style='margin-right:20px;'>确&nbsp;定</a>" +
+                    "<a class='ke-xiami-cancel ke-button'>取&nbsp;消</a>";
 
 
             function BangPaiMusic(editor) {
@@ -502,7 +504,72 @@ KISSY.Editor.add("bangpai-music", function(editor) {
 {
     attach:false,
     requires : ["flashsupport"]
-});KISSY.Editor.add("bangpai-upload", function(editor) {
+});/**
+ * bangpai source editor for kissy editor
+ * @author: yiminghe@gmail.com
+ */
+KISSY.Editor.add("bangpai-sourcearea", function(editor) {
+    var KE = KISSY.Editor,
+        S = KISSY,
+        Node = S.Node
+    UA = S.UA,
+        TripleButton = KE.TripleButton;
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92) return;
+    if (!KE.BangPaiSourceArea) {
+        (function() {
+            var SOURCE_MODE = KE.SOURCE_MODE ,
+                WYSIWYG_MODE = KE.WYSIWYG_MODE;
+
+            function BangPaiSourceArea(editor) {
+                this.editor = editor;
+                this._init();
+            }
+
+            S.augment(BangPaiSourceArea, {
+                _init:function() {
+                    var self = this,
+                        editor = self.editor,
+                        statusDiv = editor.statusDiv;
+                    self.el = new Node("<span " +
+                        "style='zoom:1;display:inline-block;height:22px;line-height:22px;'>" +
+                        "<input style='margin:0 5px;vertical-align:middle;' " +
+                        "type='checkbox' />" +
+                        "<span style='vertical-align:middle;'>编辑源代码</span></span>")
+                        .appendTo(statusDiv).one("input");
+                    self.el.on("click", self._check, self);
+                },
+                _check:function() {
+                    var self = this,el = self.el;
+                    if (el[0].checked) self._show();
+                    else self._hide();
+                },
+                _show:function() {
+                    var self = this,
+                        editor = self.editor;
+                    editor.execCommand("sourceAreaSupport", SOURCE_MODE);
+                },
+
+
+                _hide:function() {
+                    var self = this,
+                        editor = self.editor;
+                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
+                }
+            });
+            KE.BangPaiSourceArea = BangPaiSourceArea;
+        })();
+    }
+
+    editor.addPlugin(function() {
+        new KE.BangPaiSourceArea(editor);
+    });
+},
+{
+    attach:false,
+    requires : ["sourceareasupport"]
+});
+KISSY.Editor.add("bangpai-upload", function(editor) {
     var S = KISSY,KE = S.Editor;
 
     if (KE.BangPaiUpload) return;
@@ -1016,9 +1083,10 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "</table>" +
                 "</div>",
 
-                footHtml = "<button class='ke-video-ok ke-button' " +
+                footHtml = "<a " +
+                    "class='ke-video-ok ke-button' " +
                     "style='margin-left:40px;margin-right:20px;'>确定</button> " +
-                    "<a style='cursor:pointer' class='ke-video-cancel'>取消</a>",
+                    "<a class='ke-video-cancel ke-button'>取消</a>",
                 flashRules = ["img." + CLS_VIDEO];
 
 

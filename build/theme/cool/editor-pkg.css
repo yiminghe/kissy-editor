@@ -265,7 +265,8 @@ link
     _filter: chroma(color = tomato);
     vertical-align: middle;
     white-space: nowrap;
-    outline:none;
+    outline: none;
+    cursor: pointer;
 }
 
 .ke-triplebutton-on {
@@ -291,6 +292,7 @@ hover
 .ke-triplebutton:hover {
     text-decoration: none;
     color: black;
+    cursor: pointer;
 }
 
 .ke-triplebutton-off:hover {
@@ -302,10 +304,10 @@ hover
 }
 
 .ke-triplebutton-disabled:hover {
-
     background-color: transparent;
     opacity: 0.3;
     filter: chroma(color = tomato) alpha(opacity = 30);
+    cursor: default;
 }
 
 /**
@@ -316,6 +318,9 @@ active
 }
 
 .ke-button {
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
@@ -328,12 +333,19 @@ active
     padding: 3px 18px;
     _padding-bottom: 2px;
     *padding-bottom: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    color: black;
 }
 
 .ke-button:hover {
     border-color: rgb(232, 204, 160);
     background: #f5e7ce repeat-x left top;
     background-image: url("ke-button-bg-active.png");
+    cursor: pointer;
+    color: black;
+    text-decoration: none;
 }/**
 color plugin style for kissy editor
 @author:yiminghe@gmail.com

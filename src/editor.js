@@ -85,6 +85,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "sourceareasupport",
             "tabs",
             "flashbridge",
             "flashutils",
@@ -154,10 +155,12 @@ KISSY.add("editor", function(S, undefined) {
             "preview",
             "removeformat",
             {
-                name: "smiley"//,
-                //useCss: true
+                name: "smiley"
             },
-            "sourcearea",
+            {
+                name:"sourcearea",
+                requires:["sourceareasupport"]
+            },
             {
                 name: "table",
                 //useCss: true,
