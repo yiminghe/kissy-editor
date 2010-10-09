@@ -16,8 +16,7 @@ body {
 }
 
 /*
-iframe body no need to reset
-body,*/
+iframe body no need to reset */
 h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
 dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
 pre, /* text formatting elements 文本格式元素 */
@@ -29,8 +28,8 @@ th, td /* table elements 表格元素 */
 }
 
 /** 设置默认字体 **/
-body, button, input, select, textarea /* for ie */
-{
+body, button, input, select, /* for ie */
+textarea {
     font: 14px/1.5 tahoma, arial, \5b8b\4f53, sans-serif;
 }
 
@@ -193,9 +192,7 @@ ul, ol {
 }
 
 img.ke_flash, img.ke_video, img.ke_music, img.ke_xiami {
-    background-image: url("placeholder_flash.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background: url("placeholder_flash.png") center center no-repeat;
     border: 1px solid #A9A9A9;
     height: 80px;
     width: 80px;
@@ -221,9 +218,7 @@ img:-moz-broken {
 }
 
 img.ke_pagebreak {
-    background-image: url("pagebreak.gif");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background: url("pagebreak.gif") center center no-repeat;
     border-bottom: 1px dotted #999999;
     border-top: 1px dotted #999999;
     clear: both;

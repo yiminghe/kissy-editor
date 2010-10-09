@@ -185,7 +185,9 @@ box-shadow:2px 2px 0.5em #888888;
         S.Config.base = base;
         S.add({
             editor:{
-                csspath:"/build/theme/cool/editor-pkg-min-" + (S.UA.ie < 8 ? "mhtml" : "datauri") + ".css",
+                requires:["core"],
+                csspath:"/build/theme/cool/editor-pkg-min-"
+                        + (S.UA.ie < 8 ? "mhtml" : "datauri") + ".css",
                 path:"/build/editor-all-pkg-min.js"
             },
             "bangpai-editor":{
