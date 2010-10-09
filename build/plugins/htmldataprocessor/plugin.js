@@ -117,31 +117,37 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         };
     })();
 
+    var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
+        filterStyle = stylesFilter([
+            //word 自有类名去除
+            [/mso/i],
+            //qc 3711，只能出现我们规定的字体
+            [ /font-size/i,'',function(v) {
+                var fontSizes = editor.cfg.pluginConfig["font-size"],
+                    fonts = fontSizes.items;
+                for (var i = 0; i < fonts.length; i++) {
+                    if (equalsIgnoreCase(v, fonts[i].value)) return v;
+                }
+                return false;
+            },'font-size'],
+            //限制字体
+            [ /font-family/i,'',function(v) {
+                var fontFamilies = editor.cfg.pluginConfig["font-family"],
+                    fams = fontFamilies.items;
+                for (var i = 0; i < fams.length; i++) {
+                    var v2 = fams[i].value.toLowerCase();
+                    if (equalsIgnoreCase(v, v2)
+                        ||
+                        equalsIgnoreCase(v, fams[i].name))
+                        return v2;
+                }
+                return false;
+            } ,'font-family'],
+            //qc 3701，去除行高，防止乱掉
+            [/line-height/i],
 
-    var filterStyle = stylesFilter([
-        //word 自有类名去除
-        [/mso/i],
-        //qc 3711，只能出现我们规定的字体
-        [ /font-size/i,'',function(v) {
-            var fontSizes = editor.cfg.pluginConfig["font-size"];
-            for (var i = 0; i < fontSizes.items.length; i++) {
-                if (v.toLowerCase() == fontSizes.items[i].size) return v;
-            }
-            return false;
-        },'font-size'],
-        //限制字体
-        [ /font-family/i,'',function(v) {
-            var fontFamilies = editor.cfg.pluginConfig["font-family"];
-            for (var i = 0; i < fontFamilies.length; i++) {
-                if (v.toLowerCase() == fontFamilies[i].toLowerCase()) return v;
-            }
-            return false;
-        } ,'font-family'],
-        //qc 3701，去除行高，防止乱掉
-        [/line-height/i],
-
-        [/display/i,/none/i]
-    ], undefined);
+            [/display/i,/none/i]
+        ], undefined);
 
     function isListBulletIndicator(element) {
         var styleText = element.attributes && element.attributes.style;

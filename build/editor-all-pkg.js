@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-09 17:09:40
+ * @buildtime: 2010-10-09 17:47:38
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -571,6 +571,9 @@ KISSY.Editor.add("utils", function(KE) {
          */
         htmlDecode : function(value) {
             return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+        },
+        equalsIgnoreCase:function(str1, str2) {
+            return str1.toLowerCase() == str2.toLowerCase();
         }
     }
 });
@@ -9334,10 +9337,11 @@ KISSY.Editor.add("font", function(editor) {
         TripleButton = KE.TripleButton,
         Node = S.Node,
         FONT_SIZES = editor.cfg.pluginConfig["font-size"] || {};
-    S.mix(FONT_SIZES, {   items:wrapFont(["8px","10px","12px",
-        "14px","18px","24px",
-        "36px","48px","60px","72px","84px","96px",
-        "108px"]),
+    S.mix(FONT_SIZES, {
+        items:wrapFont(["8px","10px","12px",
+            "14px","18px","24px",
+            "36px","48px","60px","72px","84px","96px",
+            "108px"]),
         width:"55px"
     }, false);
     var FONT_SIZE_STYLES = {},
@@ -9351,10 +9355,28 @@ KISSY.Editor.add("font", function(editor) {
                 { element : 'font', attributes : { 'size' : null } }
             ]
         },
-        FONT_FAMILIES = editor.cfg.pluginConfig["font-family"] || ["宋体","黑体","隶书",
-            "楷体_GB2312","微软雅黑","Georgia","Times New Roman",
-            "Impact","Courier New","Arial","Verdana","Tahoma"],
-        FONT_FAMILY_STYLES = {},
+        FONT_FAMILIES = editor.cfg.pluginConfig["font-family"] || {};
+    S.mix(FONT_FAMILIES, {
+        items:[
+            //ie 不认识中文？？？
+            {name:"宋体",value:"SimSun"},
+            {name:"黑体",value:"SimHei"},
+            {name:"隶书",value:"LiSu"},
+            {name:"楷体",value:"KaiTi_GB2312"},
+            {name:"微软雅黑",value:"Microsoft YaHei"},
+            {name:"Georgia",value:"Georgia"},
+            {name:"Times New Roman",value:"Times New Roman"},
+            {name:"Impact",value:"Impact"},
+            {name:"Courier New",value:"Courier New"},
+            {name:"Arial",value:"Arial"},
+            {name:"Verdana",value:"Verdana"},
+            {name:"Tahoma",value:"Tahoma"}
+        ],
+        width:"130px"
+    }, false);
+
+
+    var FONT_FAMILY_STYLES = {},
         FONT_FAMILY_ITEMS = [],
         fontFamily_style = {
             element        : 'span',
@@ -9383,17 +9405,20 @@ KISSY.Editor.add("font", function(editor) {
         })
     }
 
-    for (i = 0; i < FONT_FAMILIES.length; i++) {
-        var family = FONT_FAMILIES[i];
-        FONT_FAMILY_STYLES[family] = new KEStyle(fontFamily_style, {
-            family:family
+    for (i = 0; i < FONT_FAMILIES.items.length; i++) {
+        var item = FONT_FAMILIES.items[i],
+            name = item.name,
+            attrs = item.attrs || {},
+            value = item.value;
+        attrs.style = attrs.style || "";
+        attrs.style += ";font-family:" + value;
+        FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
+            family:value
         });
         FONT_FAMILY_ITEMS.push({
-            name:family,
-            value:family,
-            attrs:{
-                style:"font-family:" + family
-            }
+            name:name,
+            value:value,
+            attrs:attrs
         })
     }
 
@@ -9580,7 +9605,7 @@ KISSY.Editor.add("font", function(editor) {
             editor:editor,
             title:"字体",
             width:"110px",
-            popUpWidth:"130px",
+            popUpWidth:FONT_FAMILIES.width,
             styles:FONT_FAMILY_STYLES,
             html:FONT_FAMILY_ITEMS
         });
@@ -11590,31 +11615,37 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         };
     })();
 
+    var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
+        filterStyle = stylesFilter([
+            //word 自有类名去除
+            [/mso/i],
+            //qc 3711，只能出现我们规定的字体
+            [ /font-size/i,'',function(v) {
+                var fontSizes = editor.cfg.pluginConfig["font-size"],
+                    fonts = fontSizes.items;
+                for (var i = 0; i < fonts.length; i++) {
+                    if (equalsIgnoreCase(v, fonts[i].value)) return v;
+                }
+                return false;
+            },'font-size'],
+            //限制字体
+            [ /font-family/i,'',function(v) {
+                var fontFamilies = editor.cfg.pluginConfig["font-family"],
+                    fams = fontFamilies.items;
+                for (var i = 0; i < fams.length; i++) {
+                    var v2 = fams[i].value.toLowerCase();
+                    if (equalsIgnoreCase(v, v2)
+                        ||
+                        equalsIgnoreCase(v, fams[i].name))
+                        return v2;
+                }
+                return false;
+            } ,'font-family'],
+            //qc 3701，去除行高，防止乱掉
+            [/line-height/i],
 
-    var filterStyle = stylesFilter([
-        //word 自有类名去除
-        [/mso/i],
-        //qc 3711，只能出现我们规定的字体
-        [ /font-size/i,'',function(v) {
-            var fontSizes = editor.cfg.pluginConfig["font-size"];
-            for (var i = 0; i < fontSizes.items.length; i++) {
-                if (v.toLowerCase() == fontSizes.items[i].size) return v;
-            }
-            return false;
-        },'font-size'],
-        //限制字体
-        [ /font-family/i,'',function(v) {
-            var fontFamilies = editor.cfg.pluginConfig["font-family"];
-            for (var i = 0; i < fontFamilies.length; i++) {
-                if (v.toLowerCase() == fontFamilies[i].toLowerCase()) return v;
-            }
-            return false;
-        } ,'font-family'],
-        //qc 3701，去除行高，防止乱掉
-        [/line-height/i],
-
-        [/display/i,/none/i]
-    ], undefined);
+            [/display/i,/none/i]
+        ], undefined);
 
     function isListBulletIndicator(element) {
         var styleText = element.attributes && element.attributes.style;
@@ -14093,7 +14124,8 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
-
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92) return;
     if (!KE.Maximize) {
         (function() {
             function Maximize(editor) {

@@ -281,6 +281,9 @@ KISSY.Editor.add("utils", function(KE) {
          */
         htmlDecode : function(value) {
             return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+        },
+        equalsIgnoreCase:function(str1, str2) {
+            return str1.toLowerCase() == str2.toLowerCase();
         }
     }
 });

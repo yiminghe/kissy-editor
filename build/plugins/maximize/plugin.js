@@ -12,7 +12,8 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
-
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92) return;
     if (!KE.Maximize) {
         (function() {
             function Maximize(editor) {
