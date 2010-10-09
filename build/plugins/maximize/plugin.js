@@ -4,6 +4,7 @@
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {
+
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -12,6 +13,8 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
+    //firefox 3.5 不支持，有bug
+    if(UA.gecko<1.92) return;
 
     if (!KE.Maximize) {
         (function() {

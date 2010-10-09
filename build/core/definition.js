@@ -532,7 +532,7 @@ KISSY.Editor.add("definition", function(KE) {
                             arguments.callee.retry = true;
                             //arguments.callee();
                         }
-                    }, 10);
+                    }, 50);
                 },
                 function() {
                     // The above call is known to fail when parent DOM

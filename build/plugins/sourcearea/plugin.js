@@ -7,6 +7,8 @@ KISSY.Editor.add("sourcearea", function(editor) {
         S = KISSY,
         UA = S.UA,
         TripleButton = KE.TripleButton;
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92) return;
     if (!KE.SourceArea) {
         (function() {
             function SourceArea(editor) {

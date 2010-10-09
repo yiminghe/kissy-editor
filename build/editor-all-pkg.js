@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-09 11:43:08
+ * @buildtime: 2010-10-09 13:22:06
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1169,7 +1169,7 @@ KISSY.Editor.add("definition", function(KE) {
                             arguments.callee.retry = true;
                             //arguments.callee();
                         }
-                    }, 10);
+                    }, 50);
                 },
                 function() {
                     // The above call is known to fail when parent DOM
@@ -14084,6 +14084,7 @@ KISSY.Editor.add("localStorage", function() {
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {
+
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -14092,6 +14093,8 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
+    //firefox 3.5 不支持，有bug
+    if(UA.gecko<1.92) return;
 
     if (!KE.Maximize) {
         (function() {
@@ -15786,6 +15789,8 @@ KISSY.Editor.add("sourcearea", function(editor) {
         S = KISSY,
         UA = S.UA,
         TripleButton = KE.TripleButton;
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92) return;
     if (!KE.SourceArea) {
         (function() {
             function SourceArea(editor) {

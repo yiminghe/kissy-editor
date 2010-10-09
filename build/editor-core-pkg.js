@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-09 11:43:08
+ * @buildtime: 2010-10-09 13:22:06
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1169,7 +1169,7 @@ KISSY.Editor.add("definition", function(KE) {
                             arguments.callee.retry = true;
                             //arguments.callee();
                         }
-                    }, 10);
+                    }, 50);
                 },
                 function() {
                     // The above call is known to fail when parent DOM
