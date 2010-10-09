@@ -7,6 +7,20 @@ from : resource://gre/res/html.css
 </div>
 **/
 
+/*
+清除里面的浮动
+*/
+.ke-post:after {
+    content: '\20';
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+.ke-post {
+    *zoom: 1;
+}
+
 .ke-post h1,
 .ke-post h2,
 .ke-post h3,
