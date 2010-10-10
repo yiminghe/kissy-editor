@@ -340,7 +340,7 @@ KISSY.Editor.add("dom", function(KE) {
                 if (UA.ie && offset == el.nodeValue.length) {
                     var next = doc.createTextNode("");
                     DOM.insertAfter(next, el);
-                    return next;
+                    return new Node(next);
                 }
 
 

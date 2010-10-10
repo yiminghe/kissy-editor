@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-09 20:06:53
+ * @buildtime: 2010-10-10 19:06:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -1971,7 +1971,7 @@ KISSY.Editor.add("dom", function(KE) {
                 if (UA.ie && offset == el.nodeValue.length) {
                     var next = doc.createTextNode("");
                     DOM.insertAfter(next, el);
-                    return next;
+                    return new Node(next);
                 }
 
 
@@ -3291,11 +3291,13 @@ KISSY.Editor.add("range", function(KE) {
         },
         execContentsAction:    function(action, docFrag) {
             var self = this,
-                startNode = self.startContainer, endNode = self.endContainer,
+                startNode = self.startContainer,
+                endNode = self.endContainer,
                 startOffset = self.startOffset,
                 endOffset = self.endOffset,
                 removeStartNode,
                 t,
+                doc = self.document,
                 removeEndNode;
             self.optimizeBookmark();
             // For text containers, we must simply split the node and point to the
@@ -3309,7 +3311,9 @@ KISSY.Editor.add("range", function(KE) {
                     // If the offset points after the last node.
                     if (endOffset >= endNode[0].childNodes.length) {
                         // Let's create a temporary node and mark it for removal.
-                        endNode = new Node(endNode[0].appendChild(self.document.createTextNode("")));
+                        endNode = new Node(
+                            endNode[0].appendChild(doc.createTextNode(""))
+                            );
                         removeEndNode = true;
                     }
                     else
@@ -3324,7 +3328,7 @@ KISSY.Editor.add("range", function(KE) {
                 // In cases the end node is the same as the start node, the above
                 // splitting will also split the end, so me must move the end to
                 // the second part of the split.
-                if (DOM._4e_equals(startNode, endNode))
+                if (startNode._4e_equals(endNode))
                     endNode = new Node(startNode[0].nextSibling);
             }
             else {
@@ -3335,25 +3339,32 @@ KISSY.Editor.add("range", function(KE) {
                 // sibling, so let's use the first one, but mark it for removal.
                 if (!startOffset) {
                     // Let's create a temporary node and mark it for removal.
-                    t = new Node(self.document.createTextNode(""));
-                    DOM.insertBefore(t[0], startNode[0].firstChild);
+                    t = new Node(doc.createTextNode(""));
+                    var sf = startNode[0].firstChild;
+                    if (sf)
+                        DOM.insertBefore(t[0], sf);
+                    else
+                        startNode.append(t);
                     startNode = t;
                     removeStartNode = true;
                 }
                 else if (startOffset >= startNode[0].childNodes.length) {
                     // Let's create a temporary node and mark it for removal.
                     //startNode = startNode[0].appendChild(self.document.createTextNode(''));
-                    t = new Node(self.document.createTextNode(""));
-                    startNode[0].appendChild(t[0]);
+                    t = new Node(doc.createTextNode(""));
+                    startNode.append(t);
                     startNode = t;
                     removeStartNode = true;
                 } else
-                    startNode = new Node(startNode[0].childNodes[startOffset].previousSibling);
+                    startNode = new Node(
+                        startNode[0].childNodes[startOffset].previousSibling
+                        );
             }
 
             // Get the parent nodes tree for the start and end boundaries.
-            var startParents = startNode._4e_parents();
-            var endParents = endNode._4e_parents();
+            //从根到自己
+            var startParents = startNode._4e_parents(),
+                endParents = endNode._4e_parents();
 
             // Compare them, to find the top most siblings.
             var i, topStart, topEnd;
@@ -3366,7 +3377,7 @@ KISSY.Editor.add("range", function(KE) {
                 // siblings (different nodes that have the same parent).
                 // "i" will hold the index in the parents array for the top
                 // most element.
-                if (topStart[0] !== topEnd[0])
+                if (!topStart._4e_equals(topEnd))
                     break;
             }
 
@@ -3378,7 +3389,11 @@ KISSY.Editor.add("range", function(KE) {
                 levelStartNode = startParents[j];
 
                 // For Extract and Clone, we must clone this level.
-                if (clone && levelStartNode[0] !== startNode[0])        // action = 0 = Delete
+                if (
+                    clone
+                        &&
+                        !levelStartNode._4e_equals(startNode)
+                    )        // action = 0 = Delete
                     levelClone = clone.appendChild(levelStartNode._4e_clone()[0]);
 
                 currentNode = levelStartNode[0].nextSibling;
@@ -3386,7 +3401,9 @@ KISSY.Editor.add("range", function(KE) {
                 while (currentNode) {
                     // Stop processing when the current node matches a node in the
                     // endParents tree or if it is the endNode.
-                    if ((endParents[ j ] && currentNode == endParents[ j ][0]) || currentNode == endNode[0])
+                    if (DOM._4e_equals(endParents[ j ], currentNode)
+                        ||
+                        DOM._4e_equals(endNode, currentNode))
                         break;
 
                     // Cache the next sibling.
@@ -3419,16 +3436,26 @@ KISSY.Editor.add("range", function(KE) {
                 levelStartNode = endParents[ k ];
 
                 // For Extract and Clone, we must clone this level.
-                if (action > 0 && levelStartNode[0] !== endNode[0])        // action = 0 = Delete
+                if (
+                    action > 0
+                        &&
+                        !levelStartNode._4e_equals(endNode)
+                    )        // action = 0 = Delete
                     levelClone = clone.appendChild(levelStartNode._4e_clone()[0]);
 
                 // The processing of siblings may have already been done by the parent.
-                if (!startParents[ k ] || levelStartNode[0].parentNode !== startParents[ k ][0].parentNode) {
+                if (
+                    !startParents[ k ]
+                        ||
+                        !levelStartNode.parent()._4e_equals(startParents[ k ].parent())
+                    ) {
                     currentNode = levelStartNode[0].previousSibling;
                     while (currentNode) {
                         // Stop processing when the current node matches a node in the
                         // startParents tree or if it is the startNode.
-                        if ((startParents[ k ] && currentNode == startParents[ k ][0]) || currentNode === startNode[0])
+                        if (DOM._4e_equals(startParents[ k ], currentNode)
+                            ||
+                            DOM._4e_equals(startNode, currentNode))
                             break;
 
                         // Cache the next sibling.
@@ -3436,12 +3463,11 @@ KISSY.Editor.add("range", function(KE) {
 
                         // If cloning, just clone it.
                         if (action == 2) {    // 2 = Clone
-                            clone.insertBefore(currentNode.cloneNode(true), clone.firstChild);
-                        }
-
-                        else {
+                            clone.insertBefore(currentNode.cloneNode(true),
+                                clone.firstChild);
+                        } else {
                             // Both Delete and Extract will remove the node.
-                            currentNode.parentNode.removeChild(currentNode);
+                            DOM._4e_remove(currentNode);
 
                             // When Extracting, mode the removed node to the docFrag.
                             if (action == 1)    // 1 = Extract
@@ -3482,12 +3508,21 @@ KISSY.Editor.add("range", function(KE) {
 
                 // If a node has been partially selected, collapse the range between
                 // topStart and topEnd. Otherwise, simply collapse it to the start. (W3C specs).
-                if (topStart && topEnd && ( startNode[0].parentNode != topStart[0].parentNode || endNode[0].parentNode != topEnd[0].parentNode )) {
+                if (
+                    topStart && topEnd
+                        &&
+                        (
+                            !startNode.parent()._4e_equals(topStart.parent())
+                                ||
+                                !endNode.parent()._4e_equals(topEnd.parent())
+                            )
+                    ) {
                     var endIndex = topEnd._4e_index();
 
                     // If the start node is to be removed, we must correct the
                     // index to reflect the removal.
-                    if (removeStartNode && topEnd[0].parentNode == startNode[0].parentNode)
+                    if (removeStartNode &&
+                        topEnd.parent()._4e_equals(startNode.parent()))
                         endIndex--;
 
                     self.setStart(topEnd.parent(), endIndex);
