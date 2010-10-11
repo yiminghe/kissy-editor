@@ -265,8 +265,17 @@ S.use('editor', function() {
                 holder:"#imgup1",
                 serverUrl:"/code/upload/upload.jsp",
                 serverParams:{
+                    waterMark:function() {
+                        return S.one("#ke_img_up_watermark_2")[0].checked;
+                    }
                 },
-                fileInput:"Filedata"
+                sizeLimit:1000//k,
+                ,numberLimit:15,
+                extraHtml:"<p style='margin-top:10px;'>" +
+                        "<input type='checkbox' " +
+                        "style='vertical-align:middle;margin:0 5px;' " +
+                        "id='ke_img_up_watermark_2'>" +
+                        "<span style='vertical-align:middle;'>图片加水印，防止别人盗用</span></p>"
             },
             "bangpai-video":{
                 urlCfg:[
