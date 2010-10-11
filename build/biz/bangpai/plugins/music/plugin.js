@@ -124,7 +124,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 '' +
                 '.ke-xiami-paging {' +
                 'text-align:center;' +
-                'margin-top:20px;' +
+                'margin:20px -10px 0 -10px;' +
                 '}' +
                 '' +
                 '.ke-xiami-page-more {' +

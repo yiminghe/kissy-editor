@@ -13,11 +13,19 @@
     text-align: left;
 }
 
+.ke-draft-save-btn span {
+    vertical-align: middle;
+}
+
 .ke-draft-mansave {
-    background: no-repeat scroll 5px 3px #FFFFFF;
+    background: no-repeat scroll 0 1px transparent;
     background-image: url("icon_save.png");
-    padding: 2px 5px 2px 25px;
-    border: 1px solid #C1C8D1;
+    width: 18px;
+    height: 15px;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    margin:1px 0 2px 0;
 }
 
 .ke-draft-title, .ke-draft-time {

@@ -395,11 +395,19 @@ a.ke-color-a span {
     text-align: left;
 }
 
+.ke-draft-save-btn span {
+    vertical-align: middle;
+}
+
 .ke-draft-mansave {
-    background: no-repeat scroll 5px 3px #FFFFFF;
+    background: no-repeat scroll 0 1px transparent;
     background-image: url("icon_save.png");
-    padding: 2px 5px 2px 25px;
-    border: 1px solid #C1C8D1;
+    width: 18px;
+    height: 15px;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    margin:1px 0 2px 0;
 }
 
 .ke-draft-title, .ke-draft-time {
@@ -900,8 +908,8 @@ select style for kissy editor
 .ke-select-disabled .ke-select:hover,
 .ke-select-disabled .ke-select {
     cursor: default;
-    opacity: 0.3;
-    filter: alpha(opacity = 30);
+    opacity: 0.7;
+    filter: alpha(opacity = 70);
     color: gray;
 }
 
@@ -968,8 +976,8 @@ select style for kissy editor
     border-width: 1px 1px medium;
     cursor: pointer;
     float: left;
-    height: 30px;
-    line-height: 30px;
+    height: 24px;
+    line-height: 24px;
     margin-left: 10px;
     margin-right: 10px;
     position: relative;

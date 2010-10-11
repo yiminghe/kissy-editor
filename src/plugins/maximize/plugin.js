@@ -28,12 +28,13 @@ KISSY.Editor.add("maximize", function(editor) {
 
             Maximize.init = function() {
                 iframe = new Node("<" + "iframe " +
-                    "style='" +
+                    " class='ke-maximize-shim'" +
+                    " style='" +
                     "position:absolute;" +
                     "top:-9999px;" +
                     "left:-9999px;" +
-                    "' " +
-                    "frameborder='0'>" +
+                    "'" +
+                    " frameborder='0'>" +
                     "</iframe>").appendTo(document.body);
                 Maximize.init = null;
             };
@@ -84,6 +85,7 @@ KISSY.Editor.add("maximize", function(editor) {
                             var po = _savedParents[i];
                             po.el.css("position", po.position);
                         }
+                        self._savedParents = null;
                     }
                     //如果没有失去焦点，重新获得当前选取元素
                     //self._saveEditorStatus();
@@ -124,16 +126,22 @@ KISSY.Editor.add("maximize", function(editor) {
                     window.scrollTo(0, 0);
 
                     //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
-                    var p = editorWrap.parent();
+                    var p = editorWrap.parent(),pchildren;
                     while (p) {
-                        if (p.css("position") != "static") {
-                            _savedParents.push({
-                                el:p,
-                                position:p.css("position")
-                            });
-                            p.css("position", "static");
+
+                        pchildren = p.children();
+
+                        for (var i = 0; i < pchildren.length; i++) {
+                            if (p.css("position") != "static") {
+                                _savedParents.push({
+                                    el:p,
+                                    position:p.css("position")
+                                });
+                                p.css("position", "static");
+                            }
                         }
                         p = p.parent();
+
                     }
                     self._savedParents = _savedParents;
 

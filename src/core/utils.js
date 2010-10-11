@@ -284,6 +284,19 @@ KISSY.Editor.add("utils", function(KE) {
         },
         equalsIgnoreCase:function(str1, str2) {
             return str1.toLowerCase() == str2.toLowerCase();
+        },
+
+        normParams:function (params) {
+            params = S.clone(params);
+            for (var p in params) {
+                if (params.hasOwnProperty(p)) {
+                    var v = params[p];
+                    if (S.isFunction(v)) {
+                        params[p] = v();
+                    }
+                }
+            }
+            return params;
         }
     }
 });

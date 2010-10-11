@@ -44,7 +44,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:10px 0pt 5px 20px;'>" +
+                    "padding:12px 0pt 5px 20px;'>" +
                     "<div class='kee-image-tabs-content-wrap' " +
                     ">" +
                     "<div>" +
@@ -235,18 +235,7 @@ KISSY.Editor.add("image", function(editor) {
                         });
                     self.tab = tab;
 
-                    function normParams(params) {
-                        params = S.clone(params);
-                        for (var p in params) {
-                            if (params.hasOwnProperty(p)) {
-                                var v = params[p];
-                                if (S.isFunction(v)) {
-                                    params[p] = v();
-                                }
-                            }
-                        }
-                        return params;
-                    }
+                    var normParams = KE.Utils.normParams;
 
                     ok.on("click", function() {
                         if (tab.activate() == "local" && uploader && cfg) {
@@ -316,7 +305,7 @@ KISSY.Editor.add("image", function(editor) {
                                 ]);
                             });
                             var sizeLimit = (cfg.sizeLimit) || (Number.MAX_VALUE);
-                            warning = "单张图片容量不超过" + (sizeLimit) + "KB";
+                            warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
                             imgLocalUrl = content.one(".ke-img-local-url");
                             imgLocalUrl.val(warning);
                             uploader.on("fileSelect", function(ev) {

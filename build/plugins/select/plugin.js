@@ -239,6 +239,12 @@ KISSY.Editor.add("select", function() {
                 el.addClass(DISABLED_CLASS);
             }
         },
+        enable:function() {
+            this.set("state", ENABLED);
+        },
+        disable:function() {
+            this.set("state", DISABLED);
+        },
         _select:function(ev) {
             ev.halt();
             var self = this,

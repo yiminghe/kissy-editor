@@ -124,7 +124,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 '' +
                 '.ke-xiami-paging {' +
                 'text-align:center;' +
-                'margin-top:20px;' +
+                'margin:20px -10px 0 -10px;' +
                 '}' +
                 '' +
                 '.ke-xiami-page-more {' +
@@ -591,9 +591,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
         var DOM = S.DOM,
             JSON = S.JSON,
             PIC_NUM_LIMIT = 15,
-            PIC_NUM_LIMIT_WARNING = "系统将只保留n张",
+            PIC_NUM_LIMIT_WARNING = "系统将只保留 n 张",
             PIC_SIZE_LIMIT = 1000,
-            PIC_SIZE_LIMIT_WARNING = "图片不能超过nKB",
+            PIC_SIZE_LIMIT_WARNING = "图片不能超过 n M",
             Node = S.Node,
             holder = [],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
@@ -601,6 +601,41 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
         name = "ke-bangpai-upload";
 
         DOM.addStyleSheet("" +
+            ".ke-BangPaiUpload {" +
+            "border:1px solid #CED5E0;" +
+            "}" +
+            "" +
+            "" +
+            ".ke-upload-head {" +
+            "background-color: #f4f7fc;" +
+            "background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));" +
+            "background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));" +
+            "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');" +
+            "height:40px;" +
+            "border-bottom:1px solid #CED5E0;" +
+            "padding-top:1px;" +
+            "}" +
+            "" +
+            ".ke-upload-head-text {" +
+            "height:30px;" +
+            "line-height:30px;" +
+            "width:120px;" +
+            "margin-top:8px;" +
+            "margin-left:30px;" +
+            "text-align:center;" +
+            "border:1px solid #CED5E0;" +
+            "border-bottom-color:#FDFDFD;" +
+            "background:#FDFDFD;" +
+            "padding-bottom:2px;" +
+            "margin-bottom:-2px;" +
+            "position:relative;" +
+            "" +
+            "}" +
+            "" +
+            ".ke-upload-btn-wrap {" +
+            "position:relative;" +
+            "margin:15px 0 15px 20px;" +
+            "}" +
             ".ke-upload-list {" +
             "width:100%;" +
             "" +
@@ -628,23 +663,40 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     bangpaiUploaderHolder = S.isString(holderEl) ?
                         S.one(holderEl) :
                         holderEl,
-                    flashHolder = new Node("<div style='position:relative;" +
-                        "margin:10px;'>批量上传图片：" +
+                    flashHolder = new Node("<div class='ke-upload-head'> " +
+                        "<h2 class='ke-upload-head-text'>批量上传</h2>" +
                         "</div>")
                         .appendTo(bangpaiUploaderHolder),
+
+                    btnHolder = new Node(
+                        "<div class='ke-upload-btn-wrap'>" +
+                            "<input class='ke-input'" +
+                            " readonly " +
+                            "style='" +
+                            "margin:0 15px 0 0px;" +
+                            "color:#969696;" +
+                            "vertical-align:middle;" +
+                            "width:80%;" +
+                            "'>" +
+                            "</div>").appendTo(bangpaiUploaderHolder),
                     listWrap = new Node("<div style='display:none'>")
                         .appendTo(bangpaiUploaderHolder),
-                    btn = new Node("<button disabled='disabled'>浏览</button>")
-                        .appendTo(flashHolder),
-                    boffset = btn.offset(),
+                    btn = new KE.TripleButton({
+                        text:"浏览",
+                        cls:"ke-button",
+                        container:btnHolder
+                    }),
+                    boffset = btn.el.offset(),
+                    fwidth = btn.el.width() * 2.5,
+                    fheight = btn.el.height() * 1.5,
                     flashHolderOffset = flashHolder.offset(),
                     flashPos = new Node("<div style='" +
                         ("position:absolute;" +
-                            "width:" + (btn.width() + 8) + "px;" +
-                            "height:" + (btn.height() + 8) + "px;" +
+                            "width:" + fwidth + "px;" +
+                            "height:" + fheight + "px;" +
                             "z-index:9999;")
-                        + "'>").appendTo(flashHolder),
-                    list = new Node("<div>" +
+                        + "'>").appendTo(btnHolder),
+                    listTableWrap = new Node("<div>" +
                         "<table class='ke-upload-list'>" +
                         "<thead>" +
                         "<tr>" +
@@ -668,15 +720,27 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "<tbody>" +
                         "</tbody>" +
                         "</table>" +
-                        "</div>").appendTo(listWrap)
-                        .one("tbody"),
-                    up = new Node("<p " +
-                        "style='margin:10px;" +
-                        "text-align:right;'>" +
-                        "<button>确定上传</button>" +
+                        "</div>").appendTo(listWrap),
+                    list = listTableWrap.one("tbody"),
+                    upHolder = new Node("<p " +
+                        "style='" +
+                        "margin:15px 20px 35px; 0;" +
+                        "text-align:right;" +
+                        "'>" +
+                        "<a class='ke-button'>确定上传</a>" +
                         "</p>")
-                        .appendTo(listWrap).one("button"),
-                    fid = S.guid(name);
+                        .appendTo(listWrap),
+                    up = upHolder.one("a"),
+                    fid = S.guid(name),
+                    statusText = new Node("<span></span>").insertBefore(up);
+
+                if (bangpaiCfg.extraHtml) {
+                    listTableWrap.append(bangpaiCfg.extraHtml);
+                }
+
+                self.statusText = statusText;
+                bangpaiUploaderHolder.addClass("ke-BangPaiUpload");
+
                 holder[fid] = self;
                 self.btn = btn;
                 self.up = up;
@@ -696,8 +760,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "uploadAll"],
                     holder:flashPos,
                     attrs:{
-                        width:btn.width() ,
-                        height:btn.height()
+                        width:fwidth ,
+                        height:fheight
                     },
                     params:{
                         wmode:"transparent"
@@ -707,7 +771,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         menu:true
                     }
                 });
-
+                self.flashPos = flashPos;
                 self.uploader = uploader;
                 self._list = list;
                 self._listWrap = listWrap;
@@ -716,6 +780,11 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self._fileInput = bangpaiCfg.fileInput || "Filedata";
                 self._sizeLimit = bangpaiCfg.sizeLimit || PIC_SIZE_LIMIT;
                 self._numberLimit = bangpaiCfg.numberLimit || PIC_NUM_LIMIT;
+                btnHolder.one("input").val("允许用户同时上传" +
+                    self._numberLimit
+                    + "张图片，单张图片容量不超过" +
+                    self._sizeLimit / 1000
+                    + "M");
 
                 list.on("click", function(ev) {
                     var target = new Node(ev.target),tr;
@@ -731,8 +800,10 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         } catch(e) {
                         }
                         uploader.removeFile(fid);
-                        progressBars[fid].destroy();
-                        delete progressBars[fid];
+                        if (progressBars[fid]) {
+                            progressBars[fid].destroy();
+                            delete progressBars[fid];
+                        }
                         tr._4e_remove();
                         self.enable();
                         self._seqPics();
@@ -809,12 +880,12 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             disable:function() {
                 var self = this;
                 self.uploader.disable();
-                self.btn[0].disabled = true;
+                self.btn.disable();
             },
             enable:function() {
                 var self = this;
                 self.uploader.enable();
-                self.btn[0].disabled = false;
+                self.btn.enable();
             },
             _seqPics:function() {
                 var self = this, list = self._list,seq = 1;
@@ -838,7 +909,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     var l = self._getFilesSize(files);
 
                     if (l > available) {
-                        alert(PIC_NUM_LIMIT_WARNING.replace(/n/,self._numberLimit));
+                        alert(PIC_NUM_LIMIT_WARNING.replace(/n/, self._numberLimit));
                     }
                     if (l >= available) {
                         self.disable();
@@ -853,6 +924,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         curNum ++;
                         if (curNum > available) {
                             uploader.removeFile(id);
+                            curNum--;
                             continue;
                         }
                         var n = new Node("<tr fid='" + id + "'>"
@@ -879,7 +951,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         if (size > self._sizeLimit) {
                             self._uploadError({
                                 id:id,
-                                status:PIC_SIZE_LIMIT_WARNING.replace(/n/,self._sizeLimit)
+                                status:PIC_SIZE_LIMIT_WARNING.replace(/n/, self._sizeLimit / 1000)
                             });
                             uploader.removeFile(id);
 
@@ -892,6 +964,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         }
                     }
                     self._seqPics();
+
+                    self.statusText.html("本次共插入" + curNum + "张图片，" +
+                        "点击确定上传，开始上传。 ");
                 }
 
 
@@ -902,24 +977,24 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 var self = this,
                     uploader = self.uploader,
                     up = self.up,
-                    btn = self.btn;
-                //self.flashPos.offset(self.boffset);
-                btn[0].disabled = false;
+                    btn = self.btn,
+                    flashPos = self.flashPos,
+                    normParams = KE.Utils.normParams;
+                btn.enable();
+                flashPos.offset(btn.el.offset());
                 uploader.setAllowMultipleFiles(true);
                 uploader.setFileFilters([
                     {
                         extensions:"*.jpeg;*.jpg;*.png;*.gif",
                         description:"图片文件( png,jpg,jpeg,gif )"
-
                     }
                 ]);
                 up.on("click", function(ev) {
                     ev.halt();
                     uploader.uploadAll(self._ds, "POST",
-                        self._dsp,
+                        normParams(self._dsp),
                         self._fileInput);
-                })
-
+                });
             }
         });
 

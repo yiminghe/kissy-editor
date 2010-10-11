@@ -451,13 +451,17 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     }) ? '1' : '');
                 },
                 _realTableShow:function() {
-                    var self = this;
+                    var self = this,d = self.tableDialog;
 
                     if (self.selectedTable) {
                         self._fillTableDialog();
-                        self.tableDialog.body.all(".ke-table-create-only").attr("disabled", "disabled");
+                        d.body.all(".ke-table-create-only").attr("disabled",
+                            "disabled");
+                        d.thead.disable();
                     } else {
-                        self.tableDialog.body.all(".ke-table-create-only").removeAttr("disabled");
+                        d.body.all(".ke-table-create-only")
+                            .removeAttr("disabled");
+                        d.thead.enable();
                     }
                     self.tableDialog.show();
                     //console.log("do!");

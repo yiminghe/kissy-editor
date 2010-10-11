@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-11 13:29:21
+ * @buildtime: 2010-10-11 17:53:20
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -574,6 +574,19 @@ KISSY.Editor.add("utils", function(KE) {
         },
         equalsIgnoreCase:function(str1, str2) {
             return str1.toLowerCase() == str2.toLowerCase();
+        },
+
+        normParams:function (params) {
+            params = S.clone(params);
+            for (var p in params) {
+                if (params.hasOwnProperty(p)) {
+                    var v = params[p];
+                    if (S.isFunction(v)) {
+                        params[p] = v();
+                    }
+                }
+            }
+            return params;
         }
     }
 });
@@ -8061,20 +8074,30 @@ KISSY.Editor.add("draft", function(editor) {
                     self.timeTip = new Node("<span class='ke-draft-time'" +
                         "'>").appendTo(holder);
 
-                    var save = new KE.TripleButton({
-                        text:"立即保存",
-                        cls:"ke-draft-mansave",
-                        title:"立即保存",
-                        container: holder
-                    }),versions = new KE.Select({
-                        container: holder,
-                        menuContainer:document.body,
-                        doc:editor.document,
-                        width:"85px",
-                        popUpWidth:"225px",
-                        align:["r","t"],
-                        title:"恢复编辑历史"
-                    }),help = new KE.TripleButton({
+                    var save = new Node(
+
+                        "<a " +
+                            "class='ke-button ke-draft-save-btn' " +
+                            "style='" +
+                            "vertical-align:middle;" +
+                            "padding:1px 9px;" +
+                            "'>" +
+                            "<span class='ke-draft-mansave'>" +
+                            "</span>" +
+                            "<span>立即保存</span>" +
+                            "</a>"
+
+                        ).
+                        appendTo(holder),
+                        versions = new KE.Select({
+                            container: holder,
+                            menuContainer:document.body,
+                            doc:editor.document,
+                            width:"85px",
+                            popUpWidth:"225px",
+                            align:["r","t"],
+                            title:"恢复编辑历史"
+                        }),help = new KE.TripleButton({
                         cls:"ke-draft-help",
                         title:"帮助",
                         text:"帮助",
@@ -8129,7 +8152,9 @@ KISSY.Editor.add("draft", function(editor) {
                 },
 
                 save:function(auto) {
-                    var self = this,drafts = self.drafts,data = editor._getRawData();
+                    var self = this,
+                        drafts = self.drafts,
+                        data = editor._getRawData();
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {
@@ -12306,7 +12331,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:10px 0pt 5px 20px;'>" +
+                    "padding:12px 0pt 5px 20px;'>" +
                     "<div class='kee-image-tabs-content-wrap' " +
                     ">" +
                     "<div>" +
@@ -12497,18 +12522,7 @@ KISSY.Editor.add("image", function(editor) {
                         });
                     self.tab = tab;
 
-                    function normParams(params) {
-                        params = S.clone(params);
-                        for (var p in params) {
-                            if (params.hasOwnProperty(p)) {
-                                var v = params[p];
-                                if (S.isFunction(v)) {
-                                    params[p] = v();
-                                }
-                            }
-                        }
-                        return params;
-                    }
+                    var normParams = KE.Utils.normParams;
 
                     ok.on("click", function() {
                         if (tab.activate() == "local" && uploader && cfg) {
@@ -12578,7 +12592,7 @@ KISSY.Editor.add("image", function(editor) {
                                 ]);
                             });
                             var sizeLimit = (cfg.sizeLimit) || (Number.MAX_VALUE);
-                            warning = "单张图片容量不超过" + (sizeLimit) + "KB";
+                            warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
                             imgLocalUrl = content.one(".ke-img-local-url");
                             imgLocalUrl.val(warning);
                             uploader.on("fileSelect", function(ev) {
@@ -14182,12 +14196,13 @@ KISSY.Editor.add("maximize", function(editor) {
 
             Maximize.init = function() {
                 iframe = new Node("<" + "iframe " +
-                    "style='" +
+                    " class='ke-maximize-shim'" +
+                    " style='" +
                     "position:absolute;" +
                     "top:-9999px;" +
                     "left:-9999px;" +
-                    "' " +
-                    "frameborder='0'>" +
+                    "'" +
+                    " frameborder='0'>" +
                     "</iframe>").appendTo(document.body);
                 Maximize.init = null;
             };
@@ -14238,6 +14253,7 @@ KISSY.Editor.add("maximize", function(editor) {
                             var po = _savedParents[i];
                             po.el.css("position", po.position);
                         }
+                        self._savedParents = null;
                     }
                     //如果没有失去焦点，重新获得当前选取元素
                     //self._saveEditorStatus();
@@ -14278,16 +14294,22 @@ KISSY.Editor.add("maximize", function(editor) {
                     window.scrollTo(0, 0);
 
                     //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
-                    var p = editorWrap.parent();
+                    var p = editorWrap.parent(),pchildren;
                     while (p) {
-                        if (p.css("position") != "static") {
-                            _savedParents.push({
-                                el:p,
-                                position:p.css("position")
-                            });
-                            p.css("position", "static");
+
+                        pchildren = p.children();
+
+                        for (var i = 0; i < pchildren.length; i++) {
+                            if (p.css("position") != "static") {
+                                _savedParents.push({
+                                    el:p,
+                                    position:p.css("position")
+                                });
+                                p.css("position", "static");
+                            }
                         }
                         p = p.parent();
+
                     }
                     self._savedParents = _savedParents;
 
@@ -15148,77 +15170,106 @@ KISSY.Editor.add("preview", function(editor) {
     });
 });
 KISSY.Editor.add("progressbar", function() {
-    var S = KISSY,KE = S.Editor;
+    var S = KISSY,
+        KE = S.Editor;
     if (KE.ProgressBar) return;
 
-    (function() {
-        var DOM = S.DOM,Node = S.Node;
-        DOM.addStyleSheet("" +
-            "" +
-            ".ke-progressbar {" +
-            "border:1px solid #8F8F73;" +
-            "position:relative;" +
-            "margin-left:auto;margin-right:auto;" +
-            "}" +
-            "" +
-            ".ke-progressbar-inner {" +
-            "background-color:#4f8ed2;" +
-            "height:100%;" +
-            "}" +
-            "" +
-            ".ke-progressbar-title {" +
-            "width:30px;" +
-            "top:0;" +
-            "left:50%;" +
-            "position:absolute;" +
-            "}" +
-            "", "ke_progressbar");
-        function ProgressBar() {
-            ProgressBar.superclass.constructor.apply(this, arguments);
-            this._init();
-        }
 
-        ProgressBar.ATTRS = {
-            container:{},
-            width:{},
-            height:{},
-            //0-100
-            progress:{value:0}
-        };
-        S.extend(ProgressBar, S.Base, {
-            destroy:function() {
-                var self = this;
-                self.detach();
-                self.el._4e_remove();
-            },
-            _init:function() {
-                var self = this,el = new Node("<div" +
+    var DOM = S.DOM,Node = S.Node;
+    DOM.addStyleSheet("" +
+        "" +
+        ".ke-progressbar {" +
+        "border:1px solid #D6DEE6;" +
+        "position:relative;" +
+        "margin-left:auto;margin-right:auto;" +
+        "background-color: #EAEFF4;" +
+        "background: -webkit-gradient(linear, left top, left bottom, from(#EAEFF4), " +
+        ".to(#EBF0F3));" +
+        " background: -moz-linear-gradient(top, #EAEFF4, #EBF0F3);" +
+        "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#EAEFF4'," +
+        " endColorstr = '#EBF0F3');" +
+        "}" +
+        "" +
+        ".ke-progressbar-inner {" +
+        "border:1px solid #3571B4;" +
+        "background-color:#6FA5DB;" +
+        "padding:1px;" +
+        "}" +
+
+        ".ke-progressbar-inner-bg {" +
+        "height:100%;" +
+        "background-color: #73B1E9;" +
+        "background: -webkit-gradient(linear, left top, left bottom, from(#73B1E9), " +
+        ".to(#3F81C8));" +
+        " background: -moz-linear-gradient(top, #73B1E9, #3F81C8);" +
+        "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#73B1E9', " +
+        "endColorstr = '#3F81C8');" +
+        "}" +
+        "" +
+        "" +
+        ".ke-progressbar-title {" +
+        "width:30px;" +
+        "top:0;" +
+        "left:40%;" +
+        "position:absolute;" +
+        "}" +
+        "", "ke_progressbar");
+    function ProgressBar() {
+        ProgressBar.superclass.constructor.apply(this, arguments);
+        this._init();
+    }
+
+    ProgressBar.ATTRS = {
+        container:{},
+        width:{},
+        height:{},
+        //0-100
+        progress:{value:0}
+    };
+    S.extend(ProgressBar, S.Base, {
+        destroy:function() {
+            var self = this;
+            self.detach();
+            self.el._4e_remove();
+        },
+        _init:function() {
+            var self = this,
+                h = self.get("height"),
+                el = new Node("<div" +
                     " class='ke-progressbar' " +
-                    "style='width:" + self.get("width") + ";" +
-                    "height:"
-                    + self.get("height") + ";'" +
-                    ">"),
-                    container = self.get("container"),
-                    p = new Node("<div class='ke-progressbar-inner'>").appendTo(el),
-                    title = new Node("<span class='ke-progressbar-title'>").appendTo(el);
-                if (container)
-                    el.appendTo(container);
-                self.el = el;
-                self._title = title;
-                self._p = p;
-                self.on("afterProgressChange", self._progressChange, self);
-                self._progressChange({newVal:self.get("progress")});
-            },
+                    " style='width:" +
+                    self.get("width") +
+                    ";" +
+                    "height:" +
+                    h +
+                    ";'" +
+                    "></div>"),
+                container = self.get("container"),
+                p = new Node(
+                    "<div style='overflow:hidden;'>" +
+                        "<div class='ke-progressbar-inner' style='height:" + (parseInt(h) - 4) + "px'>" +
+                        "<div class='ke-progressbar-inner-bg'></div>" +
+                        "</div>" +
+                        "</div>"
+                    ).appendTo(el),
+                title = new Node("<span class='ke-progressbar-title'>").appendTo(el);
+            if (container)
+                el.appendTo(container);
+            self.el = el;
+            self._title = title;
+            self._p = p;
+            self.on("afterProgressChange", self._progressChange, self);
+            self._progressChange({newVal:self.get("progress")});
+        },
 
-            _progressChange:function(ev) {
-                var self = this,v = ev.newVal;
-                //console.log("_progressChange:" + v);
-                self._p.css("width", v + "%");
-                self._title.html(v + "%");
-            }
-        });
-        KE.ProgressBar = ProgressBar;
-    })();
+        _progressChange:function(ev) {
+            var self = this,
+                v = ev.newVal;
+            self._p.css("width", v + "%");
+            self._title.html(v + "%");
+        }
+    });
+    KE.ProgressBar = ProgressBar;
 
 });/**
  * remove inline-style format for kissy editor,modified from ckeditor
@@ -15652,6 +15703,12 @@ KISSY.Editor.add("select", function() {
             } else {
                 el.addClass(DISABLED_CLASS);
             }
+        },
+        enable:function() {
+            this.set("state", ENABLED);
+        },
+        disable:function() {
+            this.set("state", DISABLED);
         },
         _select:function(ev) {
             ev.halt();
@@ -16498,13 +16555,17 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     }) ? '1' : '');
                 },
                 _realTableShow:function() {
-                    var self = this;
+                    var self = this,d = self.tableDialog;
 
                     if (self.selectedTable) {
                         self._fillTableDialog();
-                        self.tableDialog.body.all(".ke-table-create-only").attr("disabled", "disabled");
+                        d.body.all(".ke-table-create-only").attr("disabled",
+                            "disabled");
+                        d.thead.disable();
                     } else {
-                        self.tableDialog.body.all(".ke-table-create-only").removeAttr("disabled");
+                        d.body.all(".ke-table-create-only")
+                            .removeAttr("disabled");
+                        d.thead.enable();
                     }
                     self.tableDialog.show();
                     //console.log("do!");

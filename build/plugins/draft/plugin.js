@@ -75,20 +75,30 @@ KISSY.Editor.add("draft", function(editor) {
                     self.timeTip = new Node("<span class='ke-draft-time'" +
                         "'>").appendTo(holder);
 
-                    var save = new KE.TripleButton({
-                        text:"立即保存",
-                        cls:"ke-draft-mansave",
-                        title:"立即保存",
-                        container: holder
-                    }),versions = new KE.Select({
-                        container: holder,
-                        menuContainer:document.body,
-                        doc:editor.document,
-                        width:"85px",
-                        popUpWidth:"225px",
-                        align:["r","t"],
-                        title:"恢复编辑历史"
-                    }),help = new KE.TripleButton({
+                    var save = new Node(
+
+                        "<a " +
+                            "class='ke-button ke-draft-save-btn' " +
+                            "style='" +
+                            "vertical-align:middle;" +
+                            "padding:1px 9px;" +
+                            "'>" +
+                            "<span class='ke-draft-mansave'>" +
+                            "</span>" +
+                            "<span>立即保存</span>" +
+                            "</a>"
+
+                        ).
+                        appendTo(holder),
+                        versions = new KE.Select({
+                            container: holder,
+                            menuContainer:document.body,
+                            doc:editor.document,
+                            width:"85px",
+                            popUpWidth:"225px",
+                            align:["r","t"],
+                            title:"恢复编辑历史"
+                        }),help = new KE.TripleButton({
                         cls:"ke-draft-help",
                         title:"帮助",
                         text:"帮助",
@@ -143,7 +153,9 @@ KISSY.Editor.add("draft", function(editor) {
                 },
 
                 save:function(auto) {
-                    var self = this,drafts = self.drafts,data = editor._getRawData();
+                    var self = this,
+                        drafts = self.drafts,
+                        data = editor._getRawData();
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {

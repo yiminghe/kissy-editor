@@ -178,12 +178,9 @@
     </textarea>
 </div>
 <h2>插入图片到编辑器1</h2>
-<div style="border:1px solid #c1c8d1;
+<div style="
 width:700px;
 margin:0 auto;
--moz-box-shadow:2px 2px 0.5em #888888;
--webkit-box-shadow:2px 2px 0.5em #888888;
-box-shadow:2px 2px 0.5em #888888;
 " id="imgup1">
 
 </div>
@@ -320,7 +317,7 @@ xiami 音乐
                         upload:{
                             serverUrl:"/code/upload/upload.jsp",
                             serverParams:{
-                                watermark:function() {
+                                waterMark:function() {
                                     return S.one("#ke_img_up_watermark_1")[0].checked;
                                 }
                             },
@@ -385,9 +382,17 @@ xiami 音乐
                         holder:"#imgup1",
                         serverUrl:"/code/upload/upload.jsp",
                         serverParams:{
+                            waterMark:function() {
+                                return S.one("#ke_img_up_watermark_2")[0].checked;
+                            }
                         },
                         sizeLimit:1000//k,
-                        ,numberLimit:15
+                        ,numberLimit:15,
+                        extraHtml:"<p style='margin-top:10px;'>" +
+                                "<input type='checkbox' " +
+                                "style='vertical-align:middle;margin:0 5px;' " +
+                                "id='ke_img_up_watermark_2'>" +
+                                "<span style='vertical-align:middle;'>图片加水印，防止别人盗用</span></p>"
                     },
                     "bangpai-video":{
                         urlCfg:[
