@@ -634,7 +634,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "" +
             ".ke-upload-btn-wrap {" +
             "position:relative;" +
-            "margin:15px 0 15px 20px;" +
+            "margin:15px 20px 15px 20px;" +
+            "text-align:right;" +
             "}" +
             ".ke-upload-list {" +
             "width:100%;" +
@@ -670,19 +671,20 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 
                     btnHolder = new Node(
                         "<div class='ke-upload-btn-wrap'>" +
-                            "<input class='ke-input'" +
-                            " readonly " +
+                            "<span " +
+                            "  " +
                             "style='" +
                             "margin:0 15px 0 0px;" +
                             "color:#969696;" +
+                            "display:inline-block;" +
                             "vertical-align:middle;" +
                             "width:80%;" +
-                            "'>" +
+                            "'></span>" +
                             "</div>").appendTo(bangpaiUploaderHolder),
                     listWrap = new Node("<div style='display:none'>")
                         .appendTo(bangpaiUploaderHolder),
                     btn = new KE.TripleButton({
-                        text:"浏览",
+                        text:"浏&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;览",
                         cls:"ke-button",
                         container:btnHolder
                     }),
@@ -780,7 +782,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self._fileInput = bangpaiCfg.fileInput || "Filedata";
                 self._sizeLimit = bangpaiCfg.sizeLimit || PIC_SIZE_LIMIT;
                 self._numberLimit = bangpaiCfg.numberLimit || PIC_NUM_LIMIT;
-                btnHolder.one("input").val("允许用户同时上传" +
+                btnHolder.one("span").html("允许用户同时上传" +
                     self._numberLimit
                     + "张图片，单张图片容量不超过" +
                     self._sizeLimit / 1000
