@@ -48,6 +48,9 @@ KISSY.Editor.add("select", function() {
         width:{},
         title:{},
         items:{},
+        //下拉框优先和select左左对齐，上下对齐
+        //可以改作右右对齐，下上对齐
+        align:{value:["l","b"]},
         menuContainer:{
             valueFn:function() {
                 return this.el.parent();
@@ -208,7 +211,6 @@ KISSY.Editor.add("select", function() {
             //要在适当位置插入 !!!
             menuNode.appendTo(self.get("menuContainer"));
 
-
             menu.on("show", function() {
                 focusA.addClass(ke_select_active);
             });
@@ -267,25 +269,79 @@ KISSY.Editor.add("select", function() {
                 orixy = S.clone(xy),
                 menuHeight = self.menu.el.height(),
                 menuWidth = self.menu.el.width(),
-                te = xy.top,
                 wt = DOM.scrollTop(),
+                wl = DOM.scrollLeft(),
                 wh = DOM.viewportHeight() ,
-                ww = DOM.viewportWidth();
-            xy.top += el.height() - 2;
-            if (
-                (xy.top + menuHeight) >
-                    (wt + wh)
-                    &&
+                ww = DOM.viewportWidth(),
+                //右边界坐标,60 is buffer
+                wr = wl + ww - 60,
+                //下边界坐标
+                wb = wt + wh,
+                //下拉框向下弹出的y坐标
+                sb = xy.top + (el.height() - 2),
+                //下拉框右对齐的最右边x坐标
+                sr = xy.left + el.width() - 2,
+                align = self.get("align"),
+                xAlign = align[0],
+                yAlign = align[1];
 
-                    (te - wt)
-                        >
-                        (wt + wh - xy.top)) {
-                xy = orixy;
-                xy.top -= menuHeight;
+
+            if (yAlign == "b") {
+                //向下弹出优先
+                xy.top = sb;
+                if (
+                    (
+                        //不能显示完全
+                        (xy.top + menuHeight) > wb
+                        )
+                        &&
+                        (   //向上弹能显示更多
+                            (orixy.top - wt) > (wb - sb)
+                            )
+                    ) {
+                    xy.top = orixy.top - menuHeight;
+                }
+            } else {
+                //向上弹出优先
+                xy.top = orixy.top - menuHeight;
+
+                if (
+                //不能显示完全
+                    xy.top < wt
+                        &&
+                        //向下弹能显示更多
+                        (orixy.top - wt) < (wb - sb)
+                    ) {
+                    xy.top = sb;
+                }
             }
-            //xy.left += 1;
-            if (xy.left + menuWidth > ww - 60) {
-                xy.left -= menuWidth - el.width();
+
+            if (xAlign == "l") {
+                //左对其优先
+                if (
+                //左对齐不行
+                    (xy.left + menuWidth > wr)
+                        &&
+                        //右对齐可以弹出更多
+                        (
+                            (sr - wl) > (wr - orixy.left)
+                            )
+
+                    ) {
+                    xy.left = sr - menuWidth;
+                }
+            } else {
+                //右对齐优先
+                xy.left = sr - menuWidth;
+                if (
+                //右对齐不行
+                    xy.left < wl
+                        &&
+                        //左对齐可以弹出更多
+                        (sr - wl) < (wr - orixy.left)
+                    ) {
+                    xy.left = orixy.left;
+                }
             }
             self.menu.show(xy);
         },

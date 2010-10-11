@@ -85,7 +85,8 @@ KISSY.Editor.add("draft", function(editor) {
                         menuContainer:document.body,
                         doc:editor.document,
                         width:"85px",
-                        popUpWidth:"220px",
+                        popUpWidth:"225px",
+                        align:["r","t"],
                         title:"恢复编辑历史"
                     }),help = new KE.TripleButton({
                         cls:"ke-draft-help",
@@ -130,7 +131,7 @@ KISSY.Editor.add("draft", function(editor) {
                     var items = [],draft,tip;
                     for (var i = 0; i < drafts.length; i++) {
                         draft = drafts[i];
-                        tip = (draft.auto ? "自动" : "手动") + "保存于：" + date(draft.date);
+                        tip = (draft.auto ? "自动" : "手动") + "保存于 : " + date(draft.date);
                         items.push({
                             name:tip,
                             value:i
