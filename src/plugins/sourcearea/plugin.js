@@ -27,14 +27,21 @@ KISSY.Editor.add("sourcearea", function(editor) {
                         title:"源码",
                         contentCls:"ke-toolbar-source"
                     });
-                    self.el.on("offClick", self._show, self);
-                    self.el.on("onClick", self._hide, self);
+                    var el = self.el;
+                    el.on("offClick", self._show, self);
+                    el.on("onClick", self._hide, self);
+                    editor.on("sourcemode", function() {
+                        el.bon();
+                    });
+                    editor.on("wysiwygmode", function() {
+                        el.boff();
+                    });
                 },
                 _show:function() {
                     var self = this,
                         editor = self.editor;
                     editor.execCommand("sourceAreaSupport", SOURCE_MODE);
-                    self.el.set("state", TripleButton.ON);
+                    self.el.bon();
                 },
 
 
@@ -42,8 +49,8 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     var self = this,
                         editor = self.editor,
                         el = self.el;
-                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);                    
-                    el.set("state", TripleButton.OFF);
+                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
+                    el.boff();
                 }
             });
             KE.SourceArea = SourceArea;

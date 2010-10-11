@@ -44,9 +44,9 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:10px 0pt 10px 20px;'>" +
+                    "padding:10px 0pt 5px 20px;'>" +
                     "<div class='kee-image-tabs-content-wrap' " +
-                    "style='height:60px;'>" +
+                    ">" +
                     "<div>" +
                     "<label>" +
                     "<span " +
@@ -76,7 +76,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "</div>" +
                     "<table " +
-                    "style='width:100%;'>" +
+                    "style='width:100%;margin-top:20px;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>" +

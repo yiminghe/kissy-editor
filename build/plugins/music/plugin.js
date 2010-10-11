@@ -86,7 +86,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
                     "</label>" +
-                    "<label style='margin-left:35px;'>间距： " +
+                    "<label style='margin-left:25px;'>间距： " +
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' " +

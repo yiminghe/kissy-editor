@@ -107,6 +107,12 @@ KISSY.Editor.add("button", function(editor) {
             self.fire("click", ev);
             ev.preventDefault();
         },
+        bon:function() {
+            this.set("state", ON);
+        },
+        boff:function() {
+            this.set("state", OFF);
+        },
         _on:function() {
             this.el[0].className = [BUTTON_CLASS,ON_CLASS].join(" ");
         },

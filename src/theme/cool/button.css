@@ -24,6 +24,7 @@ link
     white-space: nowrap;
     outline: none;
     cursor: pointer;
+    *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
 
 .ke-triplebutton-on {
@@ -94,6 +95,7 @@ active
     text-decoration: none;
     outline: none;
     color: black;
+    *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
 
 .ke-button:hover {

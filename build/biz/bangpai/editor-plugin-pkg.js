@@ -537,7 +537,14 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
                         "type='checkbox' />" +
                         "<span style='vertical-align:middle;'>编辑源代码</span></span>")
                         .appendTo(statusDiv).one("input");
-                    self.el.on("click", self._check, self);
+                    var el = self.el;
+                    el.on("click", self._check, self);
+                    editor.on("sourcemode", function() {
+                        el[0].checked = true;
+                    });
+                    editor.on("wysiwygmode", function() {
+                        el[0].checked = false;
+                    });
                 },
                 _check:function() {
                     var self = this,el = self.el;

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-10 19:29:22
+ * @buildtime: 2010-10-11 11:34:26
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7358,6 +7358,12 @@ KISSY.Editor.add("button", function(editor) {
             self.fire("click", ev);
             ev.preventDefault();
         },
+        bon:function() {
+            this.set("state", ON);
+        },
+        boff:function() {
+            this.set("state", OFF);
+        },
         _on:function() {
             this.el[0].className = [BUTTON_CLASS,ON_CLASS].join(" ");
         },
@@ -12299,9 +12305,9 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:10px 0pt 10px 20px;'>" +
+                    "padding:10px 0pt 5px 20px;'>" +
                     "<div class='kee-image-tabs-content-wrap' " +
-                    "style='height:60px;'>" +
+                    ">" +
                     "<div>" +
                     "<label>" +
                     "<span " +
@@ -12331,7 +12337,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "</div>" +
                     "<table " +
-                    "style='width:100%;'>" +
+                    "style='width:100%;margin-top:20px;'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>" +
@@ -14163,6 +14169,10 @@ KISSY.Editor.add("maximize", function(editor) {
     if (UA.gecko < 1.92) return;
     if (!KE.Maximize) {
         (function() {
+
+            var MAXIMIZE_CLASS = "ke-toolbar-maximize",
+                RESTORE_CLASS = "ke-toolbar-restore";
+
             function Maximize(editor) {
                 var self = this;
                 self.editor = editor;
@@ -14187,7 +14197,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         el = new TripleButton({
                             container:editor.toolBarDiv,
                             title:"全屏",
-                            contentCls:"ke-toolbar-maximize"
+                            contentCls:MAXIMIZE_CLASS
                         });
                     self.el = el;
                     el.on("offClick", self.maximize, self);
@@ -14247,6 +14257,8 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:"-99999px"
                     });
                     window.scrollTo(self.scrollLeft, self.scrollTop);
+
+                    self.el.el.one("span").removeClass(RESTORE_CLASS).addClass(MAXIMIZE_CLASS);
                 },
                 /**
                  * 保存最大化前的外围状态信息到内存，
@@ -14277,6 +14289,8 @@ KISSY.Editor.add("maximize", function(editor) {
                         p = p.parent();
                     }
                     self._savedParents = _savedParents;
+
+                    self.el.el.one("span").removeClass(MAXIMIZE_CLASS).addClass(RESTORE_CLASS);
                 },
 
                 /**
@@ -14486,7 +14500,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
                     "</label>" +
-                    "<label style='margin-left:35px;'>间距： " +
+                    "<label style='margin-left:25px;'>间距： " +
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' " +
@@ -15492,12 +15506,6 @@ KISSY.Editor.add("select", function() {
             } else {
                 innerText.html(title);
             }
-            if (UA.ie == 6) {
-                //odd ie ,字错位
-                setTimeout(function() {
-                    innerText.css("zoom", 1);
-                }, 0);
-            }
 
             text.css("width", self.get("width"));
             //ie6,7 不失去焦点
@@ -15879,14 +15887,21 @@ KISSY.Editor.add("sourcearea", function(editor) {
                         title:"源码",
                         contentCls:"ke-toolbar-source"
                     });
-                    self.el.on("offClick", self._show, self);
-                    self.el.on("onClick", self._hide, self);
+                    var el = self.el;
+                    el.on("offClick", self._show, self);
+                    el.on("onClick", self._hide, self);
+                    editor.on("sourcemode", function() {
+                        el.bon();
+                    });
+                    editor.on("wysiwygmode", function() {
+                        el.boff();
+                    });
                 },
                 _show:function() {
                     var self = this,
                         editor = self.editor;
                     editor.execCommand("sourceAreaSupport", SOURCE_MODE);
-                    self.el.set("state", TripleButton.ON);
+                    self.el.bon();
                 },
 
 
@@ -15894,8 +15909,8 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     var self = this,
                         editor = self.editor,
                         el = self.el;
-                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);                    
-                    el.set("state", TripleButton.OFF);
+                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
+                    el.boff();
                 }
             });
             KE.SourceArea = SourceArea;

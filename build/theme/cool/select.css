@@ -64,7 +64,6 @@ select style for kissy editor
 .ke-menu .ke-select-menu-item {
     padding-left: 12px;
     padding-right: 20px;
-    zoom: 1;
 }
 
 .ke-select-text {
@@ -72,12 +71,6 @@ select style for kissy editor
     height: 20px;
     line-height: 20px;
     position: relative;
-}
-
-.ie6 .ke-combox .ke-select-text-inner {
-    zoom: 1;
-    position: relative;
-    top: 2px;
 }
 
 .ie8 .ke-combox .ke-select-text {
@@ -89,7 +82,12 @@ select style for kissy editor
 }
 
 .ie6 .ke-combox .ke-select-text {
+    /*odd ie ,字错位*/
+    position: static;
+    /*
     top: -2px;
+    */
+    padding-top: 2px;
 }
 
 .ke-select-drop-wrap {

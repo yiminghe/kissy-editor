@@ -34,15 +34,18 @@ menu style for kissy editor ,include contextmenu and select menu
     white-space: nowrap;
     zoom: 1;
     text-decoration: none;
+    color:black;
 }
 
 .ke-menu-title {
     background-color: #dcdcdc;
     padding: 3px;
     display: none;
+    color:black;
 }
 
 .ke-menu a:hover, .ke-menu-selected {
     background: #D6E9F8;
     text-decoration: none;
+    color:black;
 }

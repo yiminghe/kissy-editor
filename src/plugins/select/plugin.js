@@ -93,12 +93,6 @@ KISSY.Editor.add("select", function() {
             } else {
                 innerText.html(title);
             }
-            if (UA.ie == 6) {
-                //odd ie ,字错位
-                setTimeout(function() {
-                    innerText.css("zoom", 1);
-                }, 0);
-            }
 
             text.css("width", self.get("width"));
             //ie6,7 不失去焦点

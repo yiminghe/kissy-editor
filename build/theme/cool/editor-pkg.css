@@ -267,6 +267,7 @@ link
     white-space: nowrap;
     outline: none;
     cursor: pointer;
+    *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
 
 .ke-triplebutton-on {
@@ -337,6 +338,7 @@ active
     text-decoration: none;
     outline: none;
     color: black;
+    *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
 
 .ke-button:hover {
@@ -585,6 +587,10 @@ textarea,iframe包装
     background-image: url("maximize.png");
 }
 
+.ke-toolbar-restore {
+    background-image: url("restore.png");
+}
+
 .ke-toolbar-flash {
     background-image: url("flash.png");
 }
@@ -662,17 +668,20 @@ menu style for kissy editor ,include contextmenu and select menu
     white-space: nowrap;
     zoom: 1;
     text-decoration: none;
+    color:black;
 }
 
 .ke-menu-title {
     background-color: #dcdcdc;
     padding: 3px;
     display: none;
+    color:black;
 }
 
 .ke-menu a:hover, .ke-menu-selected {
     background: #D6E9F8;
     text-decoration: none;
+    color:black;
 }
 /**
  overlay style for kissy editor
@@ -754,7 +763,7 @@ a.ke-hd-x:active {
     background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');
     color: #000000;
-    font-size: 120%;
+    font-size: 14px;
     font-weight: bold;
     padding: 0px 0px 0px 18px;
     height: 30px;
@@ -899,7 +908,6 @@ select style for kissy editor
 .ke-menu .ke-select-menu-item {
     padding-left: 12px;
     padding-right: 20px;
-    zoom: 1;
 }
 
 .ke-select-text {
@@ -907,12 +915,6 @@ select style for kissy editor
     height: 20px;
     line-height: 20px;
     position: relative;
-}
-
-.ie6 .ke-combox .ke-select-text-inner {
-    zoom: 1;
-    position: relative;
-    top: 2px;
 }
 
 .ie8 .ke-combox .ke-select-text {
@@ -924,7 +926,12 @@ select style for kissy editor
 }
 
 .ie6 .ke-combox .ke-select-text {
+    /*odd ie ,字错位*/
+    position: static;
+    /*
     top: -2px;
+    */
+    padding-top: 2px;
 }
 
 .ke-select-drop-wrap {
@@ -950,7 +957,7 @@ select style for kissy editor
     background-image: url("text-bg.gif");
 }.ke-tabs {
     padding-left: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
     border-bottom: 1px solid #CED5E0;
 }
 

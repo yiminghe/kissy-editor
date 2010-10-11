@@ -78,7 +78,7 @@ a.ke-hd-x:active {
     background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');
     color: #000000;
-    font-size: 120%;
+    font-size: 14px;
     font-weight: bold;
     padding: 0px 0px 0px 18px;
     height: 30px;
