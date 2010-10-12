@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 18:27:57
+ * @buildtime: 2010-10-12 19:38:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7536,8 +7536,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 str = color;
             }
         }
-
-
         return "#" + str.toLowerCase();
     }
 
@@ -7605,22 +7603,25 @@ KISSY.Editor.add("colorsupport", function(editor) {
             KE.Utils.sourceDisable(editor, self);
         },
         disable:function() {
-            this.el.set("state", TripleButton.DISABLED);
+            this.el.disable();
         },
         enable:function() {
-            this.el.set("state", TripleButton.OFF);
+            this.el.enable();
         },
         _hidePanel:function(ev) {
-            var self = this;
+            var self = this,
+                colorWin = self.colorWin;
+            if (!colorWin.get("visible")) return;
             //多窗口管理
             if (DOM._4e_ascendant(ev.target, function(node) {
                 return node._4e_equals(self.el.el);
             }, true))return;
-            self.colorWin.hide();
+            colorWin.hide();
         },
         _selectColor:function(ev) {
             ev.halt();
-            var self = this,editor = self.get("editor"),
+            var self = this,
+                editor = self.get("editor"),
                 t = ev.target;
             if (DOM._4e_name(t) == "span" || DOM._4e_name(t) == "a") {
                 t = new Node(t);
@@ -7639,28 +7640,33 @@ KISSY.Editor.add("colorsupport", function(editor) {
             }
         },
         _prepare:function() {
-            var self = this;
-            self.colorPanel = new Node(html);
+            var self = this,
+                doc = document,
+                colorPanel = new Node(html);
             self.colorWin = new Overlay({
-                el:this.colorPanel,
+                el:colorPanel,
                 width:"130px",
                 zIndex:990,
                 mask:false,
                 focusMgr:false
             });
 
-            self.colorPanel._4e_unselectable();
-            self.colorPanel.on("click", self._selectColor, self);
-            Event.on(document, "click", self._hidePanel, self);
+            colorPanel._4e_unselectable();
+            colorPanel.on("click", self._selectColor, self);
+            self.colorPanel = colorPanel;
+            Event.on(doc, "click", self._hidePanel, self);
             Event.on(editor.document, "click", self._hidePanel, self);
         },
         _real:function() {
-            var self = this,xy = self.el.el.offset();
-            xy.top += self.el.el.height() + 5;
-            if (xy.left + self.colorPanel.width() > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - self.colorPanel.width() - 60;
+            var self = this,
+                el = self.el.el,
+                colorPanel = self.colorPanel,
+                xy = el.offset();
+            xy.top += el.height() + 5;
+            if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
+                xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
             }
-            this.colorWin.show(xy);
+            self.colorWin.show(xy);
         },
         _showColors:function(ev) {
             var self = this;
@@ -15964,10 +15970,11 @@ KISSY.Editor.add("smiley", function(editor) {
                 },
                 _hidePanel:function(ev) {
                     var self = this,t = ev.target;
+                    if (!this.smileyWin.get("visible")) return;
                     //多窗口管理
                     if (DOM._4e_ascendant(ev.target, function(node) {
                         return  node[0] === self.el.el[0];
-                    }))return;
+                    }, true))return;
 
                     this.smileyWin.hide();
                 },

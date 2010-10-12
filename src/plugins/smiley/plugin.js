@@ -66,10 +66,11 @@ KISSY.Editor.add("smiley", function(editor) {
                 },
                 _hidePanel:function(ev) {
                     var self = this,t = ev.target;
+                    if (!this.smileyWin.get("visible")) return;
                     //多窗口管理
                     if (DOM._4e_ascendant(ev.target, function(node) {
                         return  node[0] === self.el.el[0];
-                    }))return;
+                    }, true))return;
 
                     this.smileyWin.hide();
                 },
