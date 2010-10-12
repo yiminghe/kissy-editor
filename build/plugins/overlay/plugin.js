@@ -18,6 +18,7 @@ KISSY.Editor.add("overlay", function() {
             "style='width:" +
             "@width@" +
             "'>" +
+            "<div class='ke-dialog-wrapper'>" +
             "<div class='ke-hd'>" +
             "<span class='ke-hd-title'>" +
             "@title@" +
@@ -29,6 +30,7 @@ KISSY.Editor.add("overlay", function() {
             "<div class='ke-bd'>" +
             "</div>" +
             "<div class='ke-ft'>" +
+            "</div>" +
             "</div>" +
             "</div>",
         focusMarkup = "<a " +
@@ -334,36 +336,11 @@ KISSY.Editor.add("overlay", function() {
                         "<" + "iframe class='ke-dialog-iframe'" +
                             "></iframe>");
                 d_iframe.css(S.mix({
-                    "z-index":(self.get("zIndex") - 1),
                     opacity:0
-                }, noVisibleStyle));
-                d_iframe.appendTo(document.body);
-
-                /**
-                 * ie6 窗口垫片同步
-                 */
-                self.on("show", function() {
-                    var bw = el.width(),
-                        bh = el.height();
-                    d_iframe.css({
-                        width: bw + "px",
-                        height: bh + "px"
-                    });
-                    d_iframe.css(el.offset());
-                });
-                self.on("hide", function() {
-                    d_iframe.css(noVisibleStyle);
-                });
-
-
-                if (self._drag) {
-                    self._drag.on("move", function() {
-                        d_iframe.offset(el.offset());
-                    });
-                }
+                }));
+                d_iframe.insertBefore(self.el.one(".ke-dialog-wrapper"));
             }
-        }
-        ,
+        },
 
         loading:function() {
             this._prepareLoading();

@@ -34,6 +34,11 @@
 .ke-dialog-iframe {
     position: absolute;
     border: none;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    height: expression(this.parentNode.offsetHeight);
 }
 
 .ke-hd-x {
