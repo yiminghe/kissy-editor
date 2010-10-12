@@ -218,9 +218,9 @@ KISSY.Editor.add("maximize", function(editor) {
                             overflow:"hidden"
                         });
                     } else {
-                        doc.documentElement.style.overflow = "hidden";
                         doc.body.style.overflow = "hidden";
                     }
+                    doc.documentElement.style.overflow = "hidden";
 
                     editorWrap.css({
                         position:"absolute",

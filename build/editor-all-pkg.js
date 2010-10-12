@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 17:53:16
+ * @buildtime: 2010-10-12 17:58:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14394,9 +14394,9 @@ KISSY.Editor.add("maximize", function(editor) {
                             overflow:"hidden"
                         });
                     } else {
-                        doc.documentElement.style.overflow = "hidden";
                         doc.body.style.overflow = "hidden";
                     }
+                    doc.documentElement.style.overflow = "hidden";
 
                     editorWrap.css({
                         position:"absolute",
