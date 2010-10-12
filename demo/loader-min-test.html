@@ -4,7 +4,12 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
-
+<!--[if lt IE 8]>
+<link href="../build/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet"/>
+<![endif]-->
+<!--[if gte IE 8]><!-->
+<link href="../build/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
+<!--<![endif]-->
 </head>
 <body>
 
@@ -186,8 +191,6 @@ box-shadow:2px 2px 0.5em #888888;
         S.add({
             editor:{
                 requires:["core"],
-                csspath:"/build/theme/cool/editor-pkg-min-"
-                        + (S.UA.ie < 8 ? "mhtml" : "datauri") + ".css",
                 path:"/build/editor-all-pkg-min.js"
             },
             "bangpai-editor":{
@@ -226,21 +229,43 @@ box-shadow:2px 2px 0.5em #888888;
                         items:[
                             {
                                 value:"14px",
-                                name:"<span style='font-size:14px'>一般</span>  &nbsp; 14px"
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:14px'>标准</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>14px</span>"
                             },
                             {
                                 value:"16px",
-                                name:"<span style='font-size:16px'>较大</span> &nbsp; 16px"
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:16px'>大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>16px</span>"
                             },
-
+                            {
+                                value:"18px",
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:18px'>特大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>18px</span>"
+                            },
                             {
                                 value:"20px",
-                                name:"<span style='font-size:20px'>特大</span> &nbsp; 20px"
+                                attrs:{
+                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                },
+                                name:"" +
+                                        " <span style='font-size:20px'>极大</span>" +
+                                        "<span style='position:absolute;top:1px;right:3px;'>20px</span>"
                             }
                         ],
-                        width:"100px"
+                        width:"115px"
                     }
-
                     //,"font-family":["song"]
                     ,"bangpai-upload":{
                         holder:"#imgup1",
