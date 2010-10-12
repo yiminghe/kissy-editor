@@ -403,6 +403,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     uploader = self.uploader,
                     list = self._list,
                     curNum = 0,
+                    //当前队列的所有文件，连续选择的话累计！！！
                     files = ev.fileList,
                     available = self._numberLimit;
                 if (files) {
@@ -414,16 +415,28 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     if (l >= available) {
                         self.ddisable();
                     }
+
+                    //去除已经 ui 显示出来的
+                    var trs = list.children("tr");
+                    for (var i = 0; i < trs.length; i++) {
+                        var tr = trs[i],fid = DOM.attr(tr, "fid");
+                        fid && files[fid] && (delete files[fid]);
+                    }
+                    //限额-目前ui的
+                    available = self._numberLimit - trs.length;
                     self._listWrap.show();
+
+                    //files 是这次新选择的啦！
+                    //新选择的随即删除一些
                     for (var i in files) {
                         if (!files.hasOwnProperty(i)) continue;
-                        var f = files[i];
-                        if (self._getFileTr(f.id)) continue;
-                        var size = Math.floor(f.size / 1000),id = f.id;
                         curNum ++;
+                        var f = files[i],
+                            size = Math.floor(f.size / 1000),
+                            id = f.id;
+
                         if (curNum > available) {
                             uploader.removeFile(id);
-                            curNum--;
                             continue;
                         }
                         var n = new Node("<tr fid='" + id + "'>"
@@ -450,7 +463,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         if (size > self._sizeLimit) {
                             self._uploadError({
                                 id:id,
-                                status:PIC_SIZE_LIMIT_WARNING.replace(/n/, self._sizeLimit / 1000)
+                                status:PIC_SIZE_LIMIT_WARNING
+                                    .replace(/n/, self._sizeLimit / 1000)
                             });
                             uploader.removeFile(id);
 
