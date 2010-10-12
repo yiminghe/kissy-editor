@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 17:45:35
+ * @buildtime: 2010-10-12 17:53:16
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -754,6 +754,11 @@ KISSY.Editor.add("definition", function(KE) {
                     if (n == "select" || n == "option")return true;
                 }
                 ev.halt();
+            });
+
+            //由于上面的 mousedown 阻止，这里使得 textarea 上的事件不被阻止，可以被编辑 - firefox
+            textarea.on("mousedown", function(ev) {
+                ev.stopPropagation();
             });
 
             self.editorWrap = editorWrap;

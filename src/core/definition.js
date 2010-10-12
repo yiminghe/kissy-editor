@@ -100,6 +100,11 @@ KISSY.Editor.add("definition", function(KE) {
                 ev.halt();
             });
 
+            //由于上面的 mousedown 阻止，这里使得 textarea 上的事件不被阻止，可以被编辑 - firefox
+            textarea.on("mousedown", function(ev) {
+                ev.stopPropagation();
+            });
+
             self.editorWrap = editorWrap;
             self._UUID = INSTANCE_ID++;
             //实例集中管理
