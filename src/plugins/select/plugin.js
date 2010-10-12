@@ -19,7 +19,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span>" +
             "</span>" +
             "</a></span>",
-        menu_markup = "<div class='ke-menu' onmousedown='return false;'>" +
+        menu_markup = "<div onmousedown='return false;'>" +
             "</div>";
 
     if (KE.Select) return;
@@ -183,12 +183,17 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
-                menuNode = new Node(menu_markup),
-                menu = new KE.SimpleOverlay({
-                    el:menuNode,
-                    zIndex:990,
-                    focusMgr:false
-                }),
+                menuNode = new Node(menu_markup);
+            //要在适当位置插入 !!!
+            menuNode.appendTo(self.get("menuContainer"));
+
+            var menu = new KE.SimpleOverlay({
+                el:menuNode,
+                cls:"ke-menu",
+                width:popUpWidth ? popUpWidth : el.width(),
+                zIndex:990,
+                focusMgr:false
+            }),
                 items = self.get("items");
             self.menu = menu;
             //缩放，下拉框跟随
@@ -203,13 +208,7 @@ KISSY.Editor.add("select", function() {
             self._selectList = new Node("<div>").appendTo(menuNode);
 
             self._itemsChange({newVal:items});
-            if (popUpWidth) {
-                menuNode.css("width", popUpWidth);
-            } else {
-                menuNode.css("width", el.width());
-            }
-            //要在适当位置插入 !!!
-            menuNode.appendTo(self.get("menuContainer"));
+
 
             menu.on("show", function() {
                 focusA.addClass(ke_select_active);

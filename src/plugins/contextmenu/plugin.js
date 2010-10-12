@@ -8,7 +8,7 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div class='ke-menu' onmousedown='return false;'></div>";
+        HTML = "<div onmousedown='return false;'></div>";
     if (KE.ContextMenu) return;
 
     function ContextMenu(config) {
@@ -109,10 +109,13 @@ KISSY.Editor.add("contextmenu", function() {
             var self = this,cfg = self.cfg,funcs = cfg.funcs;
             self.elDom = new Node(HTML);
             var el = self.elDom;
-            el.css("width", cfg.width);
-            document.body.appendChild(el[0]);
+
             //使它具备 overlay 的能力，其实这里并不是实体化
-            self.el = new Overlay({el:el});
+            self.el = new Overlay({
+                el:el,
+                width:cfg.width,
+                cls:"ke-menu"
+            });
 
             for (var f in funcs) {
                 var a = new Node("<a href='#'>" + f + "</a>");

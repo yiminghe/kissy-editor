@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 15:14:02
+ * @buildtime: 2010-10-12 16:24:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7670,7 +7670,7 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div class='ke-menu' onmousedown='return false;'></div>";
+        HTML = "<div onmousedown='return false;'></div>";
     if (KE.ContextMenu) return;
 
     function ContextMenu(config) {
@@ -7771,10 +7771,13 @@ KISSY.Editor.add("contextmenu", function() {
             var self = this,cfg = self.cfg,funcs = cfg.funcs;
             self.elDom = new Node(HTML);
             var el = self.elDom;
-            el.css("width", cfg.width);
-            document.body.appendChild(el[0]);
+
             //使它具备 overlay 的能力，其实这里并不是实体化
-            self.el = new Overlay({el:el});
+            self.el = new Overlay({
+                el:el,
+                width:cfg.width,
+                cls:"ke-menu"
+            });
 
             for (var f in funcs) {
                 var a = new Node("<a href='#'>" + f + "</a>");
@@ -14664,9 +14667,7 @@ KISSY.Editor.add("overlay", function() {
         DOM = S.DOM,
         mask ,
         dialogMarkUp = "<div class='ke-dialog' " +
-            "style='width:" +
-            "@width@" +
-            "'>" +
+            ">" +
             "<div class='ke-dialog-wrapper'>" +
             "<div class='ke-hd'>" +
             "<span class='ke-hd-title'>" +
@@ -14714,16 +14715,17 @@ KISSY.Editor.add("overlay", function() {
         /**
          * 遮罩层
          */
-        mask = new Node("<div class=\"ke-mask\">&nbsp;</div>").appendTo(document.body);
-        mask.css({
-            "width": "100%",
-            "height": DOM.docHeight() + "px",
-            "opacity": 0.4
-        });
         mask = new Overlay({
-            el:mask,
+            el:new Node("<div>"),
+            cls:"ke-mask",
             focusMgr:false,
             draggable:false
+        });
+        mask.el.css({
+            "width":"100%",
+            "background-color": "#000000",
+            "height": DOM.docHeight() + "px",
+            "opacity": 0.4
         });
     };
 
@@ -14732,6 +14734,7 @@ KISSY.Editor.add("overlay", function() {
         title:{value:""},
         width:{value:"450px"},
         height:{},
+        cls:{},
         visible:{value:false},
         "zIndex":{value:9999},
         //帮你管理焦点
@@ -14834,8 +14837,7 @@ KISSY.Editor.add("overlay", function() {
             if (!el) {
                 //also gen html
                 el = new Node(
-                    dialogMarkUp.replace(/@width@/,
-                        self.get("width")).replace(/@title@/,
+                    dialogMarkUp.replace(/@title@/,
                         self.get("title"))).appendTo(document.body
                     );
                 var head = el.one(".ke-hd"),
@@ -14867,6 +14869,27 @@ KISSY.Editor.add("overlay", function() {
                         }
                     });
                 }
+            } else {
+                //已有元素就用dialog包起来
+
+                if (!el[0].parentNode ||
+                    //ie新节点 为 fragment 类型
+                    el[0].parentNode.nodeType != KE.NODE.NODE_ELEMENT) {
+                    el = new Node("<div class='ke-dialog'>")
+                        .append(new Node("<div class='ke-dialog-wrapper'>")
+                        .append(el))
+                        .appendTo(document.body);
+                } else {
+                    var w = new Node("<div class='ke-dialog'>");
+                    w.insertBefore(el);
+                    w.append(new Node("<div class='ke-dialog-wrapper'>").append(el));
+                }
+            }
+            if (self.get("cls")) {
+                el.addClass(self.get("cls"));
+            }
+            if (self.get("width")) {
+                el.css("width", self.get("width"));
             }
 
             self.set("el", el);
@@ -15488,7 +15511,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span>" +
             "</span>" +
             "</a></span>",
-        menu_markup = "<div class='ke-menu' onmousedown='return false;'>" +
+        menu_markup = "<div onmousedown='return false;'>" +
             "</div>";
 
     if (KE.Select) return;
@@ -15652,12 +15675,17 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
-                menuNode = new Node(menu_markup),
-                menu = new KE.SimpleOverlay({
-                    el:menuNode,
-                    zIndex:990,
-                    focusMgr:false
-                }),
+                menuNode = new Node(menu_markup);
+            //要在适当位置插入 !!!
+            menuNode.appendTo(self.get("menuContainer"));
+
+            var menu = new KE.SimpleOverlay({
+                el:menuNode,
+                cls:"ke-menu",
+                width:popUpWidth ? popUpWidth : el.width(),
+                zIndex:990,
+                focusMgr:false
+            }),
                 items = self.get("items");
             self.menu = menu;
             //缩放，下拉框跟随
@@ -15672,13 +15700,7 @@ KISSY.Editor.add("select", function() {
             self._selectList = new Node("<div>").appendTo(menuNode);
 
             self._itemsChange({newVal:items});
-            if (popUpWidth) {
-                menuNode.css("width", popUpWidth);
-            } else {
-                menuNode.css("width", el.width());
-            }
-            //要在适当位置插入 !!!
-            menuNode.appendTo(self.get("menuContainer"));
+
 
             menu.on("show", function() {
                 focusA.addClass(ke_select_active);
@@ -16452,9 +16474,16 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
                         if (caption && caption[0])
                             caption.html(tcv);
-                        else
-                            new Node("<caption><span>" + tcv + "</span></caption>")
-                                .insertBefore(selectedTable[0].firstChild);
+                        else {
+                            //不能使用dom操作了, ie6 table 报错
+                            //http://msdn.microsoft.com/en-us/library/ms532998(VS.85).aspx
+                            var c = selectedTable[0].createCaption();
+                            DOM.html(c, "<span>"
+                                + tcv
+                                + "</span>");
+                            // new Node("<caption><span>" + tcv + "</span></caption>");
+                            // .insertBefore(selectedTable[0].firstChild);
+                        }
                     } else if (caption) {
                         caption._4e_remove();
                     }

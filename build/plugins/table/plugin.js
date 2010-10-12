@@ -344,9 +344,16 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
                         if (caption && caption[0])
                             caption.html(tcv);
-                        else
-                            new Node("<caption><span>" + tcv + "</span></caption>")
-                                .insertBefore(selectedTable[0].firstChild);
+                        else {
+                            //不能使用dom操作了, ie6 table 报错
+                            //http://msdn.microsoft.com/en-us/library/ms532998(VS.85).aspx
+                            var c = selectedTable[0].createCaption();
+                            DOM.html(c, "<span>"
+                                + tcv
+                                + "</span>");
+                            // new Node("<caption><span>" + tcv + "</span></caption>");
+                            // .insertBefore(selectedTable[0].firstChild);
+                        }
                     } else if (caption) {
                         caption._4e_remove();
                     }

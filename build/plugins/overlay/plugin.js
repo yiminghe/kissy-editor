@@ -15,9 +15,7 @@ KISSY.Editor.add("overlay", function() {
         DOM = S.DOM,
         mask ,
         dialogMarkUp = "<div class='ke-dialog' " +
-            "style='width:" +
-            "@width@" +
-            "'>" +
+            ">" +
             "<div class='ke-dialog-wrapper'>" +
             "<div class='ke-hd'>" +
             "<span class='ke-hd-title'>" +
@@ -65,16 +63,17 @@ KISSY.Editor.add("overlay", function() {
         /**
          * 遮罩层
          */
-        mask = new Node("<div class=\"ke-mask\">&nbsp;</div>").appendTo(document.body);
-        mask.css({
-            "width": "100%",
-            "height": DOM.docHeight() + "px",
-            "opacity": 0.4
-        });
         mask = new Overlay({
-            el:mask,
+            el:new Node("<div>"),
+            cls:"ke-mask",
             focusMgr:false,
             draggable:false
+        });
+        mask.el.css({
+            "width":"100%",
+            "background-color": "#000000",
+            "height": DOM.docHeight() + "px",
+            "opacity": 0.4
         });
     };
 
@@ -83,6 +82,7 @@ KISSY.Editor.add("overlay", function() {
         title:{value:""},
         width:{value:"450px"},
         height:{},
+        cls:{},
         visible:{value:false},
         "zIndex":{value:9999},
         //帮你管理焦点
@@ -185,8 +185,7 @@ KISSY.Editor.add("overlay", function() {
             if (!el) {
                 //also gen html
                 el = new Node(
-                    dialogMarkUp.replace(/@width@/,
-                        self.get("width")).replace(/@title@/,
+                    dialogMarkUp.replace(/@title@/,
                         self.get("title"))).appendTo(document.body
                     );
                 var head = el.one(".ke-hd"),
@@ -218,6 +217,27 @@ KISSY.Editor.add("overlay", function() {
                         }
                     });
                 }
+            } else {
+                //已有元素就用dialog包起来
+
+                if (!el[0].parentNode ||
+                    //ie新节点 为 fragment 类型
+                    el[0].parentNode.nodeType != KE.NODE.NODE_ELEMENT) {
+                    el = new Node("<div class='ke-dialog'>")
+                        .append(new Node("<div class='ke-dialog-wrapper'>")
+                        .append(el))
+                        .appendTo(document.body);
+                } else {
+                    var w = new Node("<div class='ke-dialog'>");
+                    w.insertBefore(el);
+                    w.append(new Node("<div class='ke-dialog-wrapper'>").append(el));
+                }
+            }
+            if (self.get("cls")) {
+                el.addClass(self.get("cls"));
+            }
+            if (self.get("width")) {
+                el.css("width", self.get("width"));
             }
 
             self.set("el", el);

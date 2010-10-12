@@ -708,13 +708,6 @@ menu style for kissy editor ,include contextmenu and select menu
  overlay style for kissy editor
  @author:yiminghe@gmail.com
 **/
-.ke-mask {
-    background-color: #000000;
-    left: 0;
-    top: 0;
-    border: none;
-    position: absolute;
-}
 
 .ke-loading {
     position: absolute;
@@ -832,6 +825,17 @@ a.ke-hd-x:active {
     margin: 0;
     overflow: hidden;
     outline: none;
+}
+
+.ke-mask {
+    left: 0;
+    top: 0;
+    border: none;
+    background-color: #000000;
+    position: absolute;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 /**
  pop up style for kissy editor
