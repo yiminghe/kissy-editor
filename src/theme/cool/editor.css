@@ -168,10 +168,6 @@ textarea,iframe包装
     background-image: url("maximize.png");
 }
 
-.ke-toolbar-restore {
-    background-image: url("restore.png");
-}
-
 .ke-toolbar-flash {
     background-image: url("flash.png");
 }
@@ -198,6 +194,11 @@ textarea,iframe包装
 
 .ke-toolbar-pagebreak {
     background-image: url("pagebreak.png");
+}
+
+
+.ke-toolbar-restore {
+    background-image: url("restore.png");
 }
 
 .ke-input {

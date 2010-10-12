@@ -189,6 +189,12 @@ KISSY.Editor.add("maximize", function(editor) {
                         //element[0] && element[0].scrollIntoView(true);
                         element && element[0] && element._4e_scrollIntoView();
                     }
+
+                    //datauri 清空里面的background-image，使得 expression 重新执行
+                    if (UA.ie < 8) {
+                        self.el.el.one("span").css("background-image", "");
+                    }
+
                 },
 
                 /**
@@ -252,6 +258,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     self._maximize();
                     //}
                     Event.on(window, "resize", self._maximize, self);
+
                     self.el.set("state", TripleButton.ON);
                     setTimeout(function() {
                         self._restoreEditorStatus();
