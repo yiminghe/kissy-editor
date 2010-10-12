@@ -52,8 +52,11 @@ KISSY.Editor.add("colorsupport", function(editor) {
             'FFA07A,FFA500,FFFF00,00FF00,AFEEEE,ADD8E6,DDA0DD,D3D3D3,' +
             'FFF0F5,FAEBD7,FFFFE0,F0FFF0,F0FFFF,F0F8FF,E6E6FA,FFF').split(/,/),
         VALID_COLORS = [],
-        html = "<div class='ke-popup-wrap ke-color-wrap'>" +
-            "<a class='ke-color-remove' href=\"javascript:void('清除');\"><span>清除</span></a>" +
+        html = "<div>" +
+            "<a class='ke-color-remove' " +
+            "href=\"javascript:void('清除');\">" +
+            "<span>清除</span>" +
+            "</a>" +
             "<table>";
     for (var i = 0; i < 5; i++) {
         html += "<tr>";
@@ -144,11 +147,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:this.colorPanel,
+                width:"130px",
                 zIndex:990,
                 mask:false,
                 focusMgr:false
             });
-            document.body.appendChild(self.colorPanel[0]);
+
             self.colorPanel._4e_unselectable();
             self.colorPanel.on("click", self._selectColor, self);
             Event.on(document, "click", self._hidePanel, self);

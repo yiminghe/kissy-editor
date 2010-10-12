@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 18:10:23
+ * @buildtime: 2010-10-12 18:27:57
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7548,8 +7548,11 @@ KISSY.Editor.add("colorsupport", function(editor) {
             'FFA07A,FFA500,FFFF00,00FF00,AFEEEE,ADD8E6,DDA0DD,D3D3D3,' +
             'FFF0F5,FAEBD7,FFFFE0,F0FFF0,F0FFFF,F0F8FF,E6E6FA,FFF').split(/,/),
         VALID_COLORS = [],
-        html = "<div class='ke-popup-wrap ke-color-wrap'>" +
-            "<a class='ke-color-remove' href=\"javascript:void('清除');\"><span>清除</span></a>" +
+        html = "<div>" +
+            "<a class='ke-color-remove' " +
+            "href=\"javascript:void('清除');\">" +
+            "<span>清除</span>" +
+            "</a>" +
             "<table>";
     for (var i = 0; i < 5; i++) {
         html += "<tr>";
@@ -7640,11 +7643,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:this.colorPanel,
+                width:"130px",
                 zIndex:990,
                 mask:false,
                 focusMgr:false
             });
-            document.body.appendChild(self.colorPanel[0]);
+
             self.colorPanel._4e_unselectable();
             self.colorPanel.on("click", self._selectColor, self);
             Event.on(document, "click", self._hidePanel, self);
@@ -15926,15 +15930,13 @@ KISSY.Editor.add("smiley", function(editor) {
                 + '}'
                 , "smiley");
 
-            var
-                smiley_markup = "<div class='ke-popup-wrap'>" +
-                    "<div class='ke-smiley-sprite'>";
+            var smiley_markup = "<div class='ke-smiley-sprite'>";
 
             for (var i = 0; i <= 98; i++) {
                 smiley_markup += "<a href='#' data-icon='http://a.tbcdn.cn/sys/wangwang/smiley/48x48/" + i + ".gif'></a>"
             }
 
-            smiley_markup += "</div></div>";
+            smiley_markup += "</div>";
 
             function Smiley(editor) {
                 this.editor = editor;
@@ -15986,11 +15988,11 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyPanel = new Node(smiley_markup);
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
+                        width:"297px",
                         zIndex:990,
                         focusMgr:false,
                         mask:false
                     });
-                    document.body.appendChild(this.smileyPanel[0]);
                     this.smileyPanel.on("click", this._selectSmiley, this);
                     Event.on(document, "click", this._hidePanel, this);
                     Event.on(editor.document, "click", this._hidePanel, this);

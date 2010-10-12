@@ -32,15 +32,13 @@ KISSY.Editor.add("smiley", function(editor) {
                 + '}'
                 , "smiley");
 
-            var
-                smiley_markup = "<div class='ke-popup-wrap'>" +
-                    "<div class='ke-smiley-sprite'>";
+            var smiley_markup = "<div class='ke-smiley-sprite'>";
 
             for (var i = 0; i <= 98; i++) {
                 smiley_markup += "<a href='#' data-icon='http://a.tbcdn.cn/sys/wangwang/smiley/48x48/" + i + ".gif'></a>"
             }
 
-            smiley_markup += "</div></div>";
+            smiley_markup += "</div>";
 
             function Smiley(editor) {
                 this.editor = editor;
@@ -92,11 +90,11 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyPanel = new Node(smiley_markup);
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
+                        width:"297px",
                         zIndex:990,
                         focusMgr:false,
                         mask:false
                     });
-                    document.body.appendChild(this.smileyPanel[0]);
                     this.smileyPanel.on("click", this._selectSmiley, this);
                     Event.on(document, "click", this._hidePanel, this);
                     Event.on(editor.document, "click", this._hidePanel, this);
