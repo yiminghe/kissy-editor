@@ -15,6 +15,7 @@ build file for kissy editor
 
     <property name="src.dir" location="${project.dir}/src/"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
+    <property name="ke-stable.dir" location="${root.dir}/kissy-editor-stable/"/>
     <property name="build.dir" location="${project.dir}/build/"/>
 
     <property name="theme.dir" value="theme"/>
@@ -136,6 +137,15 @@ build file for kissy editor
 
     <target name="run" depends="git">
 
+    </target>
+
+    <target name="stable" depends="run">
+        <copy todir="${ke-stable.dir}/build"
+              encoding="${charset}"
+              outputencoding="${charset}">
+            <fileset dir="${project.dir}/build" includes="**/*">
+            </fileset>
+        </copy>
     </target>
 
     <!--

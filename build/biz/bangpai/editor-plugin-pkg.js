@@ -595,17 +595,13 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             PIC_SIZE_LIMIT = 1000,
             PIC_SIZE_LIMIT_WARNING = "图片不能超过 n M",
             Node = S.Node,
+            Overlay = KE.SimpleOverlay,
             holder = [],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
             progressBars = {};
         name = "ke-bangpai-upload";
 
         DOM.addStyleSheet("" +
-            ".ke-BangPaiUpload {" +
-            "border:1px solid #CED5E0;" +
-            "}" +
-            "" +
-            "" +
             ".ke-upload-head {" +
             "background-color: #f4f7fc;" +
             "background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));" +
@@ -634,7 +630,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "" +
             ".ke-upload-btn-wrap {" +
             "position:relative;" +
-            "margin:15px 20px 15px 20px;" +
+            "margin:15px 20px 15px 10px;" +
             "text-align:right;" +
             "}" +
             ".ke-upload-list {" +
@@ -652,27 +648,28 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "border-bottom:1px solid #c1c8d1;" +
             "}" +
             "", "ke-BangPaiUpload"
-            )
-            ;
+            );
 
         S.augment(BangPaiUpload, S.EventTarget, {
-            _init:function() {
+            _prepareShow:function() {
                 var self = this,
                     editor = self.editor,
-                    bangpaiCfg = editor.cfg["pluginConfig"]["bangpai-upload"],
-                    holderEl = bangpaiCfg.holder,
-                    bangpaiUploaderHolder = S.isString(holderEl) ?
-                        S.one(holderEl) :
-                        holderEl,
-                    flashHolder = new Node("<div class='ke-upload-head'> " +
-                        "<h2 class='ke-upload-head-text'>批量上传</h2>" +
-                        "</div>")
-                        .appendTo(bangpaiUploaderHolder),
+                    bangpaiCfg = editor.cfg["pluginConfig"]["bangpai-upload"];
 
+                self.dialog = new Overlay({
+                    title:"批量上传",
+                    mask:false,
+                    //height:"500px",
+                    focusMgr:false,
+                    width:"700px"
+                });
+
+                var d = self.dialog;
+                d.foot.hide();
+                var bangpaiUploaderHolder = d.body,
                     btnHolder = new Node(
                         "<div class='ke-upload-btn-wrap'>" +
                             "<span " +
-                            "  " +
                             "style='" +
                             "margin:0 15px 0 0px;" +
                             "color:#969696;" +
@@ -689,9 +686,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         container:btnHolder
                     }),
                     boffset = btn.el.offset(),
-                    fwidth = btn.el.width() * 2.5,
+                    fwidth = btn.el.width() * 2,
                     fheight = btn.el.height() * 1.5,
-                    flashHolderOffset = flashHolder.offset(),
+
                     flashPos = new Node("<div style='" +
                         ("position:absolute;" +
                             "width:" + fwidth + "px;" +
@@ -729,10 +726,13 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "margin:15px 20px 35px; 0;" +
                         "text-align:right;" +
                         "'>" +
-                        "<a class='ke-button'>确定上传</a>" +
+                        "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
+                        "<a class='ke-button ke-bangpiaupload-insertall'" +
+                        " style='margin-left:20px;'>全部插入</a>" +
                         "</p>")
                         .appendTo(listWrap),
-                    up = upHolder.one("a"),
+                    up = upHolder.one(".ke-bangpiaupload-ok"),
+                    insertAll = upHolder.one(".ke-bangpiaupload-insertall"),
                     fid = S.guid(name),
                     statusText = new Node("<span></span>").insertBefore(up);
 
@@ -741,7 +741,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 }
 
                 self.statusText = statusText;
-                bangpaiUploaderHolder.addClass("ke-BangPaiUpload");
 
                 holder[fid] = self;
                 self.btn = btn;
@@ -788,6 +787,16 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     self._sizeLimit / 1000
                     + "M");
 
+                insertAll.on("click", function() {
+                    trs = list.all("tr");
+                    for (var i = 0; i < trs.length; i++) {
+                        var tr = new Node(trs[i]),url = tr.attr("url");
+                        if (url)
+                            editor.insertElement(new Node("<p><img src='" +
+                                url + "'/></p>", null, editor.document));
+                    }
+                });
+
                 list.on("click", function(ev) {
                     var target = new Node(ev.target),tr;
                     ev.halt();
@@ -807,7 +816,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             delete progressBars[fid];
                         }
                         tr._4e_remove();
-                        self.enable();
+                        self.denable();
                         self._seqPics();
                     }
                 });
@@ -820,6 +829,32 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 uploader.on("swfReady", self._ready, self);
                 uploader.on("uploadError", self._uploadError, self);
             },
+            _init:function() {
+                var self = this,
+                    editor = self.editor,
+                    el = new KE.TripleButton({
+                        contentCls:"ke-toolbar-mul-image",
+                        title:"批量插图",
+                        container:editor.toolBarDiv
+                    });
+                el.on("offClick", self.show, self);
+                self.el = el;
+                KE.Utils.lazyRun(self, "_prepareShow", "_realShow");
+                KE.Utils.sourceDisable(editor, self);
+            },
+            disable:function() {
+                this.el.disable();
+            },
+            enable:function() {
+                this.el.boff();
+            },
+            _realShow:function() {
+                this.dialog.show();
+            },
+            show:function() {
+                this._prepareShow();
+            },
+
             _uploadError:function(ev) {
                 var self = this,
                     id = ev.id,
@@ -869,7 +904,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     tr.one(".ke-upload-insert").show();
                     tr.attr("url", data.imgUrl);
                 }
-
             },
             _onProgress:function(ev) {
                 //console.log("_onProgress", ev);
@@ -879,15 +913,20 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 bar && bar.set("progress", progess);
 
             },
-            disable:function() {
+            ddisable:function() {
                 var self = this;
                 self.uploader.disable();
                 self.btn.disable();
+                self.flashPos.offset({
+                    left:-9999,
+                    top:-9999
+                });
             },
-            enable:function() {
+            denable:function() {
                 var self = this;
                 self.uploader.enable();
                 self.btn.enable();
+                self.flashPos.offset(self.btn.el.offset());
             },
             _seqPics:function() {
                 var self = this, list = self._list,seq = 1;
@@ -897,7 +936,10 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
             _getFilesSize:function(files) {
                 var n = 0;
-                for (var i in files) n++;
+                for (var i in files) {
+                    if (files.hasOwnProperty(i))
+                        n++;
+                }
                 return n;
             },
             _onSelect:function(ev) {
@@ -914,8 +956,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         alert(PIC_NUM_LIMIT_WARNING.replace(/n/, self._numberLimit));
                     }
                     if (l >= available) {
-                        self.disable();
-
+                        self.ddisable();
                     }
                     self._listWrap.show();
                     for (var i in files) {
@@ -970,8 +1011,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     self.statusText.html("本次共插入" + curNum + "张图片，" +
                         "点击确定上传，开始上传。 ");
                 }
-
-
             },
 
             _ready:function() {
@@ -1005,10 +1044,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     editor.addPlugin(function() {
         new KE.BangPaiUpload(editor);
     });
-},
-{
+}, {
     attach:false,
-    requires : ["flashutils","progressbar","flashbridge"]
+    requires : ["flashutils","progressbar","flashbridge","overlay"]
 });/**
  * biz plugin , video about ku6,youku,tudou for bangpai
  * @author:yiminghe@gmail.com

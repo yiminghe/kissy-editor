@@ -181,10 +181,10 @@ KISSY.Editor.add("image", function(editor) {
                     KE.Utils.sourceDisable(editor, self);
                 },
                 disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
+                    this.el.disable();
                 },
                 enable:function() {
-                    this.el.set("state", TripleButton.OFF);
+                    this.el.boff();
                 },
                 _dblclick:function(ev) {
                     var self = this,t = new Node(ev.target);

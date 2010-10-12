@@ -565,6 +565,10 @@ textarea,iframe包装
     background-image: url("image.png");
 }
 
+.ke-toolbar-mul-image {
+    background-image: url("mul-image.png");
+}
+
 .ke-toolbar-bgcolor {
     background-image: url("bgcolor.png");
     width: 24px;

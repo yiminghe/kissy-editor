@@ -80,6 +80,7 @@ KISSY.Editor.add("overlay", function() {
     Overlay.ATTRS = {
         title:{value:""},
         width:{value:"450px"},
+        height:{},
         visible:{value:false},
         "zIndex":{value:9999},
         //帮你管理焦点
@@ -177,7 +178,8 @@ KISSY.Editor.add("overlay", function() {
         },
         _createEl:function() {
             //just manage container
-            var self = this,el = self.get("el");
+            var self = this,
+                el = self.get("el");
             if (!el) {
                 //also gen html
                 el = new Node(
@@ -186,7 +188,8 @@ KISSY.Editor.add("overlay", function() {
                         self.get("title"))).appendTo(document.body
                     );
                 var head = el.one(".ke-hd"),
-                    id = S.guid("ke-overlay-head-");
+                    id = S.guid("ke-overlay-head-"),
+                    height = self.get("height");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
                 self._title = head.one("h1");
@@ -194,7 +197,12 @@ KISSY.Editor.add("overlay", function() {
                     ev.preventDefault();
                     self.hide();
                 });
-
+                if (height) {
+                    self.body.css({
+                        "height": height,
+                        "overflow":"auto"
+                    });
+                }
 
                 /**
                  *  是否支持标题头拖放
@@ -217,20 +225,27 @@ KISSY.Editor.add("overlay", function() {
             el.css(noVisibleStyle);
         },
 
-        center:function() {
-            var el = this.el,
-                bw = el.width(),
-                bh = el.height(),
-                vw = DOM.viewportWidth(),
-                vh = DOM.viewportHeight(),
-                bl = (vw - bw) / 2 + DOM.scrollLeft(),
-                bt = (vh - bh) / 2 + DOM.scrollTop();
-            if ((bt - DOM.scrollTop()) > 200) bt -= 150;
-            el.css({
-                left: bl + "px",
-                top: bt + "px"
-            });
-        },
+        center
+            :
+            function() {
+                var el = this.el,
+                    bw = el.width(),
+                    bh = el.height(),
+                    vw = DOM.viewportWidth(),
+                    vh = DOM.viewportHeight(),
+                    bl = (vw - bw) / 2 + DOM.scrollLeft(),
+                    bt = (vh - bh) / 2 + DOM.scrollTop();
+                if ((bt - DOM.scrollTop()) > 200) bt -= 150;
+
+                bl = Math.max(bl, DOM.scrollLeft());
+                bt = Math.max(bt, DOM.scrollTop());
+
+                el.css({
+                    left: bl + "px",
+                    top: bt + "px"
+                });
+            }
+        ,
 
 
         _getFocusEl:function() {
@@ -242,7 +257,8 @@ KISSY.Editor.add("overlay", function() {
             fel = new Node(focusMarkup)
                 .appendTo(self.el);
             return self._focusEl = fel;
-        },
+        }
+        ,
 
         _initFocusNotice:function() {
             var self = this,
@@ -253,7 +269,8 @@ KISSY.Editor.add("overlay", function() {
             f.on("blur", function() {
                 self.fire("blur");
             });
-        },
+        }
+        ,
 
         /**
          * 焦点管理，弹出前记住当前的焦点所在editor
@@ -303,7 +320,8 @@ KISSY.Editor.add("overlay", function() {
             else {
                 editor && editor.focus();
             }
-        },
+        }
+        ,
         _prepareShow:function() {
             Overlay.init && Overlay.init();
             if (UA.ie == 6) {
@@ -344,11 +362,13 @@ KISSY.Editor.add("overlay", function() {
                     });
                 }
             }
-        },
+        }
+        ,
 
         loading:function() {
             this._prepareLoading();
-        },
+        }
+        ,
         _prepareLoading:function() {
             var loading = new Node("<div" +
                 " title='请稍候...' " +
@@ -360,7 +380,8 @@ KISSY.Editor.add("overlay", function() {
                 focusMgr:false,
                 draggable:false
             });
-        },
+        }
+        ,
         _realLoading:function() {
             var self = this,
                 el = self.el;
@@ -370,22 +391,28 @@ KISSY.Editor.add("overlay", function() {
                 "z-index":(self.get("zIndex") + 1)
             });
             loadingMask.show(el.offset());
-        },
+        }
+        ,
         unloading:function() {
             loadingMask.hide();
-        },
+        }
+        ,
         _realShow : function(v) {
             this.set("visible", v || true);
-        },
+        }
+        ,
         show:function(v) {
             this._prepareShow(v);
-        },
+        }
+        ,
         hide:function() {
             this.set("visible", false);
         }
-    });
+    })
+        ;
     KE.Utils.lazyRun(Overlay.prototype,
         "_prepareLoading",
         "_realLoading");
     KE.SimpleOverlay = Overlay;
-});
+})
+    ;
