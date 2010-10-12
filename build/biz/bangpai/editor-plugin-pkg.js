@@ -708,7 +708,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "<th>" +
                         "大小" +
                         "</th>" +
-                        "<th>" +
+                        "<th style='width:30%'>" +
                         "上传进度" +
                         "</th>" +
                         "<th>" +
@@ -775,6 +775,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self.flashPos = flashPos;
                 self.uploader = uploader;
                 self._list = list;
+                self._listTable = list.parent("table");
                 self._listWrap = listWrap;
                 self._ds = bangpaiCfg.serverUrl;
                 self._dsp = bangpaiCfg.serverParams || {};
@@ -880,9 +881,11 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     bar = progressBars[id];
                 if (tr) {
                     bar && bar.destroy();
-                    tr.one(".ke-upload-progress").html("<span style='color:red'>" +
+                    tr.one(".ke-upload-progress").html("<div " +
+                        "" +
+                        "style='color:red;'>" +
                         ev.status +
-                        "</span>");
+                        "</div>");
                 }
             },
             _getFileTr:function(id) {
@@ -902,7 +905,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     id = ev.id,
                     uploader = self.uploader;
                 uploader.removeFile(id);
-                self.ddisable();
+                //self.ddisable();
             },
             _onComplete:function() {
                 //console.log("_onComplete", ev);
@@ -925,7 +928,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     tr.one(".ke-upload-insert").show();
                     tr.attr("url", data.imgUrl);
                 }
-                self.denable();
+                //self.denable();
                 self._seqPics();
             },
             _onProgress:function(ev) {
@@ -1003,7 +1006,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     //限额-目前ui的
                     available = self._numberLimit - trs.length;
                     self._listWrap.show();
-
+                    var tbl = self._list[0];
                     //files 是这次新选择的啦！
                     //新选择的随即删除一些
                     for (var i in files) {
@@ -1017,27 +1020,51 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             uploader.removeFile(id);
                             continue;
                         }
-                        var n = new Node("<tr fid='" + id + "'>"
-                            + "<td class='ke-upload-seq'>"
-                            + "</td>"
-                            + "<td>"
-                            + f.name
-                            + "</td>"
-                            + "<td>"
-                            + size
-                            + "k</td>" +
-                            "<td class='ke-upload-progress'>" +
-                            "</td>" +
-                            "<td>" +
-                            "<a href='#' " +
+                        /*
+                         chrome not work !
+                         kissy bug?
+                         var row = new Node("<tr fid='" + id + "'>"
+                         + "<td class='ke-upload-seq'>"
+                         + "</td>"
+                         + "<td>"
+                         + f.name
+                         + "</td>"
+                         + "<td>"
+                         + size
+                         + "k</td>" +
+                         "<td class='ke-upload-progress'>" +
+                         "</td>" +
+                         "<td>" +
+                         "<a href='#' " +
+                         "class='ke-upload-insert' " +
+                         "style='display:none'>" +
+                         "[插入]</a> &nbsp; " +
+                         "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
+                         +
+                         "</td>"
+                         + "</tr>").appendTo(list);
+                         */
+
+
+                        var row = tbl.insertRow(-1);
+                        DOM.attr(row, "fid", id);
+                        var cell = row.insertCell(-1);
+                        DOM.attr(cell, "class", 'ke-upload-seq');
+                        cell = row.insertCell(-1);
+                        DOM.html(cell, f.name);
+                        cell = row.insertCell(-1);
+                        DOM.html(cell, size + "k");
+                        cell = row.insertCell(-1);
+                        DOM.attr(cell, "class", 'ke-upload-progress');
+                        cell = row.insertCell(-1);
+                        DOM.html(cell, "<a href='#' " +
                             "class='ke-upload-insert' " +
                             "style='display:none'>" +
                             "[插入]</a> &nbsp; " +
-                            "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
-                            +
-                            "</td>"
-                            + "</tr>").appendTo(list);
-                        var prog = n.one(".ke-upload-progress");
+                            "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp;");
+                        row = new Node(row);
+
+                        var prog = row.one(".ke-upload-progress");
                         if (size > self._sizeLimit) {
                             self._uploadError({
                                 id:id,
@@ -1048,7 +1075,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 
                         } else {
                             progressBars[id] = new KE.ProgressBar({
-                                container:n.one(".ke-upload-progress") ,
+                                container:row.one(".ke-upload-progress") ,
                                 width:"100px",
                                 height:"18px"
                             });
