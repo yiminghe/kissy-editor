@@ -61,7 +61,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     Event.remove(window, "resize", self._maximize, self);
                     self._saveEditorStatus();
                     self._restoreState();
-                    self.el.set("state", TripleButton.OFF);
+                    self.el.boff();
 
                     //firefox 必须timeout
                     setTimeout(function() {
@@ -92,11 +92,15 @@ KISSY.Editor.add("maximize", function(editor) {
                     editor.wrap.css({
                         height:self.iframeHeight
                     });
-                    DOM.css([doc.documentElement,doc.body], {
+
+                    DOM.css(doc.body, {
                         width:"",
                         height:"",
                         overflow:""
                     });
+                    //documentElement 设置宽高，ie崩溃
+                    doc.documentElement.style.overflow = "";
+
                     editor.editorWrap.css({
                         position:"static",
                         width:self.editorWrapWidth
@@ -126,22 +130,18 @@ KISSY.Editor.add("maximize", function(editor) {
                     window.scrollTo(0, 0);
 
                     //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
-                    var p = editorWrap.parent(),pchildren;
+                    var p = editorWrap.parent();
+
                     while (p) {
-
-                        pchildren = p.children();
-
-                        for (var i = 0; i < pchildren.length; i++) {
-                            if (p.css("position") != "static") {
-                                _savedParents.push({
-                                    el:p,
-                                    position:p.css("position")
-                                });
-                                p.css("position", "static");
-                            }
+                        var pre = p.css("position");
+                        if (pre != "static") {
+                            _savedParents.push({
+                                el:p,
+                                position:pre
+                            });
+                            p.css("position", "static");
                         }
                         p = p.parent();
-
                     }
                     self._savedParents = _savedParents;
 
@@ -205,11 +205,16 @@ KISSY.Editor.add("maximize", function(editor) {
                         toolHeight = editor.toolBarDiv.height();
 
 
-                    DOM.css([doc.documentElement,doc.body], {
-                        width:0,
-                        height:0,
-                        overflow:"hidden"
-                    });
+                    if (!UA.ie) {
+                        DOM.css(doc.body, {
+                            width:0,
+                            height:0,
+                            overflow:"hidden"
+                        });
+                    } else {
+                        doc.documentElement.style.overflow = "hidden";
+                        doc.body.style.overflow = "hidden";
+                    }
 
                     editorWrap.css({
                         position:"absolute",
