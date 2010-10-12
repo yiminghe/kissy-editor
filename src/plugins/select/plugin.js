@@ -34,7 +34,7 @@ KISSY.Editor.add("select", function() {
         DISABLED = 0;
     Select.DISABLED = DISABLED;
     Select.ENABLED = ENABLED;
-
+    var dtd = KE.XHTML_DTD;
 
     Select.ATTRS = {
         //title标题栏显示值value还是name
@@ -53,7 +53,15 @@ KISSY.Editor.add("select", function() {
         align:{value:["l","b"]},
         menuContainer:{
             valueFn:function() {
-                return this.el.parent();
+                //chrome 需要添加在能够真正包含div的地方
+                var c = this.el.parent();
+                while (c) {
+                    var n=c._4e_name();
+                    if (dtd[n] && dtd[n]["div"])
+                        return c;
+                    c = c.parent();
+                }
+                return new Node(document.body);
             }
         },
         state:{value:ENABLED}

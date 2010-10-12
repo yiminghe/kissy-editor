@@ -231,6 +231,7 @@ KISSY.Editor.add("overlay", function() {
                     var w = new Node("<div class='ke-dialog'>");
                     w.insertBefore(el);
                     w.append(new Node("<div class='ke-dialog-wrapper'>").append(el));
+                    el = w;
                 }
             }
             if (self.get("cls")) {
