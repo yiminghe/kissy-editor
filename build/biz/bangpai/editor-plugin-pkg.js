@@ -792,8 +792,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     for (var i = 0; i < trs.length; i++) {
                         var tr = new Node(trs[i]),url = tr.attr("url");
                         if (url)
-                            editor.insertElement(new Node("<p><img src='" +
-                                url + "'/></p>", null, editor.document));
+                            editor.insertElement(new Node("<p>&nbsp;<img src='" +
+                                url + "'/>&nbsp;</p>", null, editor.document));
                     }
                 });
 
