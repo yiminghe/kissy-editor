@@ -619,5 +619,5 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     });
 }, {
     attach:false,
-    requires : ["flashutils","progressbar","flashbridge","overlay"]
+    requires : ["flashutils","progressbar","flashbridge","overlay","localStorage"]
 });
