@@ -1438,13 +1438,22 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                                 self.d.loading();
                                 BangPaiVideo.dynamicUrl.origin = url;
                                 BangPaiVideo.dynamicUrl.instance = self;
-                                S.getScript(c.url
-                                    .replace(/@url@/, encodeURIComponent(url))
-                                    .replace(/@callback@/,
-                                    encodeURIComponent("KISSY.Editor.BangPaiVideo.dynamicUrl"))
-                                    //.replace(/@rand@/,
-                                    //(new Date().valueOf()))
-                                    );
+                                setTimeout(function() {
+
+                                    S.getScript(
+                                        c.url
+                                            //("/json.js?t=" + new Date())
+                                            .replace(/@url@/,
+                                            //"X"
+                                            encodeURIComponent(url)
+                                            )
+                                            .replace(/@callback@/,
+                                            encodeURIComponent("KISSY.Editor.BangPaiVideo.dynamicUrl"))
+                                        //.replace(/@rand@/,
+                                        //(new Date().valueOf()))
+                                        );
+                                    //ie 必须延迟处理？？
+                                }, 30);
                                 return;
                             }
                         }
@@ -1484,7 +1493,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }
             });
             BangPaiVideo.dynamicUrl = function(origin, re) {
-                if (origin !== BangPaiVideo.dynamicUrl.origin) return;
+                if (S.trim(origin) != S.trim(BangPaiVideo.dynamicUrl.origin)) return;
                 BangPaiVideo.dynamicUrl.instance._dynamicUrlPrepare(re);
             };
             function checkVideo(node) {
