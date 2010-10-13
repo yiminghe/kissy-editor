@@ -136,7 +136,8 @@ KISSY.Editor.add("font", function(editor) {
                         popUpWidth:self.get("popUpWidth"),
                         title:self.get("title"),
                         items:self.get("html"),
-                        showValue:self.get("showValue")
+                        showValue:self.get("showValue"),
+                        menuContainer:new Node(document.body)
                     });
 
                     self.el.on("click", self._vChange, self);

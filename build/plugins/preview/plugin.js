@@ -40,10 +40,21 @@ KISSY.Editor.add("preview", function(editor) {
                         iLeft = Math.round(screen.width * 0.1);
                     } catch (e) {
                     }
-                    var sHTML = editor._prepareIFrameHtml().replace(/<body[^>]+>.+<\/body>/, "<body>\n" + editor.getData() + "\n</body>");
+                    var sHTML = editor._prepareIFrameHtml().replace(/<body[^>]+>.+<\/body>/,
+                        "<body>\n" + editor.getData() + "\n</body>").replace(/\${title}/, "预览");
                     var sOpenUrl = '';
-                    var oWindow = window.open(sOpenUrl, null, 'toolbar=yes,location=no,status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=' +
-                        iWidth + ',height=' + iHeight + ',left=' + iLeft);
+                    var oWindow = window.open(sOpenUrl, null, 'toolbar=yes,' +
+                        'location=no,' +
+                        'status=yes,' +
+                        'menubar=yes,' +
+                        'scrollbars=yes,' +
+                        'resizable=yes,' +
+                        'width=' +
+                        iWidth +
+                        ',height='
+                        + iHeight
+                        + ',left='
+                        + iLeft);
                     oWindow.document.open();
                     oWindow.document.write(sHTML);
                     oWindow.document.close();

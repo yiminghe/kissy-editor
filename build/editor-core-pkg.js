@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-12 22:21:42
+ * @buildtime: 2010-10-13 12:36:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -683,7 +683,7 @@ KISSY.Editor.add("definition", function(KE) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
-            + "<title>kissy-editor</title>"
+            + "<title>${title}</title>"
             + "<link href='"
             + KE.Config.base + CSS_FILE
             + "' rel='stylesheet'/>"
@@ -5844,7 +5844,7 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域也丢失了
+            //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
 
 
             // In IE6/7 the blinking cursor appears, but contents are
@@ -5951,8 +5951,7 @@ KISSY.Editor.add("selection", function(KE) {
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
                 //console.log("win blur");
-                //把选择区域与光标清除
-                //防止focus时，光标会出现移位，先移回原来再移过来
+                //把选择区域与光标清除                               
                 doc && doc.selection.empty();
             });
             /*

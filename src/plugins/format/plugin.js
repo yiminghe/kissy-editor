@@ -70,7 +70,8 @@ KISSY.Editor.add("format", function(editor) {
                         width:self.get("width"),
                         popUpWidth:self.get("popUpWidth"),
                         title:self.get("title"),
-                        items:self.get("html")
+                        items:self.get("html"),
+                        menuContainer:new Node(document.body)
                     });
                     self.el.on("click", self._vChange, self);
                     editor.on("selectionChange", self._selectionChange, self);

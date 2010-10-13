@@ -27,7 +27,7 @@ KISSY.Editor.add("definition", function(KE) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
-            + "<title>kissy-editor</title>"
+            + "<title>${title}</title>"
             + "<link href='"
             + KE.Config.base + CSS_FILE
             + "' rel='stylesheet'/>"
