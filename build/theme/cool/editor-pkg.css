@@ -205,6 +205,8 @@ by the nsHTMLHRElement attribute mapping code
 .ke-post caption {
 /* coordinated margin to match cell's padding */
     margin-bottom: .5em;
+    /*ie6,7下会换行，强制不换行*/
+    white-space:nowrap;
 }
 
 .ke-post fieldset, .ke-post table, .ke-post  pre {

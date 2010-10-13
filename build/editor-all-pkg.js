@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 16:51:38
+ * @buildtime: 2010-10-13 17:39:15
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -16635,12 +16635,12 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         c = caption.text();
                     }
                     d.tcaption.val(c);
-
-                    d.trows.val(selectedTable.one("tbody").children().length);
-                    d.tcols.val(selectedTable.one("tr").children().length);
-                    d.thead.val(selectedTable._4e_first(function(n) {
+                    var head = selectedTable._4e_first(function(n) {
                         return n._4e_name() == "thead";
-                    }) ? '1' : '');
+                    });
+                    d.trows.val(selectedTable.one("tbody").children().length + (head ? 1 : 0));
+                    d.tcols.val(selectedTable.one("tr").children().length);
+                    d.thead.val(head ? '1' : '');
                 },
                 _realTableShow:function() {
                     var self = this,d = self.tableDialog;

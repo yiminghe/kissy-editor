@@ -450,12 +450,12 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         c = caption.text();
                     }
                     d.tcaption.val(c);
-
-                    d.trows.val(selectedTable.one("tbody").children().length);
-                    d.tcols.val(selectedTable.one("tr").children().length);
-                    d.thead.val(selectedTable._4e_first(function(n) {
+                    var head = selectedTable._4e_first(function(n) {
                         return n._4e_name() == "thead";
-                    }) ? '1' : '');
+                    });
+                    d.trows.val(selectedTable.one("tbody").children().length + (head ? 1 : 0));
+                    d.tcols.val(selectedTable.one("tr").children().length);
+                    d.thead.val(head ? '1' : '');
                 },
                 _realTableShow:function() {
                     var self = this,d = self.tableDialog;
