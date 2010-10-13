@@ -19,6 +19,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             Node = S.Node,
             Overlay = KE.SimpleOverlay,
             holder = [],
+            KEY = "Multi-Upload-Save",
+            JSON = S.JSON,
+            store = window[KE.STORE],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
             progressBars = {};
         name = "ke-bangpai-upload";
@@ -252,23 +255,29 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
                 uploader.on("swfReady", self._ready, self);
                 uploader.on("uploadError", self._uploadError, self);
+
+
+                //从本地恢复已上传记录
+                self._restore();
             },
             _removeTrFile:function(tr) {
                 var self = this,
                     fid = tr.attr("fid"),
                     uploader = self.uploader;
-                try {
-                    uploader.cancel(fid);
-                } catch(e) {
+                if (fid) {
+                    try {
+                        uploader.cancel(fid);
+                    } catch(e) {
+                    }
+                    uploader.removeFile(fid);
                 }
-                uploader.removeFile(fid);
                 if (progressBars[fid]) {
                     progressBars[fid].destroy();
                     delete progressBars[fid];
                 }
                 tr._4e_remove();
                 self.denable();
-                self._seqPics();
+                self._syncStatus();
             },
             _init:function() {
                 var self = this,
@@ -282,6 +291,10 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self.el = el;
                 KE.Utils.lazyRun(self, "_prepareShow", "_realShow");
                 KE.Utils.sourceDisable(editor, self);
+                self.disable();
+                KE.storeReady(function() {
+                    self.enable();
+                });
             },
             disable:function() {
                 this.el.disable();
@@ -351,7 +364,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     tr.attr("url", data.imgUrl);
                 }
                 //self.denable();
-                self._seqPics();
+                self._syncStatus();
+
             },
             _onProgress:function(ev) {
                 //console.log("_onProgress", ev);
@@ -369,6 +383,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     left:-9999,
                     top:-9999
                 });
+
             },
             denable:function() {
                 var self = this;
@@ -376,22 +391,66 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self.btn.enable();
                 self.flashPos.offset(self.btn.el.offset());
             },
-            _seqPics:function() {
+            _syncStatus:function() {
                 var self = this,
                     list = self._list,
                     seq = 1,
                     trs = list.all("tr");
-                list.all(".ke-upload-seq").each(function(n) {
-                    n.html(seq++);
-                });
-                var wait = 0;
-                for (var i = 0; i < trs.length; i++) {
-                    var tr = new Node(trs[i]);
-                    if (!tr.attr("url")) wait++;
+                if (trs.length == 0) {
+                    self._listWrap.hide();
+                } else {
+                    list.all(".ke-upload-seq").each(function(n) {
+                        n.html(seq++);
+                    });
+                    var wait = 0;
+                    for (var i = 0; i < trs.length; i++) {
+                        var tr = new Node(trs[i]);
+                        if (!tr.attr("url")) wait++;
+                    }
+                    self.statusText.html("队列中剩余" + wait + "张图片，" +
+                        "点击确定上传，开始上传。 ");
                 }
-                self.statusText.html("队列中剩余" + wait + "张图片，" +
-                    "点击确定上传，开始上传。 ");
-
+                //当前已上传的文件同步到本地
+                self._save();
+            },
+            //当前已上传的图片保存下来
+            _restore:function() {
+                var self = this,
+                    data = store.getItem(KEY),
+                    tbl = self._list[0];
+                if (!data) return;
+                data = JSON.parse(decodeURIComponent(data));
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i];
+                    d.complete = 1;
+                    d.fid = "restore_" + i;
+                    var r = self._createFileTr(tbl, d);
+                    r.attr("url", d.url);
+                }
+                if (d) {
+                    self._listWrap.show();
+                    self._syncStatus();
+                }
+            },
+            _save:function() {
+                var self = this,
+                    list = self._list,
+                    trs = list.all("tr"),
+                    data = [];
+                for (var i = 0; i < trs.length; i++) {
+                    var tr = new Node(trs[i]),
+                        url = tr.attr("url");
+                    if (url) {
+                        var size = tr.one(".ke-upload-filesize").html(),
+                            name = tr.one(".ke-upload-filename").html();
+                        data.push({
+                            name:name,
+                            size:size,
+                            url:url
+                        });
+                    }
+                }
+                store.setItem(KEY, encodeURIComponent(JSON.stringify(data)));
             },
             _getFilesSize:function(files) {
                 var n = 0;
@@ -400,6 +459,81 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         n++;
                 }
                 return n;
+            },
+            _createFileTr:function(tbl, f) {
+
+                /*
+                 chrome not work !
+                 kissy bug?
+                 var row = new Node("<tr fid='" + id + "'>"
+                 + "<td class='ke-upload-seq'>"
+                 + "</td>"
+                 + "<td>"
+                 + f.name
+                 + "</td>"
+                 + "<td>"
+                 + size
+                 + "k</td>" +
+                 "<td class='ke-upload-progress'>" +
+                 "</td>" +
+                 "<td>" +
+                 "<a href='#' " +
+                 "class='ke-upload-insert' " +
+                 "style='display:none'>" +
+                 "[插入]</a> &nbsp; " +
+                 "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
+                 +
+                 "</td>"
+                 + "</tr>").appendTo(list);
+                 */
+
+
+                var self = this,
+                    id = f.fid,
+                    row = tbl.insertRow(-1);
+                DOM.attr(row, "fid", id);
+                var cell = row.insertCell(-1);
+                DOM.attr(cell, "class", 'ke-upload-seq');
+                cell = row.insertCell(-1);
+                DOM.html(cell, f.name);
+                DOM.attr(cell, "class", 'ke-upload-filename');
+                cell = row.insertCell(-1);
+                DOM.html(cell, f.size);
+                DOM.attr(cell, "class", 'ke-upload-filesize');
+                cell = row.insertCell(-1);
+                DOM.attr(cell, "class", 'ke-upload-progress');
+                cell = row.insertCell(-1);
+                DOM.html(cell, "<a href='#' " +
+                    "class='ke-upload-insert' " +
+                    (f.complete ? "" : "style='display:none'") +
+                    ">" +
+                    "[插入]</a> &nbsp; " +
+                    "<a href='#' class='ke-upload-delete'>" +
+                    "[删除]" +
+                    "</a> &nbsp;");
+                row = new Node(row);
+
+                var prog = row.one(".ke-upload-progress");
+                if (f.size > self._sizeLimit) {
+                    self._uploadError({
+                        id:id,
+                        status:PIC_SIZE_LIMIT_WARNING
+                            .replace(/n/, self._sizeLimit / 1000)
+                    });
+                    self.uploader.removeFile(id);
+
+                } else {
+                    progressBars[id] = new KE.ProgressBar({
+                        container:row.one(".ke-upload-progress") ,
+                        width:"100px",
+                        height:"18px"
+                    });
+                    if (f.complete) {
+                        progressBars[id].set("progress", 100);
+                    }
+                }
+
+                return row;
             },
             _onSelect:function(ev) {
                 var self = this,
@@ -442,68 +576,13 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             uploader.removeFile(id);
                             continue;
                         }
-                        /*
-                         chrome not work !
-                         kissy bug?
-                         var row = new Node("<tr fid='" + id + "'>"
-                         + "<td class='ke-upload-seq'>"
-                         + "</td>"
-                         + "<td>"
-                         + f.name
-                         + "</td>"
-                         + "<td>"
-                         + size
-                         + "k</td>" +
-                         "<td class='ke-upload-progress'>" +
-                         "</td>" +
-                         "<td>" +
-                         "<a href='#' " +
-                         "class='ke-upload-insert' " +
-                         "style='display:none'>" +
-                         "[插入]</a> &nbsp; " +
-                         "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp; "
-                         +
-                         "</td>"
-                         + "</tr>").appendTo(list);
-                         */
-
-
-                        var row = tbl.insertRow(-1);
-                        DOM.attr(row, "fid", id);
-                        var cell = row.insertCell(-1);
-                        DOM.attr(cell, "class", 'ke-upload-seq');
-                        cell = row.insertCell(-1);
-                        DOM.html(cell, f.name);
-                        cell = row.insertCell(-1);
-                        DOM.html(cell, size + "k");
-                        cell = row.insertCell(-1);
-                        DOM.attr(cell, "class", 'ke-upload-progress');
-                        cell = row.insertCell(-1);
-                        DOM.html(cell, "<a href='#' " +
-                            "class='ke-upload-insert' " +
-                            "style='display:none'>" +
-                            "[插入]</a> &nbsp; " +
-                            "<a href='#' class='ke-upload-delete'>[删除]</a> &nbsp;");
-                        row = new Node(row);
-
-                        var prog = row.one(".ke-upload-progress");
-                        if (size > self._sizeLimit) {
-                            self._uploadError({
-                                id:id,
-                                status:PIC_SIZE_LIMIT_WARNING
-                                    .replace(/n/, self._sizeLimit / 1000)
-                            });
-                            uploader.removeFile(id);
-
-                        } else {
-                            progressBars[id] = new KE.ProgressBar({
-                                container:row.one(".ke-upload-progress") ,
-                                width:"100px",
-                                height:"18px"
-                            });
-                        }
+                        self._createFileTr(tbl, {
+                            size:size + "k",
+                            fid:id,
+                            name:f.name
+                        });
                     }
-                    self._seqPics();
+                    self._syncStatus();
                 }
             },
 
