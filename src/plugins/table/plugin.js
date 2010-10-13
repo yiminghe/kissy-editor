@@ -432,11 +432,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     d.talign.val(selectedTable.attr("align") || "");
 
-
-                    //d.tcellspacing.val(selectedTable.attr("cellspacing") || "");
-                    //d.tcellpadding.val(selectedTable.attr("cellpadding") || "");
-
-
                     d.tborder.val(selectedTable.attr("border") || "");
                     var w = selectedTable._4e_style("width") || "";
 

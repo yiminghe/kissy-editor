@@ -76,7 +76,8 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "</div>" +
                     "<table " +
-                    "style='width:100%;margin-top:20px;'>" +
+                    "style='width:100%;margin-top:20px;' " +
+                    "class='ke-img-setting'>" +
                     "<tr>" +
                     "<td>" +
                     "<label>" +
@@ -235,13 +236,13 @@ KISSY.Editor.add("image", function(editor) {
                         });
                     self.tab = tab;
 
-                    var normParams = KE.Utils.normParams;
+                    var normParams = KE.Utils.normParams,
+                        commonSettingTable = d.el.one(".ke-img-setting");
 
                     ok.on("click", function() {
 
-                        if (! KE.Utils.verifyInputs(d.el.all("input"))) return;
-
                         if (tab.activate() == "local" && uploader && cfg) {
+                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input"))) return;
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
                                 return;
@@ -251,6 +252,7 @@ KISSY.Editor.add("image", function(editor) {
                                 cfg.fileInput);
                             d.loading();
                         } else {
+                            if (! KE.Utils.verifyInputs(d.el.all("input"))) return;
                             self._insert();
                         }
                     });
