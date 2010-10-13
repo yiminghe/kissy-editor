@@ -238,6 +238,9 @@ KISSY.Editor.add("image", function(editor) {
                     var normParams = KE.Utils.normParams;
 
                     ok.on("click", function() {
+
+                        if (! KE.Utils.verifyInputs(d.el.all("input"))) return;
+
                         if (tab.activate() == "local" && uploader && cfg) {
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
@@ -372,11 +375,8 @@ KISSY.Editor.add("image", function(editor) {
 
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val(),
-                        re;
+                        url = self.imgUrl.val();
 
-                    re = KE.Utils.verifyInputs(self.d.el.all("input"));
-                    if (!re) return;
                     var height = parseInt(self.imgHeight.val()),
                         editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),

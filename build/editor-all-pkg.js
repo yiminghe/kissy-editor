@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 18:17:12
+ * @buildtime: 2010-10-13 18:47:28
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -12549,6 +12549,9 @@ KISSY.Editor.add("image", function(editor) {
                     var normParams = KE.Utils.normParams;
 
                     ok.on("click", function() {
+
+                        if (! KE.Utils.verifyInputs(d.el.all("input"))) return;
+
                         if (tab.activate() == "local" && uploader && cfg) {
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
@@ -12683,11 +12686,8 @@ KISSY.Editor.add("image", function(editor) {
 
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val(),
-                        re;
+                        url = self.imgUrl.val();
 
-                    re = KE.Utils.verifyInputs(self.d.el.all("input"));
-                    if (!re) return;
                     var height = parseInt(self.imgHeight.val()),
                         editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
@@ -16635,7 +16635,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     var head = selectedTable._4e_first(function(n) {
                         return n._4e_name() == "thead";
                     });
-                    d.trows.val(selectedTable.one("tbody").children().length + (head ? 1 : 0));
+                    d.trows.val(selectedTable.one("tbody").children().length +
+                        (head ? head.children("tr").length : 0));
                     d.tcols.val(selectedTable.one("tr").children().length);
                     d.thead.val(head ? '1' : '');
                 },
