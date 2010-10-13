@@ -198,9 +198,15 @@ box-shadow:2px 2px 0.5em #888888;
 
             window.editor = KE("#editor", {
 
+                //编辑器内弹窗z-index底线，防止互相覆盖
+                baseZIndex:10000,
                 pluginConfig: {
                     "image":{
                         upload:{
+                            //返回格式
+                            //正确：{imgUrl:""}
+                            //错误：{error:""}
+                            //中文 \uxxxx 转义
                             serverUrl:"/code/upload/upload.jsp",
                             serverParams:{
                                 watermark:function() {
@@ -265,7 +271,7 @@ box-shadow:2px 2px 0.5em #888888;
                     }
 
                     //,"font-family":["song"]
-                   ,"bangpai-upload":{
+                    ,"bangpai-upload":{
                         holder:"#imgup1",
                         serverUrl:"/code/upload/upload.jsp",
                         serverParams:{
