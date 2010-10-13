@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 12:57:47
+ * @buildtime: 2010-10-13 12:59:23
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -852,7 +852,7 @@ KISSY.Editor.add("definition", function(KE) {
         },
         //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
         baseZIndex:function(v) {
-            var v = v || 0,zIndex = self.cfg.baseZIndex || 0;
+            var v = v || 0,zIndex = this.cfg.baseZIndex || 0;
             return v + zIndex;
         },
 
