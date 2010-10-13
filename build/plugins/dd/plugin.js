@@ -2,14 +2,13 @@
  * dd support for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function() {
+KISSY.Editor.add("dd", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
         DOM = S.DOM,
         Node = S.Node;
     if (KE.DD) return;
-
     KE.DD = {};
 
     function Manager() {
@@ -78,7 +77,7 @@ KISSY.Editor.add("dd", function() {
                 "left:0;" +
                 "width:100%;" +
                 "top:0;" +
-                "z-index:9999;" +
+                "z-index:" + editor.baseZIndex(9999) + ";" +
                 "'></div>").appendTo(document.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
@@ -110,7 +109,7 @@ KISSY.Editor.add("dd", function() {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var self=this,node = self.get("node"),handlers = self.get("handlers");
+            var self = this,node = self.get("node"),handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
@@ -137,7 +136,7 @@ KISSY.Editor.add("dd", function() {
             return false;
         },
         _handleMouseDown:function(ev) {
-            var self=this,t = new Node(ev.target);
+            var self = this,t = new Node(ev.target);
             if (!self._check(t)) return;
             ev.halt();
             DDM._start(self);

@@ -194,6 +194,11 @@ KISSY.Editor.add("definition", function(KE) {
         sync:function() {
             this.textarea.val(this.getData());
         },
+        //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
+        baseZIndex:function(v) {
+            var v = v || 0,zIndex = self.cfg.baseZIndex || 0;
+            return v + zIndex;
+        },
 
         //撤销重做时，不需要格式化代码，直接取自身
         _getRawData:function() {

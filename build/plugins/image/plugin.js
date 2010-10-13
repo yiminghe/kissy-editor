@@ -263,7 +263,7 @@ KISSY.Editor.add("image", function(editor) {
                                 "position:absolute;" +
                                 "width:" + w + "px;" +
                                 "height:" + h + "px;" +
-                                "z-index:9999;"
+                                "z-index:"+editor.baseZIndex(9999)+";"
                                 + "'>").appendTo(content);
                             var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf");
 

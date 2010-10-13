@@ -234,7 +234,6 @@ google tip or bubble style for kissy editor
     margin: 2px;
     padding: 4px;
     position: absolute;
-    z-index: 998;
 }
 
 .ke-bubbleview-link, .ke-bubbleview-url {
@@ -589,7 +588,6 @@ menu style for kissy editor ,include contextmenu and select menu
 @author:yiminghe@gmail.com
 **/
 .ke-menu {
-    z-index: 10000;
     background: none repeat scroll 0 0 #FFFFFF;
     border-color: #CCCCCC #666666 #666666 #CCCCCC;
     border-style: solid;
@@ -727,27 +725,6 @@ a.ke-hd-x:hover .ke-close {
     margin: 0;
     overflow: hidden;
     outline: none;
-}
-/**
- pop up style for kissy editor
-@author:yiminghe@gmail.com
-**/
-.ke-popup-wrap {
-    /*
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px;*/
-    background-color: #FFFFFF;
-    border: 1px solid #8F8F73;
-    position: absolute;
-    z-index: 10001;
-    /*
-    -moz-box-shadow: 3px 3px 13px #DDDDDD;
-    -webkit-box-shadow: 3px 3px 13px #DDDDDD;
-    box-shadow: 3px 3px 13px #DDDDDD;*/
-    -moz-box-shadow: 2px 2px 0.5em #888888;
-    -webkit-box-shadow: 2px 2px 0.5em #888888;
-    box-shadow: 2px 2px 0.5em #888888;
 }
 /**
     resize handler style for kissy editor

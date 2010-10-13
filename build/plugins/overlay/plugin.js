@@ -3,7 +3,7 @@
  * @author yiminghe@gmail.com
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
-KISSY.Editor.add("overlay", function() {
+KISSY.Editor.add("overlay", function(editor) {
     // 每次实例都要载入!
     //console.log("overlay loaded!");
     var KE = KISSY.Editor,
@@ -84,7 +84,7 @@ KISSY.Editor.add("overlay", function() {
         height:{},
         cls:{},
         visible:{value:false},
-        "zIndex":{value:9999},
+        "zIndex":{value:editor.baseZIndex(9999)},
         //帮你管理焦点
         focusMgr:{value:true},
         mask:{value:false},

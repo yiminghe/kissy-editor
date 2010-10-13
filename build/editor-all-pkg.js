@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 12:36:21
+ * @buildtime: 2010-10-13 12:57:47
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -849,6 +849,11 @@ KISSY.Editor.add("definition", function(KE) {
 
         sync:function() {
             this.textarea.val(this.getData());
+        },
+        //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
+        baseZIndex:function(v) {
+            var v = v || 0,zIndex = self.cfg.baseZIndex || 0;
+            return v + zIndex;
         },
 
         //撤销重做时，不需要格式化代码，直接取自身
@@ -7831,14 +7836,13 @@ KISSY.Editor.add("contextmenu", function() {
  * dd support for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function() {
+KISSY.Editor.add("dd", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
         DOM = S.DOM,
         Node = S.Node;
     if (KE.DD) return;
-
     KE.DD = {};
 
     function Manager() {
@@ -7907,7 +7911,7 @@ KISSY.Editor.add("dd", function() {
                 "left:0;" +
                 "width:100%;" +
                 "top:0;" +
-                "z-index:9999;" +
+                "z-index:" + editor.baseZIndex(9999) + ";" +
                 "'></div>").appendTo(document.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
@@ -7939,7 +7943,7 @@ KISSY.Editor.add("dd", function() {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var self=this,node = self.get("node"),handlers = self.get("handlers");
+            var self = this,node = self.get("node"),handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
@@ -7966,7 +7970,7 @@ KISSY.Editor.add("dd", function() {
             return false;
         },
         _handleMouseDown:function(ev) {
-            var self=this,t = new Node(ev.target);
+            var self = this,t = new Node(ev.target);
             if (!self._check(t)) return;
             ev.halt();
             DDM._start(self);
@@ -12569,7 +12573,7 @@ KISSY.Editor.add("image", function(editor) {
                                 "position:absolute;" +
                                 "width:" + w + "px;" +
                                 "height:" + h + "px;" +
-                                "z-index:9999;"
+                                "z-index:"+editor.baseZIndex(9999)+";"
                                 + "'>").appendTo(content);
                             var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf");
 
@@ -14683,7 +14687,7 @@ KISSY.Editor.add("music", function(editor) {
  * @author yiminghe@gmail.com
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
-KISSY.Editor.add("overlay", function() {
+KISSY.Editor.add("overlay", function(editor) {
     // 每次实例都要载入!
     //console.log("overlay loaded!");
     var KE = KISSY.Editor,
@@ -14764,7 +14768,7 @@ KISSY.Editor.add("overlay", function() {
         height:{},
         cls:{},
         visible:{value:false},
-        "zIndex":{value:9999},
+        "zIndex":{value:editor.baseZIndex(9999)},
         //帮你管理焦点
         focusMgr:{value:true},
         mask:{value:false},

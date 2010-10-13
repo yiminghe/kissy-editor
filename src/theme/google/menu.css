@@ -3,7 +3,6 @@ menu style for kissy editor ,include contextmenu and select menu
 @author:yiminghe@gmail.com
 **/
 .ke-menu {
-    z-index: 10000;
     background: none repeat scroll 0 0 #FFFFFF;
     border-color: #CCCCCC #666666 #666666 #CCCCCC;
     border-style: solid;

@@ -693,7 +693,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         ("position:absolute;" +
                             "width:" + fwidth + "px;" +
                             "height:" + fheight + "px;" +
-                            "z-index:9999;")
+                            "z-index:" + editor.baseZIndex(9999) + ";")
                         + "'>").appendTo(btnHolder),
                     listTableWrap = new Node("<div>" +
                         "<table class='ke-upload-list'>" +
