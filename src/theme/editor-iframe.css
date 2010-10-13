@@ -178,6 +178,8 @@ th, td {
 caption {
 /* coordinated margin to match cell's padding */
     margin-bottom: .5em;
+    /*ie6,7下会换行，强制不换行*/
+    white-space:nowrap;
 }
 
 /*编辑器内p不要有间隔了，两个p来出间隔。p,*/

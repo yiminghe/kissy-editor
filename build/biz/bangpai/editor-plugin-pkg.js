@@ -1215,7 +1215,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
     dataFilter && dataFilter.addRules({
         elements : {
             'object' : function(element) {
-
                 var attributes = element.attributes,i,
                     classId = attributes['classid'] && String(attributes['classid']).toLowerCase();
                 if (!classId) {

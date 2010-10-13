@@ -717,16 +717,6 @@ menu style for kissy editor ,include contextmenu and select menu
  @author:yiminghe@gmail.com
 **/
 
-.ke-loading {
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-    border: 1px solid #3A5774;
-    padding: 4px;
-    background: #000000 center center no-repeat;
-    background-image: url('loading_mask.gif');
-}
-
 .ke-dialog {
     position: absolute;
     background: #ffffff;
@@ -840,7 +830,15 @@ a.ke-hd-x:active {
     top: 0;
     border: none;
     background-color: #000000;
-    position: absolute;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.ke-loading {
+    border: 1px solid #3A5774;
+    background: #000000 center center no-repeat;
+    background-image: url('loading_mask.gif');
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;

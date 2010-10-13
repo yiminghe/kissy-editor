@@ -73,7 +73,7 @@ KISSY.Editor.add("overlay", function(editor) {
             "width":"100%",
             "background-color": "#000000",
             "height": DOM.docHeight() + "px",
-            "opacity": 0.4
+            "opacity": 0.15
         });
     };
 
@@ -368,16 +368,13 @@ KISSY.Editor.add("overlay", function(editor) {
         }
         ,
         _prepareLoading:function() {
-            var loading = new Node("<div" +
-                " title='请稍候...' " +
-                " class='ke-loading' " +
-                ">").appendTo(document.body);
-            loading.css("opacity", 0.4);
             loadingMask = new Overlay({
-                el:loading,
+                el:new Node("<div>"),
                 focusMgr:false,
+                cls:"ke-loading",
                 draggable:false
             });
+            loadingMask.el.css("opacity", 0.15);
         }
         ,
         _realLoading:function() {

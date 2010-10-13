@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 17:39:15
+ * @buildtime: 2010-10-13 18:02:22
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14761,7 +14761,7 @@ KISSY.Editor.add("overlay", function(editor) {
             "width":"100%",
             "background-color": "#000000",
             "height": DOM.docHeight() + "px",
-            "opacity": 0.4
+            "opacity": 0.15
         });
     };
 
@@ -15056,16 +15056,13 @@ KISSY.Editor.add("overlay", function(editor) {
         }
         ,
         _prepareLoading:function() {
-            var loading = new Node("<div" +
-                " title='请稍候...' " +
-                " class='ke-loading' " +
-                ">").appendTo(document.body);
-            loading.css("opacity", 0.4);
             loadingMask = new Overlay({
-                el:loading,
+                el:new Node("<div>"),
                 focusMgr:false,
+                cls:"ke-loading",
                 draggable:false
             });
+            loadingMask.el.css("opacity", 0.15);
         }
         ,
         _realLoading:function() {
