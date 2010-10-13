@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 12:59:23
+ * @buildtime: 2010-10-13 13:05:24
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7164,7 +7164,7 @@ KISSY.Editor.add("bgcolor", function(editor) {
  * bubble or tip view for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("bubbleview", function() {
+KISSY.Editor.add("bubbleview", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
         Event = S.Event,
@@ -7245,7 +7245,7 @@ KISSY.Editor.add("bubbleview", function() {
         draggable:{
             value:false
         },
-        "zIndex":{value:998}
+        "zIndex":{value:editor.baseZIndex(998)}
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
         /**
@@ -7646,11 +7646,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
         _prepare:function() {
             var self = this,
                 doc = document,
+                editor = self.get("editor"),
                 colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:colorPanel,
                 width:"130px",
-                zIndex:990,
+                zIndex:editor.baseZIndex(990),
                 mask:false,
                 focusMgr:false
             });
@@ -14415,11 +14416,11 @@ KISSY.Editor.add("maximize", function(editor) {
 
                     editorWrap.css({
                         position:"absolute",
-                        zIndex:990,
+                        zIndex:editor.baseZIndex(990),
                         width:viewportWidth + "px"
                     });
                     iframe.css({
-                        zIndex:985,
+                        zIndex:editor.baseZIndex(985),
                         height:viewportHeight + "px",
                         width:viewportWidth + "px"
                     });
@@ -15735,7 +15736,7 @@ KISSY.Editor.add("select", function() {
                 el:menuNode,
                 cls:"ke-menu",
                 width:popUpWidth ? popUpWidth : el.width(),
-                zIndex:990,
+                zIndex:editor.baseZIndex(990),
                 focusMgr:false
             }),
                 items = self.get("items");
@@ -16021,7 +16022,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
                         width:"297px",
-                        zIndex:990,
+                        zIndex:editor.baseZIndex(990),
                         focusMgr:false,
                         mask:false
                     });

@@ -224,11 +224,11 @@ KISSY.Editor.add("maximize", function(editor) {
 
                     editorWrap.css({
                         position:"absolute",
-                        zIndex:990,
+                        zIndex:editor.baseZIndex(990),
                         width:viewportWidth + "px"
                     });
                     iframe.css({
-                        zIndex:985,
+                        zIndex:editor.baseZIndex(985),
                         height:viewportHeight + "px",
                         width:viewportWidth + "px"
                     });

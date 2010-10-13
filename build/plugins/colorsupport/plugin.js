@@ -146,11 +146,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
         _prepare:function() {
             var self = this,
                 doc = document,
+                editor = self.get("editor"),
                 colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:colorPanel,
                 width:"130px",
-                zIndex:990,
+                zIndex:editor.baseZIndex(990),
                 mask:false,
                 focusMgr:false
             });

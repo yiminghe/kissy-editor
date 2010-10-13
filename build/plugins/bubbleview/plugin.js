@@ -2,7 +2,7 @@
  * bubble or tip view for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("bubbleview", function() {
+KISSY.Editor.add("bubbleview", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
         Event = S.Event,
@@ -83,7 +83,7 @@ KISSY.Editor.add("bubbleview", function() {
         draggable:{
             value:false
         },
-        "zIndex":{value:998}
+        "zIndex":{value:editor.baseZIndex(998)}
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
         /**
