@@ -175,6 +175,10 @@ th, td {
     border-color: black;
 }
 
+th {
+    font-weight: bold;
+}
+
 caption {
 /* coordinated margin to match cell's padding */
     margin-bottom: .5em;
