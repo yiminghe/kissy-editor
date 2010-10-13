@@ -155,7 +155,7 @@ by the nsHTMLHRElement attribute mapping code
 .ke-post table {
     display: table;
     border-collapse: collapse;
-    border-color: #A9A9A9;
+    border-color: black;
 }
 
 /* giving blockquotes and lists room to breath */
@@ -199,7 +199,7 @@ by the nsHTMLHRElement attribute mapping code
 .ke-post th, .ke-post td {
 /* padding to make the table readable */
     padding: .5em;
-    border-color: #A9A9A9;
+    border-color: black;
 }
 
 .ke-post caption {

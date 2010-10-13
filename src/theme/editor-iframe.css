@@ -132,7 +132,7 @@ fieldset, img {
 
 table {
     display: table;
-    border-color: #A9A9A9;
+    border-color: black;
     border-collapse: collapse;
 }
 
@@ -172,7 +172,7 @@ dl dd {
 th, td {
 /* padding to make the table readable */
     padding: .5em;
-    border-color: #A9A9A9;
+    border-color: black;
 }
 
 caption {

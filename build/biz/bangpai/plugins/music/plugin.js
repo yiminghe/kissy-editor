@@ -285,7 +285,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         if (query.replace(/[^\x00-\xff]/g, "@@").length > 30) {
                             alert("长度上限30个字符（1个汉字=2个字符）");
                             return;
-                        } else if (!S.trim(query)) {
+                        } else if (!S.trim(query) || query == TIP) {
                             alert("不能为空！");
                             return;
                         }
