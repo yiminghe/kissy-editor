@@ -263,7 +263,7 @@ KISSY.Editor.add("image", function(editor) {
                                 "position:absolute;" +
                                 "width:" + w + "px;" +
                                 "height:" + h + "px;" +
-                                "z-index:"+editor.baseZIndex(9999)+";"
+                                "z-index:" + editor.baseZIndex(9999) + ";"
                                 + "'>").appendTo(content);
                             var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf");
 
@@ -398,17 +398,20 @@ KISSY.Editor.add("image", function(editor) {
                     if (style) {
                         style = " style='" + style + "' ";
                     }
+
+
                     var img = new Node("<img " +
                         style +
                         "src='" + url + "' alt='' />", null, editor.document);
-                    img = editor.insertElement(img, (height || width) ? null : function(el) {
-                        el.on("load", function() {
+
+                    img = editor.insertElement(img, function(el) {
+
+                        el.on("abort error", function() {
                             el.detach();
-                            el.css({
-                                width:el.width() + "px",
-                                height:el.height() + "px"
-                            });
+                            //ie6 手动设置，才会出现红叉
+                            el[0].src = url;
                         });
+
                     });
                     if (self._selectedEl) {
                         editor.getSelection().selectElement(img);
