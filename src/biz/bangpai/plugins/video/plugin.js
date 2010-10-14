@@ -109,17 +109,20 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "链接： " +
                 "" +
                 "<input " +
-                "class='ke-video-url ke-input' style='width:300px'/>" +
+                "class='ke-video-url ke-input' style='width:418px'/>" +
                 "</label>" +
                 "</p>" +
-                "<table style='margin:10px 0 5px  40px;width:300px;'>" +
+                "<table " +
+                "style='margin:10px 0 5px  40px;width:400px;'>" +
                 "<tr><td>" +
                 "<label>宽度： " +
                 " " +
                 "<input " +
                 " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
                 " data-warning='宽度请输入正整数' " +
-                "class='ke-video-width ke-input' style='width:60px' value='"
+                "class='ke-video-width ke-input' " +
+                "style='width:60px;margin-left:2px;' " +
+                "value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
                 "</td>" +
@@ -183,7 +186,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self.urlCfg = cfg["bangpai-video"] &&
                         cfg["bangpai-video"].urlCfg;
                     self._urlTip = "支持 土豆，优酷，ku6 视频分享";
-                    self._config_dwidth = "400px";
                 },
                 _initD:function() {
                     var self = this,

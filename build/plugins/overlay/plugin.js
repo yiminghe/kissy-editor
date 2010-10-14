@@ -80,7 +80,7 @@ KISSY.Editor.add("overlay", function(editor) {
 
     Overlay.ATTRS = {
         title:{value:""},
-        width:{value:"450px"},
+        width:{value:"500px"},
         height:{},
         cls:{},
         visible:{value:false},

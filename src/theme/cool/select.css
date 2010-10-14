@@ -15,7 +15,7 @@ select style for kissy editor
 .ke-select-wrap {
     margin: 0 2px;
     cursor: pointer;
-    line-height: 1.5;
+    line-height: 0;
     vertical-align: middle;
 }
 
@@ -29,6 +29,7 @@ select style for kissy editor
     border-radius: 2px;
     text-decoration: none;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .ke-select:hover {
@@ -44,8 +45,9 @@ select style for kissy editor
     background: no-repeat scroll center center transparent;
     background-image: url("arrow.png");
     width: 7px;
-    height: 16px;
-    vertical-align: text-top;
+    height: 20px;
+    vertical-align: middle;
+    font-size: 0;
 }
 
 .ke-select-active {
@@ -73,8 +75,18 @@ select style for kissy editor
     position: relative;
 }
 
+.ke-combox .ke-select {
+    height: 24px;
+}
+
+.ke-combox .ke-select-drop,
+.ke-combox .ke-select-text {
+    height: 24px;
+    line-height: 24px;
+}
+
 .ie8 .ke-combox .ke-select-text {
-    top: -1px;
+    top: -2px;
 }
 
 .ie7 .ke-combox .ke-select-text {
@@ -82,7 +94,7 @@ select style for kissy editor
 }
 
 .ie6 .ke-combox .ke-select-text {
-    /*odd ie ,字错位*/
+/*odd ie ,字错位*/
     position: static;
     /*
     top: -2px;
@@ -105,7 +117,12 @@ select style for kissy editor
     border-left: 1px solid rgb(193, 200, 209);
     background: #e8ebee repeat-x left top;
     background-image: url("ke-button-bg.png");
-    height: 20px;
+    height: 24px;
+    padding-top: 1px;
+}
+
+.ie8 .ke-combox .ke-select-drop-wrap {
+    top: 0;
 }
 
 .ke-combox .ke-select-text {

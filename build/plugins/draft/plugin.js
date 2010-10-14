@@ -8,9 +8,10 @@ KISSY.Editor.add("draft", function(editor) {
         (function() {
             var Node = S.Node,
                 LIMIT = 5,
+                Event = S.Event,
                 INTERVAL = 5,
+                UA = KISSY.UA,
                 JSON = S.JSON,
-
                 DRAFT_SAVE = "ke-draft-save",
                 localStorage = window[KE.STORE];
 
@@ -124,6 +125,85 @@ KISSY.Editor.add("draft", function(editor) {
                     versions.on("click", self.recover, self);
                     self.holder = holder;
                     KE.Utils.sourceDisable(editor, self);
+
+                    help.on("click", function() {
+                        self._prepareHelp();
+                    });
+
+                    KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
+
+                    self._holder = holder;
+                    self.helpBtn = help.el;
+                },
+                _prepareHelp:function() {
+                    var self = this,
+                        editor = self.editor,
+                        cfg = editor.cfg.pluginConfig,
+                        draftCfg = cfg.draft,
+                        helpBtn = self.helpBtn,
+                        help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
+
+                    var arrow = new Node("<div style='" +
+                        "height:0;" +
+                        "position:absolute;" +
+                        "width:0;" +
+                        "border:8px #CED5E0 solid;" +
+                        "border-color:#CED5E0 " +
+                        //ie6 透明border
+                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
+                            "transparent transparent transparent" ) +
+                        ";'>" +
+                        "<div style='" +
+                        "height:0;" +
+                        "position:absolute;" +
+                        "width:0;" +
+                        "left:-8px;" +
+                        "top:-10px;" +
+                        "border:8px white solid;" +
+                        "border-color:white " +
+                        //ie6 透明border
+                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
+                            "transparent transparent transparent" ) +
+                        ";'>" +
+                        "</div>" +
+                        "</div>"
+                        )
+                        ;
+                    help.append(arrow);
+                    help.css({
+                        border:"1px solid #ACB4BE",
+                        "text-align":"left"
+                    });
+                    self._help = new KE.SimpleOverlay({
+                        el:help,
+                        focusMgr:false,
+                        draggable:false,
+                        width:help.width() + "px",
+                        mask:false
+                    });
+                    self._help.el.css("border", "none");
+                    self._help.arrow = arrow;
+                    Event.on([document,editor.document], "click", function(ev) {
+                        var t = ev.target;
+                        if (t == helpBtn[0] || helpBtn._4e_contains(t))
+                            return;
+                        self._help.hide();
+                    })
+                },
+                _realHelp:function() {
+                    var win = this._help,
+                        helpBtn = this.helpBtn,
+                        arrow = win.arrow;
+                    win.show();
+                    var off = helpBtn.offset();
+                    win.el.offset({
+                        left:(off.left - win.el.width()) + 17,
+                        top:(off.top - win.el.height()) - 7
+                    });
+                    arrow.offset({
+                        left:off.left - 2,
+                        top:off.top - 8
+                    });
                 },
                 disable:function() {
                     this.holder.css("visibility", "hidden");

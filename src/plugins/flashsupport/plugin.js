@@ -111,8 +111,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_FLASH];
-                    self._config_dwidth = "400px";
                     self._urlTip = TIP;
+                    self._config_dwidth = "400px";
                 },
                 _init:function() {
                     this._config();
@@ -208,7 +208,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:self._config_dwidth || "350px",
+                            width:self._config_dwidth || "500px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);

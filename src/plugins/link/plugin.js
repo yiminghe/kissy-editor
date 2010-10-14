@@ -48,12 +48,12 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:220px' " +
+                    "style='width:394px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
-                    "style='margin: 15px 0 10px 70px;'>" +
+                    "style='margin: 15px 0 10px 64px;'>" +
                     "<label>" +
                     "<input " +
                     "class='ke-link-blank' " +
@@ -81,8 +81,7 @@ KISSY.Editor.add("link", function(editor) {
                 var self = this,
                     d = new Overlay({
                         title:"链接属性",
-                        mask:true,
-                        width:"350px"
+                        mask:true
                     });
                 self.dialog = d;
                 d.body.html(bodyHtml);

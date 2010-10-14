@@ -78,7 +78,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             var css = '' +
                 '.ke-xiami-list {' +
                 'margin:10px 0 10px 0;' +
-                'padding:10px 40px 0 40px;' +
+                'padding:10px 20px 0 20px;' +
                 'border-top:1px solid #CED5E0;' +
                 'display:none;' +
                 '}' +
@@ -89,7 +89,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 'border-width:0 0 1px 0;' +
                 'overflow:hidden;' +
                 'zoom:1;' +
-                'padding:2px;' +
+                'color:#646464;' +
+                'height:24px;' +
+                'line-height:24px;' +
+                'padding:0 20px 0 10px;' +
                 '}' +
                 '' +
                 '' +
@@ -150,7 +153,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
                 "<input class='ke-xiami-url ke-input' " +
-                "style='width:350px;vertical-align:middle;'" +
+                "style='width:374px;vertical-align:middle;'" +
                 "/> &nbsp; " +
                 " <button " +
                 "class='ke-xiami-submit'" +
@@ -167,7 +170,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
                 "</label>" +
-                "<label style='margin-left:45px;'>间距： " +
+                "<label style='margin-left:70px;'>间距： " +
                 " " +
                 "<input " +
                 "" +
@@ -222,7 +225,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._tip = "插入虾米音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_XIAMI];
-                    self._config_dwidth = "480px";
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
@@ -601,56 +603,35 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             JSON = S.JSON,
             store = window[KE.STORE],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
-            progressBars = {};
-        name = "ke-bangpai-upload";
+            progressBars = {},
+            name = "ke-bangpai-upload";
 
         DOM.addStyleSheet("" +
-            ".ke-upload-head {" +
-            "background-color: #f4f7fc;" +
-            "background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));" +
-            "background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));" +
-            "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');" +
-            "height:40px;" +
-            "border-bottom:1px solid #CED5E0;" +
-            "padding-top:1px;" +
-            "}" +
-            "" +
-            ".ke-upload-head-text {" +
-            "height:30px;" +
-            "line-height:30px;" +
-            "width:120px;" +
-            "margin-top:8px;" +
-            "margin-left:30px;" +
-            "text-align:center;" +
-            "border:1px solid #CED5E0;" +
-            "border-bottom-color:#FDFDFD;" +
-            "background:#FDFDFD;" +
-            "padding-bottom:2px;" +
-            "margin-bottom:-2px;" +
-            "position:relative;" +
-            "" +
-            "}" +
+
             "" +
             ".ke-upload-btn-wrap {" +
             "position:relative;" +
             "padding:15px 20px 15px 10px;" +
-            "text-align:right;" +
             "}" +
             ".ke-upload-list {" +
             "width:100%;" +
-            "" +
             "}" +
 
             ".ke-upload-list th {" +
             "border-top:1px solid #c1c8d1;" +
-            "background-color:#EBEDF1;" +
+            "background-color: #E7E9ED;" +
+            "background: -webkit-gradient(linear, left top, left bottom, from(#E7E9ED), to(#F1F4F7));" +
+            "background: -moz-linear-gradient(top, #E7E9ED, #F1F4F7);" +
+            // "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#E7E9ED', endColorstr = '#F1F4F7');" +
             "}" +
+
             ".ke-upload-list td,.ke-upload-list th {" +
-            "padding:0.5em;" +
+            "padding:0em;" +
+            "height:26px;" +
+            "line-height:26px;" +
             "text-align:center;" +
             "border-bottom:1px solid #c1c8d1;" +
-            "}" +
-            "", "ke-BangPaiUpload"
+            "}", "ke-BangPaiUpload"
             );
 
         S.augment(BangPaiUpload, S.EventTarget, {
@@ -664,7 +645,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     mask:false,
                     //height:"500px",
                     focusMgr:false,
-                    width:"700px"
+                    width:"600px"
                 });
 
                 var d = self.dialog;
@@ -678,7 +659,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             "color:#969696;" +
                             "display:inline-block;" +
                             "vertical-align:middle;" +
-                            "width:80%;" +
+                            "width:469px;" +
                             "'></span>" +
                             "</div>").appendTo(bangpaiUploaderHolder),
                     listWrap = new Node("<div style='display:none'>")
@@ -726,7 +707,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     list = listTableWrap.one("tbody"),
                     upHolder = new Node("<p " +
                         "style='" +
-                        "margin:15px 20px 35px; 0;" +
+                        "margin:15px 20px 30px; 0;" +
                         "text-align:right;" +
                         "'>" +
                         "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
@@ -1104,7 +1085,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     progressBars[id] = new KE.ProgressBar({
                         container:row.one(".ke-upload-progress") ,
                         width:"100px",
-                        height:"18px"
+                        height:"15px"
                     });
                     if (f.complete) {
                         progressBars[id].set("progress", 100);
@@ -1309,17 +1290,20 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "链接： " +
                 "" +
                 "<input " +
-                "class='ke-video-url ke-input' style='width:300px'/>" +
+                "class='ke-video-url ke-input' style='width:418px'/>" +
                 "</label>" +
                 "</p>" +
-                "<table style='margin:10px 0 5px  40px;width:300px;'>" +
+                "<table " +
+                "style='margin:10px 0 5px  40px;width:400px;'>" +
                 "<tr><td>" +
                 "<label>宽度： " +
                 " " +
                 "<input " +
                 " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
                 " data-warning='宽度请输入正整数' " +
-                "class='ke-video-width ke-input' style='width:60px' value='"
+                "class='ke-video-width ke-input' " +
+                "style='width:60px;margin-left:2px;' " +
+                "value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
                 "</td>" +
@@ -1383,7 +1367,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self.urlCfg = cfg["bangpai-video"] &&
                         cfg["bangpai-video"].urlCfg;
                     self._urlTip = "支持 土豆，优酷，ku6 视频分享";
-                    self._config_dwidth = "400px";
                 },
                 _initD:function() {
                     var self = this,

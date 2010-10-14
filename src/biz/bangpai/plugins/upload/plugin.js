@@ -23,56 +23,35 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             JSON = S.JSON,
             store = window[KE.STORE],
             movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
-            progressBars = {};
-        name = "ke-bangpai-upload";
+            progressBars = {},
+            name = "ke-bangpai-upload";
 
         DOM.addStyleSheet("" +
-            ".ke-upload-head {" +
-            "background-color: #f4f7fc;" +
-            "background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));" +
-            "background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));" +
-            "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');" +
-            "height:40px;" +
-            "border-bottom:1px solid #CED5E0;" +
-            "padding-top:1px;" +
-            "}" +
-            "" +
-            ".ke-upload-head-text {" +
-            "height:30px;" +
-            "line-height:30px;" +
-            "width:120px;" +
-            "margin-top:8px;" +
-            "margin-left:30px;" +
-            "text-align:center;" +
-            "border:1px solid #CED5E0;" +
-            "border-bottom-color:#FDFDFD;" +
-            "background:#FDFDFD;" +
-            "padding-bottom:2px;" +
-            "margin-bottom:-2px;" +
-            "position:relative;" +
-            "" +
-            "}" +
+
             "" +
             ".ke-upload-btn-wrap {" +
             "position:relative;" +
             "padding:15px 20px 15px 10px;" +
-            "text-align:right;" +
             "}" +
             ".ke-upload-list {" +
             "width:100%;" +
-            "" +
             "}" +
 
             ".ke-upload-list th {" +
             "border-top:1px solid #c1c8d1;" +
-            "background-color:#EBEDF1;" +
+            "background-color: #E7E9ED;" +
+            "background: -webkit-gradient(linear, left top, left bottom, from(#E7E9ED), to(#F1F4F7));" +
+            "background: -moz-linear-gradient(top, #E7E9ED, #F1F4F7);" +
+            // "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#E7E9ED', endColorstr = '#F1F4F7');" +
             "}" +
+
             ".ke-upload-list td,.ke-upload-list th {" +
-            "padding:0.5em;" +
+            "padding:0em;" +
+            "height:26px;" +
+            "line-height:26px;" +
             "text-align:center;" +
             "border-bottom:1px solid #c1c8d1;" +
-            "}" +
-            "", "ke-BangPaiUpload"
+            "}", "ke-BangPaiUpload"
             );
 
         S.augment(BangPaiUpload, S.EventTarget, {
@@ -86,7 +65,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     mask:false,
                     //height:"500px",
                     focusMgr:false,
-                    width:"700px"
+                    width:"600px"
                 });
 
                 var d = self.dialog;
@@ -100,7 +79,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                             "color:#969696;" +
                             "display:inline-block;" +
                             "vertical-align:middle;" +
-                            "width:80%;" +
+                            "width:469px;" +
                             "'></span>" +
                             "</div>").appendTo(bangpaiUploaderHolder),
                     listWrap = new Node("<div style='display:none'>")
@@ -148,7 +127,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     list = listTableWrap.one("tbody"),
                     upHolder = new Node("<p " +
                         "style='" +
-                        "margin:15px 20px 35px; 0;" +
+                        "margin:15px 20px 30px; 0;" +
                         "text-align:right;" +
                         "'>" +
                         "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
@@ -526,7 +505,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     progressBars[id] = new KE.ProgressBar({
                         container:row.one(".ke-upload-progress") ,
                         width:"100px",
-                        height:"18px"
+                        height:"15px"
                     });
                     if (f.complete) {
                         progressBars[id].set("progress", 100);

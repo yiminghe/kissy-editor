@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-13 21:41:52
+ * @buildtime: 2010-10-14 21:56:27
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8029,9 +8029,10 @@ KISSY.Editor.add("draft", function(editor) {
         (function() {
             var Node = S.Node,
                 LIMIT = 5,
+                Event = S.Event,
                 INTERVAL = 5,
+                UA = KISSY.UA,
                 JSON = S.JSON,
-
                 DRAFT_SAVE = "ke-draft-save",
                 localStorage = window[KE.STORE];
 
@@ -8145,6 +8146,85 @@ KISSY.Editor.add("draft", function(editor) {
                     versions.on("click", self.recover, self);
                     self.holder = holder;
                     KE.Utils.sourceDisable(editor, self);
+
+                    help.on("click", function() {
+                        self._prepareHelp();
+                    });
+
+                    KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
+
+                    self._holder = holder;
+                    self.helpBtn = help.el;
+                },
+                _prepareHelp:function() {
+                    var self = this,
+                        editor = self.editor,
+                        cfg = editor.cfg.pluginConfig,
+                        draftCfg = cfg.draft,
+                        helpBtn = self.helpBtn,
+                        help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
+
+                    var arrow = new Node("<div style='" +
+                        "height:0;" +
+                        "position:absolute;" +
+                        "width:0;" +
+                        "border:8px #CED5E0 solid;" +
+                        "border-color:#CED5E0 " +
+                        //ie6 透明border
+                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
+                            "transparent transparent transparent" ) +
+                        ";'>" +
+                        "<div style='" +
+                        "height:0;" +
+                        "position:absolute;" +
+                        "width:0;" +
+                        "left:-8px;" +
+                        "top:-10px;" +
+                        "border:8px white solid;" +
+                        "border-color:white " +
+                        //ie6 透明border
+                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
+                            "transparent transparent transparent" ) +
+                        ";'>" +
+                        "</div>" +
+                        "</div>"
+                        )
+                        ;
+                    help.append(arrow);
+                    help.css({
+                        border:"1px solid #ACB4BE",
+                        "text-align":"left"
+                    });
+                    self._help = new KE.SimpleOverlay({
+                        el:help,
+                        focusMgr:false,
+                        draggable:false,
+                        width:help.width() + "px",
+                        mask:false
+                    });
+                    self._help.el.css("border", "none");
+                    self._help.arrow = arrow;
+                    Event.on([document,editor.document], "click", function(ev) {
+                        var t = ev.target;
+                        if (t == helpBtn[0] || helpBtn._4e_contains(t))
+                            return;
+                        self._help.hide();
+                    })
+                },
+                _realHelp:function() {
+                    var win = this._help,
+                        helpBtn = this.helpBtn,
+                        arrow = win.arrow;
+                    win.show();
+                    var off = helpBtn.offset();
+                    win.el.offset({
+                        left:(off.left - win.el.width()) + 17,
+                        top:(off.top - win.el.height()) - 7
+                    });
+                    arrow.offset({
+                        left:off.left - 2,
+                        top:off.top - 8
+                    });
                 },
                 disable:function() {
                     this.holder.css("visibility", "hidden");
@@ -8898,8 +8978,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     self._tip = "插入Flash";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_FLASH];
-                    self._config_dwidth = "400px";
                     self._urlTip = TIP;
+                    self._config_dwidth = "400px";
                 },
                 _init:function() {
                     this._config();
@@ -8995,7 +9075,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this,
                         d = new Overlay({
                             title:self._title,
-                            width:self._config_dwidth || "350px",
+                            width:self._config_dwidth || "500px",
                             mask:true
                         });
                     d.body.html(self._bodyHtml);
@@ -12355,8 +12435,8 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:12px 0pt 5px 20px;'>" +
-                    "<div class='kee-image-tabs-content-wrap' " +
+                    "padding:12px 20px 5px 20px;'>" +
+                    "<div class='ke-image-tabs-content-wrap' " +
                     ">" +
                     "<div>" +
                     "<label>" +
@@ -12369,7 +12449,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url ke-input' " +
-                    "style='width:440px;' " +
+                    "style='width:394px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "</div>" +
@@ -12378,7 +12458,7 @@ KISSY.Editor.add("image", function(editor) {
                     "readonly='readonly' " +
                     "style='margin-right: 15px; " +
                     "vertical-align: middle; " +
-                    "width: 425px;" +
+                    "width: 373px;" +
                     "color:#969696;'/>" +
                     "<button class='ke-image-up ke-button'>浏览...</button>" +
                     "</p>" +
@@ -12387,7 +12467,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "</div>" +
                     "<table " +
-                    "style='width:100%;margin-top:20px;' " +
+                    "style='width:100%;margin-top:8px;' " +
                     "class='ke-img-setting'>" +
                     "<tr>" +
                     "<td>" +
@@ -12513,8 +12593,7 @@ KISSY.Editor.add("image", function(editor) {
                         imgLocalUrl;
                     self.d = new Overlay({
                         title:"图片属性",
-                        mask:true,
-                        width:"550px"
+                        mask:true
                     });
                     var d = self.d;
                     d.body.html(bodyHtml);
@@ -12537,7 +12616,7 @@ KISSY.Editor.add("image", function(editor) {
 
                     var tab = new KE.Tabs({
                         tabs:content.one("ul.ke-tabs"),
-                        contents:content.one("div.kee-image-tabs-content-wrap")
+                        contents:content.one("div.ke-image-tabs-content-wrap")
                     }),
                         ke_image_title = content.one(".ke-image-title"),
                         ke_image_up = new KE.TripleButton({
@@ -13304,12 +13383,12 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:220px' " +
+                    "style='width:394px' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
-                    "style='margin: 15px 0 10px 70px;'>" +
+                    "style='margin: 15px 0 10px 64px;'>" +
                     "<label>" +
                     "<input " +
                     "class='ke-link-blank' " +
@@ -13337,8 +13416,7 @@ KISSY.Editor.add("link", function(editor) {
                 var self = this,
                     d = new Overlay({
                         title:"链接属性",
-                        mask:true,
-                        width:"350px"
+                        mask:true
                     });
                 self.dialog = d;
                 d.body.html(bodyHtml);
@@ -14770,7 +14848,7 @@ KISSY.Editor.add("overlay", function(editor) {
 
     Overlay.ATTRS = {
         title:{value:""},
-        width:{value:"450px"},
+        width:{value:"500px"},
         height:{},
         cls:{},
         visible:{value:false},
@@ -15285,6 +15363,7 @@ KISSY.Editor.add("progressbar", function() {
         "width:30px;" +
         "top:0;" +
         "left:40%;" +
+        "line-height:1.2;" +
         "position:absolute;" +
         "}" +
         "", "ke_progressbar");
@@ -16198,6 +16277,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         TripleButton = KE.TripleButton,
         Overlay = KE.SimpleOverlay,
         IN_SIZE = 6,
+        alignStyle = 'margin-left:2px;',
         TABLE_HTML = "<div style='padding:20px 20px 10px 20px;'>" +
             "<table class='ke-table-config' style='width:100%'>" +
             "<tr>" +
@@ -16208,6 +16288,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only ke-input' " +
+            "style='" + alignStyle + "'" +
             " size='" +
             IN_SIZE +
             "'" +
@@ -16220,7 +16301,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='宽度请输入正整数' " +
             "value='200' " +
-            "style='vertical-align:middle;' " +
+            "style='vertical-align:middle;" + alignStyle + "' " +
             "class='ke-table-width ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> " +
@@ -16237,6 +16318,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='列数请输入正整数' " +
             "class='ke-table-cols ke-table-create-only ke-input' " +
+            "style='" + alignStyle + "'" +
             "value='3' " +
             "size='" +
             IN_SIZE + "'/>" +
@@ -16248,6 +16330,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^((?!0$)\\d+)?$' " +
             " data-warning='高度请输入正整数' " +
             "value='' " +
+            "style='" + alignStyle + "'" +
             "class='ke-table-height ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -16279,6 +16362,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^\\d+$' " +
             " data-warning='边框请输入非负整数' " +
             "value='1' " +
+            "style='" + alignStyle + "'" +
             "class='ke-table-border ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -16292,7 +16376,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "标题： " +
             "<input " +
             "class='ke-table-caption ke-input' " +
-            "style='width:320px'>" +
+            "style='width:320px;" + alignStyle + "'>" +
             "</label>" +
             "</td>" +
             "</tr>" +
@@ -16369,10 +16453,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
     }
     if (!KE.TableUI) {
         (function() {
-
-            DOM.addStyleSheet(".ke-table-config td {" +
-                "padding: 4px 0;" +
-                "}", "ke-table");
 
             function TableUI(editor) {
                 var self = this;

@@ -18,7 +18,7 @@ from : resource://gre/res/html.css
 }
 
 .ke-post, .ks-clear {
-    _zoom: 1;
+    _zoom: 1;    
 }
 
 .ke-post h1,
@@ -348,12 +348,10 @@ active
     color: black;
     text-decoration: none;
 }
-
 .ke-triplebutton-disabled:hover {
     opacity: 0.3;
     cursor: default;
 }
-
 .ke-triplebutton-disabled.ke-button:hover {
     background-image: url("ke-button-bg.png");
     border-color:rgb(193, 200, 209);
@@ -659,7 +657,7 @@ textarea,iframe包装
     background: #FFFFFF repeat-x scroll 0 0;
     background-image: url("text-bg.gif");
     border: 1px solid #B5B8C8;
-    height: 22px;
+    height: 24px;
     line-height: 22px;
 }
 
@@ -721,14 +719,16 @@ menu style for kissy editor ,include contextmenu and select menu
 **/
 
 .ke-dialog {
+    background-color: #FBFBFB;
     position: absolute;
-    background: #ffffff;
-    border: 1px solid rgb(206, 213, 224);
+    border: 1px solid #ACB4BE;
     color: #000000;
-    font-size: 13px;
+    font-size: 12px;
+    /*
     -moz-box-shadow: 2px 2px 0.5em #888888;
     -webkit-box-shadow: 2px 2px 0.5em #888888;
     box-shadow: 2px 2px 0.5em #888888;
+    */
 }
 
 .ke-dialog-iframe {
@@ -767,43 +767,36 @@ menu style for kissy editor ,include contextmenu and select menu
 }
 
 a.ke-hd-x:hover {
-    border: 1px solid rgb(206, 213, 224);
+    border: 1px solid #CED5E0;
+    background: white;
 }
 
 a.ke-hd-x:active {
-    background-color: rgb(229, 234, 242);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(229, 234, 242)), to(rgb(252, 252, 253)));
-    background: -moz-linear-gradient(top, rgb(229, 234, 242), rgb(252, 252, 253));
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#e5eaf2', endColorstr = '#fcfcfd');
+    background: white;
 }
 
 .ke-hd {
-    background-color: #f4f7fc;
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(244, 247, 252)), to(rgb(235, 239, 244)));
-    background: -moz-linear-gradient(top, rgb(244, 247, 252), rgb(235, 239, 244));
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#f4f7fc', endColorstr = '#ebeff4');
-    color: #000000;
+    background: #D6DBE2 url("overlay-hd.png") repeat-x;
     font-size: 14px;
     font-weight: bold;
     padding: 0px 0px 0px 18px;
     height: 30px;
     line-height: 30px;
-    border-bottom: 1px solid rgb(206, 213, 224);
+    border-bottom: 1px solid #ACB4BE;
 }
 
 .ke-bd, .ke-ft {
-    background-color: rgb(252, 252, 252);
     padding-bottom: 0;
 }
 
 .ke-ft {
     padding: 20px;
     padding-top: 5px;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
 }
 
 .ke-bd td {
-    padding: 5px 2px;
+    padding: 2px;
 }
 
 .clearfix:after {
@@ -833,18 +826,12 @@ a.ke-hd-x:active {
     top: 0;
     border: none;
     background-color: #000000;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
 }
 
 .ke-loading {
     border: 1px solid #3A5774;
     background: #000000 center center no-repeat;
     background-image: url('loading_mask.gif');
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
 }
 /**
     resize handler style for kissy editor
@@ -877,7 +864,7 @@ select style for kissy editor
 .ke-select-wrap {
     margin: 0 2px;
     cursor: pointer;
-    line-height: 1.5;
+    line-height: 0;
     vertical-align: middle;
 }
 
@@ -891,6 +878,7 @@ select style for kissy editor
     border-radius: 2px;
     text-decoration: none;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .ke-select:hover {
@@ -906,8 +894,9 @@ select style for kissy editor
     background: no-repeat scroll center center transparent;
     background-image: url("arrow.png");
     width: 7px;
-    height: 16px;
-    vertical-align: text-top;
+    height: 20px;
+    vertical-align: middle;
+    font-size: 0;
 }
 
 .ke-select-active {
@@ -935,8 +924,18 @@ select style for kissy editor
     position: relative;
 }
 
+.ke-combox .ke-select {
+    height: 24px;
+}
+
+.ke-combox .ke-select-drop,
+.ke-combox .ke-select-text {
+    height: 24px;
+    line-height: 24px;
+}
+
 .ie8 .ke-combox .ke-select-text {
-    top: -1px;
+    top: -2px;
 }
 
 .ie7 .ke-combox .ke-select-text {
@@ -944,7 +943,7 @@ select style for kissy editor
 }
 
 .ie6 .ke-combox .ke-select-text {
-    /*odd ie ,字错位*/
+/*odd ie ,字错位*/
     position: static;
     /*
     top: -2px;
@@ -967,7 +966,12 @@ select style for kissy editor
     border-left: 1px solid rgb(193, 200, 209);
     background: #e8ebee repeat-x left top;
     background-image: url("ke-button-bg.png");
-    height: 20px;
+    height: 24px;
+    padding-top: 1px;
+}
+
+.ie8 .ke-combox .ke-select-drop-wrap {
+    top: 0;
 }
 
 .ke-combox .ke-select-text {

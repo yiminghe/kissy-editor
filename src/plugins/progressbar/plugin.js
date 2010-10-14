@@ -40,6 +40,7 @@ KISSY.Editor.add("progressbar", function() {
         "width:30px;" +
         "top:0;" +
         "left:40%;" +
+        "line-height:1.2;" +
         "position:absolute;" +
         "}" +
         "", "ke_progressbar");

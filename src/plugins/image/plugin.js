@@ -44,8 +44,8 @@ KISSY.Editor.add("image", function(editor) {
                     "</li>" +
                     "</ul>" +
                     "<div style='" +
-                    "padding:12px 0pt 5px 20px;'>" +
-                    "<div class='kee-image-tabs-content-wrap' " +
+                    "padding:12px 20px 5px 20px;'>" +
+                    "<div class='ke-image-tabs-content-wrap' " +
                     ">" +
                     "<div>" +
                     "<label>" +
@@ -58,7 +58,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url ke-input' " +
-                    "style='width:440px;' " +
+                    "style='width:394px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "</div>" +
@@ -67,7 +67,7 @@ KISSY.Editor.add("image", function(editor) {
                     "readonly='readonly' " +
                     "style='margin-right: 15px; " +
                     "vertical-align: middle; " +
-                    "width: 425px;" +
+                    "width: 373px;" +
                     "color:#969696;'/>" +
                     "<button class='ke-image-up ke-button'>浏览...</button>" +
                     "</p>" +
@@ -76,7 +76,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "</div>" +
                     "<table " +
-                    "style='width:100%;margin-top:20px;' " +
+                    "style='width:100%;margin-top:8px;' " +
                     "class='ke-img-setting'>" +
                     "<tr>" +
                     "<td>" +
@@ -202,8 +202,7 @@ KISSY.Editor.add("image", function(editor) {
                         imgLocalUrl;
                     self.d = new Overlay({
                         title:"图片属性",
-                        mask:true,
-                        width:"550px"
+                        mask:true
                     });
                     var d = self.d;
                     d.body.html(bodyHtml);
@@ -226,7 +225,7 @@ KISSY.Editor.add("image", function(editor) {
 
                     var tab = new KE.Tabs({
                         tabs:content.one("ul.ke-tabs"),
-                        contents:content.one("div.kee-image-tabs-content-wrap")
+                        contents:content.one("div.ke-image-tabs-content-wrap")
                     }),
                         ke_image_title = content.one(".ke-image-title"),
                         ke_image_up = new KE.TripleButton({

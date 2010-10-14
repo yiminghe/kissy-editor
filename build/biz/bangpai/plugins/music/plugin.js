@@ -78,7 +78,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             var css = '' +
                 '.ke-xiami-list {' +
                 'margin:10px 0 10px 0;' +
-                'padding:10px 40px 0 40px;' +
+                'padding:10px 20px 0 20px;' +
                 'border-top:1px solid #CED5E0;' +
                 'display:none;' +
                 '}' +
@@ -89,7 +89,10 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 'border-width:0 0 1px 0;' +
                 'overflow:hidden;' +
                 'zoom:1;' +
-                'padding:2px;' +
+                'color:#646464;' +
+                'height:24px;' +
+                'line-height:24px;' +
+                'padding:0 20px 0 10px;' +
                 '}' +
                 '' +
                 '' +
@@ -150,7 +153,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
                 "<input class='ke-xiami-url ke-input' " +
-                "style='width:350px;vertical-align:middle;'" +
+                "style='width:374px;vertical-align:middle;'" +
                 "/> &nbsp; " +
                 " <button " +
                 "class='ke-xiami-submit'" +
@@ -167,7 +170,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
                 "</label>" +
-                "<label style='margin-left:45px;'>间距： " +
+                "<label style='margin-left:70px;'>间距： " +
                 " " +
                 "<input " +
                 "" +
@@ -222,7 +225,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     self._tip = "插入虾米音乐";
                     self._contextMenu = contextMenu;
                     self._flashRules = ["img." + CLS_XIAMI];
-                    self._config_dwidth = "480px";
                 },
                 _updateTip:function(tipurl, selectedFlash) {
                     var self = this,
