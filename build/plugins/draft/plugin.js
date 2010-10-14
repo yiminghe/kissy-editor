@@ -99,12 +99,7 @@ KISSY.Editor.add("draft", function(editor) {
                             popUpWidth:"225px",
                             align:["r","t"],
                             title:"恢复编辑历史"
-                        }),help = new KE.TripleButton({
-                        cls:"ke-draft-help",
-                        title:"帮助",
-                        text:"帮助",
-                        container: holder
-                    }),
+                        }),
                         str = localStorage.getItem(DRAFT_SAVE),
                         drafts = [],date;
                     self.versions = versions;
@@ -125,15 +120,21 @@ KISSY.Editor.add("draft", function(editor) {
                     versions.on("click", self.recover, self);
                     self.holder = holder;
                     KE.Utils.sourceDisable(editor, self);
-
-                    help.on("click", function() {
-                        self._prepareHelp();
-                    });
-
-                    KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
-
+                    if (cfg.draft.helpHtml) {
+                        var help = new KE.TripleButton({
+                            cls:"ke-draft-help",
+                            title:"帮助",
+                            text:"帮助",
+                            container: holder
+                        });
+                        help.on("click", function() {
+                            self._prepareHelp();
+                        });
+                        KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
+                        self.helpBtn = help.el;
+                    }
                     self._holder = holder;
-                    self.helpBtn = help.el;
+
                 },
                 _prepareHelp:function() {
                     var self = this,
