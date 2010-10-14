@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-14 22:04:00
+ * @buildtime: 2010-10-14 23:09:00
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8168,29 +8168,28 @@ KISSY.Editor.add("draft", function(editor) {
                     var arrow = new Node("<div style='" +
                         "height:0;" +
                         "position:absolute;" +
+                        "font-size:0;" +
                         "width:0;" +
                         "border:8px #CED5E0 solid;" +
                         "border-color:#CED5E0 " +
-                        //ie6 透明border
-                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
-                            "transparent transparent transparent" ) +
-                        ";'>" +
+                        "transparent transparent transparent" +
+                        ";" +
+                        "border-style:solid dashed dashed dashed;'>" +
                         "<div style='" +
                         "height:0;" +
                         "position:absolute;" +
+                        "font-size:0;" +
                         "width:0;" +
                         "left:-8px;" +
                         "top:-10px;" +
                         "border:8px white solid;" +
                         "border-color:white " +
                         //ie6 透明border
-                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
-                            "transparent transparent transparent" ) +
-                        ";'>" +
+                        "transparent transparent transparent" +
+                        ";" +
+                        "border-style:solid dashed dashed dashed;'>" +
                         "</div>" +
-                        "</div>"
-                        )
-                        ;
+                        "</div>");
                     help.append(arrow);
                     help.css({
                         border:"1px solid #ACB4BE",

@@ -147,29 +147,28 @@ KISSY.Editor.add("draft", function(editor) {
                     var arrow = new Node("<div style='" +
                         "height:0;" +
                         "position:absolute;" +
+                        "font-size:0;" +
                         "width:0;" +
                         "border:8px #CED5E0 solid;" +
                         "border-color:#CED5E0 " +
-                        //ie6 透明border
-                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
-                            "transparent transparent transparent" ) +
-                        ";'>" +
+                        "transparent transparent transparent" +
+                        ";" +
+                        "border-style:solid dashed dashed dashed;'>" +
                         "<div style='" +
                         "height:0;" +
                         "position:absolute;" +
+                        "font-size:0;" +
                         "width:0;" +
                         "left:-8px;" +
                         "top:-10px;" +
                         "border:8px white solid;" +
                         "border-color:white " +
                         //ie6 透明border
-                        ((UA.ie < 7) ? "tomato tomato tomato;filter: chroma(color = tomato)" :
-                            "transparent transparent transparent" ) +
-                        ";'>" +
+                        "transparent transparent transparent" +
+                        ";" +
+                        "border-style:solid dashed dashed dashed;'>" +
                         "</div>" +
-                        "</div>"
-                        )
-                        ;
+                        "</div>");
                     help.append(arrow);
                     help.css({
                         border:"1px solid #ACB4BE",
