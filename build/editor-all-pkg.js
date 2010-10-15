@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 13:48:08
+ * @buildtime: 2010-10-15 14:47:24
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14293,11 +14293,17 @@ KISSY.Editor.add("maximize", function(editor) {
     if (UA.gecko < 1.92) return;
     if (!KE.Maximize) {
         (function() {
-
+            DOM.addStyleSheet(
+                ".ke-toolbar-padding {" +
+                    "padding:5px;" +
+                    "}",
+                "ke-maximize"
+                );
             var MAXIMIZE_CLASS = "ke-toolbar-maximize",
                 RESTORE_CLASS = "ke-toolbar-restore",
                 MAXIMIZE_TIP = "全屏",
-                RESTORE_TIP = "取消全屏";
+                MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding";
+            RESTORE_TIP = "取消全屏";
 
             function Maximize(editor) {
                 var self = this;
@@ -14330,6 +14336,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     el.on("offClick", self.maximize, self);
                     el.on("onClick", self.restore, self);
                     KE.Utils.lazyRun(self, "_prepare", "_real");
+                    self._toolBarDiv = editor.toolBarDiv;
                 },
 
                 restore:function() {
@@ -14394,6 +14401,8 @@ KISSY.Editor.add("maximize", function(editor) {
                         .removeClass(RESTORE_CLASS)
                         .addClass(MAXIMIZE_CLASS);
                     bel.attr("title", MAXIMIZE_TIP);
+
+                    UA.ie < 8 && self._toolBarDiv.removeClass(MAXIMIZE_TOOLBAR_CLASS);
                 },
                 /**
                  * 保存最大化前的外围状态信息到内存，
@@ -14431,6 +14440,8 @@ KISSY.Editor.add("maximize", function(editor) {
                         .removeClass(MAXIMIZE_CLASS)
                         .addClass(RESTORE_CLASS);
                     bel.attr("title", RESTORE_TIP);
+                    //ie6,7 图标到了窗口边界，不可点击，给个padding
+                    UA.ie < 8 && self._toolBarDiv.addClass(MAXIMIZE_TOOLBAR_CLASS);
                 },
 
                 /**
@@ -14493,8 +14504,8 @@ KISSY.Editor.add("maximize", function(editor) {
                         editorWrap = editor.editorWrap,
                         viewportHeight = DOM.viewportHeight(),
                         viewportWidth = DOM.viewportWidth(),
-                        statusHeight = editor.statusDiv ? editor.statusDiv.height() : 0,
-                        toolHeight = editor.toolBarDiv.height();
+                        statusHeight = editor.statusDiv ? editor.statusDiv[0].offsetHeight : 0,
+                        toolHeight = editor.toolBarDiv[0].offsetHeight;
 
 
                     if (!UA.ie) {
@@ -14528,7 +14539,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     });
 
                     editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
+                        height:(viewportHeight - statusHeight - toolHeight ) + "px"
                     });
                     if (stop !== true) {
                         arguments.callee.call(self, true);
