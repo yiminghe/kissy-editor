@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 11:00:43
+ * @buildtime: 2010-10-15 13:48:08
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8883,6 +8883,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
     if (!KE.Flash) {
 
         (function() {
+            var MIDDLE = "vertical-align:middle";
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
@@ -8890,7 +8891,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url ke-input' style='width:300px' />" +
+                    "class='ke-flash-url ke-input' style='width:300px;" +
+                    MIDDLE + "' />" +
                     "</label>" +
                     "</p>" +
                     "<table style='margin:10px 0 5px  40px;width:300px;'>" +
@@ -8900,14 +8902,17 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^(?!0$)\\d+$' " +
                     " data-warning='宽度请输入正整数' " +
-                    "class='ke-flash-width ke-input' style='width:60px' /> 像素 </label>" +
+                    "class='ke-flash-width ke-input' style='width:60px;" +
+                    "margin-left:2px;" +
+                    MIDDLE + "' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
                     " data-verify='^(?!0$)\\d+$' " +
                     " data-warning='高度请输入正整数' " +
                     "class='ke-flash-height ke-input' " +
-                    "style='width:60px' /> 像素 </label></td>" +
+                    "style='width:60px;" +
+                    MIDDLE + "' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
                     "<td>" +
@@ -8923,7 +8928,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' "
-                    + "class='ke-flash-margin ke-input' style='width:60px' value='"
+                    + "class='ke-flash-margin ke-input' " +
+                    "style='width:60px;" +
+                    MIDDLE + "' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +
@@ -13349,6 +13356,7 @@ KISSY.Editor.add("link", function(editor) {
                         target:"#(target)"
                     }
                 },
+                MIDDLE = "vertical-align:middle;",
                 /**
                  * bubbleview/tip 初始化，所有共享一个 tip
                  */
@@ -13376,7 +13384,8 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:394px' " +
+                    "style='width:394px;" +
+                    MIDDLE + "' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +
@@ -14631,7 +14640,9 @@ KISSY.Editor.add("music", function(editor) {
     //重构，和flash结合起来，抽象
     if (!KE.MusicInserter) {
         (function() {
-            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
+            var MIDDLE = "vertical-align:middle";
+            var MUSIC_PLAYER_CODE = KE.Config.base
+                + 'plugins/music/niftyplayer.swf?file=#(music)',
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
@@ -14639,11 +14650,12 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url ke-input' style='width:300px'  />" +
+                    "class='ke-music-url ke-input' style='width:300px;" +
+                    MIDDLE + "'  />" +
                     "</label>" +
                     "</p>" +
                     "<p style='margin: 10px 0 10px 40px;'>" +
-                    "<label style='vertical-align:middle;'>对齐： " +
+                    "<label style='" + MIDDLE + "'>对齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
@@ -14654,7 +14666,9 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' " +
-                    "class='ke-music-margin ke-input' style='width:60px' value='"
+                    "class='ke-music-margin ke-input' " +
+                    "style='width:60px;" +
+                    MIDDLE + "' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</p>" +
@@ -16286,6 +16300,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         Overlay = KE.SimpleOverlay,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
+        MIDDLE = "vertical-align:middle;",
         TABLE_HTML = "<div style='padding:20px 20px 10px 20px;'>" +
             "<table class='ke-table-config' style='width:100%'>" +
             "<tr>" +
@@ -16296,7 +16311,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only ke-input' " +
-            "style='" + alignStyle + "'" +
+            "style='" + alignStyle + MIDDLE + "'" +
             " size='" +
             IN_SIZE +
             "'" +
@@ -16309,7 +16324,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='宽度请输入正整数' " +
             "value='200' " +
-            "style='vertical-align:middle;" + alignStyle + "' " +
+            "style='" +
+            alignStyle + MIDDLE + "' " +
             "class='ke-table-width ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> " +
@@ -16326,7 +16342,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='列数请输入正整数' " +
             "class='ke-table-cols ke-table-create-only ke-input' " +
-            "style='" + alignStyle + "'" +
+            "style='" + alignStyle + MIDDLE + "'" +
             "value='3' " +
             "size='" +
             IN_SIZE + "'/>" +
@@ -16338,7 +16354,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^((?!0$)\\d+)?$' " +
             " data-warning='高度请输入正整数' " +
             "value='' " +
-            "style='" + alignStyle + "'" +
+            "style='" +
+            alignStyle + MIDDLE + "'" +
             "class='ke-table-height ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -16370,7 +16387,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^\\d+$' " +
             " data-warning='边框请输入非负整数' " +
             "value='1' " +
-            "style='" + alignStyle + "'" +
+            "style='" +
+            alignStyle + MIDDLE + "'" +
             "class='ke-table-border ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -16384,7 +16402,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "标题： " +
             "<input " +
             "class='ke-table-caption ke-input' " +
-            "style='width:320px;" + alignStyle + "'>" +
+            "style='width:320px;" +
+            alignStyle + MIDDLE + "'>" +
             "</label>" +
             "</td>" +
             "</tr>" +

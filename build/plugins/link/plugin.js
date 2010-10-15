@@ -21,6 +21,7 @@ KISSY.Editor.add("link", function(editor) {
                         target:"#(target)"
                     }
                 },
+                MIDDLE = "vertical-align:middle;",
                 /**
                  * bubbleview/tip 初始化，所有共享一个 tip
                  */
@@ -48,7 +49,8 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:394px' " +
+                    "style='width:394px;" +
+                    MIDDLE + "' " +
                     "value='http://'/>" +
                     "</label>" +
                     "</p>" +

@@ -956,8 +956,10 @@ select style for kissy editor
 }
 
 .ie6 .ke-combox .ke-select-drop-wrap {
-    padding-bottom: 1px;
+    position: relative;
+    top: -2px;
     vertical-align: middle;
+    padding-top: 0;
 }
 
 .ke-combox .ke-select-drop-wrap {

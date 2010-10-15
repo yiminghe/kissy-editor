@@ -23,6 +23,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
     if (!KE.Flash) {
 
         (function() {
+            var MIDDLE = "vertical-align:middle";
             var flashFilenameRegex = /\.swf(?:$|\?)/i,
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
@@ -30,7 +31,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-flash-url ke-input' style='width:300px' />" +
+                    "class='ke-flash-url ke-input' style='width:300px;" +
+                    MIDDLE + "' />" +
                     "</label>" +
                     "</p>" +
                     "<table style='margin:10px 0 5px  40px;width:300px;'>" +
@@ -40,14 +42,17 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^(?!0$)\\d+$' " +
                     " data-warning='宽度请输入正整数' " +
-                    "class='ke-flash-width ke-input' style='width:60px' /> 像素 </label>" +
+                    "class='ke-flash-width ke-input' style='width:60px;" +
+                    "margin-left:2px;" +
+                    MIDDLE + "' /> 像素 </label>" +
                     "</td>" +
                     "<td>" +
                     "<label>高度：<input " +
                     " data-verify='^(?!0$)\\d+$' " +
                     " data-warning='高度请输入正整数' " +
                     "class='ke-flash-height ke-input' " +
-                    "style='width:60px' /> 像素 </label></td>" +
+                    "style='width:60px;" +
+                    MIDDLE + "' /> 像素 </label></td>" +
                     "</tr>" +
                     "<tr>" +
                     "<td>" +
@@ -63,7 +68,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' "
-                    + "class='ke-flash-margin ke-input' style='width:60px' value='"
+                    + "class='ke-flash-margin ke-input' " +
+                    "style='width:60px;" +
+                    MIDDLE + "' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</td></tr>" +

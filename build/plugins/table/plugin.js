@@ -15,6 +15,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
         Overlay = KE.SimpleOverlay,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
+        MIDDLE = "vertical-align:middle;",
         TABLE_HTML = "<div style='padding:20px 20px 10px 20px;'>" +
             "<table class='ke-table-config' style='width:100%'>" +
             "<tr>" +
@@ -25,7 +26,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-warning='行数请输入正整数' " +
             " value='2' " +
             " class='ke-table-rows ke-table-create-only ke-input' " +
-            "style='" + alignStyle + "'" +
+            "style='" + alignStyle + MIDDLE + "'" +
             " size='" +
             IN_SIZE +
             "'" +
@@ -38,7 +39,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='宽度请输入正整数' " +
             "value='200' " +
-            "style='vertical-align:middle;" + alignStyle + "' " +
+            "style='" +
+            alignStyle + MIDDLE + "' " +
             "class='ke-table-width ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> " +
@@ -55,7 +57,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^(?!0$)\\d+$' " +
             " data-warning='列数请输入正整数' " +
             "class='ke-table-cols ke-table-create-only ke-input' " +
-            "style='" + alignStyle + "'" +
+            "style='" + alignStyle + MIDDLE + "'" +
             "value='3' " +
             "size='" +
             IN_SIZE + "'/>" +
@@ -67,7 +69,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^((?!0$)\\d+)?$' " +
             " data-warning='高度请输入正整数' " +
             "value='' " +
-            "style='" + alignStyle + "'" +
+            "style='" +
+            alignStyle + MIDDLE + "'" +
             "class='ke-table-height ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -99,7 +102,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             " data-verify='^\\d+$' " +
             " data-warning='边框请输入非负整数' " +
             "value='1' " +
-            "style='" + alignStyle + "'" +
+            "style='" +
+            alignStyle + MIDDLE + "'" +
             "class='ke-table-border ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
@@ -113,7 +117,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             "标题： " +
             "<input " +
             "class='ke-table-caption ke-input' " +
-            "style='width:320px;" + alignStyle + "'>" +
+            "style='width:320px;" +
+            alignStyle + MIDDLE + "'>" +
             "</label>" +
             "</td>" +
             "</tr>" +

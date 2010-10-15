@@ -146,6 +146,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 return str;
             }
 
+            var MIDDLE = "vertical-align:middle;";
             var bodyHtml = "<div style='padding:20px 0;'>" +
                 "<form action='#' class='ke-xiami-form' style='margin:0 20px;'>" +
                 "<p class='ke-xiami-title'>" +
@@ -153,7 +154,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "</p>" +
                 "<p class='ke-xiami-url-wrap'>" +
                 "<input class='ke-xiami-url ke-input' " +
-                "style='width:374px;vertical-align:middle;'" +
+                "style='width:374px;" + MIDDLE
+                + "'" +
                 "/> &nbsp; " +
                 " <button " +
                 "class='ke-xiami-submit'" +
@@ -176,7 +178,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "" +
                 " data-verify='^\\d+$' " +
                 " data-warning='间距请输入非负整数' " +
-                "class='ke-xiami-margin ke-input' style='width:60px' value='"
+                "class='ke-xiami-margin ke-input' style='width:60px;" +
+                MIDDLE + "' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</p>" +

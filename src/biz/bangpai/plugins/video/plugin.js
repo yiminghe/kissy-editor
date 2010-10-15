@@ -103,13 +103,15 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
     if (!KE.BangPaiVideo) {
         (function() {
+            var MIDDLE = "vertical-align:middle;";
             var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                 "<p>" +
                 "<label>" +
                 "链接： " +
                 "" +
                 "<input " +
-                "class='ke-video-url ke-input' style='width:418px'/>" +
+                "class='ke-video-url ke-input' style='width:418px;" +
+                MIDDLE + "'/>" +
                 "</label>" +
                 "</p>" +
                 "<table " +
@@ -121,7 +123,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
                 " data-warning='宽度请输入正整数' " +
                 "class='ke-video-width ke-input' " +
-                "style='width:60px;margin-left:2px;' " +
+                "style='width:60px;margin-left:2px;" +
+                MIDDLE + "' " +
                 "value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
@@ -132,7 +135,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 " <input " +
                 " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
                 " data-warning='高度请输入正整数' " +
-                "class='ke-video-height ke-input' style='width:60px' value='"
+                "class='ke-video-height ke-input' style='width:60px;" +
+                MIDDLE + "' value='"
                 + DTIP + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +
@@ -151,7 +155,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "" +
                 " data-verify='^\\d+$' " +
                 " data-warning='间距请输入非负整数' " +
-                "class='ke-video-margin ke-input' style='width:60px' value='"
+                "class='ke-video-margin ke-input' style='width:60px;" +
+                MIDDLE + "' value='"
                 + 5 + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +

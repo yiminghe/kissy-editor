@@ -67,7 +67,9 @@ KISSY.Editor.add("music", function(editor) {
     //重构，和flash结合起来，抽象
     if (!KE.MusicInserter) {
         (function() {
-            var MUSIC_PLAYER_CODE = KE.Config.base + 'plugins/music/niftyplayer.swf?file=#(music)',
+            var MIDDLE = "vertical-align:middle";
+            var MUSIC_PLAYER_CODE = KE.Config.base
+                + 'plugins/music/niftyplayer.swf?file=#(music)',
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
@@ -75,11 +77,12 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
-                    "class='ke-music-url ke-input' style='width:300px'  />" +
+                    "class='ke-music-url ke-input' style='width:300px;" +
+                    MIDDLE + "'  />" +
                     "</label>" +
                     "</p>" +
                     "<p style='margin: 10px 0 10px 40px;'>" +
-                    "<label style='vertical-align:middle;'>对齐： " +
+                    "<label style='" + MIDDLE + "'>对齐： " +
                     "<select class='ke-music-align'>" +
                     "<option value=''>无</option>" +
                     "<option value='left'>左对齐</option>" +
@@ -90,7 +93,9 @@ KISSY.Editor.add("music", function(editor) {
                     "<input " +
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' " +
-                    "class='ke-music-margin ke-input' style='width:60px' value='"
+                    "class='ke-music-margin ke-input' " +
+                    "style='width:60px;" +
+                    MIDDLE + "' value='"
                     + 5 + "'/> 像素" +
                     "</label>" +
                     "</p>" +
