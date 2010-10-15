@@ -598,7 +598,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             PIC_NUM_LIMIT = 15,
             PIC_NUM_LIMIT_WARNING = "系统将只保留 n 张",
             PIC_SIZE_LIMIT = 1000,
-            PIC_SIZE_LIMIT_WARNING = "图片不能超过 n M",
+            PIC_SIZE_LIMIT_WARNING = "图片太大，请压缩至 n M以下",
             Node = S.Node,
             Overlay = KE.SimpleOverlay,
             holder = [],
@@ -1076,7 +1076,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 row = new Node(row);
 
                 var prog = row.one(".ke-upload-progress");
-                if (f.size > self._sizeLimit) {
+                if (parseInt(f.size) > self._sizeLimit) {
                     self._uploadError({
                         id:id,
                         status:PIC_SIZE_LIMIT_WARNING

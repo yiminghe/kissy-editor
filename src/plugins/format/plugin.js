@@ -88,7 +88,7 @@ KISSY.Editor.add("format", function(editor) {
                     var self = this,
                         editor = self.get("editor"),
                         v = ev.newVal,
-                        pre = ev.preVal;
+                        pre = ev.prevVal;
                     editor.fire("save");
                     if (v != pre) {
                         FORMAT_STYLES[v].apply(editor.document);

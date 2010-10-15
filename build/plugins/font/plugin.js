@@ -155,7 +155,7 @@ KISSY.Editor.add("font", function(editor) {
                     var self = this,
                         editor = self.get("editor"),
                         v = ev.newVal,
-                        pre = ev.preVal,
+                        pre = ev.prevVal,
                         styles = self.get("styles");
                     editor.focus();
                     editor.fire("save");

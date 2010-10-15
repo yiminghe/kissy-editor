@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 14:47:24
+ * @buildtime: 2010-10-15 17:12:55
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -9641,7 +9641,7 @@ KISSY.Editor.add("font", function(editor) {
                     var self = this,
                         editor = self.get("editor"),
                         v = ev.newVal,
-                        pre = ev.preVal,
+                        pre = ev.prevVal,
                         styles = self.get("styles");
                     editor.focus();
                     editor.fire("save");
@@ -9970,7 +9970,7 @@ KISSY.Editor.add("format", function(editor) {
                     var self = this,
                         editor = self.get("editor"),
                         v = ev.newVal,
-                        pre = ev.preVal;
+                        pre = ev.prevVal;
                     editor.fire("save");
                     if (v != pre) {
                         FORMAT_STYLES[v].apply(editor.document);
@@ -15707,7 +15707,7 @@ KISSY.Editor.add("select", function() {
                 //chrome 需要添加在能够真正包含div的地方
                 var c = this.el.parent();
                 while (c) {
-                    var n=c._4e_name();
+                    var n = c._4e_name();
                     if (dtd[n] && dtd[n]["div"])
                         return c;
                     c = c.parent();
@@ -15777,7 +15777,6 @@ KISSY.Editor.add("select", function() {
             self.on("afterStateChange", self._stateChange, self);
         },
         _findNameByV:function(v) {
-
             var self = this,
                 name = self.get(TITLE) || "",
                 items = self.get("items");
@@ -15921,7 +15920,7 @@ KISSY.Editor.add("select", function() {
             //触发 click 事件，必要时可监听 afterValueChange
             self.fire("click", {
                 newVal:newVal,
-                preVal:preVal,
+                prevVal:preVal,
                 name:a.html()
             });
             menu.hide();

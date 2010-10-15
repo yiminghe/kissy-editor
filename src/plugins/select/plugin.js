@@ -56,7 +56,7 @@ KISSY.Editor.add("select", function() {
                 //chrome 需要添加在能够真正包含div的地方
                 var c = this.el.parent();
                 while (c) {
-                    var n=c._4e_name();
+                    var n = c._4e_name();
                     if (dtd[n] && dtd[n]["div"])
                         return c;
                     c = c.parent();
@@ -126,7 +126,6 @@ KISSY.Editor.add("select", function() {
             self.on("afterStateChange", self._stateChange, self);
         },
         _findNameByV:function(v) {
-
             var self = this,
                 name = self.get(TITLE) || "",
                 items = self.get("items");
@@ -270,7 +269,7 @@ KISSY.Editor.add("select", function() {
             //触发 click 事件，必要时可监听 afterValueChange
             self.fire("click", {
                 newVal:newVal,
-                preVal:preVal,
+                prevVal:preVal,
                 name:a.html()
             });
             menu.hide();
