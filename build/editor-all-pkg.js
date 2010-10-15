@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 10:41:44
+ * @buildtime: 2010-10-15 11:00:43
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14328,7 +14328,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         doc = document,
                         editor = self.editor;
                     //body overflow 变化也会引起 resize 变化！！！！先去除
-                    Event.remove(window, "resize", self._maximize, self);
+                    self._resize && Event.remove(window, "resize", self._resize);
                     self._saveEditorStatus();
                     self._restoreState();
                     self.el.boff();
@@ -14475,8 +14475,9 @@ KISSY.Editor.add("maximize", function(editor) {
 
                 /**
                  * 将编辑器最大化-实际动作
+                 * 必须做两次，何解？？
                  */
-                _maximize:function() {
+                _maximize:function(stop) {
                     var self = this,
                         doc = document,
                         editor = self.editor,
@@ -14516,9 +14517,13 @@ KISSY.Editor.add("maximize", function(editor) {
                         left:0,
                         top:0
                     });
+
                     editor.wrap.css({
                         height:(viewportHeight - statusHeight - toolHeight - 8) + "px"
                     });
+                    if (stop !== true) {
+                        arguments.callee.call(self, true);
+                    }
                 },
                 _real:function() {
                     var self = this,
@@ -14531,9 +14536,10 @@ KISSY.Editor.add("maximize", function(editor) {
                     //if (true
                     //|| UA.gecko
                     //   ) {
-                    self._maximize();
+
                     //}
-                    Event.on(window, "resize", self._maximize, self);
+                    self._resize = self._resize || KE.Utils.buffer(self._maximize, self, 100);
+                    Event.on(window, "resize", self._resize);
 
                     self.el.set("state", TripleButton.ON);
                     setTimeout(function() {
@@ -14541,6 +14547,7 @@ KISSY.Editor.add("maximize", function(editor) {
                         editor.notifySelectionChange();
                     }, 30);
                 },
+
                 _prepare:function() {
                     Maximize.init && Maximize.init();
                 },
