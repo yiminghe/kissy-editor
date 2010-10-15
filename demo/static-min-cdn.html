@@ -187,13 +187,10 @@ box-shadow:2px 2px 0.5em #888888;
 
     KISSY.ready(function(S) {
         // just for test
-        var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
-        S.Config.base = base;
 
         S.use('editor', function() {
 
             var KE = S.Editor;
-            KE.Config.base = base + "build/";
 
             window.editor = KE("#editor", {
 
@@ -317,8 +314,7 @@ box-shadow:2px 2px 0.5em #888888;
                 disableObjectResizing:true,
                 disableInlineTableEditing:true
             }).use("htmldataprocessor,enterkey,clipboard,undo,font,image,music");
-        })
-                ;
+        });
     });
 
 </script>
