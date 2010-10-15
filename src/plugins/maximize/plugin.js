@@ -18,7 +18,9 @@ KISSY.Editor.add("maximize", function(editor) {
         (function() {
 
             var MAXIMIZE_CLASS = "ke-toolbar-maximize",
-                RESTORE_CLASS = "ke-toolbar-restore";
+                RESTORE_CLASS = "ke-toolbar-restore",
+                MAXIMIZE_TIP = "全屏",
+                RESTORE_TIP = "取消全屏";
 
             function Maximize(editor) {
                 var self = this;
@@ -110,8 +112,11 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:"-99999px"
                     });
                     window.scrollTo(self.scrollLeft, self.scrollTop);
-
-                    self.el.el.one("span").removeClass(RESTORE_CLASS).addClass(MAXIMIZE_CLASS);
+                    var bel = self.el.el;
+                    bel.one("span")
+                        .removeClass(RESTORE_CLASS)
+                        .addClass(MAXIMIZE_CLASS);
+                    bel.attr("title", MAXIMIZE_TIP);
                 },
                 /**
                  * 保存最大化前的外围状态信息到内存，
@@ -144,8 +149,11 @@ KISSY.Editor.add("maximize", function(editor) {
                         p = p.parent();
                     }
                     self._savedParents = _savedParents;
-
-                    self.el.el.one("span").removeClass(MAXIMIZE_CLASS).addClass(RESTORE_CLASS);
+                    var bel = self.el.el;
+                    self.el.el.one("span")
+                        .removeClass(MAXIMIZE_CLASS)
+                        .addClass(RESTORE_CLASS);
+                    bel.attr("title", RESTORE_TIP);
                 },
 
                 /**

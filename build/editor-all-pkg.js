@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-14 23:09:00
+ * @buildtime: 2010-10-15 10:41:44
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8164,30 +8164,23 @@ KISSY.Editor.add("draft", function(editor) {
                         draftCfg = cfg.draft,
                         helpBtn = self.helpBtn,
                         help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
-
+                    var arrowCss = "height:0;" +
+                        "position:absolute;" +
+                        "font-size:0;" +
+                        "width:0;" +
+                        "border:8px #000 solid;" +
+                        "border-color:#000 transparent transparent transparent;" +
+                        "border-style:solid dashed dashed dashed;";
                     var arrow = new Node("<div style='" +
-                        "height:0;" +
-                        "position:absolute;" +
-                        "font-size:0;" +
-                        "width:0;" +
-                        "border:8px #CED5E0 solid;" +
-                        "border-color:#CED5E0 " +
-                        "transparent transparent transparent" +
-                        ";" +
-                        "border-style:solid dashed dashed dashed;'>" +
+                        arrowCss +
+                        "border-top-color:#CED5E0;" +
+                        "'>" +
                         "<div style='" +
-                        "height:0;" +
-                        "position:absolute;" +
-                        "font-size:0;" +
-                        "width:0;" +
+                        arrowCss +
                         "left:-8px;" +
                         "top:-10px;" +
-                        "border:8px white solid;" +
-                        "border-color:white " +
-                        //ie6 透明border
-                        "transparent transparent transparent" +
-                        ";" +
-                        "border-style:solid dashed dashed dashed;'>" +
+                        "border-top-color:white;" +
+                        "'>" +
                         "</div>" +
                         "</div>");
                     help.append(arrow);
@@ -14293,7 +14286,9 @@ KISSY.Editor.add("maximize", function(editor) {
         (function() {
 
             var MAXIMIZE_CLASS = "ke-toolbar-maximize",
-                RESTORE_CLASS = "ke-toolbar-restore";
+                RESTORE_CLASS = "ke-toolbar-restore",
+                MAXIMIZE_TIP = "全屏",
+                RESTORE_TIP = "取消全屏";
 
             function Maximize(editor) {
                 var self = this;
@@ -14385,8 +14380,11 @@ KISSY.Editor.add("maximize", function(editor) {
                         top:"-99999px"
                     });
                     window.scrollTo(self.scrollLeft, self.scrollTop);
-
-                    self.el.el.one("span").removeClass(RESTORE_CLASS).addClass(MAXIMIZE_CLASS);
+                    var bel = self.el.el;
+                    bel.one("span")
+                        .removeClass(RESTORE_CLASS)
+                        .addClass(MAXIMIZE_CLASS);
+                    bel.attr("title", MAXIMIZE_TIP);
                 },
                 /**
                  * 保存最大化前的外围状态信息到内存，
@@ -14419,8 +14417,11 @@ KISSY.Editor.add("maximize", function(editor) {
                         p = p.parent();
                     }
                     self._savedParents = _savedParents;
-
-                    self.el.el.one("span").removeClass(MAXIMIZE_CLASS).addClass(RESTORE_CLASS);
+                    var bel = self.el.el;
+                    self.el.el.one("span")
+                        .removeClass(MAXIMIZE_CLASS)
+                        .addClass(RESTORE_CLASS);
+                    bel.attr("title", RESTORE_TIP);
                 },
 
                 /**

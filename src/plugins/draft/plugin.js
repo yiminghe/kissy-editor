@@ -143,30 +143,23 @@ KISSY.Editor.add("draft", function(editor) {
                         draftCfg = cfg.draft,
                         helpBtn = self.helpBtn,
                         help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
-
+                    var arrowCss = "height:0;" +
+                        "position:absolute;" +
+                        "font-size:0;" +
+                        "width:0;" +
+                        "border:8px #000 solid;" +
+                        "border-color:#000 transparent transparent transparent;" +
+                        "border-style:solid dashed dashed dashed;";
                     var arrow = new Node("<div style='" +
-                        "height:0;" +
-                        "position:absolute;" +
-                        "font-size:0;" +
-                        "width:0;" +
-                        "border:8px #CED5E0 solid;" +
-                        "border-color:#CED5E0 " +
-                        "transparent transparent transparent" +
-                        ";" +
-                        "border-style:solid dashed dashed dashed;'>" +
+                        arrowCss +
+                        "border-top-color:#CED5E0;" +
+                        "'>" +
                         "<div style='" +
-                        "height:0;" +
-                        "position:absolute;" +
-                        "font-size:0;" +
-                        "width:0;" +
+                        arrowCss +
                         "left:-8px;" +
                         "top:-10px;" +
-                        "border:8px white solid;" +
-                        "border-color:white " +
-                        //ie6 透明border
-                        "transparent transparent transparent" +
-                        ";" +
-                        "border-style:solid dashed dashed dashed;'>" +
+                        "border-top-color:white;" +
+                        "'>" +
                         "</div>" +
                         "</div>");
                     help.append(arrow);
