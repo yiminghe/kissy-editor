@@ -131,7 +131,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         "margin:15px 20px 30px; 0;" +
                         "text-align:right;" +
                         "'>" +
-                        //"<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
+                        "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
                         "<a class='ke-button ke-bangpiaupload-insertall'" +
                         " style='margin-left:20px;'>全部插入</a>" +
                         "</p>")
@@ -390,7 +390,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         if (!tr.attr("url")) wait++;
                     }
                     self.statusText.html("队列中剩余" + wait + "张图片"
-                        //+ "，点击确定上传，开始上传。 "
+                        + "，点击确定上传，开始上传。 "
                         );
                 }
                 //当前已上传的文件同步到本地
@@ -575,10 +575,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         });
                     }
                     self._syncStatus();
-
-                    uploader.uploadAll(self._ds, "POST",
-                        normParams(self._dsp),
-                        self._fileInput);
                 }
             },
 
@@ -598,13 +594,15 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         description:"图片文件( png,jpg,jpeg,gif )"
                     }
                 ]);
-                /*
-                 up.detach();
-                 up.on("click", function(ev) {
-                 ev.halt();
 
-                 });
-                 */
+                up.detach();
+                up.on("click", function(ev) {
+                    ev.halt();
+                    uploader.uploadAll(self._ds, "POST",
+                        normParams(self._dsp),
+                        self._fileInput);
+                });
+
             }
         });
 
