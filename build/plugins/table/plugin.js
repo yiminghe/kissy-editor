@@ -387,7 +387,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (valid(d.twidth.val()) || valid(d.theight.val())) {
                         html += "style='";
                         if (valid(d.twidth.val())) {
-                            html += "width:" + trim(d.twidth.val()) + d.twidthunit.val() + ";"
+                            html += "width:" + trim(d.twidth.val())
+                                + d.twidthunit.val() + ";"
                         }
                         if (valid(d.theight.val())) {
                             html += "height:" + trim(d.theight.val()) + "px;"
@@ -440,8 +441,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     d.tborder.val(selectedTable.attr("border") || "");
                     var w = selectedTable._4e_style("width") || "";
-
-                    d.twidth.val(w.replace(/px|%/i, ""));
+                    //忽略pt单位
+                    d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));
                     if (w.indexOf("%") != -1) d.twidthunit.val("%");
                     else d.twidthunit.val("px");
 

@@ -986,8 +986,9 @@ KISSY.Editor.add("selection", function(KE) {
         editor.on("selectionChange", function(ev) {
             var path = ev.path,
                 selection = ev.selection,
-                range = selection.getRanges()[0],
+                range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
+            if (!range) return;
             if (range.collapse
                 && !path.block
                 && blockLimit._4e_name() == "body") {

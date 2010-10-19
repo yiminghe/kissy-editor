@@ -523,6 +523,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     //当前队列的所有文件，连续选择的话累计！！！
                     files = ev.fileList,
                     available = self._numberLimit;
+
                 if (files) {
 
 
@@ -571,7 +572,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
 
             _ready:function() {
-
                 var self = this,
                     uploader = self.uploader,
                     up = self.up,
@@ -587,6 +587,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                         description:"图片文件( png,jpg,jpeg,gif )"
                     }
                 ]);
+                up.detach();
                 up.on("click", function(ev) {
                     ev.halt();
                     uploader.uploadAll(self._ds, "POST",

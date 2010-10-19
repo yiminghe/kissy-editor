@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 14:48:06
+ * @buildtime: 2010-10-19 15:32:16
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -6081,8 +6081,9 @@ KISSY.Editor.add("selection", function(KE) {
         editor.on("selectionChange", function(ev) {
             var path = ev.path,
                 selection = ev.selection,
-                range = selection.getRanges()[0],
+                range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
+            if (!range) return;
             if (range.collapse
                 && !path.block
                 && blockLimit._4e_name() == "body") {
