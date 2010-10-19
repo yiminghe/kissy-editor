@@ -289,7 +289,16 @@ S.use('editor', function() {
             },
             "draft":{
                 interval:5,
-                limit:10
+                limit:10,
+                helpHtml:  "<div " +
+                        "style='width:200px;'>" +
+                        "<div style='padding:5px;'>草稿箱能够自动保存您最新编辑的内容，" +
+                        "如果发现内容丢失，" +
+                        "请选择恢复编辑历史</div></div>"
+            }
+            ,
+            "resize":{
+                direction:["y"]
             }
         }
     }).use("htmldataprocessor,enterkey,clipboard," +
@@ -369,10 +378,14 @@ S.use('editor', function() {
                 interval:5,
                 limit:10,
                 helpHtml:  "<div " +
-                                "style='width:200px;'>"+
-                       "<div style='padding:5px;'>草稿箱能够自动保存您最新编辑的内容，" +
-                                "如果发现内容丢失，" +
-                                "请选择恢复编辑历史</div></div>"
+                        "style='width:200px;'>" +
+                        "<div style='padding:5px;'>草稿箱能够自动保存您最新编辑的内容，" +
+                        "如果发现内容丢失，" +
+                        "请选择恢复编辑历史</div></div>"
+            }
+            ,
+            "resize":{
+                direction:["y"]
             }
         }
     }).use("htmldataprocessor,enterkey,clipboard," +
