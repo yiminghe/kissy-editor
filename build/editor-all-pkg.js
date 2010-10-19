@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 17:21:02
+ * @buildtime: 2010-10-19 17:37:29
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -15731,7 +15731,9 @@ KISSY.Editor.add("removeformat", function(editor) {
                     var self = this,
                         editor = self.editor,
                         statusDiv = editor.statusDiv,
-                        resizer = new Node(markup);
+                        resizer = new Node(markup),
+                        cfg = editor.cfg["pluginConfig"]["resize"] || {};
+                    cfg = cfg["direction"] || ["x","y"];
                     resizer.appendTo(statusDiv);
 
                     var d = new Draggable({
@@ -15746,8 +15748,8 @@ KISSY.Editor.add("removeformat", function(editor) {
                     d.on("move", function(ev) {
                         var diffX = ev.pageX - this.startMousePos.left,
                             diffY = ev.pageY - this.startMousePos.top;
-                        heightEl.height(height + diffY);
-                        widthEl.width(width + diffX);
+                        if (S.inArray("y", cfg)) heightEl.height(height + diffY);
+                        if (S.inArray("x", cfg)) widthEl.width(width + diffX);
                     });
                 }
             });
