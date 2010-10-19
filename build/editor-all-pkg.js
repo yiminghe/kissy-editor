@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 19:23:45
+ * @buildtime: 2010-10-19 21:21:43
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -14459,6 +14459,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     setTimeout(function() {
                         self._restoreEditorStatus();
                         editor.notifySelectionChange();
+                        editor.fire("restoreWindow");
                     }, 30);
                 },
 
@@ -14671,6 +14672,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     setTimeout(function() {
                         self._restoreEditorStatus();
                         editor.notifySelectionChange();
+                        editor.fire("maximizeWindow");
                     }, 30);
                 },
 
@@ -15743,7 +15745,13 @@ KISSY.Editor.add("removeformat", function(editor) {
                         cfg = editor.cfg["pluginConfig"]["resize"] || {};
                     cfg = cfg["direction"] || ["x","y"];
                     resizer.appendTo(statusDiv);
-
+                    //最大化时就不能缩放了
+                    editor.on("maximizeWindow", function() {
+                        resizer.css("display", "none");
+                    });
+                    editor.on("restoreWindow", function() {
+                        resizer.css("display", "");
+                    });
                     var d = new Draggable({
                         node:resizer
                     }),height = 0,width = 0,

@@ -19,7 +19,13 @@ KISSY.Editor.add("resize", function(editor) {
                         cfg = editor.cfg["pluginConfig"]["resize"] || {};
                     cfg = cfg["direction"] || ["x","y"];
                     resizer.appendTo(statusDiv);
-
+                    //最大化时就不能缩放了
+                    editor.on("maximizeWindow", function() {
+                        resizer.css("display", "none");
+                    });
+                    editor.on("restoreWindow", function() {
+                        resizer.css("display", "");
+                    });
                     var d = new Draggable({
                         node:resizer
                     }),height = 0,width = 0,

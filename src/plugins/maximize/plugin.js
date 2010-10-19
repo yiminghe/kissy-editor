@@ -76,6 +76,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     setTimeout(function() {
                         self._restoreEditorStatus();
                         editor.notifySelectionChange();
+                        editor.fire("restoreWindow");
                     }, 30);
                 },
 
@@ -288,6 +289,7 @@ KISSY.Editor.add("maximize", function(editor) {
                     setTimeout(function() {
                         self._restoreEditorStatus();
                         editor.notifySelectionChange();
+                        editor.fire("maximizeWindow");
                     }, 30);
                 },
 
