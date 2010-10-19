@@ -440,16 +440,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 td:function(el) {
-                    if (!UA.ie) return;
-                    var c = el.children,t = new KE.HtmlParser.Text("&nbsp;");
-                    //ie td结尾加个空白，便于定位到结尾
-                    if (c.length) {
-                        if (c[c.length - 1].type != KEN.NODE_TEXT) {
-                            c.push(t);
-                        }
-                    } else {
-                        c.push(t);
-                    }
+                    //if (el.attributes.style) {
+                    //去掉td的style，word copy非常讨厌
+                    delete el.attributes.style;
+                    //}
                 },
                 /**
                  * ul,li 从 ms word 重建
@@ -675,8 +669,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         var blockLikeTags = KE.Utils.mix({},
             dtd.$block,
             dtd.$listItem,
-            dtd.$tableContent);
-        for (var i in blockLikeTags) {
+            dtd.$tableContent),i;
+        for (i in blockLikeTags) {
             if (! ( 'br' in dtd[i] ))
                 delete blockLikeTags[i];
         }
@@ -685,7 +679,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         delete blockLikeTags.pre;
         var defaultDataBlockFilterRules = { elements : {} };
         var defaultHtmlBlockFilterRules = { elements : {} };
-        for (var i in blockLikeTags) {
+        for (i in blockLikeTags) {
             defaultDataBlockFilterRules.elements[ i ] = extendBlockForDisplay;
             defaultHtmlBlockFilterRules.elements[ i ] = extendBlockForOutput;
         }
@@ -700,9 +694,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     (function() {
         htmlFilter.addRules({
             text : function(text) {
-                var r = text.replace(/&nbsp;/g, "\xa0")
+                return text.replace(/&nbsp;/g, "\xa0")
                     .replace("\xa0", "&nbsp;");
-                return r;
             }
         });
     })();

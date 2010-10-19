@@ -5,8 +5,8 @@ build file for kissy editor
 -->
 <project name="kissy-editor-build"
          default="run"
-         xmlns:ac="antlib:net.sf.antcontrib"
-        >
+         xmlns:ac="antlib:net.sf.antcontrib">
+
     <description>Kissy Editor Build File</description>
 
     <dirname property="current.dir" file="${ant.file.kissy-editor-build}"/>
@@ -15,7 +15,7 @@ build file for kissy editor
 
     <property name="src.dir" location="${project.dir}/src/"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
-    <property name="ke-stable.dir" location="${root.dir}/kissy-editor-stable/"/>
+    <property name="ke-stable.dir" location="${root.dir}/build/editor/"/>
     <property name="build.dir" location="${project.dir}/build/"/>
 
     <property name="theme.dir" value="theme"/>
@@ -140,7 +140,7 @@ build file for kissy editor
     </target>
 
     <target name="stable" depends="run">
-        <copy todir="${ke-stable.dir}/build"
+        <copy todir="${ke-stable.dir}"
               encoding="${charset}"
               outputencoding="${charset}">
             <fileset dir="${project.dir}/build" includes="**/*">
