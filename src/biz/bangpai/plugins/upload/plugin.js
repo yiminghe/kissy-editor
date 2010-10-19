@@ -295,13 +295,18 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 var self = this,
                     id = ev.id,
                     tr = self._getFileTr(id),
-                    bar = progressBars[id];
+                    bar = progressBars[id],
+                    status = ev.status;
+                if (!ev._custom) {
+                    S.log(status);
+                    status = "服务器出错或格式不正确！";
+                }
                 if (tr) {
                     bar && bar.destroy();
                     tr.one(".ke-upload-progress").html("<div " +
                         "" +
                         "style='color:red;'>" +
-                        ev.status +
+                        status +
                         "</div>");
                 }
             },
@@ -336,6 +341,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 if (data.error) {
                     self._uploadError({
                         id:id,
+                        _custom:1,
                         status:data.error
                     });
                     return;
@@ -503,6 +509,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 if (parseInt(f.size) > self._sizeLimit) {
                     self._uploadError({
                         id:id,
+                        _custom:1,
                         status:PIC_SIZE_LIMIT_WARNING
                             .replace(/n/, self._sizeLimit / 1000)
                     });

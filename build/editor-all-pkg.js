@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 21:21:43
+ * @buildtime: 2010-10-19 21:37:28
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -12842,7 +12842,8 @@ KISSY.Editor.add("image", function(editor) {
                             uploader.on("uploadError", function(ev) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
-                                alert(ev.status);
+                                S.log(ev.status);
+                                alert("服务器出错或格式不正确！");
                             });
                         }
 

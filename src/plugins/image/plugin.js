@@ -345,7 +345,8 @@ KISSY.Editor.add("image", function(editor) {
                             uploader.on("uploadError", function(ev) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
-                                alert(ev.status);
+                                S.log(ev.status);
+                                alert("服务器出错或格式不正确！");
                             });
                         }
 
