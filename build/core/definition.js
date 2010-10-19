@@ -311,7 +311,7 @@ KISSY.Editor.add("definition", function(KE) {
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
                         //console.log("selectionChange");
-                        self.fire("selectionChange", { selection : self, path : currentPath, element : startElement });
+                        self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
             }, 100);

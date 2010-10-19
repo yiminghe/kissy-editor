@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 17:26:18
+ * @buildtime: 2010-10-19 13:28:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -967,7 +967,7 @@ KISSY.Editor.add("definition", function(KE) {
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
                         //console.log("selectionChange");
-                        self.fire("selectionChange", { selection : self, path : currentPath, element : startElement });
+                        self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
             }, 100);
@@ -6060,6 +6060,59 @@ KISSY.Editor.add("selection", function(KE) {
             Event.on(doc, 'mouseup', editor._monitor, editor);
             Event.on(doc, 'keyup', editor._monitor, editor);
         }
+
+        // List of elements in which has no way to move editing focus outside.
+        var nonExitableElementNames = { table:1,pre:1 };
+
+        // Matching an empty paragraph at the end of document.
+        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+
+
+        function isBlankParagraph(block) {
+            return block._4e_outerHtml().match(emptyParagraphRegexp);
+        }
+
+        var isNotWhitespace = KE.Walker.whitespaces(true),
+            isNotBookmark = KE.Walker.bookmark(false, true);
+
+        /**
+         * 如果选择了body下面的直接inline元素，则新建p
+         */
+        editor.on("selectionChange", function(ev) {
+            var path = ev.path,
+                selection = ev.selection,
+                range = selection.getRanges()[0],
+                blockLimit = path.blockLimit;
+            if (range.collapse
+                && !path.block
+                && blockLimit._4e_name() == "body") {
+                var fixedBlock = range.fixBlock(true, "p");
+                //firefox选择区域变化时自动添加空行，不要出现裸的text
+                if (isBlankParagraph(fixedBlock)) {
+                    var element = fixedBlock._4e_next(isNotWhitespace);
+                    if (element &&
+                        element[0].nodeType == KEN.NODE_ELEMENT &&
+                        !nonExitableElementNames[ element._4e_name() ]) {
+                        range.moveToElementEditablePosition(element);
+                        fixedBlock._4e_remove();
+                    } else {
+                        element = fixedBlock._4e_previous(isNotWhitespace);
+                        if (element &&
+                            element[0].nodeType == KEN.NODE_ELEMENT &&
+                            !nonExitableElementNames[element._4e_name()]) {
+                            range.moveToElementEditablePosition(element,
+                                //空行的话还是要移到开头的
+                                isBlankParagraph(element) ? false : true);
+                            fixedBlock._4e_remove();
+                        }
+                    }
+                }
+                range.select();
+            }
+
+        });
+
+
     }
 
     KE.on("instanceCreated", function(ev) {

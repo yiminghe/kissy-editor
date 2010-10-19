@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-15 17:26:18
+ * @buildtime: 2010-10-19 13:28:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -967,7 +967,7 @@ KISSY.Editor.add("definition", function(KE) {
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
                         //console.log("selectionChange");
-                        self.fire("selectionChange", { selection : self, path : currentPath, element : startElement });
+                        self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
             }, 100);
@@ -6060,6 +6060,59 @@ KISSY.Editor.add("selection", function(KE) {
             Event.on(doc, 'mouseup', editor._monitor, editor);
             Event.on(doc, 'keyup', editor._monitor, editor);
         }
+
+        // List of elements in which has no way to move editing focus outside.
+        var nonExitableElementNames = { table:1,pre:1 };
+
+        // Matching an empty paragraph at the end of document.
+        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+
+
+        function isBlankParagraph(block) {
+            return block._4e_outerHtml().match(emptyParagraphRegexp);
+        }
+
+        var isNotWhitespace = KE.Walker.whitespaces(true),
+            isNotBookmark = KE.Walker.bookmark(false, true);
+
+        /**
+         * 如果选择了body下面的直接inline元素，则新建p
+         */
+        editor.on("selectionChange", function(ev) {
+            var path = ev.path,
+                selection = ev.selection,
+                range = selection.getRanges()[0],
+                blockLimit = path.blockLimit;
+            if (range.collapse
+                && !path.block
+                && blockLimit._4e_name() == "body") {
+                var fixedBlock = range.fixBlock(true, "p");
+                //firefox选择区域变化时自动添加空行，不要出现裸的text
+                if (isBlankParagraph(fixedBlock)) {
+                    var element = fixedBlock._4e_next(isNotWhitespace);
+                    if (element &&
+                        element[0].nodeType == KEN.NODE_ELEMENT &&
+                        !nonExitableElementNames[ element._4e_name() ]) {
+                        range.moveToElementEditablePosition(element);
+                        fixedBlock._4e_remove();
+                    } else {
+                        element = fixedBlock._4e_previous(isNotWhitespace);
+                        if (element &&
+                            element[0].nodeType == KEN.NODE_ELEMENT &&
+                            !nonExitableElementNames[element._4e_name()]) {
+                            range.moveToElementEditablePosition(element,
+                                //空行的话还是要移到开头的
+                                isBlankParagraph(element) ? false : true);
+                            fixedBlock._4e_remove();
+                        }
+                    }
+                }
+                range.select();
+            }
+
+        });
+
+
     }
 
     KE.on("instanceCreated", function(ev) {
@@ -12270,78 +12323,117 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
     htmlFilter.addRules(defaultHtmlFilterRules);
     dataFilter.addRules(defaultDataFilterRules);
-    /*
-     (function() {
-     // Regex to scan for &nbsp; at the end of blocks, which are actually placeholders.
-     // Safari transforms the &nbsp; to \xa0. (#4172)
-     var tailNbspRegex = /^[\t\r\n ]*(?:&nbsp;|\xa0)$/;
 
-     // Return the last non-space child node of the block (#4344).
-     function lastNoneSpaceChild(block) {
-     var lastIndex = block.children.length,
-     last = block.children[ lastIndex - 1 ];
-     while (last && last.type == KEN.NODE_TEXT && !S.trim(last.value))
-     last = block.children[ --lastIndex ];
-     return last;
-     }
-
-     function blockNeedsExtension(block) {
-     var lastChild = lastNoneSpaceChild(block);
-
-     return !lastChild
-     || lastChild.type == KEN.NODE_ELEMENT && lastChild.name == 'br'
-     // Some of the controls in form needs extension too,
-     // to move cursor at the end of the form. (#4791)
-     || block.name == 'form' && lastChild.name == 'input';
-     }
-
-     function trimFillers(block, fromSource) {
-     // If the current node is a block, and if we're converting from source or
-     // we're not in IE then search for and remove any tailing BR node.
-     //
-     // Also, any &nbsp; at the end of blocks are fillers, remove them as well.
-     // (#2886)
-     var children = block.children, lastChild = lastNoneSpaceChild(block);
-     if (lastChild) {
-     if (( fromSource || !UA.ie ) && lastChild.type == KEN.NODE_ELEMENT && lastChild.name == 'br')
-     children.pop();
-     if (lastChild.type == KEN.NODE_TEXT && tailNbspRegex.test(lastChild.value))
-     children.pop();
-     }
-     }
-
-     function extendBlockForDisplay(block) {
-     trimFillers(block, true);
-
-     if (blockNeedsExtension(block)) {
-     if (UA.ie)
-     block.add(new KE.HtmlParser.text('\xa0'));
-     else
-     block.add(new KE.HtmlParser.element('br', {}));
-     }
-     }
-
-     // Find out the list of block-like tags that can contain <br>.
-     var dtd = KE.XHTML_DTD;
-     var blockLikeTags = KE.Utils.mix({}, dtd.$block, dtd.$listItem, dtd.$tableContent);
-     for (var i in blockLikeTags) {
-     if (! ( 'br' in dtd[i] ))
-     delete blockLikeTags[i];
-     }
-     // We just avoid filler in <pre> right now.
-     // TODO: Support filler for <pre>, line break is also occupy line height.
-     delete blockLikeTags.pre;
-     var defaultDataBlockFilterRules = { elements : {} };
-     for (var i in blockLikeTags)
-     defaultDataBlockFilterRules.elements[ i ] = extendBlockForDisplay;
-     dataFilter.addRules(defaultDataBlockFilterRules);
-     })();
+    /**
+     * 去除firefox代码末尾自动添加的 <br/>
+     * 以及ie下自动添加的 &nbsp;
+     * 以及其他浏览器段落末尾添加的占位符
      */
+    (function() {
+        // Regex to scan for &nbsp; at the end of blocks, which are actually placeholders.
+        // Safari transforms the &nbsp; to \xa0. (#4172)
+        var tailNbspRegex = /^[\t\r\n ]*(?:&nbsp;|\xa0)$/;
+
+        // Return the last non-space child node of the block (#4344).
+        function lastNoneSpaceChild(block) {
+            var lastIndex = block.children.length,
+                last = block.children[ lastIndex - 1 ];
+            while (last && last.type == KEN.NODE_TEXT &&
+                !S.trim(last.value))
+                last = block.children[ --lastIndex ];
+            return last;
+        }
+
+        function blockNeedsExtension(block) {
+            var lastChild = lastNoneSpaceChild(block);
+
+            return !lastChild
+                || lastChild.type == KEN.NODE_ELEMENT &&
+                lastChild.name == 'br'
+                // Some of the controls in form needs extension too,
+                // to move cursor at the end of the form. (#4791)
+                || block.name == 'form' &&
+                lastChild.name == 'input';
+        }
+
+        function trimFillers(block, fromSource) {
+            // If the current node is a block, and if we're converting from source or
+            // we're not in IE then search for and remove any tailing BR node.
+            //
+            // Also, any &nbsp; at the end of blocks are fillers, remove them as well.
+            // (#2886)
+            var children = block.children,
+                lastChild = lastNoneSpaceChild(block);
+            if (lastChild) {
+                if (( fromSource || !UA.ie ) &&
+                    lastChild.type == KEN.NODE_ELEMENT &&
+                    lastChild.name == 'br')
+                    children.pop();
+                if (lastChild.type == KEN.NODE_TEXT &&
+                    tailNbspRegex.test(lastChild.value))
+                    children.pop();
+            }
+        }
+
+        function extendBlockForDisplay(block) {
+            trimFillers(block, true);
+
+            if (blockNeedsExtension(block)) {
+                if (UA.ie)
+                    block.add(new KE.HtmlParser.Text('\xa0'));
+                else
+                    block.add(new KE.HtmlParser.Element('br', {}));
+            }
+        }
+
+        function extendBlockForOutput(block) {
+            trimFillers(block);
+            if (blockNeedsExtension(block))
+                block.add(new KE.HtmlParser.Text('\xa0'));
+        }
+
+        // Find out the list of block-like tags that can contain <br>.
+        var dtd = KE.XHTML_DTD;
+        var blockLikeTags = KE.Utils.mix({},
+            dtd.$block,
+            dtd.$listItem,
+            dtd.$tableContent);
+        for (var i in blockLikeTags) {
+            if (! ( 'br' in dtd[i] ))
+                delete blockLikeTags[i];
+        }
+        // We just avoid filler in <pre> right now.
+        // TODO: Support filler for <pre>, line break is also occupy line height.
+        delete blockLikeTags.pre;
+        var defaultDataBlockFilterRules = { elements : {} };
+        var defaultHtmlBlockFilterRules = { elements : {} };
+        for (var i in blockLikeTags) {
+            defaultDataBlockFilterRules.elements[ i ] = extendBlockForDisplay;
+            defaultHtmlBlockFilterRules.elements[ i ] = extendBlockForOutput;
+        }
+        dataFilter.addRules(defaultDataBlockFilterRules);
+        htmlFilter.addRules(defaultHtmlBlockFilterRules);
+    })();
+
+
+    //htmlparser fragment 中的 entities 处理
+    //el.innerHTML="&nbsp;"
+    //alert(el.innerHTML);
+    (function() {
+        htmlFilter.addRules({
+            text : function(text) {
+                var r = text.replace(/&nbsp;/g, "\xa0")
+                    .replace("\xa0", "&nbsp;");
+                return r;
+            }
+        });
+    })();
+
 
     editor.htmlDataProcessor = {
         htmlFilter:htmlFilter,
         dataFilter:dataFilter,
-        //编辑器html到外部html
+        //编辑器 html 到外部 html
         toHtml:function(html, fixForBody) {
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
@@ -12349,6 +12441,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //使用htmlwriter界面美观，加入额外文字节点\n,\t空白等
             var writer = new HtmlParser.HtmlWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
+
             fragment.writeHtml(writer, htmlFilter);
             return writer.getHtml(true);
         },
@@ -12380,7 +12473,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
             //fixForBody = fixForBody || "p";
             //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白等
-            var writer = new HtmlParser.BasicWriter(),fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
+            var writer = new HtmlParser.BasicWriter(),
+                fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
             writer.reset();
             fragment.writeHtml(writer, dataFilter);
@@ -16267,6 +16361,8 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     if (UA.ie < 8) {
                         textarea.css("height", editor.wrap.css("height"));
                     }
+                    //ie6 光标透出
+                    textarea[0].focus();
                     editor.fire("sourcemode");
                 },
                 _hideSource:function(editor) {
@@ -16281,7 +16377,9 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     this._hideSource(editor);
                     editor.setData(textarea.val());
                     //firefox 光标激活，强迫刷新                    
-                    editor.activateGecko();
+                    if (UA.gecko) {
+                        editor.activateGecko();
+                    }
                 }
             });
             KE.SourceAreaSupport = new SourceAreaSupport();

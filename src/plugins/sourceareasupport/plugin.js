@@ -39,6 +39,8 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     if (UA.ie < 8) {
                         textarea.css("height", editor.wrap.css("height"));
                     }
+                    //ie6 光标透出
+                    textarea[0].focus();
                     editor.fire("sourcemode");
                 },
                 _hideSource:function(editor) {
@@ -53,7 +55,9 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     this._hideSource(editor);
                     editor.setData(textarea.val());
                     //firefox 光标激活，强迫刷新                    
-                    editor.activateGecko();
+                    if (UA.gecko) {
+                        editor.activateGecko();
+                    }
                 }
             });
             KE.SourceAreaSupport = new SourceAreaSupport();

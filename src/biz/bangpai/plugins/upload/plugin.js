@@ -523,14 +523,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     files = ev.fileList,
                     available = self._numberLimit;
                 if (files) {
-                    var l = self._getFilesSize(files);
 
-                    if (l > available) {
-                        alert(PIC_NUM_LIMIT_WARNING.replace(/n/, self._numberLimit));
-                    }
-                    if (l >= available) {
-                        self.ddisable();
-                    }
 
                     //去除已经 ui 显示出来的
                     var trs = list.children("tr");
@@ -540,6 +533,17 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     }
                     //限额-目前ui的
                     available = self._numberLimit - trs.length;
+
+                    var l = self._getFilesSize(files);
+
+                    if (l > available) {
+                        alert(PIC_NUM_LIMIT_WARNING.replace(/n/, self._numberLimit));
+                    }
+
+                    if (l >= available) {
+                        self.ddisable();
+                    }
+
                     self._listWrap.show();
                     var tbl = self._list[0];
                     //files 是这次新选择的啦！
