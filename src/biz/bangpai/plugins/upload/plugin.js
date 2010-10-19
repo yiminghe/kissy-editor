@@ -478,8 +478,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 var cell = row.insertCell(-1);
                 DOM.attr(cell, "class", 'ke-upload-seq');
                 cell = row.insertCell(-1);
-                if (f.name.length > 20) {
-                    f.name = f.name.substring(0, 20) + "...";
+                if (f.name.length > 18) {
+                    f.name = f.name.substring(0, 18) + "...";
                 }
                 DOM.html(cell, f.name);
                 DOM.attr(cell, "class", 'ke-upload-filename');
