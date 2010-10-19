@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 17:45:27
+ * @buildtime: 2010-10-19 17:59:01
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -801,6 +801,14 @@ KISSY.Editor.add("definition", function(KE) {
                 //webkit(chrome) load等不来！
                 self._setUpIFrame();
             }
+            if (self.cfg.attachForm && textarea[0].form)
+                self._attachForm();
+        },
+        _attachForm:function() {
+            var self = this,
+                textarea = self.textarea,
+                form = new Node(textarea[0].form);
+            form.on("submit", self.sync, self);
         },
         addCommand:function(name, obj) {
             this._commands[name] = obj;

@@ -145,6 +145,14 @@ KISSY.Editor.add("definition", function(KE) {
                 //webkit(chrome) load等不来！
                 self._setUpIFrame();
             }
+            if (self.cfg.attachForm && textarea[0].form)
+                self._attachForm();
+        },
+        _attachForm:function() {
+            var self = this,
+                textarea = self.textarea,
+                form = new Node(textarea[0].form);
+            form.on("submit", self.sync, self);
         },
         addCommand:function(name, obj) {
             this._commands[name] = obj;
