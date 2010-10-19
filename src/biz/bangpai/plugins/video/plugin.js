@@ -110,7 +110,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "链接： " +
                 "" +
                 "<input " +
-                "class='ke-video-url ke-input' style='width:418px;" +
+                "class='ke-video-url ke-input' style='width:410px;" +
                 MIDDLE + "'/>" +
                 "</label>" +
                 "</p>" +

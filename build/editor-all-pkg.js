@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 16:46:35
+ * @buildtime: 2010-10-19 17:16:38
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -13482,7 +13482,7 @@ KISSY.Editor.add("link", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-link-url ke-input' " +
-                    "style='width:394px;" +
+                    "style='width:390px;" +
                     MIDDLE + "' " +
                     "value='http://'/>" +
                     "</label>" +
