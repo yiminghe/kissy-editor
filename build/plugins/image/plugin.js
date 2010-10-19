@@ -58,7 +58,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url ke-input' " +
-                    "style='width:394px;' " +
+                    "style='width:390px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "</div>" +

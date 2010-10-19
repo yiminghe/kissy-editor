@@ -109,7 +109,9 @@ KISSY.Editor.add("dd", function(editor) {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var self = this,node = self.get("node"),handlers = self.get("handlers");
+            var self = this,
+                node = self.get("node"),
+                handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
@@ -117,10 +119,12 @@ KISSY.Editor.add("dd", function(editor) {
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
                 var hl = handlers[h],ori = hl.css("cursor");
-                if (!ori || ori === "auto")
-                    hl.css("cursor", "move");
-                //ie 不能被选择了
-                hl._4e_unselectable();
+                if (!hl._4e_equals(node)) {
+                    if (!ori || ori === "auto")
+                        hl.css("cursor", "move");
+                    //ie 不能被选择了
+                    hl._4e_unselectable();
+                }
             }
             node.on("mousedown", self._handleMouseDown, self);
             node.on("mouseup", function() {
@@ -131,13 +135,19 @@ KISSY.Editor.add("dd", function(editor) {
             var handlers = this.get("handlers");
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                if (handlers[h]._4e_equals(t)) return true;
+                if (handlers[h]._4e_contains(t)
+                    ||
+                    //子区域内点击也可以启动
+                    handlers[h]._4e_equals(t)) return true;
             }
             return false;
         },
         _handleMouseDown:function(ev) {
-            var self = this,t = new Node(ev.target);
+            var self = this,
+                t = new Node(ev.target);
+
             if (!self._check(t)) return;
+
             ev.halt();
             DDM._start(self);
             var node = self.get("node");

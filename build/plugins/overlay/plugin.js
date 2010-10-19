@@ -189,7 +189,6 @@ KISSY.Editor.add("overlay", function(editor) {
                         self.get("title"))).appendTo(document.body
                     );
                 var head = el.one(".ke-hd"),
-                    id = S.guid("ke-overlay-head-"),
                     height = self.get("height");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
@@ -205,17 +204,30 @@ KISSY.Editor.add("overlay", function(editor) {
                     });
                 }
 
+
                 /**
                  *  是否支持标题头拖放
                  */
-                if (self.get("draggable")) {
-                    head[0].id = id;
-                    self._drag = new KE.Drag({
-                        node:el,
-                        handlers:{
-                            id:head
-                        }
-                    });
+                var draggable = self.get("draggable");
+                if (draggable) {
+                    var dragPos = {
+                        "all":el ,
+                        "foot":self.foot,
+                        "body":self.body,
+                        "head":head
+                    };
+                    if (draggable === true)
+                        draggable = head;
+                    else
+                        draggable = dragPos[draggable];
+                    if (draggable) {
+                        new KE.Drag({
+                            node:el,
+                            handlers:{
+                                id:draggable
+                            }
+                        });
+                    }
                 }
             } else {
                 //已有元素就用dialog包起来

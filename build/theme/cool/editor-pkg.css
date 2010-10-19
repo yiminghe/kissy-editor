@@ -18,7 +18,7 @@ from : resource://gre/res/html.css
 }
 
 .ke-post, .ks-clear {
-    _zoom: 1;    
+    *zoom: 1;    
 }
 
 .ke-post h1,

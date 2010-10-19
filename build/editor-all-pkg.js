@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 13:28:34
+ * @buildtime: 2010-10-19 14:40:22
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7997,7 +7997,9 @@ KISSY.Editor.add("dd", function(editor) {
 
     S.extend(Draggable, S.Base, {
         _init:function() {
-            var self = this,node = self.get("node"),handlers = self.get("handlers");
+            var self = this,
+                node = self.get("node"),
+                handlers = self.get("handlers");
             DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
@@ -8005,10 +8007,12 @@ KISSY.Editor.add("dd", function(editor) {
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
                 var hl = handlers[h],ori = hl.css("cursor");
-                if (!ori || ori === "auto")
-                    hl.css("cursor", "move");
-                //ie 不能被选择了
-                hl._4e_unselectable();
+                if (!hl._4e_equals(node)) {
+                    if (!ori || ori === "auto")
+                        hl.css("cursor", "move");
+                    //ie 不能被选择了
+                    hl._4e_unselectable();
+                }
             }
             node.on("mousedown", self._handleMouseDown, self);
             node.on("mouseup", function() {
@@ -8019,13 +8023,19 @@ KISSY.Editor.add("dd", function(editor) {
             var handlers = this.get("handlers");
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                if (handlers[h]._4e_equals(t)) return true;
+                if (handlers[h]._4e_contains(t)
+                    ||
+                    //子区域内点击也可以启动
+                    handlers[h]._4e_equals(t)) return true;
             }
             return false;
         },
         _handleMouseDown:function(ev) {
-            var self = this,t = new Node(ev.target);
+            var self = this,
+                t = new Node(ev.target);
+
             if (!self._check(t)) return;
+
             ev.halt();
             DDM._start(self);
             var node = self.get("node");
@@ -12543,7 +12553,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^https?://[^\\s]+$' " +
                     " data-warning='网址格式为：http://' " +
                     "class='ke-img-url ke-input' " +
-                    "style='width:394px;' " +
+                    "style='width:390px;' " +
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "</div>" +
@@ -15084,7 +15094,6 @@ KISSY.Editor.add("overlay", function(editor) {
                         self.get("title"))).appendTo(document.body
                     );
                 var head = el.one(".ke-hd"),
-                    id = S.guid("ke-overlay-head-"),
                     height = self.get("height");
                 self.body = el.one(".ke-bd");
                 self.foot = el.one(".ke-ft");
@@ -15100,17 +15109,30 @@ KISSY.Editor.add("overlay", function(editor) {
                     });
                 }
 
+
                 /**
                  *  是否支持标题头拖放
                  */
-                if (self.get("draggable")) {
-                    head[0].id = id;
-                    self._drag = new KE.Drag({
-                        node:el,
-                        handlers:{
-                            id:head
-                        }
-                    });
+                var draggable = self.get("draggable");
+                if (draggable) {
+                    var dragPos = {
+                        "all":el ,
+                        "foot":self.foot,
+                        "body":self.body,
+                        "head":head
+                    };
+                    if (draggable === true)
+                        draggable = head;
+                    else
+                        draggable = dragPos[draggable];
+                    if (draggable) {
+                        new KE.Drag({
+                            node:el,
+                            handlers:{
+                                id:draggable
+                            }
+                        });
+                    }
                 }
             } else {
                 //已有元素就用dialog包起来

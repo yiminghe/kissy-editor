@@ -646,6 +646,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 self.dialog = new Overlay({
                     title:"批量上传",
                     mask:false,
+                    draggable:"all",
                     //height:"500px",
                     focusMgr:false,
                     width:"600px"
