@@ -61,7 +61,8 @@ a.ke-hd-x:active {
 }
 
 .ke-hd {
-    background: #D6DBE2 url("overlay-hd.png") repeat-x;
+    background: #D6DBE2 repeat-x;
+    background-image: url("overlay-hd.png");
     font-size: 14px;
     font-weight: bold;
     padding: 0px 0px 0px 18px;
