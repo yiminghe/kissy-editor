@@ -221,7 +221,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var self = this;
                     self._cls = CLS_XIAMI;
                     self._type = TYPE_XIAMI;
-                    self._title = "虾米";//属性";
+                    self._title = "虾米音乐";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
@@ -1396,7 +1396,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self._flashRules = flashRules;
                     self.urlCfg = cfg["bangpai-video"] &&
                         cfg["bangpai-video"].urlCfg;
-                    self._urlTip = "插入需要分享的视频链接，支持优酷、土豆、酷六视频";
+                    self._urlTip = "请输入优酷网、土豆网、酷6网的视频播放页链接...";
                 },
                 _initD:function() {
                     var self = this,

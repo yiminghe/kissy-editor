@@ -221,7 +221,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     var self = this;
                     self._cls = CLS_XIAMI;
                     self._type = TYPE_XIAMI;
-                    self._title = "虾米";//属性";
+                    self._title = "虾米音乐";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";

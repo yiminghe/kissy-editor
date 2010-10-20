@@ -18,7 +18,7 @@ from : resource://gre/res/html.css
 }
 
 .ke-post, .ks-clear {
-    *zoom: 1;    
+    *zoom: 1;
 }
 
 .ke-post h1,
@@ -204,6 +204,7 @@ by the nsHTMLHRElement attribute mapping code
 
 .ke-post th {
     font-weight: bold;
+    text-align: center;
 }
 
 .ke-post caption {

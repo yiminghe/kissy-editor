@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 18:13:41
+ * @buildtime: 2010-10-20 20:19:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -6119,6 +6119,7 @@ KISSY.Editor.add("selection", function(KE) {
          * 如果选择了body下面的直接inline元素，则新建p
          */
         editor.on("selectionChange", function(ev) {
+
             var path = ev.path,
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
@@ -6149,6 +6150,10 @@ KISSY.Editor.add("selection", function(KE) {
                     }
                 }
                 range.select();
+                if (!UA.ie) {
+                    //选择区域变了，通知其他插件更新状态
+                    editor.notifySelectionChange();
+                }
             }
 
         });
