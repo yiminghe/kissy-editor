@@ -256,7 +256,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d = new Overlay({
                             width:"430px",
                             mask:true,
-                            title:"表格属性"
+                            title:"表格"//属性"
                         }),
                         body = d.body;
                     d.body.html(TABLE_HTML);

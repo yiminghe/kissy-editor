@@ -334,7 +334,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
             _onUploadCompleteData:function(ev) {
                 var self = this,
-                    data = S.trim(ev.data).replace(/\\r||\\n/g, ""),
+                    data = S.trim(ev.data).replace(/\r|\n/g, ""),
                     id = ev.id;
                 if (!data) return;
                 data = JSON.parse(data);

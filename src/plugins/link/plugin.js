@@ -54,7 +54,7 @@ KISSY.Editor.add("link", function(editor) {
                     "class='ke-link-url ke-input' " +
                     "style='width:390px;" +
                     MIDDLE + "' " +
-                    "/>" +
+                    " value='http://' />" +
                     "</label>" +
                     "</p>" +
                     "<p " +
@@ -85,7 +85,7 @@ KISSY.Editor.add("link", function(editor) {
             Link.init = function() {
                 var self = this,
                     d = new Overlay({
-                        title:"链接属性",
+                        title:"链接",//属性",
                         mask:true
                     });
                 self.dialog = d;

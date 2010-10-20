@@ -201,7 +201,7 @@ KISSY.Editor.add("image", function(editor) {
                         warning,
                         imgLocalUrl;
                     self.d = new Overlay({
-                        title:"图片属性",
+                        title:"图片",//属性",
                         mask:true
                     });
                     var d = self.d;
@@ -326,12 +326,13 @@ KISSY.Editor.add("image", function(editor) {
                                     imgLocalUrl.val(file.name);
                                 }
                             });
-                            uploader.on("uploadStart", function(ev) {
+                            uploader.on("uploadStart", function() {
                                 uploader.clearFileList();
                             });
                             uploader.on("uploadCompleteData", function(ev) {
-                                var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                                var data = S.trim(ev.data).replace(/\r|\n/g, "");
                                 d.unloading();
+                                imgLocalUrl.val(warning);
                                 if (!data) return;
                                 data = JSON.parse(data);
                                 if (data.error) {
@@ -339,7 +340,6 @@ KISSY.Editor.add("image", function(editor) {
                                     return;
                                 }
                                 self.imgUrl.val(data.imgUrl);
-                                imgLocalUrl.val(warning);
                                 self._insert();
                             });
                             uploader.on("uploadError", function(ev) {

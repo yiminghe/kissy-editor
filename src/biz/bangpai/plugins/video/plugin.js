@@ -181,7 +181,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         cfg = editor.cfg.pluginConfig;
                     self._cls = CLS_VIDEO;
                     self._type = TYPE_VIDEO;
-                    self._title = "视频属性";
+                    self._title = "视频";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-video";
@@ -190,7 +190,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     self._flashRules = flashRules;
                     self.urlCfg = cfg["bangpai-video"] &&
                         cfg["bangpai-video"].urlCfg;
-                    self._urlTip = "支持 土豆，优酷，ku6 视频分享";
+                    self._urlTip = "插入需要分享的视频链接，支持优酷、土豆、酷六视频";
                 },
                 _initD:function() {
                     var self = this,

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 12:44:12
+ * @buildtime: 2010-10-20 16:19:17
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -9054,7 +9054,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
-                    self._title = "Flash属性";
+                    self._title = "Flash";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
@@ -12148,7 +12148,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 assembleList(element);
             },
             elements : {
-
                 font:function(el) {
                     delete el.name;
                 },
@@ -12719,7 +12718,7 @@ KISSY.Editor.add("image", function(editor) {
                         warning,
                         imgLocalUrl;
                     self.d = new Overlay({
-                        title:"图片属性",
+                        title:"图片",//属性",
                         mask:true
                     });
                     var d = self.d;
@@ -12844,12 +12843,13 @@ KISSY.Editor.add("image", function(editor) {
                                     imgLocalUrl.val(file.name);
                                 }
                             });
-                            uploader.on("uploadStart", function(ev) {
+                            uploader.on("uploadStart", function() {
                                 uploader.clearFileList();
                             });
                             uploader.on("uploadCompleteData", function(ev) {
-                                var data = S.trim(ev.data).replace(/\\r||\\n/g, "");
+                                var data = S.trim(ev.data).replace(/\r|\n/g, "");
                                 d.unloading();
+                                imgLocalUrl.val(warning);
                                 if (!data) return;
                                 data = JSON.parse(data);
                                 if (data.error) {
@@ -12857,7 +12857,6 @@ KISSY.Editor.add("image", function(editor) {
                                     return;
                                 }
                                 self.imgUrl.val(data.imgUrl);
-                                imgLocalUrl.val(warning);
                                 self._insert();
                             });
                             uploader.on("uploadError", function(ev) {
@@ -13517,7 +13516,7 @@ KISSY.Editor.add("link", function(editor) {
                     "class='ke-link-url ke-input' " +
                     "style='width:390px;" +
                     MIDDLE + "' " +
-                    "/>" +
+                    " value='http://' />" +
                     "</label>" +
                     "</p>" +
                     "<p " +
@@ -13548,7 +13547,7 @@ KISSY.Editor.add("link", function(editor) {
             Link.init = function() {
                 var self = this,
                     d = new Overlay({
-                        title:"链接属性",
+                        title:"链接",//属性",
                         mask:true
                     });
                 self.dialog = d;
@@ -14852,7 +14851,7 @@ KISSY.Editor.add("music", function(editor) {
                         editor = self.editor;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
-                    self._title = "音乐属性";
+                    self._title = "音乐";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";
@@ -16713,7 +16712,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d = new Overlay({
                             width:"430px",
                             mask:true,
-                            title:"表格属性"
+                            title:"表格"//属性"
                         }),
                         body = d.body;
                     d.body.html(TABLE_HTML);

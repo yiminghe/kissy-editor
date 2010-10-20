@@ -394,7 +394,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 assembleList(element);
             },
             elements : {
-
                 font:function(el) {
                     delete el.name;
                 },

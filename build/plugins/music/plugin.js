@@ -130,7 +130,7 @@ KISSY.Editor.add("music", function(editor) {
                         editor = self.editor;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
-                    self._title = "音乐属性";
+                    self._title = "音乐";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-music";

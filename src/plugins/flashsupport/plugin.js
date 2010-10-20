@@ -111,7 +111,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     var self = this;
                     self._cls = CLS_FLASH;
                     self._type = TYPE_FLASH;
-                    self._title = "Flash属性";
+                    self._title = "Flash";//属性";
                     self._bodyHtml = bodyHtml;
                     self._footHtml = footHtml;
                     self._contentCls = "ke-toolbar-flash";
