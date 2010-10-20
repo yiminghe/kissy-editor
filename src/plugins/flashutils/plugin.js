@@ -23,17 +23,31 @@ KISSY.Editor.add("flashutils", function() {
             return url;
         },
         createSWF:function(movie, cfg, doc) {
-            var attrs = cfg.attrs,flashVars = cfg.flashVars,
+            var attrs = cfg.attrs || {},
+                flashVars = cfg.flashVars,
                 attrs_str = "",
+                params_str = "",
+                params = cfg.params || {},
                 vars_str = "";
             doc = doc || document;
-
-            attrs = attrs || {};
-            attrs["wmode"] = "transparent";
+            S.mix(attrs, {
+                wmode:"transparent"
+            });
             for (var a in attrs) {
                 if (attrs.hasOwnProperty(a))
                     attrs_str += a + "='" + attrs[a] + "' ";
             }
+
+            S.mix(params, {
+                quality:"high",
+                movie:movie,
+                wmode:"transparent"
+            });
+            for (var p in params) {
+                if (params.hasOwnProperty(p))
+                    params_str += "<param name='" + p + "' value='" + params[p] + "'/>";
+            }
+
 
             if (flashVars) {
                 for (var f in flashVars) {
@@ -46,8 +60,7 @@ KISSY.Editor.add("flashutils", function() {
             var outerHTML = '<object ' +
                 attrs_str +
                 ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +
-                '<param name="quality" value="high" />' +
-                '<param name="movie" value="' + movie + '" />' +
+                params_str +
                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                 /*
                  "<object type='application/x-shockwave-flash'" +

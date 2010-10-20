@@ -6,6 +6,7 @@ KISSY.Editor.add("dd", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
+        UA = S.UA,
         DOM = S.DOM,
         Node = S.Node;
     if (KE.DD) return;
@@ -20,7 +21,7 @@ KISSY.Editor.add("dd", function(editor) {
         /**
          * mousedown 后 buffer 触发时间,500毫秒
          */
-        timeThred:{value:100},
+        timeThred:{value:0},
         /**
          * 当前激活的拖对象
          */
@@ -52,9 +53,14 @@ KISSY.Editor.add("dd", function(editor) {
         _start:function(drag) {
             var self = this,
                 timeThred = self.get("timeThred") || 0;
-            self._timeThredTimer = setTimeout(function() {
+            if (timeThred) {
+                self._timeThredTimer = setTimeout(function() {
+                    self._bufferStart(drag);
+                }, timeThred);
+            }
+            else {
                 self._bufferStart(drag);
-            }, timeThred);
+            }
         },
         _bufferStart:function(drag) {
             var self = this;
@@ -157,7 +163,9 @@ KISSY.Editor.add("dd", function(editor) {
                 t = new Node(ev.target);
             if (!self._check(t)) return;
             //chrome 包含的按钮不可点了
-            //if (!UA.wekit)ev.halt();
+            if (!UA.webkit) {
+                ev.halt();
+            }
             DDM._start(self);
 
             var node = self.get("node"),

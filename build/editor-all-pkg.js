@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 21:37:21
+ * @buildtime: 2010-10-20 23:17:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -6119,7 +6119,6 @@ KISSY.Editor.add("selection", function(KE) {
          * 如果选择了body下面的直接inline元素，则新建p
          */
         editor.on("selectionChange", function(ev) {
-
             var path = ev.path,
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
@@ -7940,6 +7939,7 @@ KISSY.Editor.add("dd", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
+        UA = S.UA,
         DOM = S.DOM,
         Node = S.Node;
     if (KE.DD) return;
@@ -7954,7 +7954,7 @@ KISSY.Editor.add("dd", function(editor) {
         /**
          * mousedown 后 buffer 触发时间,500毫秒
          */
-        timeThred:{value:100},
+        timeThred:{value:0},
         /**
          * 当前激活的拖对象
          */
@@ -7986,9 +7986,14 @@ KISSY.Editor.add("dd", function(editor) {
         _start:function(drag) {
             var self = this,
                 timeThred = self.get("timeThred") || 0;
-            self._timeThredTimer = setTimeout(function() {
+            if (timeThred) {
+                self._timeThredTimer = setTimeout(function() {
+                    self._bufferStart(drag);
+                }, timeThred);
+            }
+            else {
                 self._bufferStart(drag);
-            }, timeThred);
+            }
         },
         _bufferStart:function(drag) {
             var self = this;
@@ -8091,7 +8096,9 @@ KISSY.Editor.add("dd", function(editor) {
                 t = new Node(ev.target);
             if (!self._check(t)) return;
             //chrome 包含的按钮不可点了
-            //if (!UA.wekit)ev.halt();
+            if (!UA.webkit) {
+                ev.halt();
+            }
             DDM._start(self);
 
             var node = self.get("node"),
@@ -9465,17 +9472,31 @@ KISSY.Editor.add("flashutils", function() {
             return url;
         },
         createSWF:function(movie, cfg, doc) {
-            var attrs = cfg.attrs,flashVars = cfg.flashVars,
+            var attrs = cfg.attrs || {},
+                flashVars = cfg.flashVars,
                 attrs_str = "",
+                params_str = "",
+                params = cfg.params || {},
                 vars_str = "";
             doc = doc || document;
-
-            attrs = attrs || {};
-            attrs["wmode"] = "transparent";
+            S.mix(attrs, {
+                wmode:"transparent"
+            });
             for (var a in attrs) {
                 if (attrs.hasOwnProperty(a))
                     attrs_str += a + "='" + attrs[a] + "' ";
             }
+
+            S.mix(params, {
+                quality:"high",
+                movie:movie,
+                wmode:"transparent"
+            });
+            for (var p in params) {
+                if (params.hasOwnProperty(p))
+                    params_str += "<param name='" + p + "' value='" + params[p] + "'/>";
+            }
+
 
             if (flashVars) {
                 for (var f in flashVars) {
@@ -9488,8 +9509,7 @@ KISSY.Editor.add("flashutils", function() {
             var outerHTML = '<object ' +
                 attrs_str +
                 ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +
-                '<param name="quality" value="high" />' +
-                '<param name="movie" value="' + movie + '" />' +
+                params_str +
                 (vars_str ? '<param name="flashVars" value="' + vars_str + '"/>' : '') +
                 /*
                  "<object type='application/x-shockwave-flash'" +

@@ -984,7 +984,6 @@ KISSY.Editor.add("selection", function(KE) {
          * 如果选择了body下面的直接inline元素，则新建p
          */
         editor.on("selectionChange", function(ev) {
-
             var path = ev.path,
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
