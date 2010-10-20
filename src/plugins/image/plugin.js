@@ -346,7 +346,7 @@ KISSY.Editor.add("image", function(editor) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
                                 S.log(ev.status);
-                                alert("服务器出错或格式不正确！");
+                                alert("服务器出错或格式不正确，请返回重试");
                             });
                         }
 

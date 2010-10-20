@@ -18,9 +18,9 @@ KISSY.Editor.add("dd", function(editor) {
 
     Manager.ATTRS = {
         /**
-         * mousedown 后 buffer 触发时间
+         * mousedown 后 buffer 触发时间,500毫秒
          */
-        timeThred:{},
+        timeThred:{value:100},
         /**
          * 当前激活的拖对象
          */
@@ -50,15 +50,28 @@ KISSY.Editor.add("dd", function(editor) {
             activeDrag._move(ev);
         },
         _start:function(drag) {
+            var self = this,
+                timeThred = self.get("timeThred") || 0;
+            self._timeThredTimer = setTimeout(function() {
+                self._bufferStart(drag);
+            }, timeThred);
+        },
+        _bufferStart:function(drag) {
             var self = this;
             self.set("activeDrag", drag);
             self._pg.css({
                 display: "",
                 height: DOM.docHeight()
             });
+            drag.fire("start");
         },
         _end:function(ev) {
-            var self = this,activeDrag = self.get("activeDrag");
+            var self = this,
+                activeDrag = self.get("activeDrag");
+            if (self._timeThredTimer) {
+                clearTimeout(self._timeThredTimer);
+                self._timeThredTimer = null;
+            }
             if (!activeDrag) return;
             activeDrag._end(ev);
             self.set("activeDrag", null);
@@ -83,7 +96,6 @@ KISSY.Editor.add("dd", function(editor) {
             self._pg.css("opacity", 0);
             Event.on(document, "mousemove", KE.Utils.throttle(this._move, this, 10));
             Event.on(document, "mouseup", this._end, this);
-
         },
 
         _real:function() {
@@ -127,9 +139,7 @@ KISSY.Editor.add("dd", function(editor) {
                 }
             }
             node.on("mousedown", self._handleMouseDown, self);
-            node.on("mouseup", function() {
-                DDM._end();
-            });
+            node.on("mouseup", DDM._end, DDM);
         },
         _check:function(t) {
             var handlers = this.get("handlers");
@@ -145,13 +155,15 @@ KISSY.Editor.add("dd", function(editor) {
         _handleMouseDown:function(ev) {
             var self = this,
                 t = new Node(ev.target);
-
             if (!self._check(t)) return;
-
-            ev.halt();
+            //chrome 包含的按钮不可点了
+            //if (!UA.wekit)ev.halt();
             DDM._start(self);
-            var node = self.get("node");
-            var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
+
+            var node = self.get("node"),
+                mx = ev.pageX,
+                my = ev.pageY,
+                nxy = node.offset();
             self.startMousePos = {
                 left:mx,
                 top:my
@@ -161,13 +173,12 @@ KISSY.Editor.add("dd", function(editor) {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
-            self.fire("start");
+
         },
         _move:function(ev) {
             this.fire("move", ev)
         },
         _end:function() {
-
         }
     });
 

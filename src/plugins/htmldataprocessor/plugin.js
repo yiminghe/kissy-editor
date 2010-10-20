@@ -431,13 +431,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         el.filterChildren();
                         assembleList(el);
                     }
-                }
-                ,
-                table:function(el) {
-                    var border = el.attributes.border;
-                    if (!border || border == "0") {
-                        el.attributes['class'] = "ke_show_border";
-                    }
                 },
                 td:function(el) {
                     //if (el.attributes.style) {
@@ -463,6 +456,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
                             listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
                         return createListBulletMarker(listType, listSymbol);
+                    }
+                },
+                a:function(element) {
+                    var attribs = element.attributes;
+                    if (attribs.href) {
+                        attribs._ke_saved_href = attribs.href;
                     }
                 }
             },
@@ -512,7 +511,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
-                [ ( /^on/ ), 'ck_on' ],
+                [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
             ]
         },
@@ -548,6 +547,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         element.attributes.name )) {
                         return false;
                     }
+                    //防止ie<8 把 #a转换为 window.location#a
+                    var attribs = element.attributes;
+                    if (attribs._ke_saved_href) {
+                        attribs.href = attribs._ke_saved_href;
+                    }
                 },
                 //对应 table plugin , _genTable method
                 td:function(element) {
@@ -577,7 +581,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 }
             },
             attributeNames :  [
-                [ ( /^ck_on/ ), 'on' ],
+                [ ( /^ke_on/ ), 'on' ],
+                [ ( /^_ke.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
             ]
         }//,
@@ -695,7 +700,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         htmlFilter.addRules({
             text : function(text) {
                 return text.replace(/&nbsp;/g, "\xa0")
-                    .replace("\xa0", "&nbsp;");
+                    .replace(/\xa0/g, "&nbsp;");
             }
         });
     })();
@@ -710,6 +715,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
             //使用htmlwriter界面美观，加入额外文字节点\n,\t空白等
+
             var writer = new HtmlParser.HtmlWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
@@ -736,7 +742,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // </span></span></span>
             // [endif]-->
             if (UA.gecko)
-                html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi, '$1$2$3');
+                html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi,
+                    '$1$2$3');
 
 
             // Certain elements has problem to go through DOM operation, protect
@@ -744,6 +751,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
             //fixForBody = fixForBody || "p";
             //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白等
+
             var writer = new HtmlParser.BasicWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-19 21:37:28
+ * @buildtime: 2010-10-20 12:41:34
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -7915,9 +7915,9 @@ KISSY.Editor.add("dd", function(editor) {
 
     Manager.ATTRS = {
         /**
-         * mousedown 后 buffer 触发时间
+         * mousedown 后 buffer 触发时间,500毫秒
          */
-        timeThred:{},
+        timeThred:{value:100},
         /**
          * 当前激活的拖对象
          */
@@ -7947,15 +7947,28 @@ KISSY.Editor.add("dd", function(editor) {
             activeDrag._move(ev);
         },
         _start:function(drag) {
+            var self = this,
+                timeThred = self.get("timeThred") || 0;
+            self._timeThredTimer = setTimeout(function() {
+                self._bufferStart(drag);
+            }, timeThred);
+        },
+        _bufferStart:function(drag) {
             var self = this;
             self.set("activeDrag", drag);
             self._pg.css({
                 display: "",
                 height: DOM.docHeight()
             });
+            drag.fire("start");
         },
         _end:function(ev) {
-            var self = this,activeDrag = self.get("activeDrag");
+            var self = this,
+                activeDrag = self.get("activeDrag");
+            if (self._timeThredTimer) {
+                clearTimeout(self._timeThredTimer);
+                self._timeThredTimer = null;
+            }
             if (!activeDrag) return;
             activeDrag._end(ev);
             self.set("activeDrag", null);
@@ -7980,7 +7993,6 @@ KISSY.Editor.add("dd", function(editor) {
             self._pg.css("opacity", 0);
             Event.on(document, "mousemove", KE.Utils.throttle(this._move, this, 10));
             Event.on(document, "mouseup", this._end, this);
-
         },
 
         _real:function() {
@@ -8024,9 +8036,7 @@ KISSY.Editor.add("dd", function(editor) {
                 }
             }
             node.on("mousedown", self._handleMouseDown, self);
-            node.on("mouseup", function() {
-                DDM._end();
-            });
+            node.on("mouseup", DDM._end, DDM);
         },
         _check:function(t) {
             var handlers = this.get("handlers");
@@ -8042,13 +8052,15 @@ KISSY.Editor.add("dd", function(editor) {
         _handleMouseDown:function(ev) {
             var self = this,
                 t = new Node(ev.target);
-
             if (!self._check(t)) return;
-
-            ev.halt();
+            //chrome 包含的按钮不可点了
+            //if (!UA.wekit)ev.halt();
             DDM._start(self);
-            var node = self.get("node");
-            var mx = ev.pageX,my = ev.pageY,nxy = node.offset();
+
+            var node = self.get("node"),
+                mx = ev.pageX,
+                my = ev.pageY,
+                nxy = node.offset();
             self.startMousePos = {
                 left:mx,
                 top:my
@@ -8058,13 +8070,12 @@ KISSY.Editor.add("dd", function(editor) {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
-            self.fire("start");
+
         },
         _move:function(ev) {
             this.fire("move", ev)
         },
         _end:function() {
-
         }
     });
 
@@ -11455,9 +11466,11 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         var dtd = KE.XHTML_DTD;
 
-        for (var e in Utils.mix({}, dtd.$nonBodyContent, dtd.$block, dtd.$listItem, dtd.$tableContent)) {
-            this.setRules(e,
-            {
+        for (var e in Utils.mix({},
+            dtd.$nonBodyContent,
+            dtd.$block, dtd.$listItem,
+            dtd.$tableContent)) {
+            this.setRules(e, {
                 indent : true,
                 breakBeforeOpen : true,
                 breakAfterOpen : true,
@@ -12172,13 +12185,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         el.filterChildren();
                         assembleList(el);
                     }
-                }
-                ,
-                table:function(el) {
-                    var border = el.attributes.border;
-                    if (!border || border == "0") {
-                        el.attributes['class'] = "ke_show_border";
-                    }
                 },
                 td:function(el) {
                     //if (el.attributes.style) {
@@ -12204,6 +12210,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
                             listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
                         return createListBulletMarker(listType, listSymbol);
+                    }
+                },
+                a:function(element) {
+                    var attribs = element.attributes;
+                    if (attribs.href) {
+                        attribs._ke_saved_href = attribs.href;
                     }
                 }
             },
@@ -12253,7 +12265,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
-                [ ( /^on/ ), 'ck_on' ],
+                [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
             ]
         },
@@ -12289,6 +12301,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         element.attributes.name )) {
                         return false;
                     }
+                    //防止ie<8 把 #a转换为 window.location#a
+                    var attribs = element.attributes;
+                    if (attribs._ke_saved_href) {
+                        attribs.href = attribs._ke_saved_href;
+                    }
                 },
                 //对应 table plugin , _genTable method
                 td:function(element) {
@@ -12318,7 +12335,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 }
             },
             attributeNames :  [
-                [ ( /^ck_on/ ), 'on' ],
+                [ ( /^ke_on/ ), 'on' ],
+                [ ( /^_ke.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
             ]
         }//,
@@ -12436,7 +12454,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         htmlFilter.addRules({
             text : function(text) {
                 return text.replace(/&nbsp;/g, "\xa0")
-                    .replace("\xa0", "&nbsp;");
+                    .replace(/\xa0/g, "&nbsp;");
             }
         });
     })();
@@ -12451,6 +12469,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
             //使用htmlwriter界面美观，加入额外文字节点\n,\t空白等
+
             var writer = new HtmlParser.HtmlWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
@@ -12477,7 +12496,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // </span></span></span>
             // [endif]-->
             if (UA.gecko)
-                html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi, '$1$2$3');
+                html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi,
+                    '$1$2$3');
 
 
             // Certain elements has problem to go through DOM operation, protect
@@ -12485,6 +12505,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
             //fixForBody = fixForBody || "p";
             //bug:qc #3710:使用basicwriter，去除无用的文字节点，标签间连续\n空白等
+
             var writer = new HtmlParser.BasicWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
@@ -12843,7 +12864,7 @@ KISSY.Editor.add("image", function(editor) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
                                 S.log(ev.status);
-                                alert("服务器出错或格式不正确！");
+                                alert("服务器出错或格式不正确，请返回重试");
                             });
                         }
 
@@ -13455,11 +13476,14 @@ KISSY.Editor.add("link", function(editor) {
                 Node = S.Node,
                 KERange = KE.Range,
                 Overlay = KE.SimpleOverlay ,
+                _ke_saved_href = "_ke_saved_href",
                 BubbleView = KE.BubbleView,
                 link_Style = {
                     element : 'a',
                     attributes:{
                         "href":"#(href)",
+                        //ie < 8 会把锚点地址修改
+                        "_ke_saved_href":"#(_ke_saved_href)",
                         target:"#(target)"
                     }
                 },
@@ -13488,12 +13512,12 @@ KISSY.Editor.add("link", function(editor) {
                     "链接网址： " +
 
                     "<input " +
-                    " data-verify='^https?://[^\\s]+$' " +
-                    " data-warning='网址格式为：http://' " +
+                    " data-verify='^(https?://[^\\s]+)|(#.+)$' " +
+                    " data-warning='请输入合适的网址格式' " +
                     "class='ke-link-url ke-input' " +
                     "style='width:390px;" +
                     MIDDLE + "' " +
-                    "value='http://'/>" +
+                    "/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
@@ -13577,11 +13601,12 @@ KISSY.Editor.add("link", function(editor) {
                     });
 
                     bubble.on("afterVisibleChange", function() {
-
                         var a = bubble._selectedEl;
                         if (!a)return;
-                        tipurl.html(a.attr("href"));
-                        tipurl.attr("href", a.attr("href"));
+                        var href = a.attr(_ke_saved_href) ||
+                            a.attr("href");
+                        tipurl.html(href);
+                        tipurl.attr("href", href);
                     });
                 }
             });
@@ -13612,7 +13637,8 @@ KISSY.Editor.add("link", function(editor) {
                 _removeLink:function(a) {
                     var editor = this.editor,
                         attr = {
-                            href:a.attr("href")
+                            href:a.attr("href"),
+                            _ke_saved_href:a.attr(_ke_saved_href)
                         };
                     if (a._4e_hasAttribute("target")) {
                         attr.target = a.attr("target");
@@ -13622,7 +13648,6 @@ KISSY.Editor.add("link", function(editor) {
                     linkStyle.remove(editor.document);
                     editor.fire("save");
                 },
-
 
                 //得到当前选中的 link a
                 _getSelectedLink:function() {
@@ -13660,7 +13685,8 @@ KISSY.Editor.add("link", function(editor) {
                         self._removeLink(link);
                     }
                     attr = {
-                        href:url
+                        href:url,
+                        _ke_saved_href:url
                     };
                     if (d.targetEl[0].checked) {
                         attr.target = "_blank";
@@ -13671,8 +13697,11 @@ KISSY.Editor.add("link", function(editor) {
                     range = editor.getSelection().getRanges()[0];
                     //没有选择区域时直接插入链接地址
                     if (range.collapsed) {
-                        a = new Node("<a href='" + url +
-                            "' target='" + attr.target + "'>" + url + "</a>", null, editor.document);
+                        a = new Node("<a " +
+                            "href='" + url + "' " +
+                            _ke_saved_href + "='" + url + "' " +
+                            "target='" + attr.target + "'>" + url + "</a>",
+                            null, editor.document);
                         editor.insertElement(a);
                     } else {
                         editor.fire("save");
@@ -13693,7 +13722,7 @@ KISSY.Editor.add("link", function(editor) {
                     d.link = this;
                     //是修改行为
                     if (link) {
-                        d.urlEl.val(link.attr("href"));
+                        d.urlEl.val(link.attr(_ke_saved_href) || link.attr("href"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     }
                     d.show();

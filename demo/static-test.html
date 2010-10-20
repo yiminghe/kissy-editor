@@ -186,7 +186,9 @@
 </form>
 <div style="width: 60%; margin: 50px auto;position:relative;overflow:hidden;">
     <label for="editor2">Editor Instance 2:</label>
-    <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;"></textarea>
+    <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;">
+        测试1 &nbsp;测试2 &nbsp; &nbsp;测试3 &nbsp;
+    </textarea>
 </div>
 
 
@@ -424,7 +426,7 @@ xiami 音乐
             KE("#editor2", {
                 disableObjectResizing:true,
                 disableInlineTableEditing:true
-            }).use("htmldataprocessor,enterkey,clipboard,undo,font,link,image,templates,maximize");
+            }).use("htmldataprocessor,enterkey,clipboard,sourcearea,undo,font,link,image,templates,maximize");
         });
     });
 

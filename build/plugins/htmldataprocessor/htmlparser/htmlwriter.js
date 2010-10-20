@@ -50,9 +50,11 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         var dtd = KE.XHTML_DTD;
 
-        for (var e in Utils.mix({}, dtd.$nonBodyContent, dtd.$block, dtd.$listItem, dtd.$tableContent)) {
-            this.setRules(e,
-            {
+        for (var e in Utils.mix({},
+            dtd.$nonBodyContent,
+            dtd.$block, dtd.$listItem,
+            dtd.$tableContent)) {
+            this.setRules(e, {
                 indent : true,
                 breakBeforeOpen : true,
                 breakAfterOpen : true,

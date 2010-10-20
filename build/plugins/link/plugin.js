@@ -13,11 +13,14 @@ KISSY.Editor.add("link", function(editor) {
                 Node = S.Node,
                 KERange = KE.Range,
                 Overlay = KE.SimpleOverlay ,
+                _ke_saved_href = "_ke_saved_href",
                 BubbleView = KE.BubbleView,
                 link_Style = {
                     element : 'a',
                     attributes:{
                         "href":"#(href)",
+                        //ie < 8 会把锚点地址修改
+                        "_ke_saved_href":"#(_ke_saved_href)",
                         target:"#(target)"
                     }
                 },
@@ -46,12 +49,12 @@ KISSY.Editor.add("link", function(editor) {
                     "链接网址： " +
 
                     "<input " +
-                    " data-verify='^https?://[^\\s]+$' " +
-                    " data-warning='网址格式为：http://' " +
+                    " data-verify='^(https?://[^\\s]+)|(#.+)$' " +
+                    " data-warning='请输入合适的网址格式' " +
                     "class='ke-link-url ke-input' " +
                     "style='width:390px;" +
                     MIDDLE + "' " +
-                    "value='http://'/>" +
+                    "/>" +
                     "</label>" +
                     "</p>" +
                     "<p " +
@@ -135,11 +138,12 @@ KISSY.Editor.add("link", function(editor) {
                     });
 
                     bubble.on("afterVisibleChange", function() {
-
                         var a = bubble._selectedEl;
                         if (!a)return;
-                        tipurl.html(a.attr("href"));
-                        tipurl.attr("href", a.attr("href"));
+                        var href = a.attr(_ke_saved_href) ||
+                            a.attr("href");
+                        tipurl.html(href);
+                        tipurl.attr("href", href);
                     });
                 }
             });
@@ -170,7 +174,8 @@ KISSY.Editor.add("link", function(editor) {
                 _removeLink:function(a) {
                     var editor = this.editor,
                         attr = {
-                            href:a.attr("href")
+                            href:a.attr("href"),
+                            _ke_saved_href:a.attr(_ke_saved_href)
                         };
                     if (a._4e_hasAttribute("target")) {
                         attr.target = a.attr("target");
@@ -180,7 +185,6 @@ KISSY.Editor.add("link", function(editor) {
                     linkStyle.remove(editor.document);
                     editor.fire("save");
                 },
-
 
                 //得到当前选中的 link a
                 _getSelectedLink:function() {
@@ -218,7 +222,8 @@ KISSY.Editor.add("link", function(editor) {
                         self._removeLink(link);
                     }
                     attr = {
-                        href:url
+                        href:url,
+                        _ke_saved_href:url
                     };
                     if (d.targetEl[0].checked) {
                         attr.target = "_blank";
@@ -229,8 +234,11 @@ KISSY.Editor.add("link", function(editor) {
                     range = editor.getSelection().getRanges()[0];
                     //没有选择区域时直接插入链接地址
                     if (range.collapsed) {
-                        a = new Node("<a href='" + url +
-                            "' target='" + attr.target + "'>" + url + "</a>", null, editor.document);
+                        a = new Node("<a " +
+                            "href='" + url + "' " +
+                            _ke_saved_href + "='" + url + "' " +
+                            "target='" + attr.target + "'>" + url + "</a>",
+                            null, editor.document);
                         editor.insertElement(a);
                     } else {
                         editor.fire("save");
@@ -251,7 +259,7 @@ KISSY.Editor.add("link", function(editor) {
                     d.link = this;
                     //是修改行为
                     if (link) {
-                        d.urlEl.val(link.attr("href"));
+                        d.urlEl.val(link.attr(_ke_saved_href) || link.attr("href"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     }
                     d.show();

@@ -882,7 +882,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     status = ev.status;
                 if (!ev._custom) {
                     S.log(status);
-                    status = "服务器出错或格式不正确！";
+                    status = "服务器出错或格式不正确";
                 }
                 if (tr) {
                     bar && bar.destroy();
