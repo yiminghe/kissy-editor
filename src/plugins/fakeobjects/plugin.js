@@ -116,7 +116,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 src : SPACER_GIF,
                 _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
                 _ke_real_node_type : realElement[0].nodeType,
-                align : realElement.attr("align") || '',
+                //align : realElement.attr("align") || '',
                 style:style
             };
             attrs && delete attrs.width;

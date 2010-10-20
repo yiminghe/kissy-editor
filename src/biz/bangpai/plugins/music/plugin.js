@@ -167,7 +167,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<label>对 齐： " +
                 "<select " +
                 "class='ke-xiami-align'>" +
-                "<option value=''>无</option>" +
+                "<option value='none'>无</option>" +
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
@@ -275,11 +275,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             url:self._getFlashUrl(r),
                             attrs:{
                                 title:f.attr("title"),
-                                align:self.dAlign.val(),
+                                //align:self.dAlign.val(),
                                 style:
                                     "margin:" +
                                         (parseInt(self.dMargin.val()) || 0)
-                                        + "px;"
+                                        + "px;" +
+                                    "float:" + self.dAlign.val() + ";"
                             }
                         };
                         self._gen();
@@ -344,11 +345,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                     + "/singlePlayer.swf"),
                                 attrs:{
                                     title:add.attr("title"),
-                                    align:self.dAlign.val(),
+                                    //align:self.dAlign.val(),
                                     style:
                                         "margin:" +
                                             (parseInt(self.dMargin.val()) || 0)
-                                            + "px;"
+                                            + "px;" +
+                                    "float:" + self.dAlign.val() + ";"
                                 }
                             };
                             self._gen();
@@ -442,14 +444,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     if (f) {
                         self._xiami_input.val(f.attr("title"));
                         self._xiamia_title.html(f.attr("title"));
-                        self.dAlign.val(f.attr("align"));
+                        self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(f._4e_style("margin")) || 0);
                         self._xiami_url_wrap.hide();
                         self.d.foot.show();
                         self._xiamia_title.show();
                     } else {
                         KE.Utils.resetInput(self._xiami_input);
-                        self.dAlign.val("");
+                        self.dAlign.val("none");
                         self.dMargin.val("5");
                         self._xiami_url_wrap.show();
                         self.d.foot.hide();

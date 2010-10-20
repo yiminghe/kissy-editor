@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 20:19:21
+ * @buildtime: 2010-10-20 21:37:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8831,7 +8831,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 src : SPACER_GIF,
                 _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
                 _ke_real_node_type : realElement[0].nodeType,
-                align : realElement.attr("align") || '',
+                //align : realElement.attr("align") || '',
                 style:style
             };
             attrs && delete attrs.width;
@@ -9038,7 +9038,7 @@ KISSY.Editor.add("flashsupport", function(editor) {
                     "<td>" +
                     "<label>对齐： " +
                     "<select class='ke-flash-align'>" +
-                    "<option value=''>无</option>" +
+                    "<option value='none'>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
@@ -9226,14 +9226,14 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         if (f.css("height")) {
                             self.dHeight.val(parseInt(f.css("height")));
                         }
-                        self.dAlign.val(r.attr("align"));
+                        self.dAlign.val(f.css("float"));
                         self.dUrl.val(self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         KE.Utils.resetInput(self.dUrl);
                         self.dWidth.val("");
                         self.dHeight.val("");
-                        self.dAlign.val("");
+                        self.dAlign.val("none");
                         self.dMargin.val("5");
                     }
                 },
@@ -9278,8 +9278,9 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         attrs:{
                             width:self.dWidth.val(),
                             height:self.dHeight.val(),
-                            align:self.dAlign.val(),
-                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px"
+                            //align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;" +
+                                "float:" + self.dAlign.val() + ";"
                         }
                     };
                 },
@@ -14842,7 +14843,7 @@ KISSY.Editor.add("music", function(editor) {
                     "<p style='margin: 10px 0 10px 40px;'>" +
                     "<label style='" + MIDDLE + "'>对齐： " +
                     "<select class='ke-music-align'>" +
-                    "<option value=''>无</option>" +
+                    "<option value='none'>无</option>" +
                     "<option value='left'>左对齐</option>" +
                     "<option value='right'>右对齐</option>" +
                     "</select>" +
@@ -14923,8 +14924,9 @@ KISSY.Editor.add("music", function(editor) {
                         attrs:{
                             width:165,
                             height:37,
-                            align:self.dAlign.val(),
-                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
+                            //align:self.dAlign.val(),
+                            style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;" +
+                                "float:" + self.dAlign.val() + ";"
                         }
                     };
                 },
@@ -14939,11 +14941,11 @@ KISSY.Editor.add("music", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
-                        self.dAlign.val(f.attr("align"));
+                        self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         KE.Utils.resetInput(self.dUrl);
-                        self.dAlign.val("");
+                        self.dAlign.val("none");
                         self.dMargin.val("5");
                     }
                 }

@@ -167,7 +167,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 "<label>对 齐： " +
                 "<select " +
                 "class='ke-xiami-align'>" +
-                "<option value=''>无</option>" +
+                "<option value='none'>无</option>" +
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
@@ -275,11 +275,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             url:self._getFlashUrl(r),
                             attrs:{
                                 title:f.attr("title"),
-                                align:self.dAlign.val(),
+                                //align:self.dAlign.val(),
                                 style:
                                     "margin:" +
                                         (parseInt(self.dMargin.val()) || 0)
-                                        + "px;"
+                                        + "px;" +
+                                    "float:" + self.dAlign.val() + ";"
                             }
                         };
                         self._gen();
@@ -344,11 +345,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                     + "/singlePlayer.swf"),
                                 attrs:{
                                     title:add.attr("title"),
-                                    align:self.dAlign.val(),
+                                    //align:self.dAlign.val(),
                                     style:
                                         "margin:" +
                                             (parseInt(self.dMargin.val()) || 0)
-                                            + "px;"
+                                            + "px;" +
+                                    "float:" + self.dAlign.val() + ";"
                                 }
                             };
                             self._gen();
@@ -442,14 +444,14 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     if (f) {
                         self._xiami_input.val(f.attr("title"));
                         self._xiamia_title.html(f.attr("title"));
-                        self.dAlign.val(f.attr("align"));
+                        self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(f._4e_style("margin")) || 0);
                         self._xiami_url_wrap.hide();
                         self.d.foot.show();
                         self._xiamia_title.show();
                     } else {
                         KE.Utils.resetInput(self._xiami_input);
-                        self.dAlign.val("");
+                        self.dAlign.val("none");
                         self.dMargin.val("5");
                         self._xiami_url_wrap.show();
                         self.d.foot.hide();
@@ -1350,7 +1352,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 "<td>" +
                 "<label>对齐： " +
                 "<select class='ke-video-align'>" +
-                "<option value=''>无</option>" +
+                "<option value='none'>无</option>" +
                 "<option value='left'>左对齐</option>" +
                 "<option value='right'>右对齐</option>" +
                 "</select>" +
@@ -1433,8 +1435,9 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                             attrs:{
                                 height:parseInt(self.dHeight.val()) || p.height,
                                 width:parseInt(self.dWidth.val()) || p.width,
-                                align: self.dAlign.val(),
-                                style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;"
+                                //align: self.dAlign.val(),
+                                style:"margin:" + (parseInt(self.dMargin.val()) || 0) + "px;" +
+                                    "float:" + self.dAlign.val() + ";"
                             }
                         };
                     }
@@ -1488,7 +1491,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     if (f) {
                         var r = editor.restoreRealElement(f);
                         self.dUrl.val(self._getFlashUrl(r));
-                        self.dAlign.val(r.attr("align"));
+                        self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                         if (f.css("width")) {
                             self.dWidth.val(parseInt(f.css("width")));
@@ -1498,7 +1501,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                         }
                     } else {
                         KE.Utils.resetInput(self.dUrl);
-                        self.dAlign.val("");
+                        self.dAlign.val("none");
                         self.dMargin.val("5");
                         self.dWidth.val(DTIP);
                         self.dHeight.val(DTIP);
