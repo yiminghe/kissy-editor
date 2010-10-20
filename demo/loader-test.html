@@ -183,7 +183,7 @@
     S.use('editor', function() {
 
         var KE = KISSY.Editor;
-        KE.Config.base = base+"build/";
+        KE.Config.base = base+"src/";
 
         KE("#editor", {
             pluginConfig: {
@@ -199,8 +199,8 @@
                 ]
             }
         }).use("htmldataprocessor,enterkey,clipboard,elementpaths,sourcearea,preview," +
-                "templates,undo,removeformat,font,format,forecolor,bgcolor," +
-                "list,indent,justify,link,image,flash,music," +
+                "templates,undo,removeformat,separator,font,format,forecolor,bgcolor," +
+                "list,indent,justify,link,image,separator,flash,music," +
                 "table,smiley,maximize"
                 );
 

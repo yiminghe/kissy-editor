@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 16:19:17
+ * @buildtime: 2010-10-20 18:08:26
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -22,36 +22,69 @@ KISSY.add("editor", function(S, undefined) {
         cfg.pluginConfig = cfg.pluginConfig || {};
         self.cfg = cfg;
         S.app(self, S.EventTarget);
-        self.use = function(mods, callback) {
-            if (S.isString(mods)) {
-                mods = mods.split(",");
-            }
-            var left = mods,current = [],index;
-            index = S.indexOf("separator", left);
-            var sep = index != -1;
-            current = left.splice(0, sep ? index + 1 : left.length);
-            if (sep)current.pop();
-            if (current.length != 0) {
-                S.use.call(self, current.join(","), function() {
-                    if (sep) {
-                        self.addPlugin(function() {
-                            Editor.Utils.addSeparator(self.toolBarDiv);
-                        });
+
+        /**
+         * templates,separator,image,separator ->
+         * templates,separator,image,separator2
+         * work around for 重复 attach
+         * @param mods
+         */
+        function duplicateMods(mods) {
+            var existMods = Editor.Env.mods;
+            for (var i = 0; i < mods.length; i++) {
+                var mod = mods[i],dup = false;
+                for (var j = 0; j < i; j++) {
+                    var mod2 = mods[j];
+                    if (mod == mod2) {
+                        dup = true;
+                        break;
                     }
-                    //继续加载剩余插件
-                    self.use(left, callback);
-                }, { order:  true, global:  Editor });
-            } else {
-                self.on("dataReady", function() {
+                }
+                var existMod = existMods[mod];
+
+                if (dup && existMod) {
+                    var newMod = S.clone(existMod),newName = mod + "_" + i;
+                    newMod.name = newName;
+                    mods[i] = newName;
+                    if (!existMods[newName]) {
+                        existMods[newName] = newMod;
+                    }
+                }
+            }
+        }
+
+        /**
+         * 存在问题：
+         * use 涉及动态加载时
+         * 1.相同的模块名不会重复attach
+         * 2.不同模块名相同js路径也不会重复attach
+         * @param mods
+         * @param callback
+         */
+        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"];
+        self.use = function(mods, callback) {
+            mods = mods.split(",");
+            duplicateMods(mods);
+
+            for (var i = 0; i < BASIC.length; i++) {
+                var b = BASIC[i];
+                if (!S.inArray(b, mods)) {
+                    mods.unshift(b);
+                }
+            }
+            
+            S.use.call(self, mods.join(","), function() {
+
+                self.ready(function() {
                     callback && callback.call(self);
                     self.setData(textarea.val());
                     self.fire("save");
                 });
-            }
+
+            }, { order:  true, global:  Editor });
             return self;
         };
         self.init(textarea);
-        return undefined;
     }
 
     S.app(Editor, S.EventTarget);
@@ -85,6 +118,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "separator",
             "sourceareasupport",
             "tabs",
             "flashbridge",
@@ -448,9 +482,6 @@ KISSY.Editor.add("utils", function(KE) {
                 domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
         },
 
-        addSeparator:function(bar) {
-            new S.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(bar);
-        },
         duplicateStr:function(str, loop) {
             return new Array(loop + 1).join(str);
         },
@@ -791,7 +822,7 @@ KISSY.Editor.add("definition", function(KE) {
             var iframe = self.iframe;
 
             self.on("dataReady", function() {
-                self.ready = true;
+                self._ready = true;
                 KE.fire("instanceCreated", {editor:self});
             });
             // With FF, it's better to load the data on iframe.load. (#3894,#4058)
@@ -952,15 +983,16 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.close();
             }
         },
-
         addPlugin:function(func) {
+            this.ready(func);
+        },
+        ready:function(func) {
             var self = this;
-            if (self.ready)func();
+            if (self._ready)func();
             else {
                 self.on("dataReady", func);
             }
         },
-
         _monitor:function() {
             var self = this;
             if (self._monitorId) {
@@ -16198,6 +16230,10 @@ KISSY.Editor.add("select", function() {
     });
 
     KE.Select = Select;
+});KISSY.Editor.add("separator", function(editor) {
+    editor.addPlugin(function() {
+        new KISSY.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(editor.toolBarDiv);
+    });
 });/**
  * smiley icon from wangwang for kissy editor
  * @author: yiminghe@gmail.com

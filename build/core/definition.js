@@ -135,7 +135,7 @@ KISSY.Editor.add("definition", function(KE) {
             var iframe = self.iframe;
 
             self.on("dataReady", function() {
-                self.ready = true;
+                self._ready = true;
                 KE.fire("instanceCreated", {editor:self});
             });
             // With FF, it's better to load the data on iframe.load. (#3894,#4058)
@@ -296,15 +296,16 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.close();
             }
         },
-
         addPlugin:function(func) {
+            this.ready(func);
+        },
+        ready:function(func) {
             var self = this;
-            if (self.ready)func();
+            if (self._ready)func();
             else {
                 self.on("dataReady", func);
             }
         },
-
         _monitor:function() {
             var self = this;
             if (self._monitorId) {

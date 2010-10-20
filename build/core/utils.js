@@ -158,9 +158,6 @@ KISSY.Editor.add("utils", function(KE) {
                 domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
         },
 
-        addSeparator:function(bar) {
-            new S.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(bar);
-        },
         duplicateStr:function(str, loop) {
             return new Array(loop + 1).join(str);
         },

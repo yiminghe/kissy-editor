@@ -22,36 +22,69 @@ KISSY.add("editor", function(S, undefined) {
         cfg.pluginConfig = cfg.pluginConfig || {};
         self.cfg = cfg;
         S.app(self, S.EventTarget);
-        self.use = function(mods, callback) {
-            if (S.isString(mods)) {
-                mods = mods.split(",");
-            }
-            var left = mods,current = [],index;
-            index = S.indexOf("separator", left);
-            var sep = index != -1;
-            current = left.splice(0, sep ? index + 1 : left.length);
-            if (sep)current.pop();
-            if (current.length != 0) {
-                S.use.call(self, current.join(","), function() {
-                    if (sep) {
-                        self.addPlugin(function() {
-                            Editor.Utils.addSeparator(self.toolBarDiv);
-                        });
+
+        /**
+         * templates,separator,image,separator ->
+         * templates,separator,image,separator2
+         * work around for 重复 attach
+         * @param mods
+         */
+        function duplicateMods(mods) {
+            var existMods = Editor.Env.mods;
+            for (var i = 0; i < mods.length; i++) {
+                var mod = mods[i],dup = false;
+                for (var j = 0; j < i; j++) {
+                    var mod2 = mods[j];
+                    if (mod == mod2) {
+                        dup = true;
+                        break;
                     }
-                    //继续加载剩余插件
-                    self.use(left, callback);
-                }, { order:  true, global:  Editor });
-            } else {
-                self.on("dataReady", function() {
+                }
+                var existMod = existMods[mod];
+
+                if (dup && existMod) {
+                    var newMod = S.clone(existMod),newName = mod + "_" + i;
+                    newMod.name = newName;
+                    mods[i] = newName;
+                    if (!existMods[newName]) {
+                        existMods[newName] = newMod;
+                    }
+                }
+            }
+        }
+
+        /**
+         * 存在问题：
+         * use 涉及动态加载时
+         * 1.相同的模块名不会重复attach
+         * 2.不同模块名相同js路径也不会重复attach
+         * @param mods
+         * @param callback
+         */
+        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"];
+        self.use = function(mods, callback) {
+            mods = mods.split(",");
+            duplicateMods(mods);
+
+            for (var i = 0; i < BASIC.length; i++) {
+                var b = BASIC[i];
+                if (!S.inArray(b, mods)) {
+                    mods.unshift(b);
+                }
+            }
+            
+            S.use.call(self, mods.join(","), function() {
+
+                self.ready(function() {
                     callback && callback.call(self);
                     self.setData(textarea.val());
                     self.fire("save");
                 });
-            }
+
+            }, { order:  true, global:  Editor });
             return self;
         };
         self.init(textarea);
-        return undefined;
     }
 
     S.app(Editor, S.EventTarget);
@@ -85,6 +118,7 @@ KISSY.add("editor", function(S, undefined) {
             "styles"
         ],
         plugin_mods = [
+            "separator",
             "sourceareasupport",
             "tabs",
             "flashbridge",
