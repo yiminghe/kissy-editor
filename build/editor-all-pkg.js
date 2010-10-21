@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-21 21:34:54
+ * @buildtime: 2010-10-21 21:44:12
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -16961,10 +16961,15 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         caption = selectedTable.one("caption");
 
 
-                    d.talign.val(selectedTable.attr("align") || "");
+                    d.talign.val(selectedTable.attr("align") ||
+                        "");
 
-                    d.tborder.val(selectedTable.attr("border") || "0");
-                    var w = selectedTable._4e_style("width") || ("" + selectedTable.width());
+
+                    d.tborder.val(selectedTable.attr("border") ||
+                        "0");
+                    var w = selectedTable._4e_style("width") ||
+                        ("" + selectedTable.width());
+
                     //忽略pt单位
                     d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));
                     if (w.indexOf("%") != -1) d.twidthunit.val("%");
