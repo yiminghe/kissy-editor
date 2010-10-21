@@ -198,7 +198,7 @@ by the nsHTMLHRElement attribute mapping code
 
 .ke-post th, .ke-post td {
 /* padding to make the table readable */
-    padding: .5em;
+/*padding: .5em;*/
     border-color: black;
 }
 
@@ -215,7 +215,7 @@ by the nsHTMLHRElement attribute mapping code
 
 .ke-post fieldset, .ke-post table, .ke-post  pre {
 /* so things don't run into each other */
-    margin-bottom: 1em;
+/*margin-bottom: 1em;*/
 }
 
 .ke-post ul, .ke-post ol {

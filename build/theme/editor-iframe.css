@@ -171,7 +171,7 @@ dl dd {
 
 th, td {
 /* padding to make the table readable */
-    padding: .5em;
+    /*padding: .5em;*/
     border-color: black;
 }
 
@@ -189,7 +189,7 @@ caption {
 /*编辑器内p不要有间隔了，两个p来出间隔。p,*/
 fieldset, table, pre {
 /* so things don't run into each other */
-    margin-bottom: 1em;
+    /*margin-bottom: 1em;*/
 }
 
 ul, ol {
