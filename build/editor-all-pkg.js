@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-21 14:51:11
+ * @buildtime: 2010-10-21 21:27:14
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -12309,6 +12309,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 'class' : function(value
                     // , element
                     ) {
+                    value = S.trim(value);
                     if (/^ke_/.test(value)) return value;
                     return false;
                 },
@@ -16690,7 +16691,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         border = parseInt(attributes.border, 10);
 
                     if (!border || border <= 0)
-                        attributes[ 'class' ] = ( cssClass || '' ) + ' ' + showBorderClassName;
+                        attributes[ 'class' ] = ( cssClass || '' ) + ' ' +
+                            showBorderClassName;
                 }
             }
         });
@@ -16833,10 +16835,12 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     var self = this,
                         d = self.tableDialog,
                         selectedTable = self.selectedTable,
-                        caption = selectedTable.one("caption");
+                        caption = selectedTable.one("caption"),
+                        talignVal = d.talign.val(),
+                        tborderVal = d.tborder.val();
 
-                    if (valid(d.talign.val()))
-                        selectedTable.attr("align", trim(d.talign.val()));
+                    if (valid(talignVal))
+                        selectedTable.attr("align", trim(talignVal));
                     else
                         selectedTable.removeAttr("align");
 
@@ -16846,12 +16850,13 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     //if (valid(d.tcellpadding.val()))
                     //    selectedTable.attr("cellpadding", trim(d.tcellpadding.val()));
 
-                    if (valid(d.tborder.val())) {
-                        selectedTable.attr("border", trim(d.tborder.val()));
+
+                    if (valid(tborderVal)) {
+                        selectedTable.attr("border", trim(tborderVal));
                     } else {
                         selectedTable.removeAttr("border");
                     }
-                    if (!valid(d.tborder.val()) || d.tborder.val() == "0") {
+                    if (!valid(tborderVal) || tborderVal == "0") {
                         selectedTable.addClass(showBorderClassName);
                     } else {
                         selectedTable.removeClass(showBorderClassName);
@@ -16958,14 +16963,15 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     d.talign.val(selectedTable.attr("align") || "");
 
-                    d.tborder.val(selectedTable.attr("border") || "");
-                    var w = selectedTable._4e_style("width") || "";
+                    d.tborder.val(selectedTable.attr("border") || "0");
+                    var w = selectedTable._4e_style("width") || ("" + selectedTable.width());
                     //忽略pt单位
                     d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));
                     if (w.indexOf("%") != -1) d.twidthunit.val("%");
                     else d.twidthunit.val("px");
 
-                    d.theight.val((selectedTable._4e_style("height") || "").replace(/px|%/i, ""));
+                    d.theight.val((selectedTable._4e_style("height") || "")
+                        .replace(/px|%/i, ""));
                     var c = "";
                     if (caption) {
                         c = caption.text();
