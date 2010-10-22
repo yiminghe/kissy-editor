@@ -316,6 +316,8 @@ xiami 音乐
             window.editor = KE("#editor", {
                 attachForm:true,
                 baseZIndex:10000,
+                //自定义样式
+                //customStyle:"p{color:red;}",
                 pluginConfig: {
                     "image":{
                         upload:{
@@ -425,11 +427,12 @@ xiami 音乐
                     "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
                     "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                     );
-
-            KE("#editor2", {
-                disableObjectResizing:true,
-                disableInlineTableEditing:true
-            }).use("sourcearea,undo,font,link,image,templates,maximize");
+            /*
+             KE("#editor2", {
+             disableObjectResizing:true,
+             disableInlineTableEditing:true
+             }).use("sourcearea,undo,font,link,image,templates,maximize");
+             */
         });
     });
 

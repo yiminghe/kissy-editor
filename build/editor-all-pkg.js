@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-21 21:44:12
+ * @buildtime: 2010-10-22 11:55:16
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -710,14 +710,18 @@ KISSY.Editor.add("definition", function(KE) {
         ke_editor_status = ".ke-editor-status",
         CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
 
-    function prepareIFrameHtml(id) {
+    function prepareIFrameHtml(id, customStyle) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
             + "<title>${title}</title>"
             + "<link href='"
-            + KE.Config.base + CSS_FILE
+            + KE.Config.base
+            + CSS_FILE
             + "' rel='stylesheet'/>"
+            + "<style>"
+            + (customStyle || "")
+            + "</style>"
             + "</head>"
             + "<body class='ke-editor'>"
             //firefox 必须里面有东西，否则编辑前不能删除!
@@ -891,7 +895,8 @@ KISSY.Editor.add("definition", function(KE) {
         },
         //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
         baseZIndex:function(v) {
-            var v = v || 0,zIndex = this.cfg.baseZIndex || 0;
+            v = v || 0;
+            var zIndex = this.cfg.baseZIndex || 0;
             return v + zIndex;
         },
 
@@ -943,12 +948,30 @@ KISSY.Editor.add("definition", function(KE) {
             //firefox 焦点相关，强制 mousedown 刷新光标
             //this.iframeFocus = false;
         },
+        addCustomStyle:function(cssText) {
+            var self = this,
+                cfg = self.cfg,
+                doc = self.document;
+            cfg.customStyle = cfg.customStyle || "";
+            cfg.customStyle += "\n" + cssText;
+
+            var elem = doc.createElement("style");
+            // 先添加到 DOM 树中，再给 cssText 赋值，否则 css hack 会失效
+            doc.getElementsByTagName("head")[0].appendChild(elem);
+            if (elem.styleSheet) { // IE
+                elem.styleSheet.cssText = cssText;
+            } else { // W3C
+                elem.appendChild(doc.createTextNode(cssText));
+            }
+        },
         _setUpIFrame:function() {
             var self = this,
                 iframe = self.iframe,
                 KES = KE.SELECTION,
                 textarea = self.textarea[0],
-                data = prepareIFrameHtml(self._UUID),
+                cfg = self.cfg,
+                data = prepareIFrameHtml(self._UUID,
+                    cfg.customStyle),
                 win = iframe[0].contentWindow,doc;
 
             try {
@@ -967,7 +990,7 @@ KISSY.Editor.add("definition", function(KE) {
                 iframe[0].src = iframe[0].src;
                 // In IE6 though, the above is not enough, so we must pause the
                 // execution for a while, giving it time to think.
-                if (UA.ie && UA.ie < 7) {
+                if (UA.ie < 7) {
                     setTimeout(run, 10);
                     return;
                 }
@@ -15517,7 +15540,8 @@ KISSY.Editor.add("preview", function(editor) {
                     self.el.on("offClick", this._show, this);
                 },
                 _show:function() {
-                    var self = this,editor = self.editor;
+                    var self = this,
+                        editor = self.editor;
                     //try {
                     //editor will be unvisible
                     //  editor.focus();
@@ -15533,21 +15557,28 @@ KISSY.Editor.add("preview", function(editor) {
                         iLeft = Math.round(screen.width * 0.1);
                     } catch (e) {
                     }
-                    var sHTML = editor._prepareIFrameHtml().replace(/<body[^>]+>.+<\/body>/,
-                        "<body>\n" + editor.getData() + "\n</body>").replace(/\${title}/, "预览");
-                    var sOpenUrl = '';
-                    var oWindow = window.open(sOpenUrl, null, 'toolbar=yes,' +
-                        'location=no,' +
-                        'status=yes,' +
-                        'menubar=yes,' +
-                        'scrollbars=yes,' +
-                        'resizable=yes,' +
-                        'width=' +
-                        iWidth +
-                        ',height='
-                        + iHeight
-                        + ',left='
-                        + iLeft);
+                    var sHTML = editor._prepareIFrameHtml(null,
+                        editor.cfg.customStyle)
+                        .replace(/<body[^>]+>.+<\/body>/,
+                        "<body>\n"
+                            + editor.getData()
+                            + "\n</body>")
+                        .replace(/\${title}/, "预览"),
+                        sOpenUrl = '',
+                        oWindow = window.open(sOpenUrl,
+                            null,
+                            'toolbar=yes,' +
+                                'location=no,' +
+                                'status=yes,' +
+                                'menubar=yes,' +
+                                'scrollbars=yes,' +
+                                'resizable=yes,' +
+                                'width=' +
+                                iWidth +
+                                ',height='
+                                + iHeight
+                                + ',left='
+                                + iLeft);
                     oWindow.document.open();
                     oWindow.document.write(sHTML);
                     oWindow.document.close();
@@ -16991,12 +17022,14 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     d.thead.val(head ? '1' : '');
                 },
                 _realTableShow:function() {
-                    var self = this,d = self.tableDialog;
+                    var self = this,
+                        d = self.tableDialog;
 
                     if (self.selectedTable) {
                         self._fillTableDialog();
-                        d.body.all(".ke-table-create-only").attr("disabled",
-                            "disabled");
+                        d.body
+                            .all(".ke-table-create-only")
+                            .attr("disabled", "disabled");
                         d.thead.disable();
                     } else {
                         d.body.all(".ke-table-create-only")
@@ -17004,12 +17037,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d.thead.enable();
                     }
                     self.tableDialog.show();
-                    //console.log("do!");
                 },
                 _prepareTableShow:function() {
                     var self = this;
                     self._tableInit();
-                    //console.log("prepare!");
                 },
                 _tableShow:    function() {
                     var self = this;
@@ -17355,21 +17386,11 @@ KISSY.Editor.add("table", function(editor, undefined) {
         })();
     }
     editor.addPlugin(function() {
-        var doc = editor.document;
         new KE.TableUI(editor);
-
         /**
          * 动态加入显表格border css，便于编辑
          */
-        var elem = DOM.create("<style>", null, doc);
-        doc.getElementsByTagName("head")[0].appendChild(elem);
-
-        if (elem.styleSheet) { // IE
-            elem.styleSheet.cssText = cssStyleText;
-        } else { // W3C
-            elem.appendChild(doc.createTextNode(cssStyleText));
-        }
-
+        editor.addCustomStyle(cssStyleText);
     });
 });
 /**

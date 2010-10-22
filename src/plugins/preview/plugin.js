@@ -24,7 +24,8 @@ KISSY.Editor.add("preview", function(editor) {
                     self.el.on("offClick", this._show, this);
                 },
                 _show:function() {
-                    var self = this,editor = self.editor;
+                    var self = this,
+                        editor = self.editor;
                     //try {
                     //editor will be unvisible
                     //  editor.focus();
@@ -40,21 +41,28 @@ KISSY.Editor.add("preview", function(editor) {
                         iLeft = Math.round(screen.width * 0.1);
                     } catch (e) {
                     }
-                    var sHTML = editor._prepareIFrameHtml().replace(/<body[^>]+>.+<\/body>/,
-                        "<body>\n" + editor.getData() + "\n</body>").replace(/\${title}/, "预览");
-                    var sOpenUrl = '';
-                    var oWindow = window.open(sOpenUrl, null, 'toolbar=yes,' +
-                        'location=no,' +
-                        'status=yes,' +
-                        'menubar=yes,' +
-                        'scrollbars=yes,' +
-                        'resizable=yes,' +
-                        'width=' +
-                        iWidth +
-                        ',height='
-                        + iHeight
-                        + ',left='
-                        + iLeft);
+                    var sHTML = editor._prepareIFrameHtml(null,
+                        editor.cfg.customStyle)
+                        .replace(/<body[^>]+>.+<\/body>/,
+                        "<body>\n"
+                            + editor.getData()
+                            + "\n</body>")
+                        .replace(/\${title}/, "预览"),
+                        sOpenUrl = '',
+                        oWindow = window.open(sOpenUrl,
+                            null,
+                            'toolbar=yes,' +
+                                'location=no,' +
+                                'status=yes,' +
+                                'menubar=yes,' +
+                                'scrollbars=yes,' +
+                                'resizable=yes,' +
+                                'width=' +
+                                iWidth +
+                                ',height='
+                                + iHeight
+                                + ',left='
+                                + iLeft);
                     oWindow.document.open();
                     oWindow.document.write(sHTML);
                     oWindow.document.close();

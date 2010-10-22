@@ -471,12 +471,14 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     d.thead.val(head ? '1' : '');
                 },
                 _realTableShow:function() {
-                    var self = this,d = self.tableDialog;
+                    var self = this,
+                        d = self.tableDialog;
 
                     if (self.selectedTable) {
                         self._fillTableDialog();
-                        d.body.all(".ke-table-create-only").attr("disabled",
-                            "disabled");
+                        d.body
+                            .all(".ke-table-create-only")
+                            .attr("disabled", "disabled");
                         d.thead.disable();
                     } else {
                         d.body.all(".ke-table-create-only")
@@ -484,12 +486,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         d.thead.enable();
                     }
                     self.tableDialog.show();
-                    //console.log("do!");
                 },
                 _prepareTableShow:function() {
                     var self = this;
                     self._tableInit();
-                    //console.log("prepare!");
                 },
                 _tableShow:    function() {
                     var self = this;
@@ -835,20 +835,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
         })();
     }
     editor.addPlugin(function() {
-        var doc = editor.document;
         new KE.TableUI(editor);
-
         /**
          * 动态加入显表格border css，便于编辑
          */
-        var elem = DOM.create("<style>", null, doc);
-        doc.getElementsByTagName("head")[0].appendChild(elem);
-
-        if (elem.styleSheet) { // IE
-            elem.styleSheet.cssText = cssStyleText;
-        } else { // W3C
-            elem.appendChild(doc.createTextNode(cssStyleText));
-        }
-
+        editor.addCustomStyle(cssStyleText);
     });
 });

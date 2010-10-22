@@ -23,14 +23,18 @@ KISSY.Editor.add("definition", function(KE) {
         ke_editor_status = ".ke-editor-status",
         CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
 
-    function prepareIFrameHtml(id) {
+    function prepareIFrameHtml(id, customStyle) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
             + "<title>${title}</title>"
             + "<link href='"
-            + KE.Config.base + CSS_FILE
+            + KE.Config.base
+            + CSS_FILE
             + "' rel='stylesheet'/>"
+            + "<style>"
+            + (customStyle || "")
+            + "</style>"
             + "</head>"
             + "<body class='ke-editor'>"
             //firefox 必须里面有东西，否则编辑前不能删除!
@@ -204,7 +208,8 @@ KISSY.Editor.add("definition", function(KE) {
         },
         //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
         baseZIndex:function(v) {
-            var v = v || 0,zIndex = this.cfg.baseZIndex || 0;
+            v = v || 0;
+            var zIndex = this.cfg.baseZIndex || 0;
             return v + zIndex;
         },
 
@@ -256,12 +261,30 @@ KISSY.Editor.add("definition", function(KE) {
             //firefox 焦点相关，强制 mousedown 刷新光标
             //this.iframeFocus = false;
         },
+        addCustomStyle:function(cssText) {
+            var self = this,
+                cfg = self.cfg,
+                doc = self.document;
+            cfg.customStyle = cfg.customStyle || "";
+            cfg.customStyle += "\n" + cssText;
+
+            var elem = doc.createElement("style");
+            // 先添加到 DOM 树中，再给 cssText 赋值，否则 css hack 会失效
+            doc.getElementsByTagName("head")[0].appendChild(elem);
+            if (elem.styleSheet) { // IE
+                elem.styleSheet.cssText = cssText;
+            } else { // W3C
+                elem.appendChild(doc.createTextNode(cssText));
+            }
+        },
         _setUpIFrame:function() {
             var self = this,
                 iframe = self.iframe,
                 KES = KE.SELECTION,
                 textarea = self.textarea[0],
-                data = prepareIFrameHtml(self._UUID),
+                cfg = self.cfg,
+                data = prepareIFrameHtml(self._UUID,
+                    cfg.customStyle),
                 win = iframe[0].contentWindow,doc;
 
             try {
@@ -280,7 +303,7 @@ KISSY.Editor.add("definition", function(KE) {
                 iframe[0].src = iframe[0].src;
                 // In IE6 though, the above is not enough, so we must pause the
                 // execution for a while, giving it time to think.
-                if (UA.ie && UA.ie < 7) {
+                if (UA.ie < 7) {
                     setTimeout(run, 10);
                     return;
                 }
