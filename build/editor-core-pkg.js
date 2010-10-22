@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 15:12:23
+ * @buildtime: 2010-10-22 16:51:57
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -871,21 +871,22 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
+                if (self.htmlDataProcessor)
+                    html = self.htmlDataProcessor.toHtml(html, "p");
             } else {
+                //代码模式下不需过滤
                 html = self.textarea.val();
             }
-            if (self.htmlDataProcessor)
-                return self.htmlDataProcessor.toHtml(html, "p");
             return html;
         } ,
         setData:function(data) {
-            var self = this;
+            var self = this,afterData;
             if (self.htmlDataProcessor)
-                data = self.htmlDataProcessor.toDataFormat(data, "p");
-            self.document.body.innerHTML = data;
+                afterData = self.htmlDataProcessor.toDataFormat(data, "p");
+            self.document.body.innerHTML = afterData;
             if (self.getMode() == KE.WYSIWYG_MODE) {
-                self.document.body.innerHTML = data;
             } else {
+                //代码模式下不需过滤
                 self.textarea.val(data);
             }
         },

@@ -123,6 +123,10 @@ KISSY.Editor.add("undo", function(editor) {
                         editor = self.editor;
                     //外部通过editor触发save|restore,管理器捕获事件处理
                     editor.on("save", function(ev) {
+
+                        //代码模式下不和可视模式下混在一起
+                        if (editor.getMode() != KE.WYSIWYG_MODE) return;
+
                         if (ev.buffer) {
                             //键盘操作需要缓存
                             self.bufferRunner();
@@ -170,11 +174,14 @@ KISSY.Editor.add("undo", function(editor) {
                  * ev.d ：1.向前撤销 ，-1.向后重做
                  */
                 restore:function(ev) {
+
                     var d = ev.d,
                         self = this,
                         history = self.history,
                         editor = self.editor,
                         snapshot = history[self.index + d];
+                    //代码模式下不和可视模式下混在一起
+                    if (editor.getMode() != KE.WYSIWYG_MODE) return;
                     if (snapshot) {
                         editor._setRawData(snapshot.contents);
                         if (snapshot.bookmarks)

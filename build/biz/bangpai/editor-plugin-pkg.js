@@ -713,16 +713,19 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     list = listTableWrap.one("tbody"),
                     upHolder = new Node("<p " +
                         "style='" +
-                        "margin:15px 20px 30px; 0;" +
+                        "margin:15px 15px 30px; 0;" +
                         "text-align:right;" +
                         "'>" +
                         "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
                         "<a class='ke-button ke-bangpiaupload-insertall'" +
                         " style='margin-left:20px;'>全部插入</a>" +
+                        "<a class='ke-button ke-bangpiaupload-delall'" +
+                        " style='margin-left:20px;'>清空列表</a>" +
                         "</p>")
                         .appendTo(listWrap),
                     up = upHolder.one(".ke-bangpiaupload-ok"),
                     insertAll = upHolder.one(".ke-bangpiaupload-insertall"),
+                    delAll = upHolder.one(".ke-bangpiaupload-delall"),
                     fid = S.guid(name),
                     statusText = new Node("<span>")
                         .insertBefore(upHolder[0].firstChild);
@@ -783,14 +786,13 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     + "M");
 
                 insertAll.on("click", function() {
-                    trs = list.all("tr");
+                    var trs = list.all("tr");
                     for (var i = 0; i < trs.length; i++) {
                         var tr = new Node(trs[i]),
                             url = tr.attr("url");
                         if (url) {
                             editor.insertElement(new Node("<p>&nbsp;<img src='" +
                                 url + "'/>&nbsp;</p>", null, editor.document));
-                            self._removeTrFile(tr);
                             self._removeTrFile(tr);
                         }
                     }
@@ -818,6 +820,15 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     }
                 });
 
+                delAll.on("click", function() {
+                    var trs = list.all("tr");
+                    for (var i = 0; i < trs.length; i++) {
+                        var tr = new Node(trs[i]);
+                        self._removeTrFile(tr);
+                    }
+                    listWrap.hide();
+                });
+
                 uploader.on("fileSelect", self._onSelect, self);
                 uploader.on("uploadStart", self._onUploadStart, self);
                 uploader.on("uploadProgress", self._onProgress, self);
@@ -825,8 +836,6 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
                 uploader.on("contentReady", self._ready, self);
                 uploader.on("uploadError", self._uploadError, self);
-
-
                 //从本地恢复已上传记录
                 self._restore();
             },

@@ -119,4 +119,118 @@ KISSY.Editor.add("flashbridge", function() {
 
     KE.FlashBridge = FlashBridge;
 
+
+    /**
+     * @module   Flash UA 探测
+     * @author   kingfo<oicuicu@gmail.com>
+     */
+
+    var UA = S.UA, fpv, fpvF, firstRun = true;
+
+    /**
+     * 获取 Flash 版本号
+     * 返回数据 [M, S, R] 若未安装，则返回 undefined
+     */
+    function getFlashVersion() {
+        var ver, SF = 'ShockwaveFlash';
+
+        // for NPAPI see: http://en.wikipedia.org/wiki/NPAPI
+        if (navigator.plugins && navigator.mimeTypes.length) {
+            ver = (navigator.plugins['Shockwave Flash'] || 0).description;
+        }
+        // for ActiveX see:	http://en.wikipedia.org/wiki/ActiveX
+        else if (window.ActiveXObject) {
+            try {
+                ver = new ActiveXObject(SF + '.' + SF)['GetVariable']('$version');
+            } catch(ex) {
+                //S.log('getFlashVersion failed via ActiveXObject');
+                // nothing to do, just return undefined
+            }
+        }
+
+        // 插件没安装或有问题时，ver 为 undefined
+        if (!ver) return;
+
+        // 插件安装正常时，ver 为 "Shockwave Flash 10.1 r53" or "WIN 10,1,53,64"
+        return arrify(ver);
+    }
+
+    /**
+     * arrify("10.1.r53") => ["10", "1", "53"]
+     */
+    function arrify(ver) {
+        return ver.match(/(\d)+/g);
+    }
+
+    /**
+     * 格式：主版本号Major.次版本号Minor(小数点后3位，占3位)修正版本号Revision(小数点后第4至第8位，占5位)
+     * ver 参数不符合预期时，返回 0
+     * numerify("10.1 r53") => 10.00100053
+     * numerify(["10", "1", "53"]) => 10.00100053
+     * numerify(12.2) => 12.2
+     */
+    function numerify(ver) {
+        var arr = S.isString(ver) ? arrify(ver) : ver, ret = ver;
+        if (S.isArray(arr)) {
+            ret = parseFloat(arr[0] + '.' + pad(arr[1], 3) + pad(arr[2], 5));
+        }
+        return ret || 0;
+    }
+
+    /**
+     * pad(12, 5) => "00012"
+     * ref: http://lifesinger.org/blog/2009/08/the-harm-of-tricky-code/
+     */
+    function pad(num, n) {
+        var len = (num + '').length;
+        while (len++ < n) {
+            num = '0' + num;
+        }
+        return num;
+    }
+
+    /**
+     * 返回数据 [M, S, R] 若未安装，则返回 undefined
+     * fpv 全称是 flash player version
+     */
+    UA.fpv = function(force) {
+        // 考虑 new ActiveX 和 try catch 的 性能损耗，延迟初始化到第一次调用时
+        if (force || firstRun) {
+            firstRun = false;
+            fpv = getFlashVersion();
+            fpvF = numerify(fpv);
+        }
+        return fpv;
+    };
+
+    /**
+     * Checks fpv is greater than or equal the specific version.
+     * 普通的 flash 版本检测推荐使用该方法
+     * @param ver eg. "10.1.53"
+     * <code>
+     *    if(S.UA.fpvGEQ('9.9.2')) { ... }
+     * </code>
+     */
+    UA.fpvGEQ = function(ver, force) {
+        if (firstRun) UA.fpv(force);
+        return !!fpvF && (fpvF >= numerify(ver));
+    };
+
+    /*
+    if (!UA.fpvGEQ("11.0.0")) {
+
+        var alertWin = new KE.SimpleOverlay({
+            focusMgr:false,
+            mask:true,
+            title:"Flash 警告"
+        });
+
+        alertWin.body.html("您的Flash插件版本过低，" +
+            "可能不能支持上传功能，" +
+            "<a href='http://get.adobe.com/cn/flashplayer/' " +
+            "target='_blank'>请点击此处更新</a>");
+
+    }
+    */
+
 });

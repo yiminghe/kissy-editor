@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 15:12:23
+ * @buildtime: 2010-10-22 16:51:57
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -871,21 +871,22 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
+                if (self.htmlDataProcessor)
+                    html = self.htmlDataProcessor.toHtml(html, "p");
             } else {
+                //代码模式下不需过滤
                 html = self.textarea.val();
             }
-            if (self.htmlDataProcessor)
-                return self.htmlDataProcessor.toHtml(html, "p");
             return html;
         } ,
         setData:function(data) {
-            var self = this;
+            var self = this,afterData;
             if (self.htmlDataProcessor)
-                data = self.htmlDataProcessor.toDataFormat(data, "p");
-            self.document.body.innerHTML = data;
+                afterData = self.htmlDataProcessor.toDataFormat(data, "p");
+            self.document.body.innerHTML = afterData;
             if (self.getMode() == KE.WYSIWYG_MODE) {
-                self.document.body.innerHTML = data;
             } else {
+                //代码模式下不需过滤
                 self.textarea.val(data);
             }
         },
@@ -8275,7 +8276,8 @@ KISSY.Editor.add("draft", function(editor) {
                         drafts = [],date;
                     self.versions = versions;
                     if (str) {
-                        drafts = S.isString(str) ? JSON.parse(decodeURIComponent(str)) : str;
+                        drafts = S.isString(str) ?
+                            JSON.parse(decodeURIComponent(str)) : str;
                     }
                     self.drafts = drafts;
                     self.sync();
@@ -8290,7 +8292,7 @@ KISSY.Editor.add("draft", function(editor) {
 
                     versions.on("click", self.recover, self);
                     self.holder = holder;
-                    KE.Utils.sourceDisable(editor, self);
+                    //KE.Utils.sourceDisable(editor, self);
                     if (cfg.draft.helpHtml) {
                         var help = new KE.TripleButton({
                             cls:"ke-draft-help",
@@ -8385,7 +8387,8 @@ KISSY.Editor.add("draft", function(editor) {
                     var items = [],draft,tip;
                     for (var i = 0; i < drafts.length; i++) {
                         draft = drafts[i];
-                        tip = (draft.auto ? "自动" : "手动") + "保存于 : " + date(draft.date);
+                        tip = (draft.auto ? "自动" : "手动") + "保存于 : "
+                            + date(draft.date);
                         items.push({
                             name:tip,
                             value:i
@@ -8399,7 +8402,12 @@ KISSY.Editor.add("draft", function(editor) {
                 save:function(auto) {
                     var self = this,
                         drafts = self.drafts,
-                        data = editor._getRawData();
+                        //不使用rawdata
+                        //undo 只需获得可视区域内代码
+                        //可视区域内代码！= 最终代码
+                        //代码模式也要支持草稿功能
+                        //统一获得最终代码
+                        data = editor.getData();
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {
@@ -8423,7 +8431,7 @@ KISSY.Editor.add("draft", function(editor) {
                     versions.reset("value");
                     if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
                         editor.fire("save");
-                        editor._setRawData(drafts[v].content);
+                        editor.setData(drafts[v].content);
                         editor.fire("save");
                     }
                 }
@@ -9016,6 +9024,120 @@ KISSY.Editor.add("flashbridge", function() {
     };
 
     KE.FlashBridge = FlashBridge;
+
+
+    /**
+     * @module   Flash UA 探测
+     * @author   kingfo<oicuicu@gmail.com>
+     */
+
+    var UA = S.UA, fpv, fpvF, firstRun = true;
+
+    /**
+     * 获取 Flash 版本号
+     * 返回数据 [M, S, R] 若未安装，则返回 undefined
+     */
+    function getFlashVersion() {
+        var ver, SF = 'ShockwaveFlash';
+
+        // for NPAPI see: http://en.wikipedia.org/wiki/NPAPI
+        if (navigator.plugins && navigator.mimeTypes.length) {
+            ver = (navigator.plugins['Shockwave Flash'] || 0).description;
+        }
+        // for ActiveX see:	http://en.wikipedia.org/wiki/ActiveX
+        else if (window.ActiveXObject) {
+            try {
+                ver = new ActiveXObject(SF + '.' + SF)['GetVariable']('$version');
+            } catch(ex) {
+                //S.log('getFlashVersion failed via ActiveXObject');
+                // nothing to do, just return undefined
+            }
+        }
+
+        // 插件没安装或有问题时，ver 为 undefined
+        if (!ver) return;
+
+        // 插件安装正常时，ver 为 "Shockwave Flash 10.1 r53" or "WIN 10,1,53,64"
+        return arrify(ver);
+    }
+
+    /**
+     * arrify("10.1.r53") => ["10", "1", "53"]
+     */
+    function arrify(ver) {
+        return ver.match(/(\d)+/g);
+    }
+
+    /**
+     * 格式：主版本号Major.次版本号Minor(小数点后3位，占3位)修正版本号Revision(小数点后第4至第8位，占5位)
+     * ver 参数不符合预期时，返回 0
+     * numerify("10.1 r53") => 10.00100053
+     * numerify(["10", "1", "53"]) => 10.00100053
+     * numerify(12.2) => 12.2
+     */
+    function numerify(ver) {
+        var arr = S.isString(ver) ? arrify(ver) : ver, ret = ver;
+        if (S.isArray(arr)) {
+            ret = parseFloat(arr[0] + '.' + pad(arr[1], 3) + pad(arr[2], 5));
+        }
+        return ret || 0;
+    }
+
+    /**
+     * pad(12, 5) => "00012"
+     * ref: http://lifesinger.org/blog/2009/08/the-harm-of-tricky-code/
+     */
+    function pad(num, n) {
+        var len = (num + '').length;
+        while (len++ < n) {
+            num = '0' + num;
+        }
+        return num;
+    }
+
+    /**
+     * 返回数据 [M, S, R] 若未安装，则返回 undefined
+     * fpv 全称是 flash player version
+     */
+    UA.fpv = function(force) {
+        // 考虑 new ActiveX 和 try catch 的 性能损耗，延迟初始化到第一次调用时
+        if (force || firstRun) {
+            firstRun = false;
+            fpv = getFlashVersion();
+            fpvF = numerify(fpv);
+        }
+        return fpv;
+    };
+
+    /**
+     * Checks fpv is greater than or equal the specific version.
+     * 普通的 flash 版本检测推荐使用该方法
+     * @param ver eg. "10.1.53"
+     * <code>
+     *    if(S.UA.fpvGEQ('9.9.2')) { ... }
+     * </code>
+     */
+    UA.fpvGEQ = function(ver, force) {
+        if (firstRun) UA.fpv(force);
+        return !!fpvF && (fpvF >= numerify(ver));
+    };
+
+    /*
+    if (!UA.fpvGEQ("11.0.0")) {
+
+        var alertWin = new KE.SimpleOverlay({
+            focusMgr:false,
+            mask:true,
+            title:"Flash 警告"
+        });
+
+        alertWin.body.html("您的Flash插件版本过低，" +
+            "可能不能支持上传功能，" +
+            "<a href='http://get.adobe.com/cn/flashplayer/' " +
+            "target='_blank'>请点击此处更新</a>");
+
+    }
+    */
 
 });/**
  * flash base for all flash-based plugin
@@ -17737,6 +17859,10 @@ KISSY.Editor.add("undo", function(editor) {
                         editor = self.editor;
                     //外部通过editor触发save|restore,管理器捕获事件处理
                     editor.on("save", function(ev) {
+
+                        //代码模式下不和可视模式下混在一起
+                        if (editor.getMode() != KE.WYSIWYG_MODE) return;
+
                         if (ev.buffer) {
                             //键盘操作需要缓存
                             self.bufferRunner();
@@ -17784,11 +17910,14 @@ KISSY.Editor.add("undo", function(editor) {
                  * ev.d ：1.向前撤销 ，-1.向后重做
                  */
                 restore:function(ev) {
+
                     var d = ev.d,
                         self = this,
                         history = self.history,
                         editor = self.editor,
                         snapshot = history[self.index + d];
+                    //代码模式下不和可视模式下混在一起
+                    if (editor.getMode() != KE.WYSIWYG_MODE) return;
                     if (snapshot) {
                         editor._setRawData(snapshot.contents);
                         if (snapshot.bookmarks)

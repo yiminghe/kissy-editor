@@ -104,7 +104,8 @@ KISSY.Editor.add("draft", function(editor) {
                         drafts = [],date;
                     self.versions = versions;
                     if (str) {
-                        drafts = S.isString(str) ? JSON.parse(decodeURIComponent(str)) : str;
+                        drafts = S.isString(str) ?
+                            JSON.parse(decodeURIComponent(str)) : str;
                     }
                     self.drafts = drafts;
                     self.sync();
@@ -119,7 +120,7 @@ KISSY.Editor.add("draft", function(editor) {
 
                     versions.on("click", self.recover, self);
                     self.holder = holder;
-                    KE.Utils.sourceDisable(editor, self);
+                    //KE.Utils.sourceDisable(editor, self);
                     if (cfg.draft.helpHtml) {
                         var help = new KE.TripleButton({
                             cls:"ke-draft-help",
@@ -214,7 +215,8 @@ KISSY.Editor.add("draft", function(editor) {
                     var items = [],draft,tip;
                     for (var i = 0; i < drafts.length; i++) {
                         draft = drafts[i];
-                        tip = (draft.auto ? "自动" : "手动") + "保存于 : " + date(draft.date);
+                        tip = (draft.auto ? "自动" : "手动") + "保存于 : "
+                            + date(draft.date);
                         items.push({
                             name:tip,
                             value:i
@@ -228,7 +230,12 @@ KISSY.Editor.add("draft", function(editor) {
                 save:function(auto) {
                     var self = this,
                         drafts = self.drafts,
-                        data = editor._getRawData();
+                        //不使用rawdata
+                        //undo 只需获得可视区域内代码
+                        //可视区域内代码！= 最终代码
+                        //代码模式也要支持草稿功能
+                        //统一获得最终代码
+                        data = editor.getData();
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {
@@ -252,7 +259,7 @@ KISSY.Editor.add("draft", function(editor) {
                     versions.reset("value");
                     if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
                         editor.fire("save");
-                        editor._setRawData(drafts[v].content);
+                        editor.setData(drafts[v].content);
                         editor.fire("save");
                     }
                 }
