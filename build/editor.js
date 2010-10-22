@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-20 18:09:56
+ * @buildtime: 2010-10-22 18:02:58
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -72,12 +72,22 @@ KISSY.add("editor", function(S, undefined) {
                     mods.unshift(b);
                 }
             }
-            
+
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
                     callback && callback.call(self);
                     self.setData(textarea.val());
+                    //是否自动focus
+                    if (cfg.focus) {
+                        self.focus();
+                    }
+                    //否则清空选择区域
+                    else {
+
+                        var sel = self.getSelection();
+                        sel && sel.removeAllRanges();
+                    }
                     self.fire("save");
                 });
 

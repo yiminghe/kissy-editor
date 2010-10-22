@@ -72,12 +72,22 @@ KISSY.add("editor", function(S, undefined) {
                     mods.unshift(b);
                 }
             }
-            
+
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
                     callback && callback.call(self);
                     self.setData(textarea.val());
+                    //是否自动focus
+                    if (cfg.focus) {
+                        self.focus();
+                    }
+                    //否则清空选择区域
+                    else {
+
+                        var sel = self.getSelection();
+                        sel && sel.removeAllRanges();
+                    }
                     self.fire("save");
                 });
 

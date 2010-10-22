@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 17:37:21
+ * @buildtime: 2010-10-22 18:02:58
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -72,12 +72,22 @@ KISSY.add("editor", function(S, undefined) {
                     mods.unshift(b);
                 }
             }
-            
+
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
                     callback && callback.call(self);
                     self.setData(textarea.val());
+                    //是否自动focus
+                    if (cfg.focus) {
+                        self.focus();
+                    }
+                    //否则清空选择区域
+                    else {
+
+                        var sel = self.getSelection();
+                        sel && sel.removeAllRanges();
+                    }
                     self.fire("save");
                 });
 
@@ -856,9 +866,9 @@ KISSY.Editor.add("definition", function(KE) {
             args.shift();
             args.unshift(self);
             //if (self._commands[name]) {
-            self.fire("save");
+            //self.fire("save");
             var re = cmd.exec.apply(cmd, args);
-            self.fire("save");
+            //self.fire("save");
             return re;
             //}
         },
@@ -5751,6 +5761,14 @@ KISSY.Editor.add("selection", function(KE) {
             // range position and scroll relatively to it.
             var start = this.getStartElement();
             start && start._4e_scrollIntoView();
+        },
+        removeAllRanges:function() {
+            var sel = this.getNative();
+            if (UA.ie) {
+                sel.clear();
+            } else {
+                sel.removeAllRanges();
+            }
         }
     });
 
@@ -8591,7 +8609,9 @@ KISSY.Editor.add("enterkey", function(editor) {
 
                         ) {
                         if (editor.hasCommand('outdent')) {
+                            editor.fire("save");
                             editor.execCommand('outdent');
+                            editor.fire("save");
                             return;
                         } else {
                             return false;
@@ -8734,7 +8754,9 @@ KISSY.Editor.add("enterkey", function(editor) {
                     if (keyCode === 13) {
                         if (ev.shiftKey) {
                         } else {
+                            editor.fire("save");
                             var re = editor.execCommand("enterBlock");
+                            editor.fire("save");
                             if (re !== false)ev.preventDefault();
                         }
 
@@ -17761,7 +17783,7 @@ KISSY.Editor.add("undo", function(editor) {
     if (!KE.UndoManager) {
         (function() {
             /**
-             * 当前编辑区域状态，包括html与选择区域
+             * 当前编辑区域状态，包括 html 与选择区域(光标位置)
              * @param editor
              */
             function Snapshot(editor) {
@@ -17898,7 +17920,7 @@ KISSY.Editor.add("undo", function(editor) {
                     var self = this,
                         history = self.history,
                         index = self.index;
-
+                    //debugger
                     //前面的历史抛弃
                     if (history.length > index + 1)
                         history.splice(index + 1, history.length - index - 1);

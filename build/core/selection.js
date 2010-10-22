@@ -588,6 +588,14 @@ KISSY.Editor.add("selection", function(KE) {
             // range position and scroll relatively to it.
             var start = this.getStartElement();
             start && start._4e_scrollIntoView();
+        },
+        removeAllRanges:function() {
+            var sel = this.getNative();
+            if (UA.ie) {
+                sel.clear();
+            } else {
+                sel.removeAllRanges();
+            }
         }
     });
 

@@ -169,9 +169,9 @@ KISSY.Editor.add("definition", function(KE) {
             args.shift();
             args.unshift(self);
             //if (self._commands[name]) {
-            self.fire("save");
+            //self.fire("save");
             var re = cmd.exec.apply(cmd, args);
-            self.fire("save");
+            //self.fire("save");
             return re;
             //}
         },

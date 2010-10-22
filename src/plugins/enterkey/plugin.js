@@ -43,7 +43,9 @@ KISSY.Editor.add("enterkey", function(editor) {
 
                         ) {
                         if (editor.hasCommand('outdent')) {
+                            editor.fire("save");
                             editor.execCommand('outdent');
+                            editor.fire("save");
                             return;
                         } else {
                             return false;
@@ -186,7 +188,9 @@ KISSY.Editor.add("enterkey", function(editor) {
                     if (keyCode === 13) {
                         if (ev.shiftKey) {
                         } else {
+                            editor.fire("save");
                             var re = editor.execCommand("enterBlock");
+                            editor.fire("save");
                             if (re !== false)ev.preventDefault();
                         }
 
