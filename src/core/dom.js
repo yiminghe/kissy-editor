@@ -943,7 +943,11 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
                 var doc = elem[0].ownerDocument;
-                var l = DOM.scrollLeft(doc),t = DOM.scrollTop(doc),eoffset = elem.offset(),el = eoffset.left, et = eoffset.top;
+                var l = DOM.scrollLeft(doc),
+                    t = DOM.scrollTop(doc),
+                    eoffset = elem.offset(),
+                    el = eoffset.left,
+                    et = eoffset.top;
                 if (DOM.viewportHeight(doc) + t < et ||
                     et < t ||
                     DOM.viewportWidth(doc) + l < el

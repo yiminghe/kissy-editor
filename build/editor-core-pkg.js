@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 16:51:57
+ * @buildtime: 2010-10-22 17:37:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -2661,7 +2661,11 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
                 var doc = elem[0].ownerDocument;
-                var l = DOM.scrollLeft(doc),t = DOM.scrollTop(doc),eoffset = elem.offset(),el = eoffset.left, et = eoffset.top;
+                var l = DOM.scrollLeft(doc),
+                    t = DOM.scrollTop(doc),
+                    eoffset = elem.offset(),
+                    el = eoffset.left,
+                    et = eoffset.top;
                 if (DOM.viewportHeight(doc) + t < et ||
                     et < t ||
                     DOM.viewportWidth(doc) + l < el
@@ -5746,7 +5750,7 @@ KISSY.Editor.add("selection", function(KE) {
             // If we have split the block, adds a temporary span at the
             // range position and scroll relatively to it.
             var start = this.getStartElement();
-            start._4e_scrollIntoView();
+            start && start._4e_scrollIntoView();
         }
     });
 

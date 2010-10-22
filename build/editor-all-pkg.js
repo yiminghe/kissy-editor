@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 16:51:57
+ * @buildtime: 2010-10-22 17:37:21
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -2661,7 +2661,11 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
                 var doc = elem[0].ownerDocument;
-                var l = DOM.scrollLeft(doc),t = DOM.scrollTop(doc),eoffset = elem.offset(),el = eoffset.left, et = eoffset.top;
+                var l = DOM.scrollLeft(doc),
+                    t = DOM.scrollTop(doc),
+                    eoffset = elem.offset(),
+                    el = eoffset.left,
+                    et = eoffset.top;
                 if (DOM.viewportHeight(doc) + t < et ||
                     et < t ||
                     DOM.viewportWidth(doc) + l < el
@@ -5746,7 +5750,7 @@ KISSY.Editor.add("selection", function(KE) {
             // If we have split the block, adds a temporary span at the
             // range position and scroll relatively to it.
             var start = this.getStartElement();
-            start._4e_scrollIntoView();
+            start && start._4e_scrollIntoView();
         }
     });
 
@@ -16644,8 +16648,10 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
 
                 _show:function(editor) {
                     var textarea = editor.textarea;
+                    //还没等 textarea 隐掉就先获取
                     textarea.val(editor.getData());
                     this._showSource(editor);
+                    editor.fire("sourcemode");
                 },
                 _showSource:function(editor) {
                     var textarea = editor.textarea,
@@ -16658,20 +16664,27 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     }
                     //ie6 光标透出
                     textarea[0].focus();
-                    editor.fire("sourcemode");
                 },
                 _hideSource:function(editor) {
                     var textarea = editor.textarea,
                         iframe = editor.iframe;
                     iframe.css("display", "");
                     textarea.css("display", "none");
-                    editor.fire("wysiwygmode");
                 },
                 _hide:function(editor) {
                     var textarea = editor.textarea;
                     this._hideSource(editor);
+                    //等 textarea 隐掉了再设置
+                    //debugger
+                    editor.fire("save");
                     editor.setData(textarea.val());
-                    //firefox 光标激活，强迫刷新                    
+
+                    editor.fire("wysiwygmode");
+                    //debugger
+                    //在切换到可视模式后再进行，否则一旦wysiwygmode在最后，撤销又恢复为原来状态
+                    editor.fire("save");
+
+                    //firefox 光标激活，强迫刷新
                     if (UA.gecko) {
                         editor.activateGecko();
                     }
@@ -17929,6 +17942,11 @@ KISSY.Editor.add("undo", function(editor) {
                             var $range = editor.document.body.createTextRange();
                             $range.collapse(true);
                             $range.select();
+                        }
+                        var selection = editor.getSelection();
+                        //将当前光标，选择区域滚动到可视区域
+                        if (selection) {
+                            selection.scrollIntoView();
                         }
                         self.index += d;
                         editor.fire("afterRestore", {

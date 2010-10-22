@@ -194,6 +194,11 @@ KISSY.Editor.add("undo", function(editor) {
                             $range.collapse(true);
                             $range.select();
                         }
+                        var selection = editor.getSelection();
+                        //将当前光标，选择区域滚动到可视区域
+                        if (selection) {
+                            selection.scrollIntoView();
+                        }
                         self.index += d;
                         editor.fire("afterRestore", {
                             history:history,

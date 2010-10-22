@@ -27,8 +27,10 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
 
                 _show:function(editor) {
                     var textarea = editor.textarea;
+                    //还没等 textarea 隐掉就先获取
                     textarea.val(editor.getData());
                     this._showSource(editor);
+                    editor.fire("sourcemode");
                 },
                 _showSource:function(editor) {
                     var textarea = editor.textarea,
@@ -41,20 +43,27 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                     }
                     //ie6 光标透出
                     textarea[0].focus();
-                    editor.fire("sourcemode");
                 },
                 _hideSource:function(editor) {
                     var textarea = editor.textarea,
                         iframe = editor.iframe;
                     iframe.css("display", "");
                     textarea.css("display", "none");
-                    editor.fire("wysiwygmode");
                 },
                 _hide:function(editor) {
                     var textarea = editor.textarea;
                     this._hideSource(editor);
+                    //等 textarea 隐掉了再设置
+                    //debugger
+                    editor.fire("save");
                     editor.setData(textarea.val());
-                    //firefox 光标激活，强迫刷新                    
+
+                    editor.fire("wysiwygmode");
+                    //debugger
+                    //在切换到可视模式后再进行，否则一旦wysiwygmode在最后，撤销又恢复为原来状态
+                    editor.fire("save");
+
+                    //firefox 光标激活，强迫刷新
                     if (UA.gecko) {
                         editor.activateGecko();
                     }
