@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 18:02:58
+ * @buildtime: 2010-10-22 21:58:43
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -338,7 +338,12 @@ KISSY.add("editor", function(S, undefined) {
  */
 KISSY.Editor.add("utils", function(KE) {
 
-    var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
+    var S = KISSY,
+        Node = S.Node,
+        DOM = S.DOM,
+        debug = S.Config.debug,
+        UA = S.UA,
+        Event = S.Event;
     KE.Utils = {
 
         debugUrl:function (url) {
@@ -628,8 +633,108 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             }
             return params;
+        },
+
+        doFormUpload : function(o, ps, url) {
+            var id = S.guid("form-upload-");
+            var frame = document.createElement('iframe');
+            frame.id = id;
+            frame.name = id;
+            frame.className = 'ke-hidden';
+            if (UA.ie) {
+                frame.src = "javascript:false";
+            }
+            document.body.appendChild(frame);
+
+            if (UA.ie) {
+                document.frames[id].name = id;
+            }
+
+            var form = DOM._4e_unwrap(o.form),
+                buf = {
+                    target: form.target,
+                    method: form.method,
+                    encoding: form.encoding,
+                    enctype: form.enctype,
+                    action: form.action
+                };
+            form.target = id;
+            form.method = 'POST';
+            form.enctype = form.encoding = 'multipart/form-data';
+            if (url) {
+                form.action = url;
+            }
+
+            var hiddens, hd;
+            if (ps) { // add dynamic params
+                hiddens = [];
+                ps = KE.Utils.normParams(ps);
+                for (var k in ps) {
+                    if (ps.hasOwnProperty(k)) {
+                        hd = document.createElement('input');
+                        hd.type = 'hidden';
+                        hd.name = k;
+                        hd.value = ps[k];
+                        form.appendChild(hd);
+                        hiddens.push(hd);
+                    }
+                }
+            }
+
+            function cb() {
+                var r = {  // bogus response object
+                    responseText : '',
+                    responseXML : null
+                };
+
+                r.argument = o ? o.argument : null;
+
+                try { //
+                    var doc;
+                    if (UA.ie) {
+                        doc = frame.contentWindow.document;
+                    } else {
+                        doc = (frame.contentDocument || window.frames[id].document);
+                    }
+                    if (doc && doc.body) {
+                        r.responseText = doc.body.innerHTML;
+                    }
+                    if (doc && doc.XMLDocument) {
+                        r.responseXML = doc.XMLDocument;
+                    } else {
+                        r.responseXML = doc;
+                    }
+                }
+                catch(e) {
+                    // ignore
+                }
+
+                Event.remove(frame, 'load', cb);
+                o.callback && o.callback(r);
+
+                setTimeout(function() {
+                    DOM._4e_remove(frame);
+                }, 100);
+            }
+
+            Event.on(frame, 'load', cb);
+            form.submit();
+
+            form.target = buf.target;
+            form.method = buf.method;
+            form.enctype = buf.enctype;
+            form.encoding = buf.encoding;
+            form.action = buf.action;
+
+            if (hiddens) { // remove dynamic params
+                for (var i = 0, len = hiddens.length; i < len; i++) {
+                    DOM._4e_remove(hiddens[i]);
+                }
+            }
         }
-    }
+    };
+
+
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
@@ -1785,6 +1890,7 @@ KISSY.Editor.add("dom", function(KE) {
         },
         editorDom = {
             _4e_wrap:normalEl,
+            _4e_unwrap:normalElDom,
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
@@ -2496,7 +2602,7 @@ KISSY.Editor.add("dom", function(KE) {
                 while (lastChild && lastChild.nodeType == KEN.NODE_TEXT && !S.trim(lastChild.nodeValue))
                     lastChild = lastChild.previousSibling;
                 if (!lastChild ||
-                    lastChild.nodeType == KEN.NODE_TEXT || 
+                    lastChild.nodeType == KEN.NODE_TEXT ||
                     DOM._4e_name(lastChild) !== 'br') {
                     var bogus = UA.opera ?
                         el.ownerDocument.createTextNode('') :

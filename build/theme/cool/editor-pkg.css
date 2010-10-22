@@ -21,6 +21,12 @@ from : resource://gre/res/html.css
     *zoom: 1;
 }
 
+.ke-hidden {
+    position:absolute;
+    left:-9999px;
+    top:-9999px;
+}
+
 .ke-post h1,
 .ke-post h2,
 .ke-post h3,
@@ -341,7 +347,7 @@ active
     *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
 
-.ke-button:hover {
+.ke-button:hover ,.ke-button-hover{
     border-color: rgb(232, 204, 160);
     background: #f5e7ce repeat-x left top;
     background-image: url("ke-button-bg-active.png");

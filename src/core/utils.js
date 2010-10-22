@@ -4,7 +4,12 @@
  */
 KISSY.Editor.add("utils", function(KE) {
 
-    var S = KISSY,Node = S.Node,DOM = S.DOM,debug = S.Config.debug,UA = S.UA;
+    var S = KISSY,
+        Node = S.Node,
+        DOM = S.DOM,
+        debug = S.Config.debug,
+        UA = S.UA,
+        Event = S.Event;
     KE.Utils = {
 
         debugUrl:function (url) {
@@ -294,6 +299,106 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             }
             return params;
+        },
+
+        doFormUpload : function(o, ps, url) {
+            var id = S.guid("form-upload-");
+            var frame = document.createElement('iframe');
+            frame.id = id;
+            frame.name = id;
+            frame.className = 'ke-hidden';
+            if (UA.ie) {
+                frame.src = "javascript:false";
+            }
+            document.body.appendChild(frame);
+
+            if (UA.ie) {
+                document.frames[id].name = id;
+            }
+
+            var form = DOM._4e_unwrap(o.form),
+                buf = {
+                    target: form.target,
+                    method: form.method,
+                    encoding: form.encoding,
+                    enctype: form.enctype,
+                    action: form.action
+                };
+            form.target = id;
+            form.method = 'POST';
+            form.enctype = form.encoding = 'multipart/form-data';
+            if (url) {
+                form.action = url;
+            }
+
+            var hiddens, hd;
+            if (ps) { // add dynamic params
+                hiddens = [];
+                ps = KE.Utils.normParams(ps);
+                for (var k in ps) {
+                    if (ps.hasOwnProperty(k)) {
+                        hd = document.createElement('input');
+                        hd.type = 'hidden';
+                        hd.name = k;
+                        hd.value = ps[k];
+                        form.appendChild(hd);
+                        hiddens.push(hd);
+                    }
+                }
+            }
+
+            function cb() {
+                var r = {  // bogus response object
+                    responseText : '',
+                    responseXML : null
+                };
+
+                r.argument = o ? o.argument : null;
+
+                try { //
+                    var doc;
+                    if (UA.ie) {
+                        doc = frame.contentWindow.document;
+                    } else {
+                        doc = (frame.contentDocument || window.frames[id].document);
+                    }
+                    if (doc && doc.body) {
+                        r.responseText = doc.body.innerHTML;
+                    }
+                    if (doc && doc.XMLDocument) {
+                        r.responseXML = doc.XMLDocument;
+                    } else {
+                        r.responseXML = doc;
+                    }
+                }
+                catch(e) {
+                    // ignore
+                }
+
+                Event.remove(frame, 'load', cb);
+                o.callback && o.callback(r);
+
+                setTimeout(function() {
+                    DOM._4e_remove(frame);
+                }, 100);
+            }
+
+            Event.on(frame, 'load', cb);
+            form.submit();
+
+            form.target = buf.target;
+            form.method = buf.method;
+            form.enctype = buf.enctype;
+            form.encoding = buf.encoding;
+            form.action = buf.action;
+
+            if (hiddens) { // remove dynamic params
+                for (var i = 0, len = hiddens.length; i < len; i++) {
+                    DOM._4e_remove(hiddens[i]);
+                }
+            }
         }
-    }
+    };
+
+
 });

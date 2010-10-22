@@ -497,8 +497,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 'class' : function(value
                     // , element
                     ) {
-                    value = S.trim(value);
-                    if (/^ke_/.test(value)) return value;
+                    if (/(^|\s+)ke_/.test(value)) return value;
                     return false;
                 },
                 'style':function(value) {

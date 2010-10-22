@@ -57,6 +57,7 @@ KISSY.Editor.add("dom", function(KE) {
         },
         editorDom = {
             _4e_wrap:normalEl,
+            _4e_unwrap:normalElDom,
             _4e_equals:function(e1, e2) {
                 //全部为空
                 if (!e1 && !e2)return true;
@@ -768,7 +769,7 @@ KISSY.Editor.add("dom", function(KE) {
                 while (lastChild && lastChild.nodeType == KEN.NODE_TEXT && !S.trim(lastChild.nodeValue))
                     lastChild = lastChild.previousSibling;
                 if (!lastChild ||
-                    lastChild.nodeType == KEN.NODE_TEXT || 
+                    lastChild.nodeType == KEN.NODE_TEXT ||
                     DOM._4e_name(lastChild) !== 'br') {
                     var bogus = UA.opera ?
                         el.ownerDocument.createTextNode('') :

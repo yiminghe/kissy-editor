@@ -21,6 +21,12 @@ from : resource://gre/res/html.css
     *zoom: 1;
 }
 
+.ke-hidden {
+    position:absolute;
+    left:-9999px;
+    top:-9999px;
+}
+
 .ke-post h1,
 .ke-post h2,
 .ke-post h3,

@@ -14,24 +14,24 @@ KISSY.Editor.add("image", function(editor) {
         BubbleView = KE.BubbleView,
         Overlay = KE.SimpleOverlay,
         TIP = "http://",
-        DTIP = "自动";
-    //!TODO 需要重构，flashsupport ,image 类似，再抽离？
+        DTIP = "自动",
+        MARGIN_DEFAULT = 0;
+
+    //重新采用form提交，不采用flash，国产浏览器很多问题
+
     if (!KE.ImageInserter) {
         (function() {
 
             var checkImg = function (node) {
-                return node._4e_name() === 'img' && (!/(^|\s+)ke_/.test(node[0].className)) && node;
+                return node._4e_name() === 'img' &&
+                    (!/(^|\s+)ke_/.test(node[0].className)) &&
+                    node;
             };
 
             function ImageInserter(cfg) {
                 ImageInserter.superclass.constructor.call(this, cfg);
                 this._init();
             }
-
-            DOM.addStyleSheet(
-                ".ke-image-wrap {" +
-                    "margin:0;" +
-                    "}", "ke-image");
 
             var TripleButton = KE.TripleButton,
                 bodyHtml = "<div class='ke-image-wrap'>" +
@@ -62,17 +62,26 @@ KISSY.Editor.add("image", function(editor) {
                     "value='" + TIP + "'/>" +
                     "</label>" +
                     "</div>" +
-                    "<div><p>" +
+                    "<div style='position:relative;'>" +
+                    "<form class='ke-img-upload-form'>" +
+                    "<p>" +
                     "<input class='ke-input ke-img-local-url' " +
                     "readonly='readonly' " +
                     "style='margin-right: 15px; " +
                     "vertical-align: middle; " +
-                    "width: 373px;" +
+                    "width: 368px;" +
                     "color:#969696;'/>" +
-                    "<button class='ke-image-up ke-button'>浏览...</button>" +
+                    "<a " +
+                    "style='padding:3px 11px;" +
+                    "position:absolute;" +
+                    "left:390px;" +
+                    "top:0px;" +
+                    "z-index:1;' " +
+                    "class='ke-image-up ke-button'>浏览...</a>" +
                     "</p>" +
                     "<div class='ke-img-up-extraHtml'>" +
                     "</div>" +
+                    "</form>" +
                     "</div>" +
                     "</div>" +
                     "<table " +
@@ -116,7 +125,7 @@ KISSY.Editor.add("image", function(editor) {
                     " data-verify='^\\d+$' " +
                     " data-warning='间距请输入非负整数' " +
                     "class='ke-img-margin ke-input' style='width:60px' value='"
-                    + 5 + "'/> 像素" +
+                    + MARGIN_DEFAULT + "'/> 像素" +
                     "</label>" +
                     "</td>" +
                     "</tr>" +
@@ -188,7 +197,8 @@ KISSY.Editor.add("image", function(editor) {
                     this.el.boff();
                 },
                 _dblclick:function(ev) {
-                    var self = this,t = new Node(ev.target);
+                    var self = this,
+                        t = new Node(ev.target);
                     if (checkImg(t)) {
                         self.show(null, t);
                         ev.halt();
@@ -197,9 +207,9 @@ KISSY.Editor.add("image", function(editor) {
                 _prepare:function() {
                     var self = this,
                         editor = self.get("editor"),
-                        uploader,
-                        warning,
-                        imgLocalUrl;
+                        warning = "请点击浏览上传图片",
+                        cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] || null;
+
                     self.d = new Overlay({
                         title:"图片",//属性",
                         mask:true
@@ -207,10 +217,21 @@ KISSY.Editor.add("image", function(editor) {
                     var d = self.d;
                     d.body.html(bodyHtml);
                     d.foot.html(footHtml);
-                    self.content = d.el;
-                    var content = self.content;
-                    var cancel = content.one(".ke-img-cancel"),
-                        ok = content.one(".ke-img-insert");
+                    var content = d.el,
+                        cancel = content.one(".ke-img-cancel"),
+                        ok = content.one(".ke-img-insert"),
+                        uploadForm = content.one(".ke-img-upload-form"),
+                        imgLocalUrl = content.one(".ke-img-local-url"),
+                        tab = new KE.Tabs({
+                            tabs:content.one("ul.ke-tabs"),
+                            contents:content.one("div.ke-image-tabs-content-wrap")
+                        }),
+                        ke_image_title = content.one(".ke-image-title"),
+                        verifyInputs = KE.Utils.verifyInputs,
+                        commonSettingTable = d.el.one(".ke-img-setting");
+
+                    self.tab = tab;
+                    imgLocalUrl.val(warning);
                     self.imgUrl = content.one(".ke-img-url");
                     self.imgHeight = content.one(".ke-img-height");
                     self.imgWidth = content.one(".ke-img-width");
@@ -221,160 +242,92 @@ KISSY.Editor.add("image", function(editor) {
                         ev.halt();
                     });
 
-                    var cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] || null;
-
-                    var tab = new KE.Tabs({
-                        tabs:content.one("ul.ke-tabs"),
-                        contents:content.one("div.ke-image-tabs-content-wrap")
-                    }),
-                        ke_image_title = content.one(".ke-image-title"),
-                        ke_image_up = new KE.TripleButton({
-                            el:content.one(".ke-image-up"),
-                            cls:'ke-button',
-                            text:"浏&nbsp;览"
-                        });
-                    self.tab = tab;
-
-                    var normParams = KE.Utils.normParams,
-                        commonSettingTable = d.el.one(".ke-img-setting");
-
                     ok.on("click", function() {
+                        if (tab.activate() == "local" && cfg) {
 
-                        if (tab.activate() == "local" && uploader && cfg) {
-                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input")))
+                            if (!verifyInputs(commonSettingTable.all("input")))
                                 return;
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
                                 return;
                             }
-                            uploader.uploadAll(cfg.serverUrl, "POST",
-                                normParams(cfg.serverParams),
-                                true,
-                                cfg.fileInput);
+                            KE.Utils.doFormUpload({
+                                form:uploadForm,
+                                callback:function(r) {
+                                    var data = S.trim(r.responseText)
+                                        .replace(/\r|\n/g, "");
+                                    d.unloading();
+                                    imgLocalUrl.val(warning);
+                                    try {
+                                        data = JSON.parse(data);
+                                    } catch(e) {
+                                        S.log(data);
+                                        data = {error:"服务器出错，请重试"};
+                                    }
+                                    if (data.error) {
+                                        alert(data.error);
+                                        return;
+                                    }
+                                    self.imgUrl.val(data.imgUrl);
+                                    self._insert();
+                                }
+                            }, cfg.serverParams, cfg.serverUrl);
                             d.loading();
+
                         } else {
-                            if (! KE.Utils.verifyInputs(d.el.all("input"))) return;
+                            if (! verifyInputs(content.all("input")))
+                                return;
                             self._insert();
+
                         }
                     });
+
                     if (cfg) {
-                        var flashPos;
                         if (cfg.extraHtml) {
                             content.one(".ke-img-up-extraHtml").html(cfg.extraHtml);
                         }
-                        function initUpload() {
-                            var w = ke_image_up.el.width() + 38,
-                                h = ke_image_up.el.height() + 8;
-                            flashPos = new Node("<div style='" +
-                                "position:absolute;" +
-                                "width:" + w + "px;" +
-                                "height:" + h + "px;" +
-                                "z-index:" + editor.baseZIndex(9999) + ";"
-                                + "'>").appendTo(content);
-                            var movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf");
-
-                            uploader = new KE.FlashBridge({
-                                movie:movie,
-                                ajbridge:true,
-                                methods:["removeFile",
-                                    "cancel",
-                                    "clear",
-                                    "removeFile",
-                                    "disable",
-                                    "enable",
-                                    "upload",
-                                    "setAllowMultipleFiles",
-                                    "setFileFilters",
-                                    "uploadAll"],
-                                holder:flashPos,
-                                attrs:{
-                                    width:w ,
-                                    height:h
-                                },
-                                params:{
-                                    wmode:"transparent"
-                                },
-                                flashVars:{
-                                    allowedDomain : location.hostname,
-                                    btn:true,
-                                    hand:true
-                                    //menu:true
-                                }
-                            });
-
-                            uploader.on("contentReady", function() {
-                                ke_image_up.enable();
-                                uploader.setAllowMultipleFiles(false);
-                                uploader.setFileFilters([
-                                    {
-                                        ext:"*.jpeg;*.jpg;*.png;*.gif",
-                                        desc:"图片文件( png,jpg,jpeg,gif )"
-
-                                    }
-                                ]);
-                            });
-                            var sizeLimit = (cfg.sizeLimit) || (Number.MAX_VALUE);
+                        var ke_image_up = content.one(".ke-image-up"),
+                            sizeLimit = cfg && cfg.sizeLimit,
+                            fileInput = new Node("<input " +
+                                "type='file' " +
+                                "style='position:absolute;" +
+                                "cursor:pointer;" +
+                                "left:" +
+                                (UA.ie ? "360" : "369") +
+                                "px;" +
+                                "z-index:2;" +
+                                "top:0px;" +
+                                "height:26px;' " +
+                                "size='1' " +
+                                "name=''/>").insertAfter(imgLocalUrl);
+                        if (sizeLimit)
                             warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
-                            imgLocalUrl = content.one(".ke-img-local-url");
-                            imgLocalUrl.val(warning);
-                            uploader.on("fileSelect", function(ev) {
-                                var fileList = ev.fileList;
-                                for (var f in fileList) {
-                                    var file = fileList[f],
-                                        size = Math.floor(file.size / 1000);
-                                    if (size > sizeLimit) {
-                                        alert(warning);
-                                        imgLocalUrl.val(warning);
-                                        uploader.clear();
-                                        return;
-                                    }
-                                    imgLocalUrl.val(file.name);
-                                }
-                            });
-                            uploader.on("uploadStart", function() {
-                                uploader.clear();
-                            });
-                            uploader.on("uploadCompleteData", function(ev) {
-                                //console.log("uploadCompleteData");
-                                var data = S.trim(ev.data).replace(/\r|\n/g, "");
-                                d.unloading();
-                                imgLocalUrl.val(warning);
-                                if (!data) return;
-                                data = JSON.parse(data);
-                                if (data.error) {
-                                    alert(data.error);
-                                    return;
-                                }
-                                self.imgUrl.val(data.imgUrl);
-                                self._insert();
-                            });
-                            uploader.on("uploadError", function(ev) {
-                                d.unloading();
-                                imgLocalUrl.val(warning);
-                                S.log(ev.message);
-                                alert("服务器出错或格式不正确，请返回重试");
-                            });
-                        }
+                        imgLocalUrl.val(warning);
+                        fileInput.css({
+                            opacity:0
+                        });
 
-                        tab.on("local", function() {
-                            if (!flashPos) {
-                                initUpload();
-                            }
-                            flashPos.offset(ke_image_up.el.offset());
+                        fileInput.on("mouseenter", function() {
+                            ke_image_up.addClass("ke-button-hover");
                         });
-                        tab.on("remote", function() {
-                            flashPos && flashPos.offset({left:-9999,top:-9999});
+                        fileInput.on("mouseleave", function() {
+                            ke_image_up.removeClass("ke-button-hover");
                         });
-                        ke_image_up.disable();
+                        fileInput.on("change", function() {
+                            imgLocalUrl.val(fileInput.val());
+                        })
+
+
                     }
                     else {
                         tab.remove("local");
                     }
 
                 },
-                _updateTip:function(tipurl, a) {
-                    tipurl.html(a.attr("src"));
-                    tipurl.attr("href", a.attr("src"));
+                _updateTip:function(tipurl, img) {
+                    var src = img.attr("src");
+                    tipurl.html(src);
+                    tipurl.attr("href", src);
                 },
 
                 _real:function() {
@@ -383,9 +336,8 @@ KISSY.Editor.add("image", function(editor) {
 
                 _insert:function() {
                     var self = this,
-                        url = self.imgUrl.val();
-
-                    var height = parseInt(self.imgHeight.val()),
+                        url = self.imgUrl.val(),
+                        height = parseInt(self.imgHeight.val()),
                         editor = self.get("editor"),
                         width = parseInt(self.imgWidth.val()),
                         align = self.imgAlign.val(),
@@ -406,46 +358,47 @@ KISSY.Editor.add("image", function(editor) {
                     if (style) {
                         style = " style='" + style + "' ";
                     }
-
-
                     var img = new Node("<img " +
                         style +
-                        "src='" + url + "' alt='' />", null, editor.document);
+                        "src='" +
+                        url +
+                        "' alt='' />", null, editor.document);
 
                     img = editor.insertElement(img, function(el) {
-
                         el.on("abort error", function() {
                             el.detach();
                             //ie6 手动设置，才会出现红叉
                             el[0].src = url;
                         });
-
                     });
                     if (self._selectedEl) {
                         editor.getSelection().selectElement(img);
                     }
                     self.d.hide();
                     editor.notifySelectionChange();
-                }
-                ,
+                },
+
                 _updateD:function(_selectedEl) {
-                    var self = this;
+                    var self = this,active = "remote";
                     self._selectedEl = _selectedEl;
-                    self.tab.activate("remote");
+
                     if (_selectedEl) {
                         self.imgUrl.val(_selectedEl.attr("src"));
                         self.imgHeight.val(_selectedEl.height());
                         self.imgWidth.val(_selectedEl.width());
                         self.imgAlign.val(_selectedEl.css("float") || "none");
-                        var margin = parseInt(_selectedEl._4e_style("margin")) || 0;
+                        var margin = parseInt(_selectedEl._4e_style("margin"))
+                            || 0;
                         self.imgMargin.val(margin);
                     } else {
+                        active = "local";
                         self.imgUrl.val(TIP);
                         self.imgHeight.val(DTIP);
                         self.imgWidth.val(DTIP);
                         self.imgAlign.val("none");
-                        self.imgMargin.val("5");
+                        self.imgMargin.val(MARGIN_DEFAULT);
                     }
+                    self.tab.activate(active);
                 },
                 show:function(ev, _selectedEl) {
                     var self = this;
@@ -497,7 +450,8 @@ KISSY.Editor.add("image", function(editor) {
                          位置变化
                          */
                         bubble.on("afterVisibleChange", function(ev) {
-                            var v = ev.newVal,a = bubble._selectedEl,
+                            var v = ev.newVal,
+                                a = bubble._selectedEl,
                                 flash = bubble._plugin;
                             if (!v || !a)return;
                             flash._updateTip(tipurl, a);
@@ -514,6 +468,4 @@ KISSY.Editor.add("image", function(editor) {
         });
 
     });
-
-})
-    ;
+});

@@ -336,6 +336,9 @@ S.use('editor', function() {
                     },
                     fileInput:"Filedata",
                     sizeLimit:1000//k,
+                    ,extraHtml:"<p style='margin-top:10px;'>" +
+                            "<input type='checkbox' name='waterMark'> " +
+                            "图片加水印，防止别人盗用</p>"
                 }
             },
             "font-size":{
@@ -358,13 +361,19 @@ S.use('editor', function() {
             }
             ,"font-family":["宋体","黑体","微软雅黑","TimeNewRoman","Arial","Verdana"]
             ,"bangpai-upload":{
-                holder:"#imgup1",
                 serverUrl:"/code/upload/upload.jsp",
                 serverParams:{
+                    waterMark:function() {
+                        return S.one("#ke_img_up_watermark_2")[0].checked;
+                    }
                 },
-                fileInput:"Filedata",
                 sizeLimit:1000//k,
-                ,numberLimit:15
+                ,numberLimit:15,
+                extraHtml:"<p style='margin-top:10px;'>" +
+                        "<input type='checkbox' " +
+                        "style='vertical-align:middle;margin:0 5px;' " +
+                        "id='ke_img_up_watermark_2'>" +
+                        "<span style='vertical-align:middle;'>图片加水印，防止别人盗用</span></p>"
             },
             "bangpai-video":{
                 urlCfg:[
@@ -391,10 +400,10 @@ S.use('editor', function() {
         }
     }).use(
             "preview," +
-            "separator," +
-            "undo,separator,removeformat,font,forecolor,separator," +
-            "list,indent,justify,separator,link,bangpai-video,bangpai-music,smiley," +
-            "separator,table,resize,draft,bangpai-upload,maximize"
+                    "separator," +
+                    "undo,separator,removeformat,font,forecolor,separator," +
+                    "list,indent,justify,separator,link,bangpai-video,bangpai-music,smiley," +
+                    "separator,table,resize,draft,bangpai-upload,maximize"
             , function() {
         var self = this,
                 htmlDataProcessor = self.htmlDataProcessor,
