@@ -742,11 +742,12 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 
                 var uploader = new KE.FlashBridge({
                     movie:movie,
+                    ajbridge:true,
                     methods:["removeFile",
                         "cancel",
                         "removeFile",
-                        "disable",
-                        "enable",
+                        "lock",
+                        "unlock",
                         "setAllowMultipleFiles",
                         "setFileFilters",
                         "uploadAll"],
@@ -760,7 +761,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     },
                     flashVars:{
                         allowedDomain : location.hostname,
-                        menu:true
+                        btn:true,
+                        hand:true
+                        //menu:true
                     }
                 });
                 self.flashPos = flashPos;
@@ -820,7 +823,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 uploader.on("uploadProgress", self._onProgress, self);
                 uploader.on("uploadComplete", self._onComplete, self);
                 uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
-                uploader.on("swfReady", self._ready, self);
+                uploader.on("contentReady", self._ready, self);
                 uploader.on("uploadError", self._uploadError, self);
 
 
@@ -878,7 +881,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
 
             _uploadError:function(ev) {
                 var self = this,
-                    id = ev.id,
+                    id = ev.file.id,
                     tr = self._getFileTr(id),
                     bar = progressBars[id],
                     status = ev.status;
@@ -909,7 +912,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             _onUploadStart:function(ev) {
                 //console.log("_onUploadStart", ev);
                 var self = this,
-                    id = ev.id,
+                    id = ev.file.id,
                     uploader = self.uploader;
                 uploader.removeFile(id);
                 //self.ddisable();
@@ -920,7 +923,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             _onUploadCompleteData:function(ev) {
                 var self = this,
                     data = S.trim(ev.data).replace(/\r|\n/g, ""),
-                    id = ev.id;
+                    id = ev.file.id;
                 if (!data) return;
                 data = JSON.parse(data);
                 if (data.error) {
@@ -942,7 +945,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
             _onProgress:function(ev) {
                 //console.log("_onProgress", ev);
-                var fid = ev.id,
+                var fid = ev.file.id,
                     progess = Math.floor(ev.bytesLoaded * 100 / ev.bytesTotal),
                     bar = progressBars[fid];
                 bar && bar.set("progress", progess);
@@ -950,7 +953,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
             ddisable:function() {
                 var self = this;
-                self.uploader.disable();
+                self.uploader.lock();
                 self.btn.disable();
                 self.flashPos.offset({
                     left:-9999,
@@ -960,7 +963,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
             denable:function() {
                 var self = this;
-                self.uploader.enable();
+                self.uploader.unlock();
                 self.btn.enable();
                 self.flashPos.offset(self.btn.el.offset());
             },
@@ -1171,19 +1174,21 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             },
 
             _ready:function() {
+                //最大化时会重复ready
                 var self = this,
                     uploader = self.uploader,
                     up = self.up,
                     btn = self.btn,
                     flashPos = self.flashPos,
                     normParams = KE.Utils.normParams;
+
                 btn.enable();
                 flashPos.offset(btn.el.offset());
                 uploader.setAllowMultipleFiles(true);
                 uploader.setFileFilters([
                     {
-                        extensions:"*.jpeg;*.jpg;*.png;*.gif",
-                        description:"图片文件( png,jpg,jpeg,gif )"
+                        ext:"*.jpeg;*.jpg;*.png;*.gif",
+                        desc:"图片文件( png,jpg,jpeg,gif )"
                     }
                 ]);
 
@@ -1192,6 +1197,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     ev.halt();
                     uploader.uploadAll(self._ds, "POST",
                         normParams(self._dsp),
+                        true,
                         self._fileInput);
                 });
 

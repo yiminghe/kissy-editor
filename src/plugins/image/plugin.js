@@ -241,13 +241,15 @@ KISSY.Editor.add("image", function(editor) {
                     ok.on("click", function() {
 
                         if (tab.activate() == "local" && uploader && cfg) {
-                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input"))) return;
+                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input")))
+                                return;
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
                                 return;
                             }
                             uploader.uploadAll(cfg.serverUrl, "POST",
                                 normParams(cfg.serverParams),
+                                true,
                                 cfg.fileInput);
                             d.loading();
                         } else {
@@ -273,9 +275,10 @@ KISSY.Editor.add("image", function(editor) {
 
                             uploader = new KE.FlashBridge({
                                 movie:movie,
+                                ajbridge:true,
                                 methods:["removeFile",
                                     "cancel",
-                                    "clearFileList",
+                                    "clear",
                                     "removeFile",
                                     "disable",
                                     "enable",
@@ -293,17 +296,19 @@ KISSY.Editor.add("image", function(editor) {
                                 },
                                 flashVars:{
                                     allowedDomain : location.hostname,
-                                    menu:true
+                                    btn:true,
+                                    hand:true
+                                    //menu:true
                                 }
                             });
 
-                            uploader.on("swfReady", function() {
+                            uploader.on("contentReady", function() {
                                 ke_image_up.enable();
                                 uploader.setAllowMultipleFiles(false);
                                 uploader.setFileFilters([
                                     {
-                                        extensions:"*.jpeg;*.jpg;*.png;*.gif",
-                                        description:"图片文件( png,jpg,jpeg,gif )"
+                                        ext:"*.jpeg;*.jpg;*.png;*.gif",
+                                        desc:"图片文件( png,jpg,jpeg,gif )"
 
                                     }
                                 ]);
@@ -320,16 +325,17 @@ KISSY.Editor.add("image", function(editor) {
                                     if (size > sizeLimit) {
                                         alert(warning);
                                         imgLocalUrl.val(warning);
-                                        uploader.clearFileList();
+                                        uploader.clear();
                                         return;
                                     }
                                     imgLocalUrl.val(file.name);
                                 }
                             });
                             uploader.on("uploadStart", function() {
-                                uploader.clearFileList();
+                                uploader.clear();
                             });
                             uploader.on("uploadCompleteData", function(ev) {
+                                //console.log("uploadCompleteData");
                                 var data = S.trim(ev.data).replace(/\r|\n/g, "");
                                 d.unloading();
                                 imgLocalUrl.val(warning);
@@ -345,7 +351,7 @@ KISSY.Editor.add("image", function(editor) {
                             uploader.on("uploadError", function(ev) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
-                                S.log(ev.status);
+                                S.log(ev.message);
                                 alert("服务器出错或格式不正确，请返回重试");
                             });
                         }

@@ -39,10 +39,19 @@ KISSY.Editor.add("flashbridge", function() {
             }, false);
             S.mix(flashVars, {
                 shareData: false,
-                YUISwfId:id,
-                YUIBridgeCallback:callback,
                 useCompression:false
             }, false);
+            var swfCore = {
+                YUISwfId:id,
+                YUIBridgeCallback:callback
+            };
+            if (cfg.ajbridge) {
+                swfCore = {
+                    swfID:id,
+                    jsEntry:callback
+                };
+            }
+            S.mix(flashVars, swfCore);
             instances[id] = self;
             self.id = id;
             self.swf = KE.Utils.flash.createSWFRuntime(cfg.movie, cfg);

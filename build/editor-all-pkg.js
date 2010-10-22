@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 11:55:16
+ * @buildtime: 2010-10-22 15:12:23
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -8937,10 +8937,19 @@ KISSY.Editor.add("flashbridge", function() {
             }, false);
             S.mix(flashVars, {
                 shareData: false,
-                YUISwfId:id,
-                YUIBridgeCallback:callback,
                 useCompression:false
             }, false);
+            var swfCore = {
+                YUISwfId:id,
+                YUIBridgeCallback:callback
+            };
+            if (cfg.ajbridge) {
+                swfCore = {
+                    swfID:id,
+                    jsEntry:callback
+                };
+            }
+            S.mix(flashVars, swfCore);
             instances[id] = self;
             self.id = id;
             self.swf = KE.Utils.flash.createSWFRuntime(cfg.movie, cfg);
@@ -12840,13 +12849,15 @@ KISSY.Editor.add("image", function(editor) {
                     ok.on("click", function() {
 
                         if (tab.activate() == "local" && uploader && cfg) {
-                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input"))) return;
+                            if (! KE.Utils.verifyInputs(commonSettingTable.all("input")))
+                                return;
                             if (imgLocalUrl.val() == warning) {
                                 alert("请先选择文件!");
                                 return;
                             }
                             uploader.uploadAll(cfg.serverUrl, "POST",
                                 normParams(cfg.serverParams),
+                                true,
                                 cfg.fileInput);
                             d.loading();
                         } else {
@@ -12872,9 +12883,10 @@ KISSY.Editor.add("image", function(editor) {
 
                             uploader = new KE.FlashBridge({
                                 movie:movie,
+                                ajbridge:true,
                                 methods:["removeFile",
                                     "cancel",
-                                    "clearFileList",
+                                    "clear",
                                     "removeFile",
                                     "disable",
                                     "enable",
@@ -12892,17 +12904,19 @@ KISSY.Editor.add("image", function(editor) {
                                 },
                                 flashVars:{
                                     allowedDomain : location.hostname,
-                                    menu:true
+                                    btn:true,
+                                    hand:true
+                                    //menu:true
                                 }
                             });
 
-                            uploader.on("swfReady", function() {
+                            uploader.on("contentReady", function() {
                                 ke_image_up.enable();
                                 uploader.setAllowMultipleFiles(false);
                                 uploader.setFileFilters([
                                     {
-                                        extensions:"*.jpeg;*.jpg;*.png;*.gif",
-                                        description:"图片文件( png,jpg,jpeg,gif )"
+                                        ext:"*.jpeg;*.jpg;*.png;*.gif",
+                                        desc:"图片文件( png,jpg,jpeg,gif )"
 
                                     }
                                 ]);
@@ -12919,16 +12933,17 @@ KISSY.Editor.add("image", function(editor) {
                                     if (size > sizeLimit) {
                                         alert(warning);
                                         imgLocalUrl.val(warning);
-                                        uploader.clearFileList();
+                                        uploader.clear();
                                         return;
                                     }
                                     imgLocalUrl.val(file.name);
                                 }
                             });
                             uploader.on("uploadStart", function() {
-                                uploader.clearFileList();
+                                uploader.clear();
                             });
                             uploader.on("uploadCompleteData", function(ev) {
+                                //console.log("uploadCompleteData");
                                 var data = S.trim(ev.data).replace(/\r|\n/g, "");
                                 d.unloading();
                                 imgLocalUrl.val(warning);
@@ -12944,7 +12959,7 @@ KISSY.Editor.add("image", function(editor) {
                             uploader.on("uploadError", function(ev) {
                                 d.unloading();
                                 imgLocalUrl.val(warning);
-                                S.log(ev.status);
+                                S.log(ev.message);
                                 alert("服务器出错或格式不正确，请返回重试");
                             });
                         }
