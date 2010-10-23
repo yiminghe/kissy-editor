@@ -22,7 +22,8 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             KEY = "Multi-Upload-Save",
             JSON = S.JSON,
             store = window[KE.STORE],
-            movie = KE.Config.base + KE.Utils.debugUrl("plugins/uploader/uploader.swf"),
+            movie = KE.Config.base +
+                KE.Utils.debugUrl("plugins/uploader/uploader.swf?t=201010231602"),
             progressBars = {},
             name = "ke-bangpai-upload";
 
@@ -40,9 +41,11 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             ".ke-upload-list th {" +
             "border-top:1px solid #c1c8d1;" +
             "background-color: #E7E9ED;" +
-            "background: -webkit-gradient(linear, left top, left bottom, from(#E7E9ED), to(#F1F4F7));" +
+            "background: -webkit-gradient(linear, left top, left bottom, from(#E7E9ED)," +
+            " to(#F1F4F7));" +
             "background: -moz-linear-gradient(top, #E7E9ED, #F1F4F7);" +
-            // "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#E7E9ED', endColorstr = '#F1F4F7');" +
+            // "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#E7E9ED',
+            //  endColorstr = '#F1F4F7');" +
             "}" +
 
             ".ke-upload-list td,.ke-upload-list th {" +
