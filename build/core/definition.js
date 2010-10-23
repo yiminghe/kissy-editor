@@ -31,7 +31,8 @@ KISSY.Editor.add("definition", function(KE) {
             + "<link href='"
             + KE.Config.base
             + CSS_FILE
-            + "' rel='stylesheet'/>"
+            + "'" +
+            " rel='stylesheet'/>"
             + "<style>"
             + (customStyle || "")
             + "</style>"
@@ -41,17 +42,18 @@ KISSY.Editor.add("definition", function(KE) {
             + "&nbsp;"
             //使用 setData 加强安全性
             // + (textarea.value || "")
+            + (id ?
+            // The script that launches the bootstrap logic on 'domReady', so the document
+            // is fully editable even before the editing iframe is fully loaded (#4455).
+            //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
+            '<script id="ke_actscript" type="text/javascript">' +
+                ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
+                'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
+                '</script>' : ''
+            )
             + "</body>"
-            + "<html>" +
-            (id ?
-                // The script that launches the bootstrap logic on 'domReady', so the document
-                // is fully editable even before the editing iframe is fully loaded (#4455).
-                //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
-                '<script id="ke_actscrpt" type="text/javascript">' +
-                    ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
-                    'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
-                    '</script>' : ''
-                );
+            + "</html>";
+
     }
 
     var INSTANCE_ID = 1,
@@ -74,7 +76,6 @@ KISSY.Editor.add("definition", function(KE) {
             // for other browsers, the 'src' attribute should be left empty to
             // trigger iframe's 'load' event.
             ' src="' + ( UA.ie ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '' ) + '" ' +
-            //' src=""'+
             ' tabIndex="' + ( UA.webkit ? -1 : "$(tabIndex)" ) + '" ' +
             ' allowTransparency="true" ' +
             '></iframe></div>' +
@@ -170,9 +171,9 @@ KISSY.Editor.add("definition", function(KE) {
             args.unshift(self);
             //if (self._commands[name]) {
             //self.fire("save");
-            var re = cmd.exec.apply(cmd, args);
+            return cmd.exec.apply(cmd, args);
             //self.fire("save");
-            return re;
+
             //}
         },
         getMode:function() {
@@ -500,11 +501,31 @@ KISSY.Editor.add("definition", function(KE) {
             doc = self.document,
             cfg = self.cfg,
             // Remove bootstrap script from the DOM.
-            script = doc.getElementById("ke_actscrpt");
-        script.parentNode.removeChild(script);
+            script = doc.getElementById("ke_actscript");
+        DOM._4e_remove(script);
 
         var body = doc.body;
 
+        /**
+         * from kissy editor 1.0
+         *
+         * // 注1：在 tinymce 里，designMode = "on" 放在 try catch 里。
+         //     原因是在 firefox 下，当iframe 在 display: none 的容器里，会导致错误。
+         //     但经过我测试，firefox 3+ 以上已无此现象。
+         // 注2： ie 用 contentEditable = true.
+         //     原因是在 ie 下，IE needs to use contentEditable or
+         // it will display non secure items for HTTPS
+         // Ref:
+         //   - Differences between designMode and contentEditable
+         //     http://74.125.153.132/search?q=cache:5LveNs1yHyMJ:nagoon97.wordpress.com/2008/04/20/differences-between-designmode-and-contenteditable/+ie+contentEditable+designMode+different&cd=6&hl=en&ct=clnk
+         */
+
+        //这里对主流浏览器全部使用 contenteditable
+        //那么不同于 kissy editor 1.0
+        //在body范围外右键，不会出现 复制，粘贴等菜单
+        //因为这时右键作用在document而不是body
+        //1.0 document.designMode='on' 是编辑模式
+        //2.0 body.contentEditable=true body外不是编辑模式
         if (UA.ie) {
             // Don't display the focus border.
             body.hideFocus = true;
@@ -613,7 +634,11 @@ KISSY.Editor.add("definition", function(KE) {
                 // Setting focus directly on editor doesn't work, we
                 // have to use here a temporary element to 'redirect'
                 // the focus.
-                if (evt.target === htmlElement[0]) {
+                //firefox 不能直接设置，需要先失去焦点
+                //return;
+                if (evt.target == htmlElement[0]) {
+                    //self.focus();
+                    //return;
                     if (UA.gecko)
                         blinkCursor(false);
                     //setTimeout(function() {
