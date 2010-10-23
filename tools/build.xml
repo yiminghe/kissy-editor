@@ -41,7 +41,7 @@ build file for kissy editor
                       ,styles.js"/>
 
     <fileset dir="${src.dir}"
-             includes="plugins/**/*.js"
+             includes="plugins/**/plugin.js"
              id="main_js">
     </fileset>
 
@@ -347,7 +347,7 @@ build file for kissy editor
                                 outputencoding="${charset}">
                             <fileset
                                     dir="${src.dir}/${biz.dir}/${var.biz.dirname}/plugins"
-                                    includes="**/*.js"
+                                    includes="**/plugin.js"
                                     />
                         </concat>
                     </ac:then>
