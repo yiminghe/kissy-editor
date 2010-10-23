@@ -783,18 +783,33 @@ KISSY.Editor.add("definition", function(KE) {
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);
     };
+
+    /**
+     * 获得全局最大值
+     */
+    KE.baseZIndex = function(z) {
+        var r = z,instances = KE.getInstances();
+        for (var i in instances) {
+            if (!instances.hasOwnProperty(i)) return;
+            var instance = instances[i];
+            r = Math.max(r, instance.baseZIndex(z));
+        }
+        return r;
+    };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
     //不知道为什么
-    if (UA.gecko) {
-        ( function () {
-            var body = document.body;
-            if (!body)
-                window.addEventListener('load', arguments.callee, false);
-            else {
-                var currentHandler = body.getAttribute('onpageshow');
-                body.setAttribute('onpageshow', ( currentHandler ? currentHandler + ';' : '') +
-                    'event.persisted && KISSY.Editor.focusManager.refreshAll();');
-            }
-        } )();
-    }
+    /*
+     if (UA.gecko) {
+     ( function () {
+     var body = document.body;
+     if (!body)
+     window.addEventListener('load', arguments.callee, false);
+     else {
+     var currentHandler = body.getAttribute('onpageshow');
+     body.setAttribute('onpageshow', ( currentHandler ? currentHandler + ';' : '') +
+     'event.persisted && KISSY.Editor.focusManager.refreshAll();');
+     }
+     } )();
+     }
+     */
 });

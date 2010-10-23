@@ -58,8 +58,8 @@ KISSY.Editor.add("draft", function(editor) {
                     var self = this,
                         editor = self.editor,
                         toolbar = editor.toolBarDiv,
-                        statusbar = editor.statusDiv;
-                    var cfg = editor.cfg.pluginConfig;
+                        statusbar = editor.statusDiv,
+                        cfg = editor.cfg.pluginConfig;
                     cfg.draft = cfg.draft || {};
                     self.draftInterval = cfg.draft.interval
                         = cfg.draft.interval || INTERVAL;
@@ -73,11 +73,10 @@ KISSY.Editor.add("draft", function(editor) {
                             + "分钟自动保存一次。" +
                             "</span>" +
                             "</div>").appendTo(statusbar);
-                    self.timeTip = new Node("<span class='ke-draft-time'" +
-                        "'>").appendTo(holder);
+                    self.timeTip = new Node("<span class='ke-draft-time'>")
+                        .appendTo(holder);
 
                     var save = new Node(
-
                         "<a " +
                             "class='ke-button ke-draft-save-btn' " +
                             "style='" +
@@ -88,9 +87,7 @@ KISSY.Editor.add("draft", function(editor) {
                             "</span>" +
                             "<span>立即保存</span>" +
                             "</a>"
-
-                        ).
-                        appendTo(holder),
+                        ).appendTo(holder),
                         versions = new KE.Select({
                             container: holder,
                             menuContainer:document.body,

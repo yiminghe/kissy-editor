@@ -5,8 +5,8 @@
 KISSY.Editor.add("bangpai-sourcearea", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
-        Node = S.Node
-    UA = S.UA,
+        Node = S.Node,
+        UA = S.UA,
         TripleButton = KE.TripleButton;
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;

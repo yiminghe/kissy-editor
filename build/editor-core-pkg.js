@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-23 16:02:19
+ * @buildtime: 2010-10-23 17:30:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -752,6 +752,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         currentInstance,
         focusManager = {
             refreshAll:function() {
+                //console.log("refresh all!");
                 for (var i in INSTANCES) {
                     var e = INSTANCES[i];
                     e.document.designMode = "off";
@@ -799,6 +800,10 @@ KISSY.Editor.add("focusmanager", function(KE) {
     }
 
     KE.focusManager = focusManager;
+
+    KE.getInstances = function() {
+        return INSTANCES;
+    };
 });
 /**
  * definition of editor class for kissy editor
@@ -1585,20 +1590,35 @@ KISSY.Editor.add("definition", function(KE) {
         //加入焦点管理，和其他实例联系起来
         focusManager.add(self);
     };
+
+    /**
+     * 获得全局最大值
+     */
+    KE.baseZIndex = function(z) {
+        var r = z,instances = KE.getInstances();
+        for (var i in instances) {
+            if (!instances.hasOwnProperty(i)) return;
+            var instance = instances[i];
+            r = Math.max(r, instance.baseZIndex(z));
+        }
+        return r;
+    };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
     //不知道为什么
-    if (UA.gecko) {
-        ( function () {
-            var body = document.body;
-            if (!body)
-                window.addEventListener('load', arguments.callee, false);
-            else {
-                var currentHandler = body.getAttribute('onpageshow');
-                body.setAttribute('onpageshow', ( currentHandler ? currentHandler + ';' : '') +
-                    'event.persisted && KISSY.Editor.focusManager.refreshAll();');
-            }
-        } )();
-    }
+    /*
+     if (UA.gecko) {
+     ( function () {
+     var body = document.body;
+     if (!body)
+     window.addEventListener('load', arguments.callee, false);
+     else {
+     var currentHandler = body.getAttribute('onpageshow');
+     body.setAttribute('onpageshow', ( currentHandler ? currentHandler + ';' : '') +
+     'event.persisted && KISSY.Editor.focusManager.refreshAll();');
+     }
+     } )();
+     }
+     */
 });/**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
  * @modifier: <yiminghe@gmail.com(chengyu)>

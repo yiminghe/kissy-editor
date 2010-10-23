@@ -14,6 +14,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         currentInstance,
         focusManager = {
             refreshAll:function() {
+                //console.log("refresh all!");
                 for (var i in INSTANCES) {
                     var e = INSTANCES[i];
                     e.document.designMode = "off";
@@ -61,4 +62,8 @@ KISSY.Editor.add("focusmanager", function(KE) {
     }
 
     KE.focusManager = focusManager;
+
+    KE.getInstances = function() {
+        return INSTANCES;
+    };
 });

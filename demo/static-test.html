@@ -184,21 +184,13 @@
     </div>
     <input type="submit" value="submit"/>
 </form>
+<a href="http://www.g.cn"> leave </a>
 <div style="width: 60%; margin: 50px auto;position:relative;overflow:hidden;">
     <label for="editor2">Editor Instance 2:</label>
-    <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;">
-        测试1 &nbsp;测试2 &nbsp; &nbsp;测试3 &nbsp;
-    </textarea>
+    <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;"></textarea>
 </div>
 
 
-<script>
-    //document.domain="taobao.com";
-    // just for test
-    var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
-    KISSY.Config.base = base;
-    KISSY.Config.debug = "dev";
-</script>
 <script src="../src/editor.js"></script>
 <script src="../src/core/utils.js"></script>
 <script src="../src/core/focusmanager.js"></script>
@@ -311,9 +303,15 @@ xiami 音乐
 
             var KE = KISSY.Editor;
 
+            //document.domain="taobao.com";
+            // just for test
+            var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
+            KISSY.Config.base = base;
+            KISSY.Config.debug = "dev";
+
             KE.Config.base = base + "src/";
 
-            window.editor = KE("#editor", {
+           KE("#editor", {
                 attachForm:true,
                 baseZIndex:10000,
                 //自定义样式
@@ -429,12 +427,12 @@ xiami 音乐
                     "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
                     "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                     );
-            /*
+
              KE("#editor2", {
              disableObjectResizing:true,
              disableInlineTableEditing:true
              }).use("sourcearea,undo,font,link,image,templates,maximize");
-             */
+            
         });
     });
 

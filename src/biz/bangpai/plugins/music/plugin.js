@@ -134,11 +134,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 'padding:0 10px;' +
                 '}';
             DOM.addStyleSheet(css, "BangPaiMusic");
-            window.bangpai_xiami = function(data) {
-                var self = bangpai_xiami.instance;
-                data.page = bangpai_xiami.page;
-                self._listSearch(data);
-            };
+
 
             function limit(str, l) {
                 if (str.length > l)
@@ -207,8 +203,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                 }
             }
 
-            var xiami_url = "http://www.xiami.com/app/nineteen/search/key/${key}/page/${page}?" +
-                "random=${random}&callback=bangpai_xiami";
+            var xiami_url = "http://www.xiami.com/app/nineteen/search/key/" +
+                "${key}/page/${page}?" +
+                "random=${random}&callback=KISSY.Editor.BangPaiMusic.bangpai_xiami";
 
             function getXiamiUrl(params) {
                 return xiami_url.replace(/\${([^}]+)}/g, function(m, m1) {
@@ -280,7 +277,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                     "margin:" +
                                         (parseInt(self.dMargin.val()) || 0)
                                         + "px;" +
-                                    "float:" + self.dAlign.val() + ";"
+                                        "float:" + self.dAlign.val() + ";"
                             }
                         };
                         self._gen();
@@ -333,10 +330,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                         ev.preventDefault();
                         var t = new Node(ev.target),
                             add = t._4e_ascendant(function(node) {
-                                return self._xiamia_list._4e_contains(node) && node.hasClass("ke-xiami-add");
+                                return self._xiamia_list._4e_contains(node) &&
+                                    node.hasClass("ke-xiami-add");
                             }, true),
                             paging = t._4e_ascendant(function(node) {
-                                return self._xiamia_list._4e_contains(node) && node.hasClass("ke-xiami-page-item");
+                                return self._xiamia_list._4e_contains(node) &&
+                                    node.hasClass("ke-xiami-page-item");
                             }, true);
                         if (add) {
                             self._dinfo = {
@@ -350,7 +349,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                                         "margin:" +
                                             (parseInt(self.dMargin.val()) || 0)
                                             + "px;" +
-                                    "float:" + self.dAlign.val() + ";"
+                                            "float:" + self.dAlign.val() + ";"
                                 }
                             };
                             self._gen();
@@ -502,6 +501,15 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
 
             KE.BangPaiMusic = BangPaiMusic;
+
+            KE.BangPaiMusic.bangpai_xiami = function(data) {
+                var self = bangpai_xiami.instance;
+                data.page = bangpai_xiami.page;
+                self._listSearch(data);
+            };
+            var bangpai_xiami = KE.BangPaiMusic.bangpai_xiami;
+
+
         })();
     }
     editor.addPlugin(function() {

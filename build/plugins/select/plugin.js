@@ -198,7 +198,7 @@ KISSY.Editor.add("select", function() {
                 el:menuNode,
                 cls:"ke-menu",
                 width:popUpWidth ? popUpWidth : el.width(),
-                zIndex:editor.baseZIndex(990),
+                zIndex:KE.baseZIndex(990),
                 focusMgr:false
             }),
                 items = self.get("items");

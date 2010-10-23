@@ -25,8 +25,8 @@ KISSY.Editor.add("maximize", function(editor) {
             var MAXIMIZE_CLASS = "ke-toolbar-maximize",
                 RESTORE_CLASS = "ke-toolbar-restore",
                 MAXIMIZE_TIP = "全屏",
-                MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding";
-            RESTORE_TIP = "取消全屏";
+                MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding",
+                RESTORE_TIP = "取消全屏";
 
             function Maximize(editor) {
                 var self = this;
