@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-22 21:58:43
+ * @buildtime: 2010-10-23 15:45:02
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -13118,7 +13118,7 @@ KISSY.Editor.add("image", function(editor) {
                                     var data = S.trim(r.responseText)
                                         .replace(/\r|\n/g, "");
                                     d.unloading();
-                                    imgLocalUrl.val(warning);
+                                    //imgLocalUrl.val(warning);
                                     try {
                                         data = JSON.parse(data);
                                     } catch(e) {
@@ -13145,7 +13145,8 @@ KISSY.Editor.add("image", function(editor) {
 
                     if (cfg) {
                         if (cfg.extraHtml) {
-                            content.one(".ke-img-up-extraHtml").html(cfg.extraHtml);
+                            content.one(".ke-img-up-extraHtml")
+                                .html(cfg.extraHtml);
                         }
                         var ke_image_up = content.one(".ke-image-up"),
                             sizeLimit = cfg && cfg.sizeLimit,
@@ -13160,7 +13161,7 @@ KISSY.Editor.add("image", function(editor) {
                                 "top:0px;" +
                                 "height:26px;' " +
                                 "size='1' " +
-                                "name=''/>").insertAfter(imgLocalUrl);
+                                "name='" + (cfg.fileInput || "Filedata") + "'/>").insertAfter(imgLocalUrl);
                         if (sizeLimit)
                             warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
                         imgLocalUrl.val(warning);
