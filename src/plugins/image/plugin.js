@@ -64,7 +64,7 @@ KISSY.Editor.add("image", function(editor) {
                     "</div>" +
                     "<div style='position:relative;'>" +
                     "<form class='ke-img-upload-form'>" +
-                    "<p>" +
+                    "<p style='zoom:1;'>" +
                     "<input class='ke-input ke-img-local-url' " +
                     "readonly='readonly' " +
                     "style='margin-right: 15px; " +
