@@ -8,21 +8,34 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div onmousedown='return false;'></div>";
+        HTML = "<div onmousedown='return false;'>";
     if (KE.ContextMenu) return;
 
+    /**
+     * 组合使用 overlay
+     * @param config
+     */
     function ContextMenu(config) {
-        this.cfg = S.clone(config);
+        this.cfg = config;
+        //editor太复杂，防止循环引用
+        //S.clone(config);
         KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
     }
+
+    //暂时将 editor 同 右键关联。
+    ContextMenu.ATTRS = {
+        editor:{}
+    };
 
     var global_rules = [];
     /**
      * 多菜单管理
      */
-    ContextMenu.register = function(doc, cfg) {
+    ContextMenu.register = function(cfg) {
 
-        var cm = new ContextMenu(cfg);
+        var cm = new ContextMenu(cfg),
+            editor = cfg.editor,
+            doc = editor.document;
 
         global_rules.push({
             doc:doc,
@@ -39,9 +52,7 @@ KISSY.Editor.add("contextmenu", function() {
              });*/
             Event.on(doc,
                 //"mouseup"
-                "contextmenu"
-                ,
-
+                "contextmenu",
                 function(ev) {
                     /*
                      if (ev.which != 3)
@@ -65,7 +76,9 @@ KISSY.Editor.add("contextmenu", function() {
                                 //qc #3764,#3767
                                 setTimeout(function() {
                                     //console.log("show");
-                                    instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
+                                    instance.show(KE.Utils.getXY(ev.pageX,
+                                        ev.pageY, doc,
+                                        document));
                                 }, 30);
 
                                 break;
@@ -106,7 +119,9 @@ KISSY.Editor.add("contextmenu", function() {
          * 根据配置构造右键菜单内容
          */
         _init:function() {
-            var self = this,cfg = self.cfg,funcs = cfg.funcs;
+            var self = this,
+                cfg = self.cfg,
+                funcs = cfg.funcs;
             self.elDom = new Node(HTML);
             var el = self.elDom;
 
@@ -139,6 +154,11 @@ KISSY.Editor.add("contextmenu", function() {
             this.el && this.el.hide();
         },
         _realShow:function(offset) {
+            var self = this;
+            //防止ie 失去焦点，取不到复制等状态
+            KE.fire("contextmenu", {
+                contextmenu:self
+            });
             this.el.show(offset);
         },
         _prepareShow:function() {

@@ -167,6 +167,7 @@ KISSY.Editor.add("image", function(editor) {
                     KE.Utils.lazyRun(self, "_prepare", "_real");
                     editor._toolbars = editor._toolbars || {};
                     editor._toolbars[TYPE_IMG] = self;
+
                     if (contextMenu) {
                         for (var f in contextMenu) {
                             (function(f) {
@@ -175,12 +176,13 @@ KISSY.Editor.add("image", function(editor) {
                                 }
                             })(f);
                         }
+                        KE.ContextMenu.register({
+                            editor:editor,
+                            rules:[checkImg],
+                            width:"120px",
+                            funcs:myContexts
+                        });
                     }
-                    KE.ContextMenu.register(editor.document, {
-                        rules:[checkImg],
-                        width:"120px",
-                        funcs:myContexts
-                    });
 
 
                     BubbleView.attach({

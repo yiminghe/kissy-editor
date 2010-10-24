@@ -152,7 +152,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         }
                     }
                     //注册右键，contextmenu时检测
-                    ContextMenu.register(editor.document, {
+                    ContextMenu.register({
+                        editor:editor,
                         rules:self._flashRules,
                         width:"120px",
                         funcs:myContexts

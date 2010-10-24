@@ -231,7 +231,7 @@ KISSY.Editor.add("overlay", function(editor) {
                 }
             } else {
                 //已有元素就用dialog包起来
-
+                self.originalEl = el;
                 if (!el[0].parentNode ||
                     //ie新节点 为 fragment 类型
                     el[0].parentNode.nodeType != KE.NODE.NODE_ELEMENT) {

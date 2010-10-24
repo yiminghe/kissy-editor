@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-23 20:46:58
+ * @buildtime: 2010-10-24 18:12:59
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -973,7 +973,10 @@ KISSY.Editor.add("definition", function(KE) {
             return this._commands[name];
         },
         execCommand:function(name) {
-            var self = this,cmd = self._commands[name],args = S.makeArray(arguments);
+            //console.log(name);
+            var self = this,
+                cmd = self._commands[name],
+                args = S.makeArray(arguments);
             args.shift();
             args.unshift(self);
             //if (self._commands[name]) {
@@ -1443,7 +1446,8 @@ KISSY.Editor.add("definition", function(KE) {
                 // the focus.
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
-                if (evt.target == htmlElement[0]) {
+                //左键激活
+                if (evt.target == htmlElement[0] && evt.button == 0) {
                     //self.focus();
                     //return;
                     if (UA.gecko)
@@ -7718,6 +7722,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                     if (UA.ie)
                         Event.on(editor.document, "keydown", self._paste, self);
                     else  Event.on(editor.document, "paste", self._paste, self);
+
+                    editor.addCommand("copy", new cutCopyCmd("copy"));
+                    editor.addCommand("cut", new cutCopyCmd("cut"));
+                    editor.addCommand("paste", new cutCopyCmd("paste"));
+
                 },
                 _paste:function(ev) {
                     if (ev.type === 'keydown' &&
@@ -7787,8 +7796,195 @@ KISSY.Editor.add("clipboard", function(editor) {
                 }
             });
             KE.Paste = Paste;
+
+
+            // Tries to execute any of the paste, cut or copy commands in IE. Returns a
+            // boolean indicating that the operation succeeded.
+            var execIECommand = function(editor, command) {
+                var doc = editor.document,
+                    body = new Node(doc.body);
+
+                var enabled = false;
+                var onExec = function() {
+                    enabled = true;
+                };
+
+                // The following seems to be the only reliable way to detect that
+                // clipboard commands are enabled in IE. It will fire the
+                // onpaste/oncut/oncopy events only if the security settings allowed
+                // the command to execute.
+                body.on(command, onExec);
+
+                // IE6/7: document.execCommand has problem to paste into positioned element.
+                ( UA.ie > 7 ? doc : doc.selection.createRange() ) [ 'execCommand' ](command);
+
+                body.detach(command, onExec);
+
+                return enabled;
+            };
+
+            // Attempts to execute the Cut and Copy operations.
+            var tryToCutCopy =
+                UA.ie ?
+                    function(editor, type) {
+                        return execIECommand(editor, type);
+                    }
+                    : // !IE.
+                    function(editor, type) {
+                        try {
+                            // Other browsers throw an error if the command is disabled.
+                            return editor.document.execCommand(type);
+                        }
+                        catch(e) {
+                            return false;
+                        }
+                    };
+
+            var error_types = {
+                "cut":"您的浏览器安全设置不允许编辑器自动执行剪切操作，请使用键盘快捷键(Ctrl/Cmd+X)来完成",
+                "copy":"您的浏览器安全设置不允许编辑器自动执行复制操作，请使用键盘快捷键(Ctrl/Cmd+C)来完成",
+                "paste":"您的浏览器安全设置不允许编辑器自动执行粘贴操作，请使用键盘快捷键(Ctrl/Cmd+V)来完成"
+            };
+
+            // A class that represents one of the cut or copy commands.
+            var cutCopyCmd = function(type) {
+                this.type = type;
+                this.canUndo = ( this.type == 'cut' );		// We can't undo copy to clipboard.
+            };
+
+            cutCopyCmd.prototype =
+            {
+                exec : function(editor) {
+                    this.type == 'cut' && fixCut(editor);
+
+                    var success = tryToCutCopy(editor, this.type);
+
+                    if (!success)
+                        alert(error_types[this.type]);		// Show cutError or copyError.
+
+                    return success;
+                }
+            };
+
+            // Paste command.
+            var pasteCmd =
+            {
+                canUndo : false,
+
+                exec :
+                    UA.ie ?
+                        function(editor) {
+                            // Prevent IE from pasting at the begining of the document.
+                            editor.focus();
+
+                            if (!execIECommand(editor, 'paste')) {
+                                alert(error_types["paste"]);
+                                return false;
+                            }
+                        }
+                        :
+                        function(editor) {
+                            try {
+                                if (!editor.document.$.execCommand('Paste', false, null)) {
+                                    throw 0;
+                                }
+                            }
+                            catch (e) {
+                                alert(error_types["paste"]);
+                                return false;
+                            }
+                        }
+            };
+
+
+            var KES = KE.Selection;
+            // Cutting off control type element in IE standards breaks the selection entirely. (#4881)
+            function fixCut(editor) {
+                if (!UA.ie ||
+                    editor.document.compatMode == 'BackCompat')
+                    return;
+
+                var sel = editor.getSelection();
+                var control;
+                if (( sel.getType() == KES.SELECTION_ELEMENT ) && ( control = sel.getSelectedElement() )) {
+                    var range = sel.getRanges()[ 0 ];
+                    var dummy = new Node(editor.document.createTextNode(''));
+                    dummy.insertBefore(control);
+                    range.setStartBefore(dummy);
+                    range.setEndAfter(control);
+                    sel.selectRanges([ range ]);
+
+                    // Clear up the fix if the paste wasn't succeeded.
+                    setTimeout(function() {
+                        // Element still online?
+                        if (control.parent()) {
+                            dummy.remove();
+                            sel.selectElement(control);
+                        }
+                    }, 0);
+                }
+            }
+
+            var lang = {
+                "copy":"复制",
+                "paste":"粘贴",
+                "cut":"剪切"
+            };
+
+            function stateFromNamedCommand(command, doc) {
+                // IE Bug: queryCommandEnabled('paste') fires also 'beforepaste(copy/cut)',
+                // guard to distinguish from the ordinary sources( either
+                // keyboard paste or execCommand ) (#4874).
+                //UA.ie && ( depressBeforeEvent = 1 );
+                var retval = doc.queryCommandEnabled(command) ?
+                    true :
+                    false;
+                //depressBeforeEvent = 0;
+                return retval;
+            }
+
+            KE.on("contextmenu", function(ev) {
+                //debugger
+                var contextmenu = ev.contextmenu,
+                    editor = contextmenu.cfg["editor"],
+                    //原始内容
+                    el = contextmenu.el.originalEl,
+                    pastes = {"copy":0,"cut":0,"paste":0};
+                for (var i in pastes) {
+                    if (!pastes.hasOwnProperty(i))return;
+                    pastes[i] = el.one(".ke-paste-" + i);
+                    (function(cmd) {
+                        var cmdObj = pastes[cmd];
+                        if (!cmdObj) {
+                            cmdObj = new Node("<a href='#'" +
+                                "class='ke-paste-" + cmd + "'>"
+                                + lang[cmd]
+                                + "</a>").appendTo(el);
+                            cmdObj.on("click", function(ev) {
+                                if (cmdObj.hasClass("ke-paste-disable"))
+                                    return;
+                                contextmenu.hide();
+                                ev.halt();
+                                //给 ie 一点 hide() 中的事件触发 handler 运行机会，
+                                // 原编辑器获得焦点后再进行下步操作
+                                setTimeout(function() {
+                                    editor.execCommand(cmd);
+                                }, 30);
+                            });
+                        }
+                        pastes[cmd] = cmdObj;
+                    })(i);
+                    var cmdObj = pastes[i];
+                    if (stateFromNamedCommand(i, editor.document)) {
+                        cmdObj.removeClass("ke-menuitem-disable");
+                    } else {
+                        cmdObj.addClass("ke-menuitem-disable");
+                    }
+                }
+            });
         })();
     }
+
     editor.addPlugin(function() {
         new KE.Paste(editor);
     });
@@ -7985,21 +8181,34 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div onmousedown='return false;'></div>";
+        HTML = "<div onmousedown='return false;'>";
     if (KE.ContextMenu) return;
 
+    /**
+     * 组合使用 overlay
+     * @param config
+     */
     function ContextMenu(config) {
-        this.cfg = S.clone(config);
+        this.cfg = config;
+        //editor太复杂，防止循环引用
+        //S.clone(config);
         KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
     }
+
+    //暂时将 editor 同 右键关联。
+    ContextMenu.ATTRS = {
+        editor:{}
+    };
 
     var global_rules = [];
     /**
      * 多菜单管理
      */
-    ContextMenu.register = function(doc, cfg) {
+    ContextMenu.register = function(cfg) {
 
-        var cm = new ContextMenu(cfg);
+        var cm = new ContextMenu(cfg),
+            editor = cfg.editor,
+            doc = editor.document;
 
         global_rules.push({
             doc:doc,
@@ -8016,9 +8225,7 @@ KISSY.Editor.add("contextmenu", function() {
              });*/
             Event.on(doc,
                 //"mouseup"
-                "contextmenu"
-                ,
-
+                "contextmenu",
                 function(ev) {
                     /*
                      if (ev.which != 3)
@@ -8042,7 +8249,9 @@ KISSY.Editor.add("contextmenu", function() {
                                 //qc #3764,#3767
                                 setTimeout(function() {
                                     //console.log("show");
-                                    instance.show(KE.Utils.getXY(ev.pageX, ev.pageY, doc, document));
+                                    instance.show(KE.Utils.getXY(ev.pageX,
+                                        ev.pageY, doc,
+                                        document));
                                 }, 30);
 
                                 break;
@@ -8083,7 +8292,9 @@ KISSY.Editor.add("contextmenu", function() {
          * 根据配置构造右键菜单内容
          */
         _init:function() {
-            var self = this,cfg = self.cfg,funcs = cfg.funcs;
+            var self = this,
+                cfg = self.cfg,
+                funcs = cfg.funcs;
             self.elDom = new Node(HTML);
             var el = self.elDom;
 
@@ -8116,6 +8327,11 @@ KISSY.Editor.add("contextmenu", function() {
             this.el && this.el.hide();
         },
         _realShow:function(offset) {
+            var self = this;
+            //防止ie 失去焦点，取不到复制等状态
+            KE.fire("contextmenu", {
+                contextmenu:self
+            });
             this.el.show(offset);
         },
         _prepareShow:function() {
@@ -9467,7 +9683,8 @@ KISSY.Editor.add("flashsupport", function(editor) {
                         }
                     }
                     //注册右键，contextmenu时检测
-                    ContextMenu.register(editor.document, {
+                    ContextMenu.register({
+                        editor:editor,
                         rules:self._flashRules,
                         width:"120px",
                         funcs:myContexts
@@ -11414,6 +11631,7 @@ KISSY.Editor.add("image", function(editor) {
                     KE.Utils.lazyRun(self, "_prepare", "_real");
                     editor._toolbars = editor._toolbars || {};
                     editor._toolbars[TYPE_IMG] = self;
+
                     if (contextMenu) {
                         for (var f in contextMenu) {
                             (function(f) {
@@ -11422,12 +11640,13 @@ KISSY.Editor.add("image", function(editor) {
                                 }
                             })(f);
                         }
+                        KE.ContextMenu.register({
+                            editor:editor,
+                            rules:[checkImg],
+                            width:"120px",
+                            funcs:myContexts
+                        });
                     }
-                    KE.ContextMenu.register(editor.document, {
-                        rules:[checkImg],
-                        width:"120px",
-                        funcs:myContexts
-                    });
 
 
                     BubbleView.attach({
@@ -13859,7 +14078,7 @@ KISSY.Editor.add("overlay", function(editor) {
                 }
             } else {
                 //已有元素就用dialog包起来
-
+                self.originalEl = el;
                 if (!el[0].parentNode ||
                     //ie新节点 为 fragment 类型
                     el[0].parentNode.nodeType != KE.NODE.NODE_ELEMENT) {
@@ -15402,7 +15621,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                             }
                         })(f);
                     }
-                    ContextMenu.register(editor.document, {
+                    ContextMenu.register({
+                        editor:editor,
                         rules:tableRules,
                         width:"120px",
                         funcs:myContexts

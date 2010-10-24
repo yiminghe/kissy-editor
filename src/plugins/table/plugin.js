@@ -235,7 +235,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                             }
                         })(f);
                     }
-                    ContextMenu.register(editor.document, {
+                    ContextMenu.register({
+                        editor:editor,
                         rules:tableRules,
                         width:"120px",
                         funcs:myContexts

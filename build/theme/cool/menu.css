@@ -10,8 +10,7 @@ menu style for kissy editor ,include contextmenu and select menu
     cursor: default;
     font: 13px Arial, sans-serif;
     margin: 0;
-    outline: medium none;
-    /*padding: 4px 0;*/
+    outline: medium none; /*padding: 4px 0;*/
     position: absolute;
     overflow: hidden;
     zoom: 1;
@@ -33,18 +32,26 @@ menu style for kissy editor ,include contextmenu and select menu
     white-space: nowrap;
     zoom: 1;
     text-decoration: none;
-    color:black;
+    color: black;
 }
 
 .ke-menu-title {
     background-color: #dcdcdc;
     padding: 3px;
     display: none;
-    color:black;
+    color: black;
 }
 
 .ke-menu a:hover, .ke-menu-selected {
     background: #D6E9F8;
     text-decoration: none;
-    color:black;
+    color: black;
+}
+
+.ke-menu a.ke-menuitem-disable {
+    color: gray;
+}
+
+.ke-menu a.ke-menuitem-disable:hover {
+    background: #fcfcfc;
 }

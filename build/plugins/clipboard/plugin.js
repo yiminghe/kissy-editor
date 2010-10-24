@@ -23,6 +23,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                     if (UA.ie)
                         Event.on(editor.document, "keydown", self._paste, self);
                     else  Event.on(editor.document, "paste", self._paste, self);
+
+                    editor.addCommand("copy", new cutCopyCmd("copy"));
+                    editor.addCommand("cut", new cutCopyCmd("cut"));
+                    editor.addCommand("paste", new cutCopyCmd("paste"));
+
                 },
                 _paste:function(ev) {
                     if (ev.type === 'keydown' &&
@@ -92,8 +97,195 @@ KISSY.Editor.add("clipboard", function(editor) {
                 }
             });
             KE.Paste = Paste;
+
+
+            // Tries to execute any of the paste, cut or copy commands in IE. Returns a
+            // boolean indicating that the operation succeeded.
+            var execIECommand = function(editor, command) {
+                var doc = editor.document,
+                    body = new Node(doc.body);
+
+                var enabled = false;
+                var onExec = function() {
+                    enabled = true;
+                };
+
+                // The following seems to be the only reliable way to detect that
+                // clipboard commands are enabled in IE. It will fire the
+                // onpaste/oncut/oncopy events only if the security settings allowed
+                // the command to execute.
+                body.on(command, onExec);
+
+                // IE6/7: document.execCommand has problem to paste into positioned element.
+                ( UA.ie > 7 ? doc : doc.selection.createRange() ) [ 'execCommand' ](command);
+
+                body.detach(command, onExec);
+
+                return enabled;
+            };
+
+            // Attempts to execute the Cut and Copy operations.
+            var tryToCutCopy =
+                UA.ie ?
+                    function(editor, type) {
+                        return execIECommand(editor, type);
+                    }
+                    : // !IE.
+                    function(editor, type) {
+                        try {
+                            // Other browsers throw an error if the command is disabled.
+                            return editor.document.execCommand(type);
+                        }
+                        catch(e) {
+                            return false;
+                        }
+                    };
+
+            var error_types = {
+                "cut":"您的浏览器安全设置不允许编辑器自动执行剪切操作，请使用键盘快捷键(Ctrl/Cmd+X)来完成",
+                "copy":"您的浏览器安全设置不允许编辑器自动执行复制操作，请使用键盘快捷键(Ctrl/Cmd+C)来完成",
+                "paste":"您的浏览器安全设置不允许编辑器自动执行粘贴操作，请使用键盘快捷键(Ctrl/Cmd+V)来完成"
+            };
+
+            // A class that represents one of the cut or copy commands.
+            var cutCopyCmd = function(type) {
+                this.type = type;
+                this.canUndo = ( this.type == 'cut' );		// We can't undo copy to clipboard.
+            };
+
+            cutCopyCmd.prototype =
+            {
+                exec : function(editor) {
+                    this.type == 'cut' && fixCut(editor);
+
+                    var success = tryToCutCopy(editor, this.type);
+
+                    if (!success)
+                        alert(error_types[this.type]);		// Show cutError or copyError.
+
+                    return success;
+                }
+            };
+
+            // Paste command.
+            var pasteCmd =
+            {
+                canUndo : false,
+
+                exec :
+                    UA.ie ?
+                        function(editor) {
+                            // Prevent IE from pasting at the begining of the document.
+                            editor.focus();
+
+                            if (!execIECommand(editor, 'paste')) {
+                                alert(error_types["paste"]);
+                                return false;
+                            }
+                        }
+                        :
+                        function(editor) {
+                            try {
+                                if (!editor.document.$.execCommand('Paste', false, null)) {
+                                    throw 0;
+                                }
+                            }
+                            catch (e) {
+                                alert(error_types["paste"]);
+                                return false;
+                            }
+                        }
+            };
+
+
+            var KES = KE.Selection;
+            // Cutting off control type element in IE standards breaks the selection entirely. (#4881)
+            function fixCut(editor) {
+                if (!UA.ie ||
+                    editor.document.compatMode == 'BackCompat')
+                    return;
+
+                var sel = editor.getSelection();
+                var control;
+                if (( sel.getType() == KES.SELECTION_ELEMENT ) && ( control = sel.getSelectedElement() )) {
+                    var range = sel.getRanges()[ 0 ];
+                    var dummy = new Node(editor.document.createTextNode(''));
+                    dummy.insertBefore(control);
+                    range.setStartBefore(dummy);
+                    range.setEndAfter(control);
+                    sel.selectRanges([ range ]);
+
+                    // Clear up the fix if the paste wasn't succeeded.
+                    setTimeout(function() {
+                        // Element still online?
+                        if (control.parent()) {
+                            dummy.remove();
+                            sel.selectElement(control);
+                        }
+                    }, 0);
+                }
+            }
+
+            var lang = {
+                "copy":"复制",
+                "paste":"粘贴",
+                "cut":"剪切"
+            };
+
+            function stateFromNamedCommand(command, doc) {
+                // IE Bug: queryCommandEnabled('paste') fires also 'beforepaste(copy/cut)',
+                // guard to distinguish from the ordinary sources( either
+                // keyboard paste or execCommand ) (#4874).
+                //UA.ie && ( depressBeforeEvent = 1 );
+                var retval = doc.queryCommandEnabled(command) ?
+                    true :
+                    false;
+                //depressBeforeEvent = 0;
+                return retval;
+            }
+
+            KE.on("contextmenu", function(ev) {
+                //debugger
+                var contextmenu = ev.contextmenu,
+                    editor = contextmenu.cfg["editor"],
+                    //原始内容
+                    el = contextmenu.el.originalEl,
+                    pastes = {"copy":0,"cut":0,"paste":0};
+                for (var i in pastes) {
+                    if (!pastes.hasOwnProperty(i))return;
+                    pastes[i] = el.one(".ke-paste-" + i);
+                    (function(cmd) {
+                        var cmdObj = pastes[cmd];
+                        if (!cmdObj) {
+                            cmdObj = new Node("<a href='#'" +
+                                "class='ke-paste-" + cmd + "'>"
+                                + lang[cmd]
+                                + "</a>").appendTo(el);
+                            cmdObj.on("click", function(ev) {
+                                if (cmdObj.hasClass("ke-paste-disable"))
+                                    return;
+                                contextmenu.hide();
+                                ev.halt();
+                                //给 ie 一点 hide() 中的事件触发 handler 运行机会，
+                                // 原编辑器获得焦点后再进行下步操作
+                                setTimeout(function() {
+                                    editor.execCommand(cmd);
+                                }, 30);
+                            });
+                        }
+                        pastes[cmd] = cmdObj;
+                    })(i);
+                    var cmdObj = pastes[i];
+                    if (stateFromNamedCommand(i, editor.document)) {
+                        cmdObj.removeClass("ke-menuitem-disable");
+                    } else {
+                        cmdObj.addClass("ke-menuitem-disable");
+                    }
+                }
+            });
         })();
     }
+
     editor.addPlugin(function() {
         new KE.Paste(editor);
     });

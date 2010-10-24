@@ -166,7 +166,10 @@ KISSY.Editor.add("definition", function(KE) {
             return this._commands[name];
         },
         execCommand:function(name) {
-            var self = this,cmd = self._commands[name],args = S.makeArray(arguments);
+            //console.log(name);
+            var self = this,
+                cmd = self._commands[name],
+                args = S.makeArray(arguments);
             args.shift();
             args.unshift(self);
             //if (self._commands[name]) {
@@ -636,7 +639,8 @@ KISSY.Editor.add("definition", function(KE) {
                 // the focus.
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
-                if (evt.target == htmlElement[0]) {
+                //左键激活
+                if (evt.target == htmlElement[0] && evt.button == 0) {
                     //self.focus();
                     //return;
                     if (UA.gecko)
