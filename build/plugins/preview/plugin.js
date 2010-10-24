@@ -45,7 +45,7 @@ KISSY.Editor.add("preview", function(editor) {
                         editor.cfg.customStyle)
                         .replace(/<body[^>]+>.+<\/body>/,
                         "<body>\n"
-                            + editor.getData()
+                            + editor.getData(true)
                             + "\n</body>")
                         .replace(/\${title}/, "预览"),
                         sOpenUrl = '',

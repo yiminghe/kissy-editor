@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-24 18:12:59
+ * @buildtime: 2010-10-24 18:22:55
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -991,7 +991,7 @@ KISSY.Editor.add("definition", function(KE) {
                 KE.WYSIWYG_MODE :
                 KE.SOURCE_MODE;
         },
-        getData:function() {
+        getData:function(format) {
             var self = this,html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
@@ -1000,6 +1000,11 @@ KISSY.Editor.add("definition", function(KE) {
             } else {
                 //代码模式下不需过滤
                 html = self.textarea.val();
+            }
+            //如果不需要要格式化，例如提交数据给服务器
+            if (!format) {
+                html = html || "";
+                html = html.replace(/\s+/g, " ");
             }
             return html;
         } ,
@@ -7961,10 +7966,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 + lang[cmd]
                                 + "</a>").appendTo(el);
                             cmdObj.on("click", function(ev) {
-                                if (cmdObj.hasClass("ke-paste-disable"))
+                                ev.halt();
+                                if (cmdObj.hasClass("ke-menuitem-disable"))
                                     return;
                                 contextmenu.hide();
-                                ev.halt();
+
                                 //给 ie 一点 hide() 中的事件触发 handler 运行机会，
                                 // 原编辑器获得焦点后再进行下步操作
                                 setTimeout(function() {
@@ -8793,7 +8799,7 @@ KISSY.Editor.add("draft", function(editor) {
                         //可视区域内代码！= 最终代码
                         //代码模式也要支持草稿功能
                         //统一获得最终代码
-                        data = editor.getData();
+                        data = editor.getData(true);
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {
@@ -14387,7 +14393,7 @@ KISSY.Editor.add("preview", function(editor) {
                         editor.cfg.customStyle)
                         .replace(/<body[^>]+>.+<\/body>/,
                         "<body>\n"
-                            + editor.getData()
+                            + editor.getData(true)
                             + "\n</body>")
                         .replace(/\${title}/, "预览"),
                         sOpenUrl = '',
@@ -15334,7 +15340,7 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                 _show:function(editor) {
                     var textarea = editor.textarea;
                     //还没等 textarea 隐掉就先获取
-                    textarea.val(editor.getData());
+                    textarea.val(editor.getData(true));
                     this._showSource(editor);
                     editor.fire("sourcemode");
                 },

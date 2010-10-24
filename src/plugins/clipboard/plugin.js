@@ -262,10 +262,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 + lang[cmd]
                                 + "</a>").appendTo(el);
                             cmdObj.on("click", function(ev) {
-                                if (cmdObj.hasClass("ke-paste-disable"))
+                                ev.halt();
+                                if (cmdObj.hasClass("ke-menuitem-disable"))
                                     return;
                                 contextmenu.hide();
-                                ev.halt();
+
                                 //给 ie 一点 hide() 中的事件触发 handler 运行机会，
                                 // 原编辑器获得焦点后再进行下步操作
                                 setTimeout(function() {

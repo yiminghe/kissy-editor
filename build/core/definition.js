@@ -184,7 +184,7 @@ KISSY.Editor.add("definition", function(KE) {
                 KE.WYSIWYG_MODE :
                 KE.SOURCE_MODE;
         },
-        getData:function() {
+        getData:function(format) {
             var self = this,html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
@@ -193,6 +193,11 @@ KISSY.Editor.add("definition", function(KE) {
             } else {
                 //代码模式下不需过滤
                 html = self.textarea.val();
+            }
+            //如果不需要要格式化，例如提交数据给服务器
+            if (!format) {
+                html = html || "";
+                html = html.replace(/\s+/g, " ");
             }
             return html;
         } ,

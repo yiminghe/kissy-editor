@@ -28,7 +28,7 @@ KISSY.Editor.add("sourceareasupport", function(editor) {
                 _show:function(editor) {
                     var textarea = editor.textarea;
                     //还没等 textarea 隐掉就先获取
-                    textarea.val(editor.getData());
+                    textarea.val(editor.getData(true));
                     this._showSource(editor);
                     editor.fire("sourcemode");
                 },

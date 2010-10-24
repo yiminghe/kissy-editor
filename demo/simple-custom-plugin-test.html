@@ -190,7 +190,7 @@ box-shadow:2px 2px 0.5em #888888;
         KE.Config.base = base + "build/";
 
         var k = KE("#editor", {
-             attachForm:true,
+            attachForm:true,
             pluginConfig: {
                 "image":{
                     upload:{
@@ -300,7 +300,16 @@ box-shadow:2px 2px 0.5em #888888;
                 "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
                 "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
                 "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                );
+                , function() {
+            var b1 = new TripleButton({
+                container:k.toolBarDiv,
+                title:"get format data",
+                text:"get format data"
+            });
+            b1.on("offClick", function() {
+                alert(k.getData(true));
+            });
+        });
 
 
         var TripleButton = KE.TripleButton;

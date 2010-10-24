@@ -232,7 +232,7 @@ KISSY.Editor.add("draft", function(editor) {
                         //可视区域内代码！= 最终代码
                         //代码模式也要支持草稿功能
                         //统一获得最终代码
-                        data = editor.getData();
+                        data = editor.getData(true);
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {
