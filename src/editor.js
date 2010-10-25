@@ -190,10 +190,11 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "image",
-                requires: ["overlay","contextmenu","bubbleview","tabs"]
+                requires: ["contextmenu","bubbleview"]
             },
             {
-                name:"image/dialog"
+                name:"image/dialog",
+                requires:["overlay","tabs"]
             },
             "indent",
             "justify",
