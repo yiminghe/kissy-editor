@@ -68,5 +68,5 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
 },
 {
     attach:false,
-    requires : ["sourceareasupport"]
+    requires : ["sourcearea/support"]
 });

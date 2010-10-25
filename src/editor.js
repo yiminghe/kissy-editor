@@ -61,7 +61,8 @@ KISSY.add("editor", function(S, undefined) {
          * @param mods
          * @param callback
          */
-        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"];
+        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"],
+            initial = false;
         self.use = function(mods, callback) {
             mods = mods.split(",");
             duplicateMods(mods);
@@ -77,18 +78,21 @@ KISSY.add("editor", function(S, undefined) {
 
                 self.ready(function() {
                     callback && callback.call(self);
-                    self.setData(textarea.val());
-                    //是否自动focus
-                    if (cfg.focus) {
-                        self.focus();
+                    //也用在窗口按需加载，只有在初始化时才进行内容设置
+                    if (!initial) {
+                        self.setData(textarea.val());
+                        //是否自动focus
+                        if (cfg.focus) {
+                            self.focus();
+                        }
+                        //否则清空选择区域
+                        else {
+                            var sel = self.getSelection();
+                            sel && sel.removeAllRanges();
+                        }
+                        self.fire("save");
+                        initial = true;
                     }
-                    //否则清空选择区域
-                    else {
-
-                        var sel = self.getSelection();
-                        sel && sel.removeAllRanges();
-                    }
-                    self.fire("save");
                 });
 
             }, { order:  true, global:  Editor });
@@ -111,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=@TIMESTAMP@")
             }
         },
         core_mods = [
@@ -129,7 +133,7 @@ KISSY.add("editor", function(S, undefined) {
         ],
         plugin_mods = [
             "separator",
-            "sourceareasupport",
+            "sourcearea/support",
             "tabs",
             "flashbridge",
             "flashutils",
@@ -164,10 +168,14 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name:"flash",
-                requires:["flashsupport"]
+                requires:["flash/support"]
             },
             {
-                name: "flashsupport",
+                name:"flash/dialog",
+                requires:["flash"]
+            },
+            {
+                name: "flash/support",
                 requires: ["flashutils","contextmenu",
                     "fakeobjects","overlay","bubbleview"]
             },
@@ -184,6 +192,9 @@ KISSY.add("editor", function(S, undefined) {
                 name: "image",
                 requires: ["overlay","contextmenu","bubbleview","tabs"]
             },
+            {
+                name:"image/dialog"
+            },
             "indent",
             "justify",
             {
@@ -194,7 +205,11 @@ KISSY.add("editor", function(S, undefined) {
             "maximize",
             {
                 name:"music",
-                requires:["flashsupport"]
+                requires:["flash/support"]
+            },
+            {
+                name:"music/dialog",
+                requires:["flash/dialog"]
             },
             "preview",
             "removeformat",
@@ -203,7 +218,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name:"sourcearea",
-                requires:["sourceareasupport"]
+                requires:["sourcearea/support"]
             },
             {
                 name: "table",
@@ -301,8 +316,8 @@ KISSY.add("editor", function(S, undefined) {
         mods[name] = {
             attach: false,
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=@TIMESTAMP@") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=@TIMESTAMP@")
         };
     }
 
@@ -319,7 +334,7 @@ KISSY.add("editor", function(S, undefined) {
         mods[mod] = {
             attach: false,
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=@TIMESTAMP@")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {

@@ -229,7 +229,7 @@
 <!--草稿-->
 <script src="../src/plugins/draft/plugin.js"></script>
 <!--源码--->
-<script src="../src/plugins/sourceareasupport/plugin.js"></script>
+<script src="../src/plugins/sourcearea/support/plugin.js"></script>
 <script src="../src/plugins/sourcearea/plugin.js"></script>
 <!--预览-->
 <script src="../src/plugins/preview/plugin.js"></script>
@@ -260,7 +260,7 @@
 <!--flash-->
 <script src="../src/plugins/flashbridge/plugin.js"></script>
 <script src="../src/plugins/flashutils/plugin.js"></script>
-<script src="../src/plugins/flashsupport/plugin.js"></script>
+<script src="../src/plugins/flash/support/plugin.js"></script>
 <script src="../src/plugins/flash/plugin.js"></script>
 <!--音乐-->
 <script src="../src/plugins/music/plugin.js"></script>
@@ -294,8 +294,8 @@ xiami 音乐
 <!--
 xiami 音乐
 -->
-<script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
 
+<script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
 <script src="../src/biz/bangpai/plugins/sourcearea/plugin.js"></script>
 <script>
     KISSY.ready(function(S) {
@@ -311,7 +311,7 @@ xiami 音乐
 
             KE.Config.base = base + "src/";
 
-           KE("#editor", {
+            KE("#editor", {
                 attachForm:true,
                 baseZIndex:10000,
                 //自定义样式
@@ -424,15 +424,17 @@ xiami 音乐
             }).use("elementpaths,sourcearea,preview," +
                     "bangpai-sourcearea,templates,separator," +
                     "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                    "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+                    "list,indent,justify,separator,link,image,flash,music,"
+                    + "bangpai-music,bangpai-video,draft,resize,bangpai-upload"
+                //+",bangpai-video,music,bangpai-music,smiley," +
+                //"separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                     );
 
-             KE("#editor2", {
-             disableObjectResizing:true,
-             disableInlineTableEditing:true
-             }).use("sourcearea,undo,font,link,image,templates,maximize");
-            
+            KE("#editor2", {
+                disableObjectResizing:true,
+                disableInlineTableEditing:true
+            }).use("sourcearea,undo,font,link,image,templates,maximize");
+
         });
     });
 

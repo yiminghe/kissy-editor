@@ -72,9 +72,55 @@ KISSY.Editor.add("overlay", function(editor) {
         mask.el.css({
             "width":"100%",
             "background-color": "#000000",
-            "height": DOM.docHeight() + "px",
+            "height": DOM.docHeight(),
             "opacity": 0.15
         });
+    };
+    var loadingBaseZindex = KE.baseZIndex(11000);
+
+    Overlay.loading = function(el) {
+        if (!loadingMask) {
+            loadingMask = new Overlay({
+                el:new Node("<div>"),
+                focusMgr:false,
+                cls:"ke-loading",
+                shortkey:false,
+                draggable:false
+            });
+            loadingMask.el.css({
+                opacity:0.15,
+                border:0
+            });
+        }
+
+        var width,height,offset,zIndex;
+        if (el) {
+            offset = el.offset();
+            width = el[0].offsetWidth;
+            height = el[0].offsetHeight;
+            zIndex = el.css("z-index")+1;
+        } else {
+            //DOM.addClass(document.documentElement, "ke-overflow-hidden");
+            offset = {
+                left:0,
+                top:0
+            };
+            width = "100%";
+            height = DOM.docHeight();
+            zIndex = loadingBaseZindex;
+        }
+
+        loadingMask.el.css({
+            width:width,
+            height:height,
+            "z-index":zIndex
+        });
+        loadingMask.show(offset);
+    };
+
+    Overlay.unloading = function() {
+        //DOM.removeClass(document.documentElement, "ke-overflow-hidden");
+        loadingMask && loadingMask.hide();
     };
 
 
@@ -83,6 +129,7 @@ KISSY.Editor.add("overlay", function(editor) {
         width:{value:"500px"},
         height:{},
         cls:{},
+        shortkey:{value:true},
         visible:{value:false},
         "zIndex":{value:editor.baseZIndex(9999)},
         //帮你管理焦点
@@ -127,7 +174,7 @@ KISSY.Editor.add("overlay", function(editor) {
              */
             self.on("afterVisibleChange", function(ev) {
                 var v = ev.newVal;
-                if (v) {
+                if (v && self.get("shortkey")) {
                     self._register();
                 } else {
                     self._unregister();
@@ -260,27 +307,24 @@ KISSY.Editor.add("overlay", function(editor) {
             el.css(noVisibleStyle);
         },
 
-        center
-            :
-            function() {
-                var el = this.el,
-                    bw = el.width(),
-                    bh = el.height(),
-                    vw = DOM.viewportWidth(),
-                    vh = DOM.viewportHeight(),
-                    bl = (vw - bw) / 2 + DOM.scrollLeft(),
-                    bt = (vh - bh) / 2 + DOM.scrollTop();
-                if ((bt - DOM.scrollTop()) > 200) bt -= 150;
+        center :function() {
+            var el = this.el,
+                bw = el.width(),
+                bh = el.height(),
+                vw = DOM.viewportWidth(),
+                vh = DOM.viewportHeight(),
+                bl = (vw - bw) / 2 + DOM.scrollLeft(),
+                bt = (vh - bh) / 2 + DOM.scrollTop();
+            if ((bt - DOM.scrollTop()) > 200) bt -= 150;
 
-                bl = Math.max(bl, DOM.scrollLeft());
-                bt = Math.max(bt, DOM.scrollTop());
+            bl = Math.max(bl, DOM.scrollLeft());
+            bt = Math.max(bt, DOM.scrollTop());
 
-                el.css({
-                    left: bl + "px",
-                    top: bt + "px"
-                });
-            }
-        ,
+            el.css({
+                left: bl + "px",
+                top: bt + "px"
+            });
+        },
 
 
         _getFocusEl:function() {
@@ -292,8 +336,7 @@ KISSY.Editor.add("overlay", function(editor) {
             fel = new Node(focusMarkup)
                 .appendTo(self.el);
             return self._focusEl = fel;
-        }
-        ,
+        }        ,
 
         _initFocusNotice:function() {
             var self = this,
@@ -304,8 +347,7 @@ KISSY.Editor.add("overlay", function(editor) {
             f.on("blur", function() {
                 self.fire("blur");
             });
-        }
-        ,
+        }        ,
 
         /**
          * 焦点管理，弹出前记住当前的焦点所在editor
@@ -355,8 +397,7 @@ KISSY.Editor.add("overlay", function(editor) {
             else {
                 editor && editor.focus();
             }
-        }
-        ,
+        }        ,
         _prepareShow:function() {
             Overlay.init && Overlay.init();
             if (UA.ie == 6) {
@@ -376,47 +417,22 @@ KISSY.Editor.add("overlay", function(editor) {
         },
 
         loading:function() {
-            this._prepareLoading();
-        }
-        ,
-        _prepareLoading:function() {
-            loadingMask = new Overlay({
-                el:new Node("<div>"),
-                focusMgr:false,
-                cls:"ke-loading",
-                draggable:false
-            });
-            loadingMask.el.css("opacity", 0.15);
-        }
-        ,
-        _realLoading:function() {
-            var self = this,
-                el = self.el;
-            loadingMask.el.css({
-                width:el.width(),
-                height:el.height(),
-                "z-index":(self.get("zIndex") + 1)
-            });
-            loadingMask.show(el.offset());
-        }
-        ,
+            Overlay.loading(this.el);
+        },
+
         unloading:function() {
-            loadingMask.hide();
-        }
-        ,
+            Overlay.unloading();
+        },
         _realShow : function(v) {
             this.set("visible", v || true);
-        }
-        ,
+        },
         show:function(v) {
             this._prepareShow(v);
-        }
-        ,
+        },
         hide:function() {
             this.set("visible", false);
         }
-    })
-        ;
+    });
     KE.Utils.lazyRun(Overlay.prototype,
         "_prepareLoading",
         "_realLoading");

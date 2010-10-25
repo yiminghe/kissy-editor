@@ -578,7 +578,7 @@ KISSY.Editor.add("list", function(editor) {
                         el = self.el,
                         blockLimit = elementPath.blockLimit,
                         elements = elementPath.elements;
-
+                    if (!blockLimit)return;
                     // Grouping should only happen under blockLimit.(#3940).
                     if (elements)
                         for (var i = 0; i < elements.length && ( element = elements[ i ] )

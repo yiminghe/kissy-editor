@@ -7,12 +7,12 @@ KISSY.Editor.add("utils", function(KE) {
     var S = KISSY,
         Node = S.Node,
         DOM = S.DOM,
-        debug = S.Config.debug,
         UA = S.UA,
         Event = S.Event;
     KE.Utils = {
 
         debugUrl:function (url) {
+            var debug = S.Config.debug;
             if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
             if (debug === "dev") {
                 return  "../src/" + url;

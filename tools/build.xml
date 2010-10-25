@@ -42,6 +42,7 @@ build file for kissy editor
 
     <fileset dir="${src.dir}"
              includes="plugins/**/plugin.js"
+             excludes="**/dialog/plugin.js"
              id="main_js">
     </fileset>
 
@@ -348,6 +349,7 @@ build file for kissy editor
                             <fileset
                                     dir="${src.dir}/${biz.dir}/${var.biz.dirname}/plugins"
                                     includes="**/plugin.js"
+                                    excludes="**/dialog/plugin.js"
                                     />
                         </concat>
                     </ac:then>

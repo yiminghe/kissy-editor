@@ -19,7 +19,7 @@ KISSY.Editor.add("dd", function(editor) {
 
     Manager.ATTRS = {
         /**
-         * mousedown 后 buffer 触发时间,500毫秒
+         * mousedown 后 buffer 触发时间,100毫秒
          */
         timeThred:{value:0},
         /**

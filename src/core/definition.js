@@ -17,7 +17,8 @@ KISSY.Editor.add("definition", function(KE) {
         focusManager = KE.focusManager,
         tryThese = KE.Utils.tryThese,
         HTML5_DTD = '<!doctype html>',
-        DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+        DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" ' +
+            '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         ke_textarea_wrap = ".ke-textarea-wrap",
         ke_editor_tools = ".ke-editor-tools",
         ke_editor_status = ".ke-editor-status",
@@ -123,6 +124,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
             self._commands = {};
+            self._dialogs = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -158,6 +160,26 @@ KISSY.Editor.add("definition", function(KE) {
                 textarea = self.textarea,
                 form = new Node(textarea[0].form);
             form.on("submit", self.sync, self);
+        },
+        useDialog:function(name, callback) {
+            var self = this,Overlay = KE.SimpleOverlay;
+            Overlay.loading();
+            self.use(name, function() {
+                Overlay.unloading();
+                var dialog = self.getDialog(name);
+                callback(dialog);
+            });
+        },
+        addDialog:function(name, obj) {
+
+            this._dialogs[name] = obj;
+        },
+        getDialog:function(name) {
+
+            return this._dialogs[name];
+        },
+        addPlugin:function(func) {
+            this.ready(func);
         },
         addCommand:function(name, obj) {
             this._commands[name] = obj;
@@ -329,9 +351,7 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.close();
             }
         },
-        addPlugin:function(func) {
-            this.ready(func);
-        },
+
         ready:function(func) {
             var self = this;
             if (self._ready)func();

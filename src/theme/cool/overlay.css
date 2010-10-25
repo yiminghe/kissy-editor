@@ -65,7 +65,7 @@ a.ke-hd-x:active {
     background-image: url("overlay-hd.png");
     font-size: 14px;
     font-weight: bold;
-    padding: 0px 0px 0px 18px;
+    padding: 0 0 0 18px;
     height: 30px;
     line-height: 30px;
     border-bottom: 1px solid #ACB4BE;
@@ -118,4 +118,8 @@ a.ke-hd-x:active {
     border: 1px solid #3A5774;
     background: #000000 center center no-repeat;
     background-image: url('loading_mask.gif');
+}
+
+.ke-overflow-hidden {
+    overflow: hidden;
 }
