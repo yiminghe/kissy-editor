@@ -315,6 +315,7 @@ KISSY.add("editor", function(S, undefined) {
         name = mod.name;
         mods[name] = {
             attach: false,
+            charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=@TIMESTAMP@") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=@TIMESTAMP@")
@@ -333,6 +334,7 @@ KISSY.add("editor", function(S, undefined) {
 
         mods[mod] = {
             attach: false,
+            charset:"utf-8",
             requires: requires,
             path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=@TIMESTAMP@")
         };

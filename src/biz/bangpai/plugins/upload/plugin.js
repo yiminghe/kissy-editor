@@ -46,6 +46,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             KE.add({
                 "bangpai-upload/dialog":{
                     attach: false,
+                    charset:"utf-8",
                     requires:["flashutils","progressbar","flashbridge","overlay"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/upload/" +

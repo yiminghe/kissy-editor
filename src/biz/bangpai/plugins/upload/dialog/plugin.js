@@ -14,7 +14,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
         movie = KE.Config.base +
-            KE.Utils.debugUrl("plugins/uploader/uploader.longzang.swf?t=@TIMESTAMP@"),
+            KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=@TIMESTAMP@"),
         progressBars = {},
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";
@@ -105,7 +105,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "<th style='width:35%'>" +
                             "上传进度" +
                             "</th>" +
-                            "<th>" +
+                            "<th style='width:30%'>" +
                             "图片操作" +
                             "</th>" +
                             "</tr>" +
@@ -185,13 +185,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     self.flashPos = flashPos;
                     var uploader = new KE.FlashBridge({
                         movie:movie,
-                        ajbridge:true,
+                        //ajbridge:true,
                         methods:[
                             "getReady",
                             "cancel",
                             "removeFile",
-                            "lock",
-                            "unlock",
+                            "disable",
+                            "enable",
                             "setAllowMultipleFiles",
                             "setFileFilters",
                             "uploadAll"],
@@ -205,9 +205,9 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         },
                         flashVars:{
                             allowedDomain : location.hostname,
-                            btn:true,
-                            hand:true
-                            //menu:true
+                            //btn:true,
+                            //hand:true
+                            menu:true
                         }
                     });
 
@@ -257,16 +257,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             self._removeTrFile(tr);
                         }
                     });
-
                     uploader.on("fileSelect", self._onSelect, self);
                     uploader.on("uploadStart", self._onUploadStart, self);
                     uploader.on("uploadProgress", self._onProgress, self);
                     uploader.on("uploadComplete", self._onComplete, self);
                     uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
-                    uploader.on("contentReady", self._ready, self);
+                    uploader.on("swfReady", self._ready, self);
                     uploader.on("uploadError", self._uploadError, self);
-
-
                     //从本地恢复已上传记录
                     self._restore();
                 },
@@ -332,7 +329,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 _onUploadStart:function(ev) {
                     //console.log("_onUploadStart", ev);
                     var self = this,
-                        id = ev.file.id,
+                        id = ev.id || (ev.file && ev.file.id),
                         uploader = self.uploader;
                     uploader.removeFile(id);
                     //self.ddisable();
@@ -343,7 +340,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 _onUploadCompleteData:function(ev) {
                     var self = this,
                         data = S.trim(ev.data).replace(/\r|\n/g, ""),
-                        id = ev.file.id;
+                        id = ev.id || (ev.file && ev.file.id);
                     if (!data) return;
                     data = JSON.parse(data);
                     if (data.error) {
@@ -365,7 +362,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 },
                 _onProgress:function(ev) {
                     //console.log("_onProgress", ev);
-                    var fid = ev.file.id,
+                    var fid = ev.id || ev.file.id,
                         progess = Math.floor(ev.bytesLoaded * 100 / ev.bytesTotal),
                         bar = progressBars[fid];
                     bar && bar.set("progress", progess);
@@ -373,7 +370,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 },
                 ddisable:function() {
                     var self = this;
-                    self.uploader.lock();
+                    self.uploader.disable();
                     self.btn.disable();
                     self.flashPos.offset({
                         left:-9999,
@@ -382,7 +379,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 },
                 denable:function() {
                     var self = this;
-                    self.uploader.unlock();
+                    self.uploader.enable();
                     self.btn.enable();
                     self.flashPos.offset(self.btn.el.offset());
                 },
@@ -598,7 +595,27 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         btn = self.btn,
                         flashPos = self.flashPos,
                         normParams = KE.Utils.normParams;
-                    if ("ready" != uploader.getReady()) {
+
+                    try {
+                        flashPos.offset(btn.el.offset());
+                        uploader.setAllowMultipleFiles(true);
+                        uploader.setFileFilters([
+                            {
+                                extensions:"*.jpeg;*.jpg;*.png;*.gif",
+                                description:"图片文件( png,jpg,jpeg,gif )"
+                            }
+                        ]);
+                        up.detach();
+                        up.on("click", function(ev) {
+                            ev.halt();
+                            uploader.uploadAll(self._ds,
+                                "POST",
+                                normParams(self._dsp),
+                                // true,
+                                self._fileInput);
+                        });
+                        btn.enable();
+                    } catch(e) {
                         self.tipSpan.html("您的浏览器不支持该功能，" +
                             "请升级当前浏览器，" +
                             "并同时 <a href='http://get.adobe.com/cn/flashplayer/'" +
@@ -607,26 +624,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             left:-9999,
                             top:-9999
                         });
-                        return;
                     }
-                    btn.enable();
-                    flashPos.offset(btn.el.offset());
-                    uploader.setAllowMultipleFiles(true);
-                    uploader.setFileFilters([
-                        {
-                            ext:"*.jpeg;*.jpg;*.png;*.gif",
-                            desc:"图片文件( png,jpg,jpeg,gif )"
-                        }
-                    ]);
-                    up.detach();
-                    up.on("click", function(ev) {
-                        ev.halt();
-                        uploader.uploadAll(self._ds,
-                            "POST",
-                            normParams(self._dsp),
-                            true,
-                            self._fileInput);
-                    });
                 }
             });
 

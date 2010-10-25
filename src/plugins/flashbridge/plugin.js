@@ -107,6 +107,8 @@ KISSY.Editor.add("flashbridge", function() {
     });
 
     FlashBridge.EventHandler = function(id, event) {
+        //S.log(id);
+        //S.log(event.type);
         var instance = instances[id];
         if (instance) {
             //防止ie同步触发事件，后面还没on呢，另外给 swf 喘息机会

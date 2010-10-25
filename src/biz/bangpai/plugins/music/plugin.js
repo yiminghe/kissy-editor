@@ -129,6 +129,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             KE.add({
                 "bangpai-music/dialog":{
                     attach: false,
+                    charset:"utf-8",
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/music/" +

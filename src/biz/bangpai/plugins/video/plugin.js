@@ -148,6 +148,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             KE.add({
                 "bangpai-video/dialog":{
                     attach: false,
+                    charset:"utf-8",
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
