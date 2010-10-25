@@ -11,7 +11,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         PIC_SIZE_LIMIT_WARNING = "图片太大，请压缩至 n M以下",
         Node = S.Node,
         Overlay = KE.SimpleOverlay,
-        holder = [],
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
         movie = KE.Config.base +
@@ -25,6 +24,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 ".ke-upload-btn-wrap {" +
                     "position:relative;" +
                     "padding:15px 20px 15px 10px;" +
+                    "zoom:1;" +
                     "}" +
 
                     ".ke-upload-list {" +
