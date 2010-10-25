@@ -118,7 +118,7 @@ KISSY.Editor.add("image", function(editor) {
                     var editor = this.get("editor");
                     editor.useDialog("image/dialog", function(dialog) {
                         dialog.show(_selectedEl);
-                    },{mask:true});
+                    });
                 }
             });
 

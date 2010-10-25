@@ -845,7 +845,7 @@ a.ke-hd-x:active {
 
 .ke-loading {
     border: 1px solid #3A5774;
-    background: #000000 center center no-repeat;
+    background: #000000 center center no-repeat fixed;
     background-image: url('loading_mask.gif');
 }
 

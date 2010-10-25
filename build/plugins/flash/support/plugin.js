@@ -11,13 +11,11 @@ KISSY.Editor.add("flash/support", function(editor) {
         Node = S.Node,
         BubbleView = KE.BubbleView,
         TripleButton = KE.TripleButton,
-        Overlay = KE.SimpleOverlay,
         dataProcessor = editor.htmlDataProcessor,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
         flashUtils = KE.Utils.flash,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "请输入如 http://www.xxx.com/xxx.swf";
+        dataFilter = dataProcessor && dataProcessor.dataFilter;
 
 
     if (!KE.Flash) {
@@ -156,7 +154,7 @@ KISSY.Editor.add("flash/support", function(editor) {
                         editor = self.editor;
                     editor.useDialog(self._type + "/dialog", function(dialog) {
                         dialog.show(selected);
-                    }, {mask:true});
+                    });
                 }
             });
 

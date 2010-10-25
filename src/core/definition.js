@@ -165,14 +165,11 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,
                 Overlay = KE.SimpleOverlay,
                 cfg = cfg || {};
-            if (cfg.mask)
-                Overlay.mask();
-            else
-                Overlay.loading();
+            Overlay.loading();
             self.use(name, function() {
-                (!cfg.mask) && Overlay.unloading();
                 var dialog = self.getDialog(name);
                 callback(dialog);
+                Overlay.unloading();
             });
         },
         addDialog:function(name, obj) {

@@ -50,7 +50,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     requires:["flashutils","progressbar","flashbridge","overlay"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/upload/" +
-                            "dialog/plugin.js?t=2010-10-25 20:37:24"
+                            "dialog/plugin.js?t=2010-10-25 21:09:11"
                         )
                 }
             });

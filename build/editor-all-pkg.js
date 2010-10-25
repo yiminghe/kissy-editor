@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-25 21:02:33
+ * @buildtime: 2010-10-25 21:12:12
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-25 21:02:33")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-25 21:12:12")
             }
         },
         core_mods = [
@@ -318,8 +318,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-25 21:02:33") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-25 21:02:33")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-25 21:12:12") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-25 21:12:12")
         };
     }
 
@@ -337,7 +337,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-25 21:02:33")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-25 21:12:12")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {
@@ -990,14 +990,11 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,
                 Overlay = KE.SimpleOverlay,
                 cfg = cfg || {};
-            if (cfg.mask)
-                Overlay.mask();
-            else
-                Overlay.loading();
+            Overlay.loading();
             self.use(name, function() {
-                (!cfg.mask) && Overlay.unloading();
                 var dialog = self.getDialog(name);
                 callback(dialog);
+                Overlay.unloading();
             });
         },
         addDialog:function(name, obj) {
@@ -9356,13 +9353,11 @@ KISSY.Editor.add("flash/support", function(editor) {
         Node = S.Node,
         BubbleView = KE.BubbleView,
         TripleButton = KE.TripleButton,
-        Overlay = KE.SimpleOverlay,
         dataProcessor = editor.htmlDataProcessor,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
         flashUtils = KE.Utils.flash,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "请输入如 http://www.xxx.com/xxx.swf";
+        dataFilter = dataProcessor && dataProcessor.dataFilter;
 
 
     if (!KE.Flash) {
@@ -9501,7 +9496,7 @@ KISSY.Editor.add("flash/support", function(editor) {
                         editor = self.editor;
                     editor.useDialog(self._type + "/dialog", function(dialog) {
                         dialog.show(selected);
-                    }, {mask:true});
+                    });
                 }
             });
 
@@ -11456,7 +11451,7 @@ KISSY.Editor.add("image", function(editor) {
                     var editor = this.get("editor");
                     editor.useDialog("image/dialog", function(dialog) {
                         dialog.show(_selectedEl);
-                    },{mask:true});
+                    });
                 }
             });
 
