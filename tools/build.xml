@@ -394,7 +394,7 @@ build file for kissy editor
                 encoding="${charset}"
                 src="${build.dir}"
                 dest="${build.dir}"
-                includes="**/*-pkg-min.js"
+                includes="**/*-min.js"
                 >
             <mapper type="regexp" from="^(.*)\.js$" to="\1-ascii.js"/>
         </native2ascii>
@@ -404,7 +404,7 @@ build file for kissy editor
         -->
         <delete>
             <fileset dir="${build.dir}">
-                <include name="**/*-pkg-min.js"/>
+                <include name="**/*-min.js"/>
             </fileset>
         </delete>
         <!--
