@@ -665,7 +665,7 @@ KISSY.Editor.add("definition", function(KE) {
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                if (evt.target == htmlElement[0] && evt.button == 0) {
+                if (evt.target == htmlElement[0]) {
                     //self.focus();
                     //return;
                     if (UA.gecko)
