@@ -8,7 +8,7 @@ KISSY.Editor.add("selection", function(KE) {
         UA = S.UA,
         DOM = S.DOM,
         Event = S.Event,
-        tryThese = KE.Utils.tryThese,
+        //tryThese = KE.Utils.tryThese,
         Node = S.Node,
         KES = KE.SELECTION,
         KER = KE.RANGE,
@@ -825,7 +825,7 @@ KISSY.Editor.add("selection", function(KE) {
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
-
+                //S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
                 if (DOM._4e_name(evt.target) != 'body')
@@ -836,6 +836,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (savedRange) {
                     // Well not break because of this.
                     try {
+
                         restoreEnabled && savedRange.select();
                     }
                     catch (e) {
@@ -846,7 +847,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
 
             body.on('focus', function() {
-                //console.log("body focus");
+                //S.log("body focus");
                 // Enable selections to be saved.
                 saveEnabled = true;
                 saveSelection();
@@ -985,8 +986,8 @@ KISSY.Editor.add("selection", function(KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(true),
-            isNotBookmark = KE.Walker.bookmark(false, true);
+        var isNotWhitespace = KE.Walker.whitespaces(true);//,
+        //isNotBookmark = KE.Walker.bookmark(false, true);
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p

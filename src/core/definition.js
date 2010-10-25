@@ -267,7 +267,7 @@ KISSY.Editor.add("definition", function(KE) {
         focus:function() {
             //console.log("manually focus");
             var self = this,
-                doc = self.doc,
+                doc = self.document,
                 win = DOM._4e_getWin(doc);
             UA.webkit && win && win.parent && win.parent.focus();
             //win && win.blur();
@@ -668,6 +668,7 @@ KISSY.Editor.add("definition", function(KE) {
                 //return;
                 //左键激活
                 if (evt.target == htmlElement[0]) {
+                    //S.log("click");
                     //self.focus();
                     //return;
                     if (UA.gecko)

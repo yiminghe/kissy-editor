@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-25 21:12:12
+ * @buildtime: 2010-10-25 21:26:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-25 21:12:12")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-25 21:26:48")
             }
         },
         core_mods = [
@@ -318,8 +318,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-25 21:12:12") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-25 21:12:12")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-25 21:26:48") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-25 21:26:48")
         };
     }
 
@@ -337,7 +337,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-25 21:12:12")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-25 21:26:48")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {
@@ -1092,7 +1092,7 @@ KISSY.Editor.add("definition", function(KE) {
         focus:function() {
             //console.log("manually focus");
             var self = this,
-                doc = self.doc,
+                doc = self.document,
                 win = DOM._4e_getWin(doc);
             UA.webkit && win && win.parent && win.parent.focus();
             //win && win.blur();
@@ -1493,6 +1493,7 @@ KISSY.Editor.add("definition", function(KE) {
                 //return;
                 //左键激活
                 if (evt.target == htmlElement[0]) {
+                    //S.log("click");
                     //self.focus();
                     //return;
                     if (UA.gecko)
@@ -5381,7 +5382,7 @@ KISSY.Editor.add("selection", function(KE) {
         UA = S.UA,
         DOM = S.DOM,
         Event = S.Event,
-        tryThese = KE.Utils.tryThese,
+        //tryThese = KE.Utils.tryThese,
         Node = S.Node,
         KES = KE.SELECTION,
         KER = KE.RANGE,
@@ -6198,7 +6199,7 @@ KISSY.Editor.add("selection", function(KE) {
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
-
+                //S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
                 if (DOM._4e_name(evt.target) != 'body')
@@ -6209,6 +6210,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (savedRange) {
                     // Well not break because of this.
                     try {
+
                         restoreEnabled && savedRange.select();
                     }
                     catch (e) {
@@ -6219,7 +6221,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
 
             body.on('focus', function() {
-                //console.log("body focus");
+                //S.log("body focus");
                 // Enable selections to be saved.
                 saveEnabled = true;
                 saveSelection();
@@ -6358,8 +6360,8 @@ KISSY.Editor.add("selection", function(KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(true),
-            isNotBookmark = KE.Walker.bookmark(false, true);
+        var isNotWhitespace = KE.Walker.whitespaces(true);//,
+        //isNotBookmark = KE.Walker.bookmark(false, true);
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p
