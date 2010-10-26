@@ -9,7 +9,8 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
     if (!BangPaiVideo.Dialog) {
         (function() {
             var getProvider = BangPaiVideo.getProvider;
-            var MIDDLE = "vertical-align:middle;";
+            var MIDDLE = "vertical-align:middle;",
+                MARGIN_DEFAULT = 5;
             var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                 "<p>" +
                 "<label>" +
@@ -63,7 +64,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 " data-warning='间距请输入非负整数' " +
                 "class='ke-video-margin ke-input' style='width:60px;" +
                 MIDDLE + "' value='"
-                + 5 + "'/> 像素" +
+                + MARGIN_DEFAULT + "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +
                 "</table>" +
@@ -196,7 +197,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                     } else {
                         KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("none");
-                        self.dMargin.val("5");
+                        self.dMargin.val(MARGIN_DEFAULT);
                         self.dWidth.val(DTIP);
                         self.dHeight.val(DTIP);
                     }

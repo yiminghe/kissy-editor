@@ -123,7 +123,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "text-align:right;" +
                             "'>" +
                             "<a class='ke-button ke-bangpiaupload-delall'" +
-                            " style='margin-left:20px;'>清空列表</a>" +
+                            " style='margin-right:20px;'>清空列表</a>" +
                             "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
                             "<a class='ke-button ke-bangpiaupload-insertall'" +
                             " style='margin-left:20px;'>全部插入</a>" +
@@ -333,13 +333,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         }
                     }
                 },
-                _onUploadStart:function(ev) {
+                _onUploadStart:function() {
                     //console.log("_onUploadStart", ev);
-                    var self = this,
-                        id = ev.file.id,
-                        uploader = self.uploader;
-                    //uploader.removeFile(id);
-                    //self.ddisable();
                 },
                 _onComplete:function() {
                     //console.log("_onComplete", ev);

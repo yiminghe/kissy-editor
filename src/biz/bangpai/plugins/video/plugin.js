@@ -8,7 +8,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         CLS_VIDEO = "ke_video",
         TYPE_VIDEO = "bangpai-video",
         Flash = KE.Flash,
-        DTIP = "自动",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter;
 
@@ -154,7 +153,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
                             "dialog/plugin.js?t=" +
-                           encodeURIComponent("@TIMESTAMP@")+
+                            encodeURIComponent("@TIMESTAMP@") +
                             ""
                         )
                 }

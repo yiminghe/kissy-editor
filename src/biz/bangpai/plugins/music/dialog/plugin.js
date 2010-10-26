@@ -80,6 +80,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
             }
 
             var MIDDLE = "vertical-align:middle;",
+                MARGIN_DEFAULT = 5,
                 bodyHtml = "<div style='padding:20px 0;'>" +
                     "<form action='#' class='ke-xiami-form' style='margin:0 20px;'>" +
                     "<p class='ke-xiami-title'>" +
@@ -113,7 +114,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     " data-warning='间距请输入非负整数' " +
                     "class='ke-xiami-margin ke-input' style='width:60px;" +
                     MIDDLE + "' value='"
-                    + 5 + "'/> 像素" +
+                    + MARGIN_DEFAULT + "'/> 像素" +
                     "</label>" +
                     "</p>" +
                     "</form>" +
@@ -358,7 +359,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     } else {
                         KE.Utils.resetInput(self._xiami_input);
                         self.dAlign.val("none");
-                        self.dMargin.val("5");
+                        self.dMargin.val(MARGIN_DEFAULT);
                         self._xiami_url_wrap.show();
                         self.d.foot.hide();
                         self._xiamia_title.hide();
