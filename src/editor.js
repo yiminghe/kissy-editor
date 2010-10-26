@@ -99,6 +99,7 @@ KISSY.add("editor", function(S, undefined) {
             return self;
         };
         self.init(textarea);
+        return self;
     }
 
     S.app(Editor, S.EventTarget);
@@ -112,12 +113,6 @@ KISSY.add("editor", function(S, undefined) {
     }
 
     var debug = S.Config.debug,
-        mods = {
-            "htmlparser": {
-                attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=@TIMESTAMP@")
-            }
-        },
         core_mods = [
             "utils",
             "focusmanager",
@@ -129,7 +124,15 @@ KISSY.add("editor", function(S, undefined) {
             "range",
             "domiterator",
             "selection",
-            "styles"
+            "styles",
+            "htmlparser",
+            "htmlparser-basicwriter",
+            "htmlparser-comment",
+            "htmlparser-element",
+            "htmlparser-filter",
+            "htmlparser-fragment",
+            "htmlparser-htmlwriter",
+            "htmlparser-text"
         ],
         plugin_mods = [
             "separator",
@@ -185,8 +188,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             "format",
             {
-                name: "htmldataprocessor",
-                requires: ["htmlparser-text"]
+                name: "htmldataprocessor"
             },
             {
                 name: "image",
@@ -226,7 +228,6 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "table",
-                //useCss: true,
                 requires: ["contextmenu"]
             },
             {
@@ -242,41 +243,12 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["dd"]
             }
         ],
-        htmlparser_mods = [
-            {
-                name: "htmlparser-basicwriter",
-                requires: ["htmlparser"]
-            },
-            {
-                name: "htmlparser-element",
-                requires: ["htmlparser-fragment"]
-            },
-            {
-                name: "htmlparser-filter",
-                requires: ["htmlparser-element"]
-            },
-            {
-                name: "htmlparser-fragment",
-                requires: ["htmlparser-htmlwriter"]
-            },
-            {
-                name: "htmlparser-htmlwriter",
-                requires: ["htmlparser-basicwriter"]
-            },
-            {
-                name: "htmlparser-text",
-                requires: ["htmlparser-comment"]
-            }
-            ,
-            {
-                name: "htmlparser-comment",
-                requires: ["htmlparser-filter"]
-            }
-        ],
+
         mis_mods = [
             {
                 name:"localStorage",
-                requires:["flashutils","flashbridge"]
+                requires:["flashutils",
+                    "flashbridge"]
             },
             {name:"button"},
             {name:"dd"},
@@ -287,21 +259,18 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "contextmenu",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             },
             {
                 name: "bubbleview",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             },
             {
                 name: "select",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             }
         ],
-        i, len, mod, name, requires;
+        i, len, mod, name, requires,mods = {};
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -309,12 +278,12 @@ KISSY.add("editor", function(S, undefined) {
                 name:mod
             };
         }
-        mod.requires = mod.requires || [];
+        requires = mod.requires || [];
         var basicMod = ["button"];
         if (mod.name.indexOf("/dialog") != -1) {
             basicMod.push("overlay");
         }
-        mod.requires = mod.requires.concat(basicMod);
+        mod.requires = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
@@ -330,31 +299,7 @@ KISSY.add("editor", function(S, undefined) {
             path: debugUrl("plugins/" + name + "/plugin.js?t=@TIMESTAMP@")
         };
     }
-
-    // htmlparser
-    for (i = 0,len = htmlparser_mods.length; i < len; i++) {
-        mod = htmlparser_mods[i];
-        requires = undefined;
-
-        if (!S.isString(mod)) {
-            requires = mod.requires;
-            mod = mod.name;
-        }
-
-        mods[mod] = {
-            attach: false,
-            charset:"utf-8",
-            requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=@TIMESTAMP@")
-        };
-    }
-    for (i = 0,len = core_mods.length; i < len; i++) {
-        mod = core_mods[i];
-        mods[mod] = {
-            host: "editor",
-            requires: i > 0 ? core_mods[i - 1] : []
-        };
-    }
     Editor.add(mods);
     S.Editor = Editor;
+    S.log(core_mods);
 });

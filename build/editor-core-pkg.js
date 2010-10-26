@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 12:57:48
+ * @buildtime: 2010-10-26 13:59:54
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -99,6 +99,7 @@ KISSY.add("editor", function(S, undefined) {
             return self;
         };
         self.init(textarea);
+        return self;
     }
 
     S.app(Editor, S.EventTarget);
@@ -112,12 +113,6 @@ KISSY.add("editor", function(S, undefined) {
     }
 
     var debug = S.Config.debug,
-        mods = {
-            "htmlparser": {
-                attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 12:57:48")
-            }
-        },
         core_mods = [
             "utils",
             "focusmanager",
@@ -129,7 +124,15 @@ KISSY.add("editor", function(S, undefined) {
             "range",
             "domiterator",
             "selection",
-            "styles"
+            "styles",
+            "htmlparser",
+            "htmlparser-basicwriter",
+            "htmlparser-comment",
+            "htmlparser-element",
+            "htmlparser-filter",
+            "htmlparser-fragment",
+            "htmlparser-htmlwriter",
+            "htmlparser-text"
         ],
         plugin_mods = [
             "separator",
@@ -185,8 +188,7 @@ KISSY.add("editor", function(S, undefined) {
             },
             "format",
             {
-                name: "htmldataprocessor",
-                requires: ["htmlparser-text"]
+                name: "htmldataprocessor"
             },
             {
                 name: "image",
@@ -226,7 +228,6 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "table",
-                //useCss: true,
                 requires: ["contextmenu"]
             },
             {
@@ -242,41 +243,12 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["dd"]
             }
         ],
-        htmlparser_mods = [
-            {
-                name: "htmlparser-basicwriter",
-                requires: ["htmlparser"]
-            },
-            {
-                name: "htmlparser-element",
-                requires: ["htmlparser-fragment"]
-            },
-            {
-                name: "htmlparser-filter",
-                requires: ["htmlparser-element"]
-            },
-            {
-                name: "htmlparser-fragment",
-                requires: ["htmlparser-htmlwriter"]
-            },
-            {
-                name: "htmlparser-htmlwriter",
-                requires: ["htmlparser-basicwriter"]
-            },
-            {
-                name: "htmlparser-text",
-                requires: ["htmlparser-comment"]
-            }
-            ,
-            {
-                name: "htmlparser-comment",
-                requires: ["htmlparser-filter"]
-            }
-        ],
+
         mis_mods = [
             {
                 name:"localStorage",
-                requires:["flashutils","flashbridge"]
+                requires:["flashutils",
+                    "flashbridge"]
             },
             {name:"button"},
             {name:"dd"},
@@ -287,21 +259,18 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name: "contextmenu",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             },
             {
                 name: "bubbleview",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             },
             {
                 name: "select",
-                requires: ["overlay"]   //,
-                //useCss:true
+                requires: ["overlay"]
             }
         ],
-        i, len, mod, name, requires;
+        i, len, mod, name, requires,mods = {};
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -309,12 +278,12 @@ KISSY.add("editor", function(S, undefined) {
                 name:mod
             };
         }
-        mod.requires = mod.requires || [];
+        requires = mod.requires || [];
         var basicMod = ["button"];
         if (mod.name.indexOf("/dialog") != -1) {
             basicMod.push("overlay");
         }
-        mod.requires = mod.requires.concat(basicMod);
+        mod.requires = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
@@ -326,37 +295,13 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 12:57:48") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 12:57:48")
-        };
-    }
-
-    // htmlparser
-    for (i = 0,len = htmlparser_mods.length; i < len; i++) {
-        mod = htmlparser_mods[i];
-        requires = undefined;
-
-        if (!S.isString(mod)) {
-            requires = mod.requires;
-            mod = mod.name;
-        }
-
-        mods[mod] = {
-            attach: false,
-            charset:"utf-8",
-            requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 12:57:48")
-        };
-    }
-    for (i = 0,len = core_mods.length; i < len; i++) {
-        mod = core_mods[i];
-        mods[mod] = {
-            host: "editor",
-            requires: i > 0 ? core_mods[i - 1] : []
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 13:59:54") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 13:59:54")
         };
     }
     Editor.add(mods);
     S.Editor = Editor;
+    S.log(core_mods);
 });
 /**
  * modified from ckeditor,common utils for kissy editor
@@ -7476,4 +7421,1674 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     KE.Style = KEStyle;
+});
+/**
+ * modified from ckeditor,htmlparser for malform html string
+ * @modifier: yiminghe@gmail.com
+ */
+KISSY.Editor.add("htmlparser", function(
+    // editor
+    ) {
+
+    var S = KISSY,KE = S.Editor;
+    //if (KE.HtmlParser) return;
+    var attribsRegex = /([\w\-:.]+)(?:(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s>]+)))|(?=\s|$))/g,
+        emptyAttribs = {
+            checked:1,
+            compact:1,
+            declare:1,
+            defer:1,
+            disabled:1,
+            ismap:1,
+            multiple:1,
+            nohref:1,
+            noresize:1,
+            noshade:1,
+            nowrap:1,
+            readonly:1,
+            selected:1
+        },
+        XHTML_DTD = KE.XHTML_DTD;
+
+
+    function HtmlParser() {
+        this._ = {
+            htmlPartsRegex : new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
+        };
+    }
+
+
+    S.augment(HtmlParser, {
+        /**
+         * Function to be fired when a tag opener is found. This function
+         * should be overriden when using this class.
+         *  {String} tagName The tag name. The name is guarantted to be
+         *        lowercased.
+         *  {Object} attributes An object containing all tag attributes. Each
+         *        property in this object represent and attribute name and its
+         *        value is the attribute value.
+         * {Boolean} selfClosing true if the tag closes itself, false if the
+         *         tag doesn't.
+         * @example
+         * var parser = new CKEDITOR.htmlParser();
+         * parser.onTagOpen = function( tagName, attributes, selfClosing )
+         *     {
+         *         alert( tagName );  // e.g. "b"
+         *     });
+         * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
+         */
+        onTagOpen    : function() {
+        },
+
+        /**
+         * Function to be fired when a tag closer is found. This function
+         * should be overriden when using this class.
+
+         * @example
+         * var parser = new CKEDITOR.htmlParser();
+         * parser.onTagClose = function( tagName )
+         *     {
+         *         alert( tagName );  // e.g. "b"
+         *     });
+         * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
+         */
+        onTagClose    : function(
+            //tagName
+            ) {
+        },
+
+        /**
+         * Function to be fired when text is found. This function
+         * should be overriden when using this class.
+
+         * @example
+         * var parser = new CKEDITOR.htmlParser();
+         * parser.onText = function( text )
+         *     {
+         *         alert( text );  // e.g. "Hello"
+         *     });
+         * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
+         */
+        onText        : function(
+            //text
+            ) {
+        },
+
+        /**
+         * Function to be fired when CDATA section is found. This function
+         * should be overriden when using this class.
+
+         */
+        onCDATA        : function(
+            //cdata
+            ) {
+        },
+
+        /**
+         * Function to be fired when a commend is found. This function
+         * should be overriden when using this class.
+
+
+         */
+        onComment : function(
+            //comment
+            ) {
+        },
+
+        /**
+         * Parses text, looking for HTML tokens, like tag openers or closers,
+         * or comments. This function fires the onTagOpen, onTagClose, onText
+         * and onComment function during its execution.
+         * @param {String} html The HTML to be parsed.
+
+         */
+        parse : function(html) {
+            var parts,
+                tagName,
+
+                nextIndex = 0,
+                cdata;	// The collected data inside a CDATA section.
+
+            while (( parts = this._.htmlPartsRegex.exec(html) )) {
+                var tagIndex = parts.index;
+                if (tagIndex > nextIndex) {
+                    var text = html.substring(nextIndex, tagIndex);
+
+                    if (cdata)
+                        cdata.push(text);
+                    else
+                        this.onText(text);
+                }
+
+                nextIndex = this._.htmlPartsRegex.lastIndex;
+
+                /*
+                 "parts" is an array with the following items:
+                 0 : The entire match for opening/closing tags and comments.
+                 1 : Group filled with the tag name for closing tags.
+                 2 : Group filled with the comment text.
+                 3 : Group filled with the tag name for opening tags.
+                 4 : Group filled with the attributes part of opening tags.
+                 */
+
+                // Closing tag
+                if (( tagName = parts[ 1 ] )) {
+                    tagName = tagName.toLowerCase();
+
+                    if (cdata && XHTML_DTD.$cdata[ tagName ]) {
+                        // Send the CDATA data.
+                        this.onCDATA(cdata.join(''));
+                        cdata = null;
+                    }
+
+                    if (!cdata) {
+                        this.onTagClose(tagName);
+                        continue;
+                    }
+                }
+
+                // If CDATA is enabled, just save the raw match.
+                if (cdata) {
+                    cdata.push(parts[ 0 ]);
+                    continue;
+                }
+
+                // Opening tag
+                if (( tagName = parts[ 3 ] )) {
+                    tagName = tagName.toLowerCase();
+                    var attribs = {},
+                        attribMatch,
+                        attribsPart = parts[ 4 ],
+                        selfClosing = !!( attribsPart && attribsPart.charAt(attribsPart.length - 1) == '/' );
+
+                    if (attribsPart) {
+                        while (( attribMatch = attribsRegex.exec(attribsPart) )) {
+                            var attName = attribMatch[1].toLowerCase(),
+                                attValue = attribMatch[2] || attribMatch[3] || attribMatch[4] || '';
+
+                            if (!attValue && emptyAttribs[ attName ])
+                                attribs[ attName ] = attName;
+                            else
+                                attribs[ attName ] = attValue;
+                        }
+                    }
+
+                    this.onTagOpen(tagName, attribs, selfClosing);
+
+                    // Open CDATA mode when finding the appropriate tags.
+                    if (!cdata && XHTML_DTD.$cdata[ tagName ])
+                        cdata = [];
+
+                    continue;
+                }
+
+                // Comment
+                if (( tagName = parts[ 2 ] ))
+                    this.onComment(tagName);
+            }
+
+            if (html.length > nextIndex)
+                this.onText(html.substring(nextIndex, html.length));
+        }
+    });
+
+    KE.HtmlParser = HtmlParser;
+});
+/**
+ * modified from ckeditor,html generator for kissy editor
+ * @modifier: yiminghe@gmail.com
+ */
+KISSY.Editor.add("htmlparser-basicwriter", function() {
+    var S = KISSY,KE = S.Editor,Utils = KE.Utils;
+    //if (KE.HtmlParser.BasicWriter)return;
+    function BasicWriter() {
+        this._ = {
+            output : []
+        };
+    }
+
+    S.augment(BasicWriter, {
+        /**
+         * Writes the tag opening part for a opener tag.
+         * @param {String} tagName The element name for this tag.
+         * param {Object} attributes The attributes defined for this tag. The
+         *        attributes could be used to inspect the tag.
+         * @example
+         * // Writes "&lt;p".
+         * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
+         */
+        openTag : function(tagName
+            //, attributes
+            ) {
+            this._.output.push('<', tagName);
+        },
+
+        /**
+         * Writes the tag closing part for a opener tag.
+         * @param {String} tagName The element name for this tag.
+         * @param {Boolean} isSelfClose Indicates that this is a self-closing tag,
+         *        like "br" or "img".
+         * @example
+         * // Writes "&gt;".
+         * writer.openTagClose( 'p', false );
+         * @example
+         * // Writes " /&gt;".
+         * writer.openTagClose( 'br', true );
+         */
+        openTagClose : function(tagName, isSelfClose) {
+            if (isSelfClose)
+                this._.output.push(' />');
+            else
+                this._.output.push('>');
+        },
+
+        /**
+         * Writes an attribute. This function should be called after opening the
+         * tag with {@link #openTagClose}.
+         * @param {String} attName The attribute name.
+         * @param {String} attValue The attribute value.
+         * @example
+         * // Writes ' class="MyClass"'.
+         * writer.attribute( 'class', 'MyClass' );
+         */
+        attribute : function(attName, attValue) {
+            // Browsers don't always escape special character in attribute values. (#4683, #4719).
+            if (typeof attValue == 'string')
+                attValue = Utils.htmlEncodeAttr(attValue);
+
+            this._.output.push(' ', attName, '="', attValue, '"');
+        },
+
+        /**
+         * Writes a closer tag.
+         * @param {String} tagName The element name for this tag.
+         * @example
+         * // Writes "&lt;/p&gt;".
+         * writer.closeTag( 'p' );
+         */
+        closeTag : function(tagName) {
+            this._.output.push('</', tagName, '>');
+        },
+
+        /**
+         * Writes text.
+         * @param {String} text The text value
+         * @example
+         * // Writes "Hello Word".
+         * writer.text( 'Hello Word' );
+         */
+        text : function(text) {
+            this._.output.push(text);
+        },
+
+        /**
+         * Writes a comment.
+         * @param {String} comment The comment text.
+         * @example
+         * // Writes "&lt;!-- My comment --&gt;".
+         * writer.comment( ' My comment ' );
+         */
+        comment : function(comment) {
+            this._.output.push('<!--', comment, '-->');
+        },
+
+        /**
+         * Writes any kind of data to the ouput.
+         * @example
+         * writer.write( 'This is an &lt;b&gt;example&lt;/b&gt;.' );
+         */
+        write : function(data) {
+            this._.output.push(data);
+        },
+
+        /**
+         * Empties the current output buffer.
+         * @example
+         * writer.reset();
+         */
+        reset : function() {
+            this._.output = [];
+            this._.indent = false;
+        },
+
+        /**
+         * Empties the current output buffer.
+         * @param {Boolean} reset Indicates that the { reset} function is to
+         *        be automatically called after retrieving the HTML.
+         * @returns {String} The HTML written to the writer so far.
+         * @example
+         * var html = writer.getHtml();
+         */
+        getHtml : function(reset) {
+            var html = this._.output.join('');
+
+            if (reset)
+                this.reset();
+
+            return html;
+        }
+    });
+
+    KE.HtmlParser.BasicWriter = BasicWriter;
+});
+KISSY.Editor.add("htmlparser-htmlwriter", function(
+    //editor
+    ) {
+    var S = KISSY,
+        KE = S.Editor,
+        Utils = KE.Utils;
+    //if (KE.HtmlParser.HtmlWriter) return;
+    function HtmlWriter() {
+        // Call the base contructor.
+
+        HtmlWriter.superclass.constructor.call(this);
+
+        /**
+         * The characters to be used for each identation step.
+         * @type String
+         * @default "\t" (tab)
+         * @example
+         * // Use two spaces for indentation.
+         * editorInstance.dataProcessor.writer.indentationChars = '  ';
+         */
+        this.indentationChars = '\t';
+
+        /**
+         * The characters to be used to close "self-closing" elements, like "br" or
+         * "img".
+         * @type String
+         * @default " /&gt;"
+         * @example
+         * // Use HTML4 notation for self-closing elements.
+         * editorInstance.dataProcessor.writer.selfClosingEnd = '>';
+         */
+        this.selfClosingEnd = ' />';
+
+        /**
+         * The characters to be used for line breaks.
+         * @type String
+         * @default "\n" (LF)
+         * @example
+         * // Use CRLF for line breaks.
+         * editorInstance.dataProcessor.writer.lineBreakChars = '\r\n';
+         */
+        this.lineBreakChars = '\n';
+
+        this.forceSimpleAmpersand = false;
+
+        this.sortAttributes = true;
+
+        this._.indent = false;
+        this._.indentation = '';
+        this._.rules = {};
+
+        var dtd = KE.XHTML_DTD;
+
+        for (var e in Utils.mix({},
+            dtd.$nonBodyContent,
+            dtd.$block, dtd.$listItem,
+            dtd.$tableContent)) {
+            this.setRules(e, {
+                indent : true,
+                breakBeforeOpen : true,
+                breakAfterOpen : true,
+                breakBeforeClose : !dtd[ e ][ '#' ],
+                breakAfterClose : true
+            });
+        }
+
+        this.setRules('br',
+        {
+            breakAfterOpen : true
+        });
+
+        this.setRules('title',
+        {
+            indent : false,
+            breakAfterOpen : false
+        });
+
+        this.setRules('style',
+        {
+            indent : false,
+            breakBeforeClose : true
+        });
+
+        // Disable indentation on <pre>.
+        this.setRules('pre',
+        {
+            indent: false
+        });
+    }
+
+    S.extend(HtmlWriter, KE.HtmlParser.BasicWriter, {
+        /**
+         * Writes the tag opening part for a opener tag.
+         * @param {String} tagName The element name for this tag.
+         *  {Object} attributes The attributes defined for this tag. The
+         *        attributes could be used to inspect the tag.
+         * @example
+         * // Writes "&lt;p".
+         * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
+         */
+        openTag : function(tagName
+            //, attributes
+            ) {
+            var rules = this._.rules[ tagName ];
+
+            if (this._.indent)
+                this.indentation();
+            // Do not break if indenting.
+            else if (rules && rules.breakBeforeOpen) {
+                this.lineBreak();
+                this.indentation();
+            }
+
+            this._.output.push('<', tagName);
+        },
+
+        /**
+         * Writes the tag closing part for a opener tag.
+         * @param {String} tagName The element name for this tag.
+         * @param {Boolean} isSelfClose Indicates that this is a self-closing tag,
+         *        like "br" or "img".
+         * @example
+         * // Writes "&gt;".
+         * writer.openTagClose( 'p', false );
+         * @example
+         * // Writes " /&gt;".
+         * writer.openTagClose( 'br', true );
+         */
+        openTagClose : function(tagName, isSelfClose) {
+            var rules = this._.rules[ tagName ];
+
+            if (isSelfClose)
+                this._.output.push(this.selfClosingEnd);
+            else {
+                this._.output.push('>');
+                if (rules && rules.indent)
+                    this._.indentation += this.indentationChars;
+            }
+
+            if (rules && rules.breakAfterOpen)
+                this.lineBreak();
+        },
+
+        /**
+         * Writes an attribute. This function should be called after opening the
+         * tag with {@link #openTagClose}.
+         * @param {String} attName The attribute name.
+         * @param {String} attValue The attribute value.
+         * @example
+         * // Writes ' class="MyClass"'.
+         * writer.attribute( 'class', 'MyClass' );
+         */
+        attribute : function(attName, attValue) {
+
+            if (typeof attValue == 'string') {
+                this.forceSimpleAmpersand && ( attValue = attValue.replace(/&amp;/g, '&') );
+                // Browsers don't always escape special character in attribute values. (#4683, #4719).
+                attValue = Utils.htmlEncodeAttr(attValue);
+            }
+
+            this._.output.push(' ', attName, '="', attValue, '"');
+        },
+
+        /**
+         * Writes a closer tag.
+         * @param {String} tagName The element name for this tag.
+         * @example
+         * // Writes "&lt;/p&gt;".
+         * writer.closeTag( 'p' );
+         */
+        closeTag : function(tagName) {
+            var rules = this._.rules[ tagName ];
+
+            if (rules && rules.indent)
+                this._.indentation = this._.indentation.substr(this.indentationChars.length);
+
+            if (this._.indent)
+                this.indentation();
+            // Do not break if indenting.
+            else if (rules && rules.breakBeforeClose) {
+                this.lineBreak();
+                this.indentation();
+            }
+
+            this._.output.push('</', tagName, '>');
+
+            if (rules && rules.breakAfterClose)
+                this.lineBreak();
+        },
+
+        /**
+         * Writes text.
+         * @param {String} text The text value
+         * @example
+         * // Writes "Hello Word".
+         * writer.text( 'Hello Word' );
+         */
+        text : function(text) {
+            if (this._.indent) {
+                this.indentation();
+                text = Utils.ltrim(text);
+            }
+
+            this._.output.push(text);
+        },
+
+        /**
+         * Writes a comment.
+         * @param {String} comment The comment text.
+         * @example
+         * // Writes "&lt;!-- My comment --&gt;".
+         * writer.comment( ' My comment ' );
+         */
+        comment : function(comment) {
+            if (this._.indent)
+                this.indentation();
+
+            this._.output.push('<!--', comment, '-->');
+        },
+
+        /**
+         * Writes a line break. It uses the { #lineBreakChars} property for it.
+         * @example
+         * // Writes "\n" (e.g.).
+         * writer.lineBreak();
+         */
+        lineBreak : function() {
+            if (this._.output.length > 0)
+                this._.output.push(this.lineBreakChars);
+            this._.indent = true;
+        },
+
+        /**
+         * Writes the current indentation chars. It uses the
+         * { #indentationChars} property, repeating it for the current
+         * indentation steps.
+         * @example
+         * // Writes "\t" (e.g.).
+         * writer.indentation();
+         */
+        indentation : function() {
+            this._.output.push(this._.indentation);
+            this._.indent = false;
+        },
+
+        /**
+         * Sets formatting rules for a give element. The possible rules are:
+         * <ul>
+         *    <li><b>indent</b>: indent the element contents.</li>
+         *    <li><b>breakBeforeOpen</b>: break line before the opener tag for this element.</li>
+         *    <li><b>breakAfterOpen</b>: break line after the opener tag for this element.</li>
+         *    <li><b>breakBeforeClose</b>: break line before the closer tag for this element.</li>
+         *    <li><b>breakAfterClose</b>: break line after the closer tag for this element.</li>
+         * </ul>
+         *
+         * All rules default to "false". Each call to the function overrides
+         * already present rules, leaving the undefined untouched.
+         *
+         * By default, all elements available in the { XHTML_DTD.$block),
+         * { XHTML_DTD.$listItem} and { XHTML_DTD.$tableContent}
+         * lists have all the above rules set to "true". Additionaly, the "br"
+         * element has the "breakAfterOpen" set to "true".
+         * @param {String} tagName The element name to which set the rules.
+         * @param {Object} rules An object containing the element rules.
+         * @example
+         * // Break line before and after "img" tags.
+         * writer.setRules( 'img',
+         *     {
+         *         breakBeforeOpen : true
+         *         breakAfterOpen : true
+         *     });
+         * @example
+         * // Reset the rules for the "h1" tag.
+         * writer.setRules( 'h1', {} );
+         */
+        setRules : function(tagName, rules) {
+            var currentRules = this._.rules[ tagName ];
+
+            if (currentRules)
+                currentRules = Utils.mix(currentRules, rules);
+            else
+                this._.rules[ tagName ] = rules;
+        }
+    });
+
+    KE.HtmlParser.HtmlWriter = HtmlWriter;
+});
+KISSY.Editor.add("htmlparser-fragment", function(
+    //editor
+    ) {
+    var KE = KISSY.Editor;
+    //if (KE.HtmlParser.Fragment) return;
+    /**
+     * A lightweight representation of an HTML DOM structure.
+     * @constructor
+     * @example
+     */
+    function Fragment() {
+        /**
+         * The nodes contained in the root of this fragment.
+         * @type Array
+         * @example
+         * var fragment = Fragment.fromHtml( '<b>Sample</b> Text' );
+         * alert( fragment.children.length );  "2"
+         */
+        this.children = [];
+
+        /**
+         * Get the fragment parent. Should always be null.
+         * @type Object
+         * @default null
+         * @example
+         */
+        this.parent = null;
+
+        /** @private */
+        this._ = {
+            isBlockLike : true,
+            hasInlineStarted : false
+        };
+    }
+
+    // Elements which the end tag is marked as optional in the HTML 4.01 DTD
+    // (expect empty elements).
+    var optionalClose = {colgroup:1,dd:1,dt:1,li:1,option:1,p:1,td:1,tfoot:1,th:1,thead:1,tr:1};
+
+    // Block-level elements whose internal structure should be respected during
+    // parser fixing.
+    var S = KISSY,
+        Utils = KE.Utils,
+        KEN = KE.NODE,
+        XHTML_DTD = KE.XHTML_DTD,
+        nonBreakingBlocks = Utils.mix({table:1,ul:1,ol:1,dl:1},
+            XHTML_DTD.table, XHTML_DTD.ul, XHTML_DTD.ol, XHTML_DTD.dl),
+        listBlocks = XHTML_DTD.$list,
+        listItems = XHTML_DTD.$listItem;
+
+    /**
+     * Creates a  Fragment from an HTML string.
+     * @param {String} fragmentHtml The HTML to be parsed, filling the fragment.
+     * @param {Number} [fixForBody=false] Wrap body with specified element if needed.
+     * @returns Fragment The fragment created.
+     * @example
+     * var fragment = Fragment.fromHtml( '<b>Sample</b> Text' );
+     * alert( fragment.children[0].name );  "b"
+     * alert( fragment.children[1].value );  " Text"
+     * 特例：
+     * 自动加p，自动处理标签嵌套规则
+     * "<img src='xx'><span>5<div>6</div>7</span>"
+     * ="<p><img><span>5</span></p><div><span>6</span></div><p><span>7</span></p>"
+     * 自动处理ul嵌套，以及li ie不闭合
+     * "<ul><ul><li>xxx</ul><li>1<li>2<ul>");
+     */
+    Fragment.FromHtml = function(fragmentHtml, fixForBody) {
+        var parser = new KE.HtmlParser(),
+            //html = [],
+            fragment = new Fragment(),
+            pendingInline = [],
+            pendingBRs = [],
+            currentNode = fragment,
+            // Indicate we're inside a <pre> element, spaces should be touched differently.
+            inPre = false,
+            returnPoint;
+
+        function checkPending(newTagName) {
+            var pendingBRsSent;
+
+            if (pendingInline.length > 0) {
+                for (var i = 0; i < pendingInline.length; i++) {
+                    var pendingElement = pendingInline[ i ],
+                        pendingName = pendingElement.name,
+                        pendingDtd = XHTML_DTD[ pendingName ],
+                        currentDtd = currentNode.name && XHTML_DTD[ currentNode.name ];
+
+                    if (( !currentDtd || currentDtd[ pendingName ] ) && ( !newTagName || !pendingDtd || pendingDtd[ newTagName ] || !XHTML_DTD[ newTagName ] )) {
+                        if (!pendingBRsSent) {
+                            sendPendingBRs();
+                            pendingBRsSent = 1;
+                        }
+
+                        // Get a clone for the pending element.
+                        pendingElement = pendingElement.clone();
+
+                        // Add it to the current node and make it the current,
+                        // so the new element will be added inside of it.
+                        pendingElement.parent = currentNode;
+                        currentNode = pendingElement;
+
+                        // Remove the pending element (back the index by one
+                        // to properly process the next entry).
+                        pendingInline.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+        }
+
+        function sendPendingBRs() {
+            while (pendingBRs.length)
+                currentNode.add(pendingBRs.shift());
+        }
+
+        function addElement(element, target, enforceCurrent) {
+            target = target || currentNode || fragment;
+
+            // If the target is the fragment and this element can't go inside
+            // body (if fixForBody).
+            if (fixForBody && !target.type) {
+                var elementName, realElementName;
+                if (element.attributes
+                    && ( realElementName =
+                    element.attributes[ '_ke_real_element_type' ] ))
+                    elementName = realElementName;
+                else
+                    elementName = element.name;
+                if (elementName
+                    && !( elementName in XHTML_DTD.$body )
+                    && !( elementName in XHTML_DTD.$nonBodyContent )) {
+                    var savedCurrent = currentNode;
+
+                    // Create a <p> in the fragment.
+                    currentNode = target;
+                    parser.onTagOpen(fixForBody, {});
+
+                    // The new target now is the <p>.
+                    target = currentNode;
+
+                    if (enforceCurrent)
+                        currentNode = savedCurrent;
+                }
+            }
+
+            // Rtrim empty spaces on block end boundary. (#3585)
+            if (element._.isBlockLike
+                && element.name != 'pre') {
+
+                var length = element.children.length,
+                    lastChild = element.children[ length - 1 ],
+                    text;
+                if (lastChild && lastChild.type == KEN.NODE_TEXT) {
+                    if (!( text = Utils.rtrim(lastChild.value) ))
+                        element.children.length = length - 1;
+                    else
+                        lastChild.value = text;
+                }
+            }
+
+            target.add(element);
+
+            //<ul><ul></ul></ul> -> <ul><li><ul></ul></li></ul>
+            //跳过隐形添加的li直接到ul
+            if (element.returnPoint) {
+                currentNode = element.returnPoint;
+                delete element.returnPoint;
+            }
+        }
+
+        /**
+         * 遇到标签开始建立节点和父亲关联 ==  node.parent=parent
+         * @param tagName
+         * @param attributes
+         * @param selfClosing
+         */
+        parser.onTagOpen = function(tagName, attributes, selfClosing) {
+            var element = new KE.HtmlParser.Element(tagName, attributes);
+
+            // "isEmpty" will be always "false" for unknown elements, so we
+            // must force it if the parser has identified it as a selfClosing tag.
+            if (element.isUnknown && selfClosing)
+                element.isEmpty = true;
+
+            // This is a tag to be removed if empty, so do not add it immediately.
+            if (XHTML_DTD.$removeEmpty[ tagName ]) {
+                pendingInline.push(element);
+                return;
+            }
+            else if (tagName == 'pre')
+                inPre = true;
+            else if (tagName == 'br' && inPre) {
+                currentNode.add(new KE.HtmlParser.Text('\n'));
+                return;
+            }
+
+            if (tagName == 'br') {
+                pendingBRs.push(element);
+                return;
+            }
+
+            var currentName = currentNode.name;
+
+            var currentDtd = currentName
+                && ( XHTML_DTD[ currentName ]
+                || ( currentNode._.isBlockLike ? XHTML_DTD.div : XHTML_DTD.span ) );
+
+            // If the element cannot be child of the current element.
+            if (currentDtd   // Fragment could receive any elements.
+                && !element.isUnknown && !currentNode.isUnknown && !currentDtd[ tagName ]) {
+
+                var reApply = false,
+                    addPoint;   // New position to start adding nodes.
+
+                // Fixing malformed nested lists by moving it into a previous list item. (#3828)
+                if (tagName in listBlocks
+                    && currentName in listBlocks) {
+                    var children = currentNode.children,
+                        lastChild = children[ children.length - 1 ];
+
+                    // Establish the list item if it's not existed.
+                    if (!( lastChild && lastChild.name in listItems ))
+                    //直接添加到父亲
+                        addElement(( lastChild = new KE.HtmlParser.Element('li') ), currentNode);
+                    //以后直接跳到父亲不用再向父亲添加
+                    returnPoint = currentNode,addPoint = lastChild;
+                }
+                // If the element name is the same as the current element name,
+                // then just close the current one and append the new one to the
+                // parent. This situation usually happens with <p>, <li>, <dt> and
+                // <dd>, specially in IE. Do not enter in this if block in this case.
+                else if (tagName == currentName) {
+                    //直接把上一个<p>,<li>结束掉，不要再等待</p>,</li>执行此项操作了
+                    addElement(currentNode, currentNode.parent);
+                }
+                else {
+                    if (nonBreakingBlocks[ currentName ]) {
+                        if (!returnPoint)
+                            returnPoint = currentNode;
+                    }
+                    else {
+                        //拆分，闭合掉
+                        addElement(currentNode, currentNode.parent, true);
+                        //li,p等现在就闭合，以后都不用再管了
+                        if (!optionalClose[ currentName ]) {
+                            // The current element is an inline element, which
+                            // cannot hold the new one. Put it in the pending list,
+                            // and try adding the new one after it.
+                            pendingInline.unshift(currentNode);
+                        }
+                    }
+
+                    reApply = true;
+                }
+
+                if (addPoint)
+                    currentNode = addPoint;
+                // Try adding it to the return point, or the parent element.
+                else
+                //前面都调用 addElement 将当前节点闭合了，只能往 parent 添加了
+                    currentNode = currentNode.returnPoint || currentNode.parent;
+
+                if (reApply) {
+                    parser.onTagOpen.apply(this, arguments);
+                    return;
+                }
+            }
+
+            checkPending(tagName);
+            sendPendingBRs();
+
+            element.parent = currentNode;
+            element.returnPoint = returnPoint;
+            returnPoint = 0;
+
+            //自闭合的，不等结束标签，立即加到父亲
+            if (element.isEmpty)
+                addElement(element);
+            else
+                currentNode = element;
+        };
+
+        /**
+         * 遇到标签结束，将open生成的节点添加到dom树中 == 父亲接纳自己 node.parent.add(node)
+         * @param tagName
+         */
+        parser.onTagClose = function(tagName) {
+            // Check if there is any pending tag to be closed.
+            for (var i = pendingInline.length - 1; i >= 0; i--) {
+                // If found, just remove it from the list.
+                if (tagName == pendingInline[ i ].name) {
+                    pendingInline.splice(i, 1);
+                    return;
+                }
+            }
+
+            var pendingAdd = [],
+                newPendingInline = [],
+                candidate = currentNode;
+
+            while (candidate.type && candidate.name != tagName) {
+                // If this is an inline element, add it to the pending list, if we're
+                // really closing one of the parents element later, they will continue
+                // after it.
+                if (!candidate._.isBlockLike)
+                    newPendingInline.unshift(candidate);
+
+                // This node should be added to it's parent at this point. But,
+                // it should happen only if the closing tag is really closing
+                // one of the nodes. So, for now, we just cache it.
+                pendingAdd.push(candidate);
+
+                candidate = candidate.parent;
+            }
+
+            if (candidate.type) {
+                // Add all elements that have been found in the above loop.
+                for (i = 0; i < pendingAdd.length; i++) {
+                    var node = pendingAdd[ i ];
+                    addElement(node, node.parent);
+                }
+
+                currentNode = candidate;
+
+                if (currentNode.name == 'pre')
+                    inPre = false;
+
+                if (candidate._.isBlockLike)
+                    sendPendingBRs();
+
+                addElement(candidate, candidate.parent);
+
+                // The parent should start receiving new nodes now, except if
+                // addElement changed the currentNode.
+                if (candidate == currentNode)
+                    currentNode = currentNode.parent;
+
+                pendingInline = pendingInline.concat(newPendingInline);
+            }
+
+            if (tagName == 'body')
+                fixForBody = false;
+        };
+
+        parser.onText = function(text) {
+            // Trim empty spaces at beginning of element contents except <pre>.
+            if (!currentNode._.hasInlineStarted && !inPre) {
+                text = Utils.ltrim(text);
+
+                if (text.length === 0)
+                    return;
+            }
+
+            sendPendingBRs();
+            checkPending();
+
+            if (fixForBody
+                && ( !currentNode.type || currentNode.name == 'body' )
+                && Utils.trim(text)) {
+                this.onTagOpen(fixForBody, {});
+            }
+
+            // Shrinking consequential spaces into one single for all elements
+            // text contents.
+            if (!inPre)
+                text = text.replace(/[\t\r\n ]{2,}|[\t\r\n]/g, ' ');
+
+            currentNode.add(new KE.HtmlParser.Text(text));
+        };
+
+        parser.onCDATA = function(
+            //cdata
+            ) {
+            //不做
+            //currentNode.add(new KE.HtmlParser.cdata(cdata));
+        };
+
+        parser.onComment = function(comment) {
+            currentNode.add(new KE.HtmlParser.Comment(comment));
+        };
+
+        // Parse it.
+        parser.parse(fragmentHtml);
+
+        sendPendingBRs();
+
+        // Close all pending nodes.
+        //<p>xxxxxxxxxxxxx
+        //到最后也灭有结束标签
+        while (currentNode.type) {
+            var parent = currentNode.parent,
+                node = currentNode;
+
+            if (fixForBody
+                && ( !parent.type || parent.name == 'body' )
+                && !XHTML_DTD.$body[ node.name ]) {
+                currentNode = parent;
+                parser.onTagOpen(fixForBody, {});
+                parent = currentNode;
+            }
+
+            parent.add(node);
+            currentNode = parent;
+        }
+
+        return fragment;
+    };
+
+    S.augment(Fragment, {
+        /**
+         * Adds a node to this fragment.
+         * @param {Object} node The node to be added. It can be any of of the
+         *        following types: {@link Element},
+         *        {@link Text}
+         * @example
+         */
+        add : function(node) {
+            var len = this.children.length,
+                previous = len > 0 && this.children[ len - 1 ] || null;
+
+            if (previous) {
+                // If the block to be appended is following text, trim spaces at
+                // the right of it.
+                if (node._.isBlockLike && previous.type == KEN.NODE_TEXT) {
+                    previous.value = Utils.rtrim(previous.value);
+                    // If we have completely cleared the previous node.
+                    if (previous.value.length === 0) {
+                        // Remove it from the list and add the node again.
+                        this.children.pop();
+                        this.add(node);
+                        return;
+                    }
+                }
+
+                previous.next = node;
+            }
+
+            node.previous = previous;
+            node.parent = this;
+
+            this.children.push(node);
+            this._.hasInlineStarted = node.type == KEN.NODE_TEXT || ( node.type == KEN.NODE_ELEMENT && !node._.isBlockLike );
+        },
+
+        /**
+         * Writes the fragment HTML to a CKEDITOR.htmlWriter.
+         * @param writer The writer to which write the HTML.
+         * @example
+         * var writer = new HtmlWriter();
+         * var fragment = Fragment.fromHtml( '&lt;P&gt;&lt;B&gt;Example' );
+         * fragment.writeHtml( writer )
+         * alert( writer.getHtml() );  "&lt;p&gt;&lt;b&gt;Example&lt;/b&gt;&lt;/p&gt;"
+         */
+        writeHtml : function(writer, filter) {
+            var isChildrenFiltered;
+            this.filterChildren = function() {
+                var writer = new KE.HtmlParser.BasicWriter();
+                this.writeChildrenHtml.call(this, writer, filter, true);
+                var html = writer.getHtml();
+                this.children = new Fragment.FromHtml(html).children;
+                isChildrenFiltered = 1;
+            };
+
+            // Filtering the root fragment before anything else.
+            !this.name && filter && filter.onFragment(this);
+
+            this.writeChildrenHtml(writer, isChildrenFiltered ? null : filter);
+        },
+
+        writeChildrenHtml : function(writer, filter) {
+            for (var i = 0; i < this.children.length; i++)
+                this.children[i].writeHtml(writer, filter);
+        }
+    });
+
+    KE.HtmlParser.Fragment = Fragment;
+
+});
+KISSY.Editor.add("htmlparser-element", function() {
+    var KE = KISSY.Editor;
+    //if (KE.HtmlParser.Element)return;
+    /**
+     * A lightweight representation of an HTML element.
+     * @param {String} name The element name.
+     * @param {Object} attributes And object holding all attributes defined for
+     *        this element.
+     * @constructor
+     * @example
+     */
+    function Element(name, attributes) {
+        /**
+         * The element name.
+         * @type String
+         * @example
+         */
+        this.name = name;
+
+        /**
+         * Holds the attributes defined for this element.
+         * @type Object
+         * @example
+         */
+        this.attributes = attributes || ( attributes = {} );
+
+        /**
+         * The nodes that are direct children of this element.
+         * @type Array
+         * @example
+         */
+        this.children = [];
+
+        var tagName = attributes._ke_real_element_type || name;
+
+        var dtd = KE.XHTML_DTD,
+            isBlockLike = !!( dtd.$nonBodyContent[ tagName ] || dtd.$block[ tagName ] || dtd.$listItem[ tagName ] || dtd.$tableContent[ tagName ] || dtd.$nonEditable[ tagName ] || tagName == 'br' ),
+            isEmpty = !!dtd.$empty[ name ];
+
+        this.isEmpty = isEmpty;
+        this.isUnknown = !dtd[ name ];
+
+        /** @private */
+        this._ =
+        {
+            isBlockLike : isBlockLike,
+            hasInlineStarted : isEmpty || !isBlockLike
+        };
+    }
+
+    // Used to sort attribute entries in an array, where the first element of
+    // each object is the attribute name.
+    var S = KISSY,
+        KEN = KE.NODE,
+        sortAttribs = function(a, b) {
+            a = a[0];
+            b = b[0];
+            return a < b ? -1 : a > b ? 1 : 0;
+        };
+    S.augment(Element, {
+        /**
+         * The node type. This is a constant value set to { KEN.NODE_ELEMENT}.
+         * @type Number
+         * @example
+         */
+        type : KEN.NODE_ELEMENT,
+
+        /**
+         * Adds a node to the element children list.
+         * @param {Object} node The node to be added.
+         * @function
+         * @example
+         */
+        add : KE.HtmlParser.Fragment.prototype.add,
+
+        /**
+         * Clone this element.
+         * @returns {Element} The element clone.
+         * @example
+         */
+        clone : function() {
+            return new Element(this.name, this.attributes);
+        },
+
+        /**
+         * Writes the element HTML to a CKEDITOR.htmlWriter.
+         * @param  writer The writer to which write the HTML.
+         * @example
+         */
+        writeHtml : function(writer, filter) {
+            var attributes = this.attributes;
+
+            // Ignore cke: prefixes when writing HTML.
+            var element = this,
+                writeName = element.name,
+                a, newAttrName, value;
+
+            var isChildrenFiltered;
+
+            /**
+             * Providing an option for bottom-up filtering order ( element
+             * children to be pre-filtered before the element itself ).
+             */
+            element.filterChildren = function() {
+                if (!isChildrenFiltered) {
+                    var writer = new KE.HtmlParser.BasicWriter();
+                    KE.HtmlParser.Fragment.prototype.writeChildrenHtml.call(element, writer, filter);
+                    element.children = new KE.HtmlParser.Fragment.FromHtml(writer.getHtml()).children;
+                    isChildrenFiltered = 1;
+                }
+            };
+
+            if (filter) {
+                while (true) {
+                    if (!( writeName = filter.onElementName(writeName) ))
+                        return;
+
+                    element.name = writeName;
+
+                    if (!( element = filter.onElement(element) ))
+                        return;
+
+                    element.parent = this.parent;
+
+                    if (element.name == writeName)
+                        break;
+
+                    // If the element has been replaced with something of a
+                    // different type, then make the replacement write itself.
+                    if (element.type != KEN.NODE_ELEMENT) {
+                        element.writeHtml(writer, filter);
+                        return;
+                    }
+
+                    writeName = element.name;
+
+                    // This indicate that the element has been dropped by
+                    // filter but not the children.
+                    if (!writeName) {
+                        this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                        return;
+                    }
+                }
+
+                // The element may have been changed, so update the local
+                // references.
+                attributes = element.attributes;
+            }
+
+            // Open element tag.
+            writer.openTag(writeName, attributes);
+
+            // Copy all attributes to an array.
+            var attribsArray = [];
+            // Iterate over the attributes twice since filters may alter
+            // other attributes.
+            for (var i = 0; i < 2; i++) {
+                for (a in attributes) {
+                    newAttrName = a;
+                    value = attributes[ a ];
+                    if (i == 1)
+                        attribsArray.push([ a, value ]);
+                    else if (filter) {
+                        while (true) {
+                            if (!( newAttrName = filter.onAttributeName(a) )) {
+                                delete attributes[ a ];
+                                break;
+                            }
+                            else if (newAttrName != a) {
+                                delete attributes[ a ];
+                                a = newAttrName;
+                                //continue;
+                            }
+                            else
+                                break;
+                        }
+                        if (newAttrName) {
+                            if (( value = filter.onAttribute(element, newAttrName, value) ) === false)
+                                delete attributes[ newAttrName ];
+                            else
+                                attributes [ newAttrName ] = value;
+                        }
+                    }
+                }
+            }
+            // Sort the attributes by name.
+            if (writer.sortAttributes)
+                attribsArray.sort(sortAttribs);
+
+            // Send the attributes.
+            var len = attribsArray.length;
+            for (i = 0; i < len; i++) {
+                var attrib = attribsArray[ i ];
+                writer.attribute(attrib[0], attrib[1]);
+            }
+
+            // Close the tag.
+            writer.openTagClose(writeName, element.isEmpty);
+
+            if (!element.isEmpty) {
+                this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                // Close the element.
+                writer.closeTag(writeName);
+            }
+        },
+
+        writeChildrenHtml : function(writer, filter) {
+            // Send children.
+            KE.HtmlParser.Fragment.prototype.writeChildrenHtml.apply(this, arguments);
+        }
+    });
+
+    KE.HtmlParser.Element = Element;
+});
+KISSY.Editor.add("htmlparser-filter", function(
+    //editor
+    ) {
+    var S = KISSY,KE = S.Editor,KEN = KE.NODE;
+    //if (KE.HtmlParser.Filter)return;
+    function Filter(rules) {
+        this._ = {
+            elementNames : [],
+            attributeNames : [],
+            elements : { $length : 0 },
+            attributes : { $length : 0 }
+        };
+
+        if (rules)
+            this.addRules(rules, 10);
+    }
+
+    S.augment(Filter, {
+        addRules : function(rules, priority) {
+            if (typeof priority != 'number')
+                priority = 10;
+
+            // Add the elementNames.
+            addItemsToList(this._.elementNames, rules.elementNames, priority);
+
+            // Add the attributeNames.
+            addItemsToList(this._.attributeNames, rules.attributeNames, priority);
+
+            // Add the elements.
+            addNamedItems(this._.elements, rules.elements, priority);
+
+            // Add the attributes.
+            addNamedItems(this._.attributes, rules.attributes, priority);
+
+            // Add the text.
+            this._.text = transformNamedItem(this._.text, rules.text, priority) || this._.text;
+
+            // Add the comment.
+            this._.comment = transformNamedItem(this._.comment, rules.comment, priority) || this._.comment;
+
+            // Add root fragment.
+            this._.root = transformNamedItem(this._.root, rules.root, priority) || this._.root;
+        },
+
+        onElementName : function(name) {
+            return filterName(name, this._.elementNames);
+        },
+
+        onAttributeName : function(name) {
+            return filterName(name, this._.attributeNames);
+        },
+
+        onText : function(text) {
+            var textFilter = this._.text;
+            return textFilter ? textFilter.filter(text) : text;
+        },
+
+        onComment : function(commentText, comment) {
+            var textFilter = this._.comment;
+            return textFilter ? textFilter.filter(commentText, comment) : commentText;
+        },
+
+        onFragment : function(element) {
+            var rootFilter = this._.root;
+            return rootFilter ? rootFilter.filter(element) : element;
+        },
+
+        onElement : function(element) {
+            // We must apply filters set to the specific element name as
+            // well as those set to the generic $ name. So, add both to an
+            // array and process them in a small loop.
+            var filters = [ this._.elements[ '^' ], this._.elements[ element.name ], this._.elements.$ ],
+                filter, ret;
+
+            for (var i = 0; i < 3; i++) {
+                filter = filters[ i ];
+                if (filter) {
+                    ret = filter.filter(element, this);
+
+                    if (ret === false)
+                        return null;
+
+                    if (ret && ret != element)
+                        return this.onNode(ret);
+
+                    // The non-root element has been dismissed by one of the filters.
+                    if (element.parent && !element.name)
+                        break;
+                }
+            }
+
+            return element;
+        },
+
+        onNode : function(node) {
+            var type = node.type;
+
+            return type == KEN.NODE_ELEMENT ? this.onElement(node) :
+                type == KEN.NODE_TEXT ? new KE.HtmlParser.Text(this.onText(node.value)) :
+                    null;
+        },
+
+        onAttribute : function(element, name, value) {
+            var filter = this._.attributes[ name ];
+
+            if (filter) {
+                var ret = filter.filter(value, element, this);
+
+                if (ret === false)
+                    return false;
+
+                if (typeof ret != 'undefined')
+                    return ret;
+            }
+
+            return value;
+        }
+    });
+    function filterName(name, filters) {
+        for (var i = 0; name && i < filters.length; i++) {
+            var filter = filters[ i ];
+            name = name.replace(filter[ 0 ], filter[ 1 ]);
+        }
+        return name;
+    }
+
+    function addItemsToList(list, items, priority) {
+        if (typeof items == 'function')
+            items = [ items ];
+
+        var i, j,
+            listLength = list.length,
+            itemsLength = items && items.length;
+
+        if (itemsLength) {
+            // Find the index to insert the items at.
+            for (i = 0; i < listLength && list[ i ].pri < priority; i++) { /*jsl:pass*/
+            }
+
+            // Add all new items to the list at the specific index.
+            for (j = itemsLength - 1; j >= 0; j--) {
+                var item = items[ j ];
+                if (item) {
+                    item.pri = priority;
+                    list.splice(i, 0, item);
+                }
+            }
+        }
+    }
+
+    function addNamedItems(hashTable, items, priority) {
+        if (items) {
+            for (var name in items) {
+                var current = hashTable[ name ];
+
+                hashTable[ name ] =
+                    transformNamedItem(
+                        current,
+                        items[ name ],
+                        priority);
+
+                if (!current)
+                    hashTable.$length++;
+            }
+        }
+    }
+
+    function transformNamedItem(current, item, priority) {
+        if (item) {
+            item.pri = priority;
+
+            if (current) {
+                // If the current item is not an Array, transform it.
+                if (!current.splice) {
+                    if (current.pri > priority)
+                        current = [ item, current ];
+                    else
+                        current = [ current, item ];
+
+                    current.filter = callItems;
+                }
+                else
+                    addItemsToList(current, item, priority);
+
+                return current;
+            }
+            else {
+                item.filter = item;
+                return item;
+            }
+        }
+        return undefined;
+    }
+
+    // Invoke filters sequentially on the array, break the iteration
+    // when it doesn't make sense to continue anymore.
+    function callItems(currentEntry) {
+        var isNode = currentEntry.type
+            || currentEntry instanceof KE.HtmlParser.Fragment;
+
+        for (var i = 0; i < this.length; i++) {
+            // Backup the node info before filtering.
+            if (isNode) {
+                var orgType = currentEntry.type,
+                    orgName = currentEntry.name;
+            }
+
+            var item = this[ i ],
+                ret = item.apply(window, arguments);
+
+            if (ret === false)
+                return ret;
+
+            // We're filtering node (element/fragment).
+            if (isNode) {
+                // No further filtering if it's not anymore
+                // fitable for the subsequent filters.
+                if (ret && ( ret.name != orgName
+                    || ret.type != orgType )) {
+                    return ret;
+                }
+            }
+            // Filtering value (nodeName/textValue/attrValue).
+            else {
+                // No further filtering if it's not
+                // any more values.
+                if (typeof ret != 'string')
+                    return ret;
+            }
+
+            ret != undefined && ( currentEntry = ret );
+        }
+        return currentEntry;
+    }
+
+    KE.HtmlParser.Filter = Filter;
+});
+KISSY.Editor.add("htmlparser-text", function(
+    //editor
+    ) {
+    var S = KISSY,
+        KE = S.Editor,
+        KEN = KE.NODE;
+    //if (KE.HtmlParser.Text) return;
+    /**
+     * A lightweight representation of HTML text.
+     * @constructor
+     * @example
+     */
+
+    function Text(value) {
+        /**
+         * The text value.
+         * @type String
+         * @example
+         */
+        this.value = value;
+
+        /** @private */
+        this._ = {
+            isBlockLike : false
+        };
+    }
+
+    S.augment(Text, {
+        /**
+         * The node type. This is a constant value set to { KEN.NODE_TEXT}.
+         * @type Number
+         * @example
+         */
+        type : KEN.NODE_TEXT,
+
+        /**
+         * Writes the HTML representation of this text to a HtmlWriter.
+         *  {HtmlWriter} writer The writer to which write the HTML.
+         * @example
+         */
+        writeHtml : function(writer, filter) {
+            var text = this.value;
+
+            if (filter && !( text = filter.onText(text, this) ))
+                return;
+
+            writer.text(text);
+        }
+    });
+
+    KE.HtmlParser.Text = Text;
+});
+KISSY.Editor.add("htmlparser-comment", function() {
+    var KE = KISSY.Editor,KEN = KE.NODE;
+    //if (KE.HtmlParser.Comment) return;
+
+    function Comment(value) {
+        /**
+         * The comment text.
+         * @type String
+         * @example
+         */
+        this.value = value;
+
+        /** @private */
+        this._ =
+        {
+            isBlockLike : false
+        };
+    }
+
+    KE.HtmlParser.Comment = Comment;
+
+    Comment.prototype = {
+        constructor:Comment,
+        /**
+         * The node type. This is a constant value set to  NODE_COMMENT.
+         * @type Number
+         * @example
+         */
+        type : KEN.NODE_COMMENT,
+
+        /**
+         * Writes the HTML representation of this comment to a CKEDITOR.htmlWriter.
+         * @param  writer The writer to which write the HTML.
+         * @example
+         */
+        writeHtml : function(writer, filter) {
+            var comment = this.value;
+
+            if (filter) {
+                if (!( comment = filter.onComment(comment, this) ))
+                    return;
+
+                if (typeof comment != 'string') {
+                    comment.parent = this.parent;
+                    comment.writeHtml(writer, filter);
+                    return;
+                }
+            }
+
+            writer.comment(comment);
+        }
+    };
 });

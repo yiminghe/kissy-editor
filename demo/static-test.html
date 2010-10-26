@@ -203,6 +203,15 @@
 <script src="../src/core/domiterator.js"></script>
 <script src="../src/core/selection.js"></script>
 <script src="../src/core/styles.js"></script>
+<script src="../src/core/htmlparser/htmlparser.js"></script>
+<script src="../src/core/htmlparser/basicwriter.js"></script>
+<script src="../src/core/htmlparser/htmlwriter.js"></script>
+<script src="../src/core/htmlparser/fragment.js"></script>
+<script src="../src/core/htmlparser/element.js"></script>
+<script src="../src/core/htmlparser/filter.js"></script>
+<script src="../src/core/htmlparser/text.js"></script>
+<script src="../src/core/htmlparser/comment.js"></script>
+
 
 <script src="../src/plugins/button/plugin.js"></script>
 <script src="../src/plugins/contextmenu/plugin.js"></script>
@@ -214,18 +223,11 @@
 <script src="../src/plugins/progressbar/plugin.js"></script>
 
 
-<script src="../src/plugins/htmldataprocessor/htmlparser/htmlparser.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/basicwriter.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/htmlwriter.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/fragment.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/element.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/filter.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/text.js"></script>
-<script src="../src/plugins/htmldataprocessor/htmlparser/comment.js"></script>
-<script src="../src/plugins/htmldataprocessor/plugin.js"></script>
 
+<script src="../src/plugins/htmldataprocessor/plugin.js"></script>
 <script src="../src/plugins/fakeobjects/plugin.js"></script>
 <script src="../src/plugins/localStorage/plugin.js"></script>
+
 <!--草稿-->
 <script src="../src/plugins/draft/plugin.js"></script>
 <!--源码--->
@@ -302,6 +304,7 @@ xiami 音乐
 <script src="../src/biz/bangpai/plugins/sourcearea/plugin.js"></script>
 <script>
     KISSY.ready(function(S) {
+      
         S.use('editor', function() {
 
             var KE = KISSY.Editor;

@@ -33,12 +33,31 @@ build file for kissy editor
              id="cssembed_files">
     </fileset>
 
-    <filelist dir="${src.dir}/core"
-              id="core_js"
-              files="../editor.js,utils.js,focusmanager.js,definition.js,
-                      dtd.js,dom.js,elementpath.js
-                      ,walker.js,range.js,domiterator.js,selection.js
-                      ,styles.js"/>
+    <!--
+    注意：核心文件有顺序依赖
+    -->
+    <filelist id="core_js" dir="${src.dir}/core" files="
+    ../editor.js,
+    utils.js,
+    focusmanager.js,
+    definition.js,
+    dtd.js,
+    dom.js,
+    elementpath.js,
+    walker.js,
+    range.js,
+    domiterator.js,
+    selection.js,
+    styles.js,
+    htmlparser/htmlparser.js,
+    htmlparser/basicwriter.js,
+    htmlparser/htmlwriter.js,
+    htmlparser/fragment.js,
+    htmlparser/element.js,
+    htmlparser/filter.js,
+    htmlparser/text.js,
+    htmlparser/comment.js
+    "/>
 
     <fileset dir="${src.dir}"
              includes="plugins/**/plugin.js"
