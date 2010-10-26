@@ -105,7 +105,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "<th style='width:35%'>" +
                             "上传进度" +
                             "</th>" +
-                            "<th style='width:30%'>" +
+                            "<th>" +
                             "图片操作" +
                             "</th>" +
                             "</tr>" +

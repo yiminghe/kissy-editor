@@ -114,12 +114,13 @@ KISSY.Editor.add("colorsupport", function(editor) {
         },
         _hidePanel:function(ev) {
             var self = this,
+                el = self.el.el,
+                t = ev.target,
                 colorWin = self.colorWin;
-            if (!colorWin.get("visible")) return;
-            //多窗口管理
-            if (DOM._4e_ascendant(ev.target, function(node) {
-                return node._4e_equals(self.el.el);
-            }, true))return;
+            //当前按钮点击无效
+            if (el._4e_equals(t) || el._4e_contains(t)) {
+                return;
+            }
             colorWin.hide();
         },
         _selectColor:function(ev) {
@@ -174,8 +175,13 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorWin.show(xy);
         },
         _showColors:function(ev) {
-            var self = this;
-            self._prepare(ev);
+            var self = this,
+                colorWin = self.colorWin;
+            if (colorWin && colorWin.get("visible")) {
+                colorWin.hide();
+            } else {
+                self._prepare(ev);
+            }
         }
     });
     KE.ColorSupport = ColorSupport;

@@ -34,6 +34,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }
                 m = url.match(/v_playlist\/([^.]+)\.html$/);
                 if (m) {
+                    return;
                     //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                 }
                 return url;
@@ -152,7 +153,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
-                            "dialog/plugin.js?t=2010-10-25 21:09:11"
+                            "dialog/plugin.js?t=2010-10-26 10:51:26"
                         )
                 }
             });

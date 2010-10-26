@@ -65,14 +65,15 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
-                    var self = this,t = ev.target;
-                    if (!this.smileyWin.get("visible")) return;
-                    //多窗口管理
-                    if (DOM._4e_ascendant(ev.target, function(node) {
-                        return  node[0] === self.el.el[0];
-                    }, true))return;
-
-                    this.smileyWin.hide();
+                    var self = this,
+                        el = self.el.el,
+                        t = ev.target,
+                        smileyWin = self.smileyWin;
+                    //当前按钮点击无效
+                    if (el._4e_equals(t) || el._4e_contains(t)) {
+                        return;
+                    }
+                    smileyWin.hide();
                 },
                 _selectSmiley:function(ev) {
                     ev.halt();
@@ -109,8 +110,13 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyWin.show(xy);
                 },
                 _show:function(ev) {
-                    var self = this;
-                    self._prepare(ev);
+                    var self = this,
+                        smileyWin = self.smileyWin;
+                    if (smileyWin && smileyWin.get("visible")) {
+                        smileyWin.hide();
+                    } else {
+                        self._prepare(ev);
+                    }
                 }
             });
             KE.Smiley = Smiley;

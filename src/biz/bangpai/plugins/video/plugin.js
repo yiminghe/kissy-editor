@@ -34,6 +34,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 }
                 m = url.match(/v_playlist\/([^.]+)\.html$/);
                 if (m) {
+                    return;
                     //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                 }
                 return url;

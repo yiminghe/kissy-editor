@@ -122,6 +122,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                     } else {
                         var re = p.detect(url);
                         if (!re) {
+                            alert("不支持该链接来源!");
                             return;
                         }
                         return {

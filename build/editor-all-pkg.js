@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-25 21:26:48
+ * @buildtime: 2010-10-26 10:51:26
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-25 21:26:48")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 10:51:26")
             }
         },
         core_mods = [
@@ -318,8 +318,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-25 21:26:48") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-25 21:26:48")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 10:51:26") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 10:51:26")
         };
     }
 
@@ -337,7 +337,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-25 21:26:48")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 10:51:26")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {
@@ -8153,12 +8153,13 @@ KISSY.Editor.add("colorsupport", function(editor) {
         },
         _hidePanel:function(ev) {
             var self = this,
+                el = self.el.el,
+                t = ev.target,
                 colorWin = self.colorWin;
-            if (!colorWin.get("visible")) return;
-            //多窗口管理
-            if (DOM._4e_ascendant(ev.target, function(node) {
-                return node._4e_equals(self.el.el);
-            }, true))return;
+            //当前按钮点击无效
+            if (el._4e_equals(t) || el._4e_contains(t)) {
+                return;
+            }
             colorWin.hide();
         },
         _selectColor:function(ev) {
@@ -8213,8 +8214,13 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorWin.show(xy);
         },
         _showColors:function(ev) {
-            var self = this;
-            self._prepare(ev);
+            var self = this,
+                colorWin = self.colorWin;
+            if (colorWin && colorWin.get("visible")) {
+                colorWin.hide();
+            } else {
+                self._prepare(ev);
+            }
         }
     });
     KE.ColorSupport = ColorSupport;
@@ -14696,14 +14702,15 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.el.set("state", TripleButton.OFF);
                 },
                 _hidePanel:function(ev) {
-                    var self = this,t = ev.target;
-                    if (!this.smileyWin.get("visible")) return;
-                    //多窗口管理
-                    if (DOM._4e_ascendant(ev.target, function(node) {
-                        return  node[0] === self.el.el[0];
-                    }, true))return;
-
-                    this.smileyWin.hide();
+                    var self = this,
+                        el = self.el.el,
+                        t = ev.target,
+                        smileyWin = self.smileyWin;
+                    //当前按钮点击无效
+                    if (el._4e_equals(t) || el._4e_contains(t)) {
+                        return;
+                    }
+                    smileyWin.hide();
                 },
                 _selectSmiley:function(ev) {
                     ev.halt();
@@ -14740,8 +14747,13 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyWin.show(xy);
                 },
                 _show:function(ev) {
-                    var self = this;
-                    self._prepare(ev);
+                    var self = this,
+                        smileyWin = self.smileyWin;
+                    if (smileyWin && smileyWin.get("visible")) {
+                        smileyWin.hide();
+                    } else {
+                        self._prepare(ev);
+                    }
                 }
             });
             KE.Smiley = Smiley;
