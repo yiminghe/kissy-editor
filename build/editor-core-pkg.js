@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 11:44:42
+ * @buildtime: 2010-10-26 12:57:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -66,14 +66,14 @@ KISSY.add("editor", function(S, undefined) {
         self.use = function(mods, callback) {
             mods = mods.split(",");
             duplicateMods(mods);
-
-            for (var i = 0; i < BASIC.length; i++) {
-                var b = BASIC[i];
-                if (!S.inArray(b, mods)) {
-                    mods.unshift(b);
+            if (!initial) {
+                for (var i = 0; i < BASIC.length; i++) {
+                    var b = BASIC[i];
+                    if (!S.inArray(b, mods)) {
+                        mods.unshift(b);
+                    }
                 }
             }
-
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 11:44:42")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 12:57:48")
             }
         },
         core_mods = [
@@ -177,7 +177,7 @@ KISSY.add("editor", function(S, undefined) {
             {
                 name: "flash/support",
                 requires: ["flashutils","contextmenu",
-                    "fakeobjects","overlay","bubbleview"]
+                    "fakeobjects","bubbleview"]
             },
             {
                 name:"font",
@@ -194,13 +194,16 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name:"image/dialog",
-                requires:["overlay","tabs"]
+                requires:["tabs"]
             },
             "indent",
             "justify",
             {
                 name:"link",
                 requires: ["bubbleview"]
+            },
+            {
+                name:"link/dialog"
             },
             "list",
             "maximize",
@@ -227,14 +230,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["contextmenu"]
             },
             {
-                name: "table/dialog",
-                //useCss: true,
-                requires: ["overlay"]
+                name: "table/dialog"
             },
             {
                 name: "templates",
-                requires: ["overlay"]//,
-                //useCss: true
+                requires: ["overlay"]
             },
             "undo",
             {
@@ -310,7 +310,11 @@ KISSY.add("editor", function(S, undefined) {
             };
         }
         mod.requires = mod.requires || [];
-        mod.requires = mod.requires.concat(["button"]);
+        var basicMod = ["button"];
+        if (mod.name.indexOf("/dialog") != -1) {
+            basicMod.push("overlay");
+        }
+        mod.requires = mod.requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
@@ -322,8 +326,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 11:44:42") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 11:44:42")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 12:57:48") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 12:57:48")
         };
     }
 
@@ -341,7 +345,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 11:44:42")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 12:57:48")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 11:44:42
+ * @buildtime: 2010-10-26 12:57:48
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -66,14 +66,14 @@ KISSY.add("editor", function(S, undefined) {
         self.use = function(mods, callback) {
             mods = mods.split(",");
             duplicateMods(mods);
-
-            for (var i = 0; i < BASIC.length; i++) {
-                var b = BASIC[i];
-                if (!S.inArray(b, mods)) {
-                    mods.unshift(b);
+            if (!initial) {
+                for (var i = 0; i < BASIC.length; i++) {
+                    var b = BASIC[i];
+                    if (!S.inArray(b, mods)) {
+                        mods.unshift(b);
+                    }
                 }
             }
-
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 11:44:42")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 12:57:48")
             }
         },
         core_mods = [
@@ -177,7 +177,7 @@ KISSY.add("editor", function(S, undefined) {
             {
                 name: "flash/support",
                 requires: ["flashutils","contextmenu",
-                    "fakeobjects","overlay","bubbleview"]
+                    "fakeobjects","bubbleview"]
             },
             {
                 name:"font",
@@ -194,13 +194,16 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name:"image/dialog",
-                requires:["overlay","tabs"]
+                requires:["tabs"]
             },
             "indent",
             "justify",
             {
                 name:"link",
                 requires: ["bubbleview"]
+            },
+            {
+                name:"link/dialog"
             },
             "list",
             "maximize",
@@ -227,14 +230,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["contextmenu"]
             },
             {
-                name: "table/dialog",
-                //useCss: true,
-                requires: ["overlay"]
+                name: "table/dialog"
             },
             {
                 name: "templates",
-                requires: ["overlay"]//,
-                //useCss: true
+                requires: ["overlay"]
             },
             "undo",
             {
@@ -310,7 +310,11 @@ KISSY.add("editor", function(S, undefined) {
             };
         }
         mod.requires = mod.requires || [];
-        mod.requires = mod.requires.concat(["button"]);
+        var basicMod = ["button"];
+        if (mod.name.indexOf("/dialog") != -1) {
+            basicMod.push("overlay");
+        }
+        mod.requires = mod.requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
@@ -322,8 +326,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 11:44:42") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 11:44:42")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 12:57:48") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 12:57:48")
         };
     }
 
@@ -341,7 +345,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 11:44:42")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 12:57:48")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {
@@ -11965,16 +11969,14 @@ KISSY.Editor.add("justify", function(editor) {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    var KE = KISSY.Editor;
+    var S = KISSY,KE = S.Editor;
 
     if (!KE.Link) {
         (function() {
-            var S = KISSY,
-                TripleButton = KE.TripleButton,
+            var TripleButton = KE.TripleButton,
                 KEStyle = KE.Style,
                 Node = S.Node,
                 KERange = KE.Range,
-                Overlay = KE.SimpleOverlay ,
                 _ke_saved_href = "_ke_saved_href",
                 BubbleView = KE.BubbleView,
                 link_Style = {
@@ -11986,7 +11988,6 @@ KISSY.Editor.add("link", function(editor) {
                         target:"#(target)"
                     }
                 },
-                MIDDLE = "vertical-align:middle;",
                 /**
                  * bubbleview/tip 初始化，所有共享一个 tip
                  */
@@ -12003,77 +12004,25 @@ KISSY.Editor.add("link", function(editor) {
                     + ' <span ' +
                     'class="ke-bubbleview-link ke-bubbleview-remove">' +
                     '去除' +
-                    '</span>',
-                bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
-                    "<p>" +
-                    "<label>" +
-
-                    "链接网址： " +
-
-                    "<input " +
-                    " data-verify='^(https?://[^\\s]+)|(#.+)$' " +
-                    " data-warning='请输入合适的网址格式' " +
-                    "class='ke-link-url ke-input' " +
-                    "style='width:390px;" +
-                    MIDDLE + "' " +
-                    " value='http://' />" +
-                    "</label>" +
-                    "</p>" +
-                    "<p " +
-                    "style='margin: 15px 0 10px 64px;'>" +
-                    "<label>" +
-                    "<input " +
-                    "class='ke-link-blank' " +
-                    "type='checkbox'/>" +
-                    " &nbsp; 在新窗口打开链接" +
-                    "</label>" +
-                    "</p>" +
-
-                    "</div>",
-                footHtml = "<a class='ke-link-ok ke-button' " +
-                    "style='margin-left:65px;margin-right:20px;'>确定</a> " +
-                    "<a class='ke-link-cancel ke-button'>取消</a>";
+                    '</span>';
 
 
             function Link(editor) {
-                this.editor = editor;
-                this._init();
+                var self = this;
+                self.editor = editor;
+                self._init();
             }
 
+            Link.link_Style = link_Style;
+            Link._ke_saved_href = _ke_saved_href;
 
-            /**
-             * 所有编辑器实例共享同一功能窗口
-             */
-            Link.init = function() {
-                var self = this,
-                    d = new Overlay({
-                        title:"链接",//属性",
-                        mask:true
-                    });
-                self.dialog = d;
-                d.body.html(bodyHtml);
-                d.foot.html(footHtml);
-                d.urlEl = d.body.one(".ke-link-url");
-                d.targetEl = d.body.one(".ke-link-blank");
-                var cancel = d.foot.one(".ke-link-cancel"),
-                    ok = d.foot.one(".ke-link-ok");
-                ok.on("click", function(ev) {
-                    var link = d.link;
-                    link._link();
-                    ev.halt();
-                }, this);
-                cancel.on("click", function(ev) {
-                    d.hide();
-                    ev.halt();
-                }, self);
-                Link.init = null;
-            };
+                function checkLink(lastElement) {
+                    return lastElement._4e_ascendant(function(node) {
+                        return node._4e_name() === 'a' && (!!node.attr("href"));
+                    }, true);
+                }
 
-            function checkLink(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'a' && (!!node.attr("href"));
-                }, true);
-            }
+            Link.checkLink = checkLink;
 
             BubbleView.register({
                 pluginName:"link",
@@ -12093,9 +12042,9 @@ KISSY.Editor.add("link", function(editor) {
                         ev.halt();
                     });
                     tipremove.on("click", function(ev) {
-                        var link = bubble._plugin;
-                        link._removeLink(bubble._selectedEl);
-                        link.editor.notifySelectionChange();
+                        var link = bubble._plugin,editor = link.editor;
+                        _removeLink(bubble._selectedEl, editor);
+                        editor.notifySelectionChange();
                         ev.halt();
                     });
 
@@ -12110,6 +12059,21 @@ KISSY.Editor.add("link", function(editor) {
                 }
             });
 
+            function _removeLink(a, editor) {
+                var attr = {
+                    href:a.attr("href"),
+                    _ke_saved_href:a.attr(_ke_saved_href)
+                };
+                if (a._4e_hasAttribute("target")) {
+                    attr.target = a.attr("target");
+                }
+                var linkStyle = new KEStyle(link_Style, attr);
+                editor.fire("save");
+                linkStyle.remove(editor.document);
+                editor.fire("save");
+            }
+
+            Link._removeLink = _removeLink;
 
             S.augment(Link, {
                 _init:function() {
@@ -12126,111 +12090,22 @@ KISSY.Editor.add("link", function(editor) {
                     });
                     KE.Utils.sourceDisable(editor, self);
                 },
+
                 disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
+                    this.el.disable();
                 },
+
                 enable:function() {
-                    this.el.set("state", TripleButton.OFF);
+                    this.el.enable();
                 },
 
-                _removeLink:function(a) {
-                    var editor = this.editor,
-                        attr = {
-                            href:a.attr("href"),
-                            _ke_saved_href:a.attr(_ke_saved_href)
-                        };
-                    if (a._4e_hasAttribute("target")) {
-                        attr.target = a.attr("target");
-                    }
-                    var linkStyle = new KEStyle(link_Style, attr);
-                    editor.fire("save");
-                    linkStyle.remove(editor.document);
-                    editor.fire("save");
-                },
-
-                //得到当前选中的 link a
-                _getSelectedLink:function() {
-                    var self = this,
-                        editor = this.editor,
-                        //ie焦点很容易丢失,tipwin没了
-                        selection = editor.getSelection(),
-                        common = selection && selection.getStartElement();
-                    if (common) {
-                        common = checkLink(common);
-                    }
-                    return common;
-                },
-
-                _link:function() {
-                    var self = this,range,
-                        editor = this.editor,
-                        d = Link.dialog,
-                        url = d.urlEl.val(),
-                        link,
-                        attr,
-                        a,
-                        linkStyle;
-
-                    if (!KE.Utils.verifyInputs(d.el.all("input"))) {
-                        return;
-                    }
-                    d.hide();
-                    link = self._getSelectedLink();
-                    //是修改行为
-                    if (link) {
-                        range = new KERange(editor.document);
-                        range.selectNodeContents(link);
-                        editor.getSelection().selectRanges([range]);
-                        self._removeLink(link);
-                    }
-                    attr = {
-                        href:url,
-                        _ke_saved_href:url
-                    };
-                    if (d.targetEl[0].checked) {
-                        attr.target = "_blank";
-                    } else {
-                        attr.target = "_self";
-                    }
-
-                    range = editor.getSelection().getRanges()[0];
-                    //没有选择区域时直接插入链接地址
-                    if (range.collapsed) {
-                        a = new Node("<a " +
-                            "href='" + url + "' " +
-                            _ke_saved_href + "='" + url + "' " +
-                            "target='" + attr.target + "'>" + url + "</a>",
-                            null, editor.document);
-                        editor.insertElement(a);
-                    } else {
-                        editor.fire("save");
-                        linkStyle = new KEStyle(link_Style, attr);
-                        linkStyle.apply(editor.document);
-                        editor.fire("save");
-                    }
-
-                    editor.notifySelectionChange();
-                },
-                _prepare:function() {
-                    Link.init && Link.init();
-                },
-                _real:function() {
-                    var self = this,
-                        d = Link.dialog,
-                        link = self._getSelectedLink();
-                    d.link = this;
-                    //是修改行为
-                    if (link) {
-                        d.urlEl.val(link.attr(_ke_saved_href) || link.attr("href"));
-                        d.targetEl[0].checked = (link.attr("target") == "_blank");
-                    }
-                    d.show();
-                },
                 show:function() {
-                    this._prepare();
+                    this.editor.useDialog("link/dialog", function(dialog) {
+                        dialog.show();
+                    });
                 }
             });
-            KE.Utils.lazyRun(Link.prototype, "_prepare", "_real");
+
             KE.Link = Link;
         })();
     }

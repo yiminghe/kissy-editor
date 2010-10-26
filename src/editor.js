@@ -66,14 +66,14 @@ KISSY.add("editor", function(S, undefined) {
         self.use = function(mods, callback) {
             mods = mods.split(",");
             duplicateMods(mods);
-
-            for (var i = 0; i < BASIC.length; i++) {
-                var b = BASIC[i];
-                if (!S.inArray(b, mods)) {
-                    mods.unshift(b);
+            if (!initial) {
+                for (var i = 0; i < BASIC.length; i++) {
+                    var b = BASIC[i];
+                    if (!S.inArray(b, mods)) {
+                        mods.unshift(b);
+                    }
                 }
             }
-
             S.use.call(self, mods.join(","), function() {
 
                 self.ready(function() {
@@ -177,7 +177,7 @@ KISSY.add("editor", function(S, undefined) {
             {
                 name: "flash/support",
                 requires: ["flashutils","contextmenu",
-                    "fakeobjects","overlay","bubbleview"]
+                    "fakeobjects","bubbleview"]
             },
             {
                 name:"font",
@@ -194,13 +194,16 @@ KISSY.add("editor", function(S, undefined) {
             },
             {
                 name:"image/dialog",
-                requires:["overlay","tabs"]
+                requires:["tabs"]
             },
             "indent",
             "justify",
             {
                 name:"link",
                 requires: ["bubbleview"]
+            },
+            {
+                name:"link/dialog"
             },
             "list",
             "maximize",
@@ -227,14 +230,11 @@ KISSY.add("editor", function(S, undefined) {
                 requires: ["contextmenu"]
             },
             {
-                name: "table/dialog",
-                //useCss: true,
-                requires: ["overlay"]
+                name: "table/dialog"
             },
             {
                 name: "templates",
-                requires: ["overlay"]//,
-                //useCss: true
+                requires: ["overlay"]
             },
             "undo",
             {
@@ -310,7 +310,11 @@ KISSY.add("editor", function(S, undefined) {
             };
         }
         mod.requires = mod.requires || [];
-        mod.requires = mod.requires.concat(["button"]);
+        var basicMod = ["button"];
+        if (mod.name.indexOf("/dialog") != -1) {
+            basicMod.push("overlay");
+        }
+        mod.requires = mod.requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
