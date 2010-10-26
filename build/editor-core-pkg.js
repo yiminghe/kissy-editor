@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 14:03:22
+ * @buildtime: 2010-10-26 18:29:25
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,8 +295,12 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 14:03:22") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 14:03:22")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
+                encodeURIComponent("2010-10-26 18:29:25")+
+                "") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=" +
+                encodeURIComponent("2010-10-26 18:29:25")+
+                "")
         };
     }
     Editor.add(mods);

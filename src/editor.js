@@ -295,8 +295,12 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=@TIMESTAMP@") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=@TIMESTAMP@")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
+                encodeURIComponent("@TIMESTAMP@")+
+                "") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=" +
+                encodeURIComponent("@TIMESTAMP@")+
+                "")
         };
     }
     Editor.add(mods);

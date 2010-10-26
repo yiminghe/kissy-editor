@@ -13,8 +13,12 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         Overlay = KE.SimpleOverlay,
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
+        //国产浏览器用随机数/时间戳试试
         movie = KE.Config.base +
-            KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=2010-10-26 14:00:51"),
+            KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=" +
+                encodeURIComponent("2010-10-26 18:29:25") +
+                "&rand=" +
+                (+new Date())),
         progressBars = {},
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";
@@ -105,7 +109,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "<th style='width:35%'>" +
                             "上传进度" +
                             "</th>" +
-                            "<th style='width:30%'>" +
+                            "<th>" +
                             "图片操作" +
                             "</th>" +
                             "</tr>" +
@@ -120,11 +124,11 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "margin:15px 15px 30px; 0;" +
                             "text-align:right;" +
                             "'>" +
+                            "<a class='ke-button ke-bangpiaupload-delall'" +
+                            " style='margin-right:20px;'>清空列表</a>" +
                             "<a class='ke-button ke-bangpiaupload-ok'>确定上传</a>" +
                             "<a class='ke-button ke-bangpiaupload-insertall'" +
                             " style='margin-left:20px;'>全部插入</a>" +
-                            "<a class='ke-button ke-bangpiaupload-delall'" +
-                            " style='margin-left:20px;'>清空列表</a>" +
                             "</p>")
                             .appendTo(listWrap),
                         up = upHolder.one(".ke-bangpiaupload-ok"),
@@ -221,7 +225,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             if (url) {
                                 editor.insertElement(new Node("<p>&nbsp;<img src='" +
                                     url + "'/>&nbsp;</p>", null, editor.document));
-                                self._removeTrFile(tr);
                                 self._removeTrFile(tr);
                             }
                         }
@@ -624,7 +627,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             left:-9999,
                             top:-9999
                         });
-                        return;
                     }
                 }
             });

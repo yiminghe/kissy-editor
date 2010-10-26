@@ -133,6 +133,9 @@ KISSY.Editor.add("flashutils", function() {
                     '</object>';
             }
             else {
+                /*!TODO 截止 firefix3.6 ，会发生 flash 请求两次问题，
+                 想改成 embed， 再等等吧
+                 */
                 outerHTML = "<object " +
                     "type='application/x-shockwave-flash'" +
                     " data='" + movie + "'" +

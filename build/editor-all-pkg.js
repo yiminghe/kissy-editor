@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 14:03:22
+ * @buildtime: 2010-10-26 18:29:25
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,8 +295,12 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 14:03:22") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 14:03:22")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
+                encodeURIComponent("2010-10-26 18:29:25")+
+                "") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=" +
+                encodeURIComponent("2010-10-26 18:29:25")+
+                "")
         };
     }
     Editor.add(mods);
@@ -11627,6 +11631,9 @@ KISSY.Editor.add("flashbridge", function() {
                     '</object>';
             }
             else {
+                /*!TODO 截止 firefix3.6 ，会发生 flash 请求两次问题，
+                 想改成 embed， 再等等吧
+                 */
                 outerHTML = "<object " +
                     "type='application/x-shockwave-flash'" +
                     " data='" + movie + "'" +

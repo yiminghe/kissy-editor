@@ -133,7 +133,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/music/" +
-                            "dialog/plugin.js?t=2010-10-26 14:03:22"
+                            "dialog/plugin.js?t=" +
+                           encodeURIComponent("2010-10-26 18:29:25")+
+                            ""
                         )
                 }
             });
@@ -270,7 +272,9 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     requires:["flashutils","progressbar","flashbridge","overlay"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/upload/" +
-                            "dialog/plugin.js?t=2010-10-26 14:03:22"
+                            "dialog/plugin.js?t=" +
+                            encodeURIComponent("2010-10-26 18:29:25")+
+                            ""
                         )
                 }
             });
@@ -438,7 +442,9 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
-                            "dialog/plugin.js?t=2010-10-26 14:03:22"
+                            "dialog/plugin.js?t=" +
+                           encodeURIComponent("2010-10-26 18:29:25")+
+                            ""
                         )
                 }
             });

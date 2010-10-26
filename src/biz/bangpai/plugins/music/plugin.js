@@ -133,7 +133,9 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/music/" +
-                            "dialog/plugin.js?t=@TIMESTAMP@"
+                            "dialog/plugin.js?t=" +
+                           encodeURIComponent("@TIMESTAMP@")+
+                            ""
                         )
                 }
             });
