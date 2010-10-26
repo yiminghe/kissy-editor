@@ -3,133 +3,17 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("table", function(editor, undefined) {
-    //console.log("table attached!");
-    var KE = KISSY.Editor,
-        S = KISSY,
+
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
-        DOM = S.DOM,
         Walker = KE.Walker,
         UA = S.UA,
         KEN = KE.NODE,
         TripleButton = KE.TripleButton,
-        Overlay = KE.SimpleOverlay,
-        IN_SIZE = 6,
-        alignStyle = 'margin-left:2px;',
-        MIDDLE = "vertical-align:middle;",
-        TABLE_HTML = "<div style='padding:20px 20px 10px 20px;'>" +
-            "<table class='ke-table-config' style='width:100%'>" +
-            "<tr>" +
-            "<td>" +
-            "<label>行数： " +
-            "<input " +
-            " data-verify='^(?!0$)\\d+$' " +
-            " data-warning='行数请输入正整数' " +
-            " value='2' " +
-            " class='ke-table-rows ke-table-create-only ke-input' " +
-            "style='" + alignStyle + MIDDLE + "'" +
-            " size='" +
-            IN_SIZE +
-            "'" +
-            " />" +
-            "</label>" +
-            "</td>" +
-            "<td>" +
-            "<label>宽&nbsp;&nbsp;&nbsp;度： " +
-            "<input " +
-            " data-verify='^(?!0$)\\d+$' " +
-            " data-warning='宽度请输入正整数' " +
-            "value='200' " +
-            "style='" +
-            alignStyle + MIDDLE + "' " +
-            "class='ke-table-width ke-input' " +
-            "size='" + IN_SIZE + "'/>" +
-            "</label> " +
-            "<select class='ke-table-width-unit'>" +
-            "<option value='px'>像素</option>" +
-            "<option value='%'>百分比</option>" +
-            "</select>" +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>" +
-            "<label>列数： " +
-            "<input " +
-            " data-verify='^(?!0$)\\d+$' " +
-            " data-warning='列数请输入正整数' " +
-            "class='ke-table-cols ke-table-create-only ke-input' " +
-            "style='" + alignStyle + MIDDLE + "'" +
-            "value='3' " +
-            "size='" +
-            IN_SIZE + "'/>" +
-            "</label>" +
-            "</td>" +
-            "<td>" +
-            "<label>高&nbsp;&nbsp;&nbsp;度： " +
-            "<input " +
-            " data-verify='^((?!0$)\\d+)?$' " +
-            " data-warning='高度请输入正整数' " +
-            "value='' " +
-            "style='" +
-            alignStyle + MIDDLE + "'" +
-            "class='ke-table-height ke-input' " +
-            "size='" + IN_SIZE + "'/>" +
-            "</label> &nbsp;像素" +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>" +
-            "<label>对齐： " +
-            "<select class='ke-table-align'>" +
-            "<option value=''>无</option>" +
-            "<option value='left'>左对齐</option>" +
-            "<option value='right'>右对齐</option>" +
-            "<option value='center'>中间对齐</option>" +
-            "</select>" +
-            "</label>" +
-            "</td>" +
-            "<td>" +
-            "<label>标题格： " +
-            "<select class='ke-table-head ke-table-create-only'>" +
-            "<option value=''>无</option>" +
-            "<option value='1'>有</option>" +
-            "</select>" +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>" +
-            "<label>边框： " +
-            "<input " +
-            " data-verify='^\\d+$' " +
-            " data-warning='边框请输入非负整数' " +
-            "value='1' " +
-            "style='" +
-            alignStyle + MIDDLE + "'" +
-            "class='ke-table-border ke-input' " +
-            "size='" + IN_SIZE + "'/>" +
-            "</label> &nbsp;像素" +
-            "</td>" +
-            "<td>" +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td colspan='2'>" +
-            "<label>" +
-            "标题： " +
-            "<input " +
-            "class='ke-table-caption ke-input' " +
-            "style='width:320px;" +
-            alignStyle + MIDDLE + "'>" +
-            "</label>" +
-            "</td>" +
-            "</tr>" +
-            "</table>" +
-            "</div>",
-        footHtml = "<a " +
-            "class='ke-table-ok ke-button' " +
-            "style='margin-right:20px;'>确定</a> " +
-            "<a class='ke-table-cancel ke-button'>取消</a>",
         ContextMenu = KE.ContextMenu,
-        tableRules = ["tr","th","td","tbody","table"],trim = S.trim;
+        tableRules = ["tr","th","td","tbody","table"],
+        trim = S.trim;
 
     /**
      * table 编辑模式下显示虚线边框便于编辑
@@ -200,16 +84,15 @@ KISSY.Editor.add("table", function(editor, undefined) {
             function TableUI(editor) {
                 var self = this;
                 self.editor = editor;
-                self.selectedTable = null;
                 editor._toolbars = editor._toolbars || {};
                 editor._toolbars["table"] = self;
                 self._init();
             }
 
+            TableUI.showBorderClassName = showBorderClassName;
 
-            function valid(str) {
-                return trim(str).length != 0;
-            }
+
+
 
             S.augment(TableUI, {
                 _init:function() {
@@ -242,259 +125,19 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         funcs:myContexts
                     });
 
-                    KE.Utils.lazyRun(this, "_prepareTableShow", "_realTableShow");
-
                     KE.Utils.sourceDisable(editor, self);
                 },
                 disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
+                    this.el.disable();
                 },
                 enable:function() {
-                    this.el.set("state", TripleButton.OFF);
+                    this.el.enable();
                 },
-                _tableInit:function() {
-                    var self = this,
-                        editor = self.editor,
-                        d = new Overlay({
-                            width:"430px",
-                            mask:true,
-                            title:"表格"//属性"
-                        }),
-                        body = d.body;
-                    d.body.html(TABLE_HTML);
-                    d.foot.html(footHtml);
-                    var dbody = d.body;
-                    d.twidth = dbody.one(".ke-table-width");
-                    d.theight = dbody.one(".ke-table-height");
-                    d.tborder = dbody.one(".ke-table-border");
-                    d.tcaption = dbody.one(".ke-table-caption");
-                    d.talign = KE.Select.decorate(dbody.one(".ke-table-align"));
-                    d.trows = dbody.one(".ke-table-rows");
-                    d.tcols = dbody.one(".ke-table-cols");
-                    d.thead = KE.Select.decorate(dbody.one(".ke-table-head"));
-                    var tok = d.foot.one(".ke-table-ok"),
-                        tclose = d.foot.one(".ke-table-cancel");
-                    d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
-                    self.tableDialog = d;
-                    tok.on("click", self._tableOk, self);
-                    d.on("hide", function() {
-                        //清空
-                        self.selectedTable = null;
+                _tableShow:function(ev, selectedTable) {
+                    var editor = this.editor;
+                    editor.useDialog("table/dialog", function(dialog) {
+                        dialog.show(selectedTable);
                     });
-                    tclose.on("click", function() {
-                        d.hide();
-                    });
-                },
-                _tableOk:function() {
-                    var self = this,
-                        tableDialog = self.tableDialog,
-                        inputs = tableDialog.el.all("input");
-
-                    if (tableDialog.twidthunit.val() == "%") {
-                        var tw = parseInt(tableDialog.twidth.val());
-                        if (
-                            !tw || (
-                                tw > 100 ||
-                                    tw < 0
-                                )
-                            ) {
-                            alert("宽度百分比：" + "请输入1-100之间");
-                            return;
-                        }
-                    }
-                    var re = KE.Utils.verifyInputs(inputs);
-                    if (!re) return;
-
-
-                    if (!self.selectedTable) {
-                        self._genTable();
-                    } else {
-                        self._modifyTable();
-                    }
-                },
-                _modifyTable:function() {
-                    var self = this,
-                        d = self.tableDialog,
-                        selectedTable = self.selectedTable,
-                        caption = selectedTable.one("caption"),
-                        talignVal = d.talign.val(),
-                        tborderVal = d.tborder.val();
-
-                    if (valid(talignVal))
-                        selectedTable.attr("align", trim(talignVal));
-                    else
-                        selectedTable.removeAttr("align");
-
-                    //if (valid(d.tcellspacing.val()))
-                    //    selectedTable.attr("cellspacing", trim(d.tcellspacing.val()));
-
-                    //if (valid(d.tcellpadding.val()))
-                    //    selectedTable.attr("cellpadding", trim(d.tcellpadding.val()));
-
-
-                    if (valid(tborderVal)) {
-                        selectedTable.attr("border", trim(tborderVal));
-                    } else {
-                        selectedTable.removeAttr("border");
-                    }
-                    if (!valid(tborderVal) || tborderVal == "0") {
-                        selectedTable.addClass(showBorderClassName);
-                    } else {
-                        selectedTable.removeClass(showBorderClassName);
-                    }
-
-                    if (valid(d.twidth.val()))
-                        selectedTable.css("width", trim(d.twidth.val()) + d.twidthunit.val());
-                    else
-                        selectedTable.css("width", "");
-                    if (valid(d.theight.val()))
-                        selectedTable.css("height", trim(d.theight.val()));
-                    else
-                        selectedTable.css("height", "");
-                    if (valid(d.tcaption.val())) {
-                        var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
-                        if (caption && caption[0])
-                            caption.html(tcv);
-                        else {
-                            //不能使用dom操作了, ie6 table 报错
-                            //http://msdn.microsoft.com/en-us/library/ms532998(VS.85).aspx
-                            var c = selectedTable[0].createCaption();
-                            DOM.html(c, "<span>"
-                                + tcv
-                                + "</span>");
-                            // new Node("<caption><span>" + tcv + "</span></caption>");
-                            // .insertBefore(selectedTable[0].firstChild);
-                        }
-                    } else if (caption) {
-                        caption._4e_remove();
-                    }
-                    d.hide();
-                },
-                _genTable:function() {
-                    var self = this,
-                        d = self.tableDialog,
-                        html = "<table ",
-                        i,
-                        cols = parseInt(d.tcols.val()) || 1,
-                        rows = parseInt(d.trows.val()) || 1,
-                        //firefox 需要 br 才能得以放置焦点
-                        cellpad = UA.ie ? "" : "<br/>",
-                        editor = self.editor;
-
-                    if (valid(d.talign.val()))
-                        html += "align='" + trim(d.talign.val()) + "' ";
-                    //if (S.trim(d.tcellspacing.val()).length != 0)
-                    //    html += "cellspacing='" + S.trim(d.tcellspacing.val()) + "' ";
-                    //if (S.trim(d.tcellpadding.val()).length != 0)
-                    //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
-                    if (valid(d.tborder.val()))
-                        html += "border='" + trim(d.tborder.val()) + "' ";
-                    if (valid(d.twidth.val()) || valid(d.theight.val())) {
-                        html += "style='";
-                        if (valid(d.twidth.val())) {
-                            html += "width:" + trim(d.twidth.val())
-                                + d.twidthunit.val() + ";"
-                        }
-                        if (valid(d.theight.val())) {
-                            html += "height:" + trim(d.theight.val()) + "px;"
-                        }
-                        html += "' "
-                    }
-                    if (!valid(d.tborder.val()) || trim(d.tborder.val()) == "0") {
-                        html += "class='" + showBorderClassName + "' "
-                    }
-
-                    html += ">";
-                    if (valid(d.tcaption.val())) {
-                        html += "<caption><span>" + KE.Utils.htmlEncode(trim(d.tcaption.val()))
-                            + "</span></caption>";
-                    }
-                    if (d.thead.val()) {
-                        html += "<thead>";
-                        html += "<tr>";
-                        for (i = 0; i < cols; i++)
-                            html += "<th>" + cellpad + "</th>";
-                        html += "</tr>";
-                        html += "</thead>";
-                        rows -= 1;
-                    }
-
-                    html += "<tbody>";
-                    for (var r = 0; r < rows; r++) {
-                        html += "<tr>";
-                        for (i = 0; i < cols; i++) {
-                            html += "<td>" + cellpad + "</td>";
-                        }
-                        html += "</tr>";
-                    }
-                    html += "</tbody>";
-                    html += "</table>";
-
-                    var table = new Node(html, null, editor.document);
-                    editor.insertElement(table);
-                    d.hide();
-
-                },
-                _fillTableDialog:function() {
-                    var self = this,
-                        d = self.tableDialog,
-                        selectedTable = self.selectedTable,
-                        caption = selectedTable.one("caption");
-
-
-                    d.talign.val(selectedTable.attr("align") ||
-                        "");
-
-
-                    d.tborder.val(selectedTable.attr("border") ||
-                        "0");
-                    var w = selectedTable._4e_style("width") ||
-                        ("" + selectedTable.width());
-
-                    //忽略pt单位
-                    d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));
-                    if (w.indexOf("%") != -1) d.twidthunit.val("%");
-                    else d.twidthunit.val("px");
-
-                    d.theight.val((selectedTable._4e_style("height") || "")
-                        .replace(/px|%/i, ""));
-                    var c = "";
-                    if (caption) {
-                        c = caption.text();
-                    }
-                    d.tcaption.val(c);
-                    var head = selectedTable._4e_first(function(n) {
-                        return n._4e_name() == "thead";
-                    });
-                    d.trows.val(selectedTable.one("tbody").children().length +
-                        (head ? head.children("tr").length : 0));
-                    d.tcols.val(selectedTable.one("tr").children().length);
-                    d.thead.val(head ? '1' : '');
-                },
-                _realTableShow:function() {
-                    var self = this,
-                        d = self.tableDialog;
-
-                    if (self.selectedTable) {
-                        self._fillTableDialog();
-                        d.body
-                            .all(".ke-table-create-only")
-                            .attr("disabled", "disabled");
-                        d.thead.disable();
-                    } else {
-                        d.body.all(".ke-table-create-only")
-                            .removeAttr("disabled");
-                        d.thead.enable();
-                    }
-                    self.tableDialog.show();
-                },
-                _prepareTableShow:function() {
-                    var self = this;
-                    self._tableInit();
-                },
-                _tableShow:    function() {
-                    var self = this;
-                    self._prepareTableShow();
                 }
             });
 
@@ -516,7 +159,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                     // If we are exiting from the first </td>, then the td should definitely be
                     // included.
-                    if (node[0].nodeType == KEN.NODE_ELEMENT && cellNodeRegex.test(node._4e_name())
+                    if (node[0].nodeType == KEN.NODE_ELEMENT &&
+                        cellNodeRegex.test(node._4e_name())
                         && !node._4e_getData('selected_cell')) {
                         node._4e_setMarker(database, 'selected_cell', true);
                         retval.push(node);
@@ -529,7 +173,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (range.collapsed) {
                         // Walker does not handle collapsed ranges yet - fall back to old API.
                         var startNode = range.getCommonAncestor(),
-                            nearestCell = startNode._4e_ascendant('td', true) || startNode._4e_ascendant('th', true);
+                            nearestCell = startNode._4e_ascendant('td', true) ||
+                                startNode._4e_ascendant('th', true);
                         if (nearestCell)
                             retval.push(nearestCell);
                     } else {
@@ -546,7 +191,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                             // walked into its children.
 
                             var parent = node.parent();
-                            if (parent && cellNodeRegex.test(parent._4e_name()) && !parent._4e_getData('selected_cell')) {
+                            if (parent && cellNodeRegex.test(parent._4e_name()) &&
+                                !parent._4e_getData('selected_cell')) {
                                 parent._4e_setMarker(database, 'selected_cell', true);
                                 retval.push(parent);
                             }
@@ -555,7 +201,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 }
 
                 KE.Utils.clearAllMarkers(database);
-
                 // Restore selection position.
                 selection.selectBookmarks(bookmarks);
 
@@ -565,11 +210,9 @@ KISSY.Editor.add("table", function(editor, undefined) {
             function clearRow($tr) {
                 // Get the array of row's cells.
                 var $cells = $tr.cells;
-
                 // Empty all cells.
                 for (var i = 0; i < $cells.length; i++) {
                     $cells[ i ].innerHTML = '';
-
                     if (!UA.ie)
                         ( new Node($cells[ i ]) )._4e_appendBogus();
                 }
@@ -583,11 +226,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                 // Create a clone of the row.
                 var newRow = row._4e_clone(true);
-
                 // Insert the new row before of it.
                 newRow.insertBefore(row);
-
-                // Clean one of the rows to produce the illusion of inserting an empty row
+                // Clean one of the rows to produce the illusion of
+                // inserting an empty row
                 // before or after.
                 clearRow(insertBefore ? newRow[0] : row[0]);
             }
@@ -601,7 +243,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         previousRowIndex,
                         nextRowIndex;
 
-                    // Queue up the rows - it's possible and likely that we have duplicates.
+                    // Queue up the rows - it's possible and
+                    // likely that we have duplicates.
                     for (var i = 0; i < cellsCount; i++) {
                         var row = cells[ i ].parent(),
                             rowIndex = row[0].rowIndex;
@@ -646,7 +289,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
             function insertColumn(selection, insertBefore) {
                 // Get the cell where the selection is placed in.
                 var startElement = selection.getStartElement(),
-                    cell = startElement._4e_ascendant('td', true) || startElement._4e_ascendant('th', true);
+                    cell = startElement._4e_ascendant('td', true) ||
+                        startElement._4e_ascendant('th', true);
                 if (!cell)
                     return;
                 // Get the cell's table.
@@ -683,7 +327,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                 // get the focusable column index
                 cellIndexList.sort();
-                for (i = 1,length = cellIndexList.length; i < length; i++) {
+                for (i = 1,length = cellIndexList.length;
+                     i < length; i++) {
                     if (cellIndexList[ i ] - cellIndexList[ i - 1 ] > 1) {
                         targetIndex = cellIndexList[ i - 1 ] + 1;
                         break;
@@ -696,7 +341,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                 // scan row by row to get the target cell
                 var rows = table[0].rows;
-                for (i = 0,length = rows.length; i < length; i++) {
+                for (i = 0,length = rows.length;
+                     i < length; i++) {
                     targetCell = rows[ i ].cells[ targetIndex ];
                     if (targetCell)
                         break;
@@ -730,14 +376,16 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     var cellIndex = selectionOrCell[0].cellIndex;
 
                     /*
-                     * Loop through all rows from down to up, coz it's possible that some rows
+                     * Loop through all rows from down to up,
+                     *  coz it's possible that some rows
                      * will be deleted.
                      */
                     for (i = table[0].rows.length - 1; i >= 0; i--) {
                         // Get the row.
                         var row = new Node(table[0].rows[ i ]);
 
-                        // If the cell to be removed is the first one and the row has just one cell.
+                        // If the cell to be removed is the first one and
+                        //  the row has just one cell.
                         if (!cellIndex && row[0].cells.length == 1) {
                             deleteRows(row);
                             continue;
@@ -754,7 +402,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
             function placeCursorInCell(cell, placeAtEnd) {
                 var range = new KE.Range(cell[0].ownerDocument);
-                if (!range['moveToElementEditablePosition'](cell, placeAtEnd ? true : undefined)) {
+                if (!range['moveToElementEditablePosition'](cell,
+                    placeAtEnd ? true : undefined)) {
                     range.selectNodeContents(cell);
                     range.collapse(placeAtEnd ? false : true);
                 }
@@ -762,6 +411,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
             }
 
             var contextMenu = {
+
                 "表格属性" : function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
@@ -769,24 +419,25 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (!table)
                         return;
                     var tableUI = editor._toolbars["table"];
-                    tableUI.selectedTable = table;
-                    tableUI._tableShow();
+                    tableUI._tableShow(null, table);
                 },
+
                 "删除表格" : function(editor) {
                     var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        table = startElement && startElement._4e_ascendant('table', true);
-
+                        startElement = selection &&
+                            selection.getStartElement(),
+                        table = startElement &&
+                            startElement._4e_ascendant('table', true);
                     if (!table)
                         return;
-
                     // Maintain the selection point at where the table was deleted.
                     selection.selectElement(table);
                     var range = selection.getRanges()[0];
                     range.collapse();
                     selection.selectRanges([ range ]);
 
-                    // If the table's parent has only one child, remove it,except body,as well.( #5416 )
+                    // If the table's parent has only one child,
+                    // remove it,except body,as well.( #5416 )
                     var parent = table.parent();
                     if (parent[0].childNodes.length == 1 &&
                         parent._4e_name() != 'body' &&
@@ -818,9 +469,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     insertRow(selection, undefined);
                 },
 
-
-
-
                 '在左侧插入列' : function(editor) {
                     var selection = editor.getSelection();
                     insertColumn(selection, true);
@@ -830,7 +478,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 '在右侧插入列' : function(editor) {
                     var selection = editor.getSelection();
                     insertColumn(selection, undefined);
-                }};
+                }
+            };
 
             KE.TableUI = TableUI;
         })();

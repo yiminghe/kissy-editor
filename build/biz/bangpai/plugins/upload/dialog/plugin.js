@@ -14,7 +14,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
         movie = KE.Config.base +
-            KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=2010-10-26 10:51:26"),
+            KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=2010-10-26 10:56:03"),
         progressBars = {},
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";

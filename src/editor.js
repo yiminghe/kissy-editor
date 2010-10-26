@@ -224,8 +224,12 @@ KISSY.add("editor", function(S, undefined) {
             {
                 name: "table",
                 //useCss: true,
-                requires: ["overlay",
-                    "contextmenu"]
+                requires: ["contextmenu"]
+            },
+            {
+                name: "table/dialog",
+                //useCss: true,
+                requires: ["overlay"]
             },
             {
                 name: "templates",

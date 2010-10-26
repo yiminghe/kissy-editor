@@ -18,7 +18,7 @@
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
-         <script>alert(1);</script>
+        <script>alert(1);</script>
         <p>
             我是虾米音乐
         </p>
@@ -169,7 +169,7 @@
 <script>
     // just for test
     var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1'),
-        S = KISSY;
+            S = KISSY;
 
     S.Config.debug = true;
     S.Config.base = base;
@@ -179,34 +179,36 @@
             path: 'build/editor-core-pkg.js'
         }
     });
+    S.ready(function() {
 
-    S.use('editor', function() {
 
-        var KE = KISSY.Editor;
-        KE.Config.base = base+"src/";
+        S.use('editor', function() {
 
-        KE("#editor", {
-            pluginConfig: {
-                "templates": [
-                    {
-                        demo: "模板1",
-                        html: "<div style='border: 1px solid #999'>边框线效果</div>"
-                    },
-                    {
-                        demo: "模板2",
-                        html: "<div style='background: #ffc'>背景色效果</div>"
-                    }
-                ]
-            }
-        }).use("elementpaths,sourcearea,preview," +
-                "templates,undo,removeformat,separator,font,format,forecolor,bgcolor," +
-                "list,indent,justify,link,image,separator,flash,music," +
-                "table,smiley,maximize"
-                );
+            var KE = KISSY.Editor;
+            KE.Config.base = base + "src/";
 
-        KE("#editor2").use("elementpaths,sourcearea,undo,font");
+            KE("#editor", {
+                pluginConfig: {
+                    "templates": [
+                        {
+                            demo: "模板1",
+                            html: "<div style='border: 1px solid #999'>边框线效果</div>"
+                        },
+                        {
+                            demo: "模板2",
+                            html: "<div style='background: #ffc'>背景色效果</div>"
+                        }
+                    ]
+                }
+            }).use("elementpaths,sourcearea,preview," +
+                    "templates,undo,removeformat,separator,font,format,forecolor,bgcolor," +
+                    "list,indent,justify,link,image,separator,flash,music," +
+                    "table,smiley,maximize"
+                    );
+
+            KE("#editor2").use("elementpaths,sourcearea,undo,font");
+        });
     });
-
 </script>
 </body>
 </html>

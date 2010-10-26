@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 10:51:26
+ * @buildtime: 2010-10-26 11:44:42
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -115,7 +115,7 @@ KISSY.add("editor", function(S, undefined) {
         mods = {
             "htmlparser": {
                 attach: false,
-                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 10:51:26")
+                path: debugUrl("plugins/htmldataprocessor/htmlparser/htmlparser.js?t=2010-10-26 11:44:42")
             }
         },
         core_mods = [
@@ -224,8 +224,12 @@ KISSY.add("editor", function(S, undefined) {
             {
                 name: "table",
                 //useCss: true,
-                requires: ["overlay",
-                    "contextmenu"]
+                requires: ["contextmenu"]
+            },
+            {
+                name: "table/dialog",
+                //useCss: true,
+                requires: ["overlay"]
             },
             {
                 name: "templates",
@@ -318,8 +322,8 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 10:51:26") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 10:51:26")
+            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=2010-10-26 11:44:42") : undefined),
+            path: debugUrl("plugins/" + name + "/plugin.js?t=2010-10-26 11:44:42")
         };
     }
 
@@ -337,7 +341,7 @@ KISSY.add("editor", function(S, undefined) {
             attach: false,
             charset:"utf-8",
             requires: requires,
-            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 10:51:26")
+            path: debugUrl("plugins/htmldataprocessor/htmlparser/" + mod.substring(11) + ".js?t=2010-10-26 11:44:42")
         };
     }
     for (i = 0,len = core_mods.length; i < len; i++) {
