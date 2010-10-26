@@ -1,0 +1,1 @@
+KISSY.Editor.add("htmlparser-comment",function(){function c(b){this.value=b;this._={isBlockLike:false}}var e=KISSY.Editor,f=e.NODE;e.HtmlParser.Comment=c;c.prototype={constructor:c,type:f.NODE_COMMENT,writeHtml:function(b,d){var a=this.value;if(d){if(!(a=d.onComment(a,this)))return;if(typeof a!="string"){a.parent=this.parent;a.writeHtml(b,d);return}}b.comment(a)}}});
