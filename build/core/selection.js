@@ -82,11 +82,13 @@ KISSY.Editor.add("selection", function(KE) {
         getNative :
             UA.ie ?
                 function() {
-                    return this._.cache.nativeSel || ( this._.cache.nativeSel = this.document.selection );
+                    var self = this,cache = self._.cache;
+                    return cache.nativeSel || ( cache.nativeSel = self.document.selection );
                 }
                 :
                 function() {
-                    return this._.cache.nativeSel || ( this._.cache.nativeSel = DOM._4e_getWin(this.document).getSelection() );
+                    var self = this,cache = self._.cache;
+                    return cache.nativeSel || ( cache.nativeSel = DOM._4e_getWin(self.document).getSelection() );
                 },
 
         /**
@@ -110,14 +112,14 @@ KISSY.Editor.add("selection", function(KE) {
         getType :
             UA.ie ?
                 function() {
-                    var cache = this._.cache;
+                    var self = this,cache = self._.cache;
                     if (cache.type)
                         return cache.type;
 
                     var type = KES.SELECTION_NONE;
 
                     try {
-                        var sel = this.getNative(),
+                        var sel = self.getNative(),
                             ieType = sel.type;
 
                         if (ieType == 'Text')
@@ -141,12 +143,12 @@ KISSY.Editor.add("selection", function(KE) {
                 }
                 :
                 function() {
-                    var cache = this._.cache;
+                    var self = this,cache = self._.cache;
                     if (cache.type)
                         return cache.type;
 
                     var type = KES.SELECTION_TEXT,
-                        sel = this.getNative();
+                        sel = self.getNative();
 
                     if (!sel)
                         type = KES.SELECTION_NONE;
@@ -220,7 +222,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // IE report line break as CRLF with range.text but
                         // only LF with textnode.nodeValue, normalize them to avoid
                         // breaking character counting logic below. (#3949)
-                        var distance = testRange.text.replace(/(\r\n|\r)/g, '\n').length;
+                        var distance = testRange.text.replace(/(\r\n|\r)/g, "\n").length;
 
                         try {
                             while (distance > 0)
@@ -250,7 +252,7 @@ KISSY.Editor.add("selection", function(KE) {
                     };
 
                     return function() {
-                        var cache = this._.cache;
+                        var self = this,cache = self._.cache;
                         if (cache.ranges)
                             return cache.ranges;
 
@@ -258,30 +260,30 @@ KISSY.Editor.add("selection", function(KE) {
                         // need to do some magic to transform selections into
                         // CKEDITOR.dom.range instances.
 
-                        var sel = this.getNative(),
+                        var sel = self.getNative(),
                             nativeRange = sel && sel.createRange(),
-                            type = this.getType(),
+                            type = self.getType(),
                             range;
 
                         if (!sel)
                             return [];
 
                         if (type == KES.SELECTION_TEXT) {
-                            range = new KERange(this.document);
+                            range = new KERange(self.document);
                             var boundaryInfo = getBoundaryInformation(nativeRange, true);
                             range.setStart(new Node(boundaryInfo.container), boundaryInfo.offset);
                             boundaryInfo = getBoundaryInformation(nativeRange);
                             range.setEnd(new Node(boundaryInfo.container), boundaryInfo.offset);
                             return ( cache.ranges = [ range ] );
                         } else if (type == KES.SELECTION_ELEMENT) {
-                            var retval = this._.cache.ranges = [];
+                            var retval = cache.ranges = [];
 
                             for (var i = 0; i < nativeRange.length; i++) {
                                 var element = nativeRange.item(i),
                                     parentElement = element.parentNode,
                                     j = 0;
 
-                                range = new KERange(this.document);
+                                range = new KERange(self.document);
 
                                 for (; j < parentElement.childNodes.length && parentElement.childNodes[j] != element; j++) { /*jsl:pass*/
                                 }
@@ -299,7 +301,7 @@ KISSY.Editor.add("selection", function(KE) {
                 })()
                 :
                 function() {
-                    var cache = this._.cache;
+                    var self = this,cache = self._.cache;
                     if (cache.ranges)
                         return cache.ranges;
 
@@ -307,13 +309,13 @@ KISSY.Editor.add("selection", function(KE) {
                     // tranform the native ranges in CKEDITOR.dom.range
                     // instances.
 
-                    var ranges = [], sel = this.getNative();
+                    var ranges = [], sel = self.getNative();
 
                     if (!sel)
                         return [];
 
                     for (var i = 0; i < sel.rangeCount; i++) {
-                        var nativeRange = sel.getRangeAt(i), range = new KERange(this.document);
+                        var nativeRange = sel.getRangeAt(i), range = new KERange(self.document);
 
                         range.setStart(new Node(nativeRange.startContainer), nativeRange.startOffset);
                         range.setEnd(new Node(nativeRange.endContainer), nativeRange.endOffset);
@@ -332,20 +334,20 @@ KISSY.Editor.add("selection", function(KE) {
          * alert( element.getName() );
          */
         getStartElement : function() {
-            var cache = this._.cache;
+            var self = this,cache = self._.cache;
             if (cache.startElement !== undefined)
                 return cache.startElement;
 
             var node,
-                sel = this.getNative();
+                sel = self.getNative();
 
-            switch (this.getType()) {
+            switch (self.getType()) {
                 case KES.SELECTION_ELEMENT :
                     return this.getSelectedElement();
 
                 case KES.SELECTION_TEXT :
 
-                    var range = this.getRanges()[0];
+                    var range = self.getRanges()[0];
 
                     if (range) {
                         if (!range.collapsed) {
@@ -409,11 +411,13 @@ KISSY.Editor.add("selection", function(KE) {
          * alert( element.getName() );
          */
         getSelectedElement : function() {
-            var cache = this._.cache;
+            var self = this,
+                node,
+                cache = self._.cache;
             if (cache.selectedElement !== undefined)
                 return cache.selectedElement;
 
-            var self = this, node;
+
             // Is it native IE control type selection?
 
             if (UA.ie) {
@@ -492,21 +496,22 @@ KISSY.Editor.add("selection", function(KE) {
         },
 
         selectRanges : function(ranges) {
-
+            var self = this;
             if (UA.ie) {
                 // IE doesn't accept multiple ranges selection, so we just
                 // select the first one.
                 if (ranges[ 0 ])
                     ranges[ 0 ].select();
 
-                this.reset();
+                self.reset();
             }
             else {
-                var sel = this.getNative();
+                var sel = self.getNative();
                 if (!sel) return;
                 sel.removeAllRanges();
                 for (var i = 0; i < ranges.length; i++) {
-                    var range = ranges[ i ], nativeRange = this.document.createRange(),startContainer = range.startContainer;
+                    var range = ranges[ i ], nativeRange = self.document.createRange(),
+                        startContainer = range.startContainer;
 
                     // In FF2, if we have a collapsed range, inside an empty
                     // element, we must add something to it otherwise the caret
@@ -515,14 +520,14 @@ KISSY.Editor.add("selection", function(KE) {
                         ( UA.gecko && UA.gecko < 1.0900 ) &&
                         startContainer[0].nodeType == KEN.NODE_ELEMENT &&
                         !startContainer[0].childNodes.length) {
-                        startContainer[0].appendChild(this.document.createTextNode(""));
+                        startContainer[0].appendChild(self.document.createTextNode(""));
                     }
                     nativeRange.setStart(startContainer[0], range.startOffset);
                     nativeRange.setEnd(range.endContainer[0], range.endOffset);
                     // Select the range.
                     sel.addRange(nativeRange);
                 }
-                this.reset();
+                self.reset();
             }
         },
         createBookmarks2 : function(normalized) {
@@ -565,14 +570,14 @@ KISSY.Editor.add("selection", function(KE) {
         },
 
         selectBookmarks : function(bookmarks) {
-            var ranges = [];
+            var self = this,ranges = [];
             for (var i = 0; i < bookmarks.length; i++) {
-                var range = new KERange(this.document);
+                var range = new KERange(self.document);
                 range.moveToBookmark(bookmarks[i]);
                 ranges.push(range);
             }
-            this.selectRanges(ranges);
-            return this;
+            self.selectRanges(ranges);
+            return self;
         },
 
         getCommonAncestor : function() {
@@ -601,7 +606,8 @@ KISSY.Editor.add("selection", function(KE) {
 
 
     KE.Selection = KESelection;
-    var nonCells = { table:1,tbody:1,tr:1 }, notWhitespaces = Walker.whitespaces(true), fillerTextRegex = /\ufeff|\u00a0/;
+    var nonCells = { table:1,tbody:1,tr:1 }, notWhitespaces = Walker.whitespaces(true),
+        fillerTextRegex = /\ufeff|\u00a0/;
     KERange.prototype.select = UA.ie ?
         // V2
         function(forceExpand) {
@@ -635,11 +641,11 @@ KISSY.Editor.add("selection", function(KE) {
                 endNode = bookmark.endNode;
 
             // Create the main range which will be used for the selection.
-            var ieRange = this.document.body.createTextRange();
+            var ieRange = self.document.body.createTextRange();
 
             // Position the range at the start boundary.
             ieRange.moveToElementText(startNode[0]);
-
+            //跳过开始 bookmark 标签
             ieRange.moveStart('character', 1);
 
             if (endNode) {
@@ -706,7 +712,7 @@ KISSY.Editor.add("selection", function(KE) {
                 } else
                     ieRange.select();
                 if (dummySpan) {
-                    this.moveToPosition(dummySpan, KER.POSITION_BEFORE_START);
+                    self.moveToPosition(dummySpan, KER.POSITION_BEFORE_START);
                     dummySpan._4e_remove();
                 }
             }
@@ -751,6 +757,8 @@ KISSY.Editor.add("selection", function(KE) {
         var sel = new KESelection(doc);
         return ( !sel || sel.isInvalid ) ? null : sel;
     }
+
+    KESelection.getSelection = getSelection;
 
     /**
      * 监控选择区域变化
@@ -836,7 +844,6 @@ KISSY.Editor.add("selection", function(KE) {
                 if (savedRange) {
                     // Well not break because of this.
                     try {
-
                         restoreEnabled && savedRange.select();
                     }
                     catch (e) {
@@ -854,7 +861,6 @@ KISSY.Editor.add("selection", function(KE) {
             });
 
             body.on('beforedeactivate', function(evt) {
-
                 // Ignore this event if it's caused by focus switch between
                 // internal editable control type elements, e.g. layouted paragraph. (#4682)
                 if (evt.relatedTarget)
@@ -1030,8 +1036,6 @@ KISSY.Editor.add("selection", function(KE) {
             }
 
         });
-
-
     }
 
     KE.on("instanceCreated", function(ev) {

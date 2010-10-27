@@ -260,8 +260,7 @@ KISSY.Editor.add("definition", function(KE) {
         _prepareIFrameHtml:prepareIFrameHtml,
 
         getSelection:function() {
-            var sel = new KE.Selection(this.document);
-            return ( !sel || sel.isInvalid ) ? null : sel;
+            return KE.Selection.getSelection(this.document);
         },
 
         focus:function() {
