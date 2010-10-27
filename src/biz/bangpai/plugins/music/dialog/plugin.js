@@ -80,7 +80,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
             }
 
             var MIDDLE = "vertical-align:middle;",
-                MARGIN_DEFAULT = 5,
+                MARGIN_DEFAULT = 0,
                 bodyHtml = "<div style='padding:20px 0;'>" +
                     "<form action='#' class='ke-xiami-form' style='margin:0 20px;'>" +
                     "<p class='ke-xiami-title'>" +

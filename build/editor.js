@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 18:53:15
+ * @buildtime: 2010-10-27 17:33:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -174,8 +174,7 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["flash/support"]
             },
             {
-                name:"flash/dialog",
-                requires:["flash"]
+                name:"flash/dialog"
             },
             {
                 name: "flash/support",
@@ -296,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "")
         };
     }

@@ -841,18 +841,6 @@ KISSY.Editor.add("definition", function(KE) {
         focusManager.add(self);
     };
 
-    /**
-     * 获得全局最大值
-     */
-    KE.baseZIndex = function(z) {
-        var r = z,instances = KE.getInstances();
-        for (var i in instances) {
-            if (!instances.hasOwnProperty(i)) return;
-            var instance = instances[i];
-            r = Math.max(r, instance.baseZIndex(z));
-        }
-        return r;
-    };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
     //不知道为什么
     /*

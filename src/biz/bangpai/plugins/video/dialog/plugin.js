@@ -10,7 +10,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
         (function() {
             var getProvider = BangPaiVideo.getProvider;
             var MIDDLE = "vertical-align:middle;",
-                MARGIN_DEFAULT = 5;
+                MARGIN_DEFAULT = 0;
             var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                 "<p>" +
                 "<label>" +

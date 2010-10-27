@@ -50,7 +50,8 @@ KISSY.Editor.add("preview", function(editor) {
                         .replace(/\${title}/, "预览"),
                         sOpenUrl = '',
                         oWindow = window.open(sOpenUrl,
-                            null,
+                            //每次都弹出新窗口
+                            '',
                             'toolbar=yes,' +
                                 'location=no,' +
                                 'status=yes,' +

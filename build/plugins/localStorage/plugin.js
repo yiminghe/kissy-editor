@@ -32,7 +32,13 @@ KISSY.Editor.add("localStorage", function() {
         return;
     }
 
-    var movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf");
+    //国产浏览器用随机数/时间戳试试 ! 是可以的
+    var movie = KE.Config.base +
+        KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?t=" +
+            encodeURIComponent("2010-10-27 17:33:10") +
+            "&rand=" +
+            (+new Date())
+            );
 
 
     window[STORE] = new KE.FlashBridge({

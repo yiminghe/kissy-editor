@@ -41,6 +41,7 @@ build file for kissy editor
     utils.js,
     focusmanager.js,
     definition.js,
+    zindexmanager.js,
     dtd.js,
     dom.js,
     elementpath.js,

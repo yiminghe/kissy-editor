@@ -16,7 +16,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         //国产浏览器用随机数/时间戳试试
         movie = KE.Config.base +
             KE.Utils.debugUrl("plugins/uploader/uploader.yui.swf?t=" +
-                encodeURIComponent("2010-10-26 18:53:15") +
+                encodeURIComponent("2010-10-27 17:33:10") +
                 "&rand=" +
                 (+new Date())),
         progressBars = {},
@@ -638,4 +638,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
     editor.addDialog("bangpai-upload/dialog",
         new KE.BangPaiUpload.Dialog(editor));
+},{
+    attach:false
 });

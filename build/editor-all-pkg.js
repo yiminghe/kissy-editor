@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 18:53:15
+ * @buildtime: 2010-10-27 17:33:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -174,8 +174,7 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["flash/support"]
             },
             {
-                name:"flash/dialog",
-                requires:["flash"]
+                name:"flash/dialog"
             },
             {
                 name: "flash/support",
@@ -296,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "")
         };
     }
@@ -1623,18 +1622,6 @@ KISSY.Editor.add("definition", function(KE) {
         focusManager.add(self);
     };
 
-    /**
-     * 获得全局最大值
-     */
-    KE.baseZIndex = function(z) {
-        var r = z,instances = KE.getInstances();
-        for (var i in instances) {
-            if (!instances.hasOwnProperty(i)) return;
-            var instance = instances[i];
-            r = Math.max(r, instance.baseZIndex(z));
-        }
-        return r;
-    };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
     //不知道为什么
     /*
@@ -1651,6 +1638,40 @@ KISSY.Editor.add("definition", function(KE) {
      } )();
      }
      */
+});/**
+ * 集中管理各个z-index
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("zindex", function() {
+    var S = KISSY,KE = S.Editor;
+
+    if (KE.zIndexManager) return;
+
+    KE.zIndexManager = {};
+    var manager = KE.zIndexManager;
+
+    S.mix(manager, {
+        BUBBLE_VIEW:(1100),
+        POPUP_MENU:(1200),
+        DD_PG: (1500),
+        MAXIMIZE:(900),
+        OVERLAY:(9999),
+        LOADING:(99999),
+        SELECT:(1200)
+    });
+
+    /**
+     * 获得全局最大值
+     */
+    KE.baseZIndex = function(z) {
+        var r = z,instances = KE.getInstances();
+        for (var i in instances) {
+            if (!instances.hasOwnProperty(i)) return;
+            var instance = instances[i];
+            r = Math.max(r, instance.baseZIndex(z));
+        }
+        return r;
+    };
 });/**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
  * @modifier: <yiminghe@gmail.com(chengyu)>
@@ -9137,7 +9158,7 @@ KISSY.Editor.add("bgcolor", function(editor) {
  * bubble or tip view for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("bubbleview", function(editor) {
+KISSY.Editor.add("bubbleview", function() {
     var KE = KISSY.Editor,
         S = KISSY,
         Event = S.Event,
@@ -9218,7 +9239,7 @@ KISSY.Editor.add("bubbleview", function(editor) {
         draggable:{
             value:false
         },
-        "zIndex":{value:editor.baseZIndex(998)}
+        "zIndex":{value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)}
     };
     S.extend(BubbleView, KE.SimpleOverlay, {
         /**
@@ -9675,7 +9696,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
         Event = S.Event,
         Overlay = KE.SimpleOverlay,
         TripleButton = KE.TripleButton,
-        KEStyle = KE.Style,
+        //KEStyle = KE.Style,
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
@@ -9818,7 +9839,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorWin = new Overlay({
                 el:colorPanel,
                 width:"130px",
-                zIndex:editor.baseZIndex(990),
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                 mask:false,
                 focusMgr:false
             });
@@ -10029,7 +10050,7 @@ KISSY.Editor.add("contextmenu", function() {
  * dd support for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function(editor) {
+KISSY.Editor.add("dd", function() {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
@@ -10048,7 +10069,7 @@ KISSY.Editor.add("dd", function(editor) {
         /**
          * mousedown 后 buffer 触发时间,100毫秒
          */
-        timeThred:{value:0},
+        timeThred:{value:100},
         /**
          * 当前激活的拖对象
          */
@@ -10123,7 +10144,10 @@ KISSY.Editor.add("dd", function(editor) {
                 "left:0;" +
                 "width:100%;" +
                 "top:0;" +
-                "z-index:" + editor.baseZIndex(9999) + ";" +
+                "z-index:" +
+                //覆盖iframe上面即可
+                KE.baseZIndex(KE.zIndexManager.DD_PG)
+                + ";" +
                 "'></div>").appendTo(document.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
@@ -10191,8 +10215,10 @@ KISSY.Editor.add("dd", function(editor) {
             if (!self._check(t)) return;
             //chrome 包含的按钮不可点了
             if (!UA.webkit) {
-                ev.halt();
+                //firefox 默认会拖动对象地址
+                ev.preventDefault();
             }
+            //
             DDM._start(self);
 
             var node = self.get("node"),
@@ -14388,7 +14414,13 @@ KISSY.Editor.add("localStorage", function() {
         return;
     }
 
-    var movie = KE.Config.base + KE.Utils.debugUrl("plugins/localStorage/swfstore.swf");
+    //国产浏览器用随机数/时间戳试试 ! 是可以的
+    var movie = KE.Config.base +
+        KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?t=" +
+            encodeURIComponent("2010-10-27 17:33:10") +
+            "&rand=" +
+            (+new Date())
+            );
 
 
     window[STORE] = new KE.FlashBridge({
@@ -14654,11 +14686,11 @@ KISSY.Editor.add("maximize", function(editor) {
 
                     editorWrap.css({
                         position:"absolute",
-                        zIndex:editor.baseZIndex(990),
+                        zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE),
                         width:viewportWidth + "px"
                     });
                     iframe.css({
-                        zIndex:editor.baseZIndex(985),
+                        zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE-5),
                         height:viewportHeight + "px",
                         width:viewportWidth + "px"
                     });
@@ -14845,7 +14877,7 @@ KISSY.Editor.add("music", function(editor) {
  * @author yiminghe@gmail.com
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
-KISSY.Editor.add("overlay", function(editor) {
+KISSY.Editor.add("overlay", function() {
     // 每次实例都要载入!
     //console.log("overlay loaded!");
     var S = KISSY,
@@ -14890,7 +14922,7 @@ KISSY.Editor.add("overlay", function(editor) {
             "left":"-9999px",
             top:"-9999px"
         },
-        loadingBaseZindex = KE.baseZIndex(11000);
+        loadingBaseZindex = KE.baseZIndex(KE.zIndexManager.LOADING);
 
     //全局的不要重写
     if (KE.SimpleOverlay) return;
@@ -14982,7 +15014,7 @@ KISSY.Editor.add("overlay", function(editor) {
         cls:{},
         shortkey:{value:true},
         visible:{value:false},
-        "zIndex":{value:editor.baseZIndex(9999)},
+        "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)},
         //帮你管理焦点
         focusMgr:{value:true},
         mask:{value:false},
@@ -15409,7 +15441,8 @@ KISSY.Editor.add("preview", function(editor) {
                         .replace(/\${title}/, "预览"),
                         sOpenUrl = '',
                         oWindow = window.open(sOpenUrl,
-                            null,
+                            //每次都弹出新窗口
+                            '',
                             'toolbar=yes,' +
                                 'location=no,' +
                                 'status=yes,' +
@@ -15940,7 +15973,7 @@ KISSY.Editor.add("select", function() {
                 el:menuNode,
                 cls:"ke-menu",
                 width:popUpWidth ? popUpWidth : el.width(),
-                zIndex:KE.baseZIndex(990),
+                zIndex:KE.baseZIndex(KE.zIndexManager.SELECT),
                 focusMgr:false
             }),
                 items = self.get("items");
@@ -16231,7 +16264,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
                         width:"297px",
-                        zIndex:editor.baseZIndex(990),
+                        zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                         focusMgr:false,
                         mask:false
                     });

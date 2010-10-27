@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-26 18:53:15
+ * @buildtime: 2010-10-27 17:33:10
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -174,8 +174,7 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["flash/support"]
             },
             {
-                name:"flash/dialog",
-                requires:["flash"]
+                name:"flash/dialog"
             },
             {
                 name: "flash/support",
@@ -296,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-26 18:53:15")+
+                encodeURIComponent("2010-10-27 17:33:10")+
                 "")
         };
     }
@@ -1623,18 +1622,6 @@ KISSY.Editor.add("definition", function(KE) {
         focusManager.add(self);
     };
 
-    /**
-     * 获得全局最大值
-     */
-    KE.baseZIndex = function(z) {
-        var r = z,instances = KE.getInstances();
-        for (var i in instances) {
-            if (!instances.hasOwnProperty(i)) return;
-            var instance = instances[i];
-            r = Math.max(r, instance.baseZIndex(z));
-        }
-        return r;
-    };
     // Fixing Firefox 'Back-Forward Cache' break design mode. (#4514)
     //不知道为什么
     /*
@@ -1651,6 +1638,40 @@ KISSY.Editor.add("definition", function(KE) {
      } )();
      }
      */
+});/**
+ * 集中管理各个z-index
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("zindex", function() {
+    var S = KISSY,KE = S.Editor;
+
+    if (KE.zIndexManager) return;
+
+    KE.zIndexManager = {};
+    var manager = KE.zIndexManager;
+
+    S.mix(manager, {
+        BUBBLE_VIEW:(1100),
+        POPUP_MENU:(1200),
+        DD_PG: (1500),
+        MAXIMIZE:(900),
+        OVERLAY:(9999),
+        LOADING:(99999),
+        SELECT:(1200)
+    });
+
+    /**
+     * 获得全局最大值
+     */
+    KE.baseZIndex = function(z) {
+        var r = z,instances = KE.getInstances();
+        for (var i in instances) {
+            if (!instances.hasOwnProperty(i)) return;
+            var instance = instances[i];
+            r = Math.max(r, instance.baseZIndex(z));
+        }
+        return r;
+    };
 });/**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
  * @modifier: <yiminghe@gmail.com(chengyu)>

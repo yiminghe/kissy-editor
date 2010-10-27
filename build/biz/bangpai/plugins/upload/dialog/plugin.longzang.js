@@ -15,8 +15,9 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         store = window[KE.STORE],
         movie = KE.Config.base +
             KE.Utils.debugUrl("plugins/uploader/uploader.longzang.swf?t=" +
-                encodeURIComponent("2010-10-26 18:53:15") +
-                "&rand=" + (+new Date())),
+                encodeURIComponent("2010-10-27 17:33:10") //+
+                // "&rand=" + (+new Date())
+                ),
         progressBars = {},
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";
@@ -190,7 +191,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         ajbridge:true,
                         methods:[
                             "getReady",
-                            "cancel",
+                            //"cancel",
                             "removeFile",
                             "lock",
                             "unlock",
@@ -277,7 +278,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         uploader = self.uploader;
                     if (fid) {
                         try {
-                            uploader.cancel(fid);
                             uploader.removeFile(fid);
                         } catch(e) {
                         }

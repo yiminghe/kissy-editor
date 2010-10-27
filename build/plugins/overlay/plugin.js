@@ -3,7 +3,7 @@
  * @author yiminghe@gmail.com
  * @refer http://yiminghe.javaeye.com/blog/734867
  */
-KISSY.Editor.add("overlay", function(editor) {
+KISSY.Editor.add("overlay", function() {
     // 每次实例都要载入!
     //console.log("overlay loaded!");
     var S = KISSY,
@@ -48,7 +48,7 @@ KISSY.Editor.add("overlay", function(editor) {
             "left":"-9999px",
             top:"-9999px"
         },
-        loadingBaseZindex = KE.baseZIndex(11000);
+        loadingBaseZindex = KE.baseZIndex(KE.zIndexManager.LOADING);
 
     //全局的不要重写
     if (KE.SimpleOverlay) return;
@@ -140,7 +140,7 @@ KISSY.Editor.add("overlay", function(editor) {
         cls:{},
         shortkey:{value:true},
         visible:{value:false},
-        "zIndex":{value:editor.baseZIndex(9999)},
+        "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)},
         //帮你管理焦点
         focusMgr:{value:true},
         mask:{value:false},

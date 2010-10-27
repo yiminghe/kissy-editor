@@ -93,7 +93,7 @@ KISSY.Editor.add("smiley", function(editor) {
                     this.smileyWin = new Overlay({
                         el:this.smileyPanel,
                         width:"297px",
-                        zIndex:editor.baseZIndex(990),
+                        zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                         focusMgr:false,
                         mask:false
                     });

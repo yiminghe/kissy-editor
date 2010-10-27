@@ -51,7 +51,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/upload/" +
                             "dialog/plugin.js?t=" +
-                            encodeURIComponent("2010-10-26 18:53:15")+
+                            encodeURIComponent("2010-10-27 17:33:10")+
                             ""
                         )
                 }

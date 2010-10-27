@@ -9,7 +9,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
         Event = S.Event,
         Overlay = KE.SimpleOverlay,
         TripleButton = KE.TripleButton,
-        KEStyle = KE.Style,
+        //KEStyle = KE.Style,
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
@@ -152,7 +152,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorWin = new Overlay({
                 el:colorPanel,
                 width:"130px",
-                zIndex:editor.baseZIndex(990),
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                 mask:false,
                 focusMgr:false
             });

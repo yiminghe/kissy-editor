@@ -174,8 +174,7 @@ KISSY.add("editor", function(S, undefined) {
                 requires:["flash/support"]
             },
             {
-                name:"flash/dialog",
-                requires:["flash"]
+                name:"flash/dialog"
             },
             {
                 name: "flash/support",

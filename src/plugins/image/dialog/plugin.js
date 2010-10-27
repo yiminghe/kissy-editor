@@ -181,18 +181,18 @@ KISSY.Editor.add("image/dialog", function(editor) {
         imgMargin = content.one(".ke-img-margin");
 
 
-        imgHeight.on("change", function() {
+        imgHeight.on("keyup", function() {
             var v = parseInt(imgHeight.val());
             if (!v ||
                 !imgRatio[0].checked ||
-                !imgRatioValue) {
+                imgRatio[0].disabled) {
                 return;
             }
             imgWidth.val(Math.floor(v * imgRatioValue));
         });
 
 
-        imgWidth.on("change", function() {
+        imgWidth.on("keyup", function() {
             var v = parseInt(imgWidth.val());
             if (!v ||
                 !imgRatio[0].checked ||
@@ -352,6 +352,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             var margin = parseInt(selectedEl._4e_style("margin"))
                 || 0;
             imgMargin.val(margin);
+            imgRatio[0].disabled = false;
             imgRatioValue = w / h;
         } else {
             if (tab.getTab("local"))
@@ -361,7 +362,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             imgWidth.val(DTIP);
             imgAlign.val("none");
             imgMargin.val(MARGIN_DEFAULT);
-            imgRatioValue = 0;
+            imgRatio[0].disabled = true;
         }
         uploadForm[0].reset();
         imgLocalUrl.val(warning);

@@ -638,4 +638,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
     editor.addDialog("bangpai-upload/dialog",
         new KE.BangPaiUpload.Dialog(editor));
+},{
+    attach:false
 });

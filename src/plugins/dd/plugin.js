@@ -2,7 +2,7 @@
  * dd support for kissy editor
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function(editor) {
+KISSY.Editor.add("dd", function() {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
@@ -21,7 +21,7 @@ KISSY.Editor.add("dd", function(editor) {
         /**
          * mousedown 后 buffer 触发时间,100毫秒
          */
-        timeThred:{value:0},
+        timeThred:{value:100},
         /**
          * 当前激活的拖对象
          */
@@ -96,7 +96,10 @@ KISSY.Editor.add("dd", function(editor) {
                 "left:0;" +
                 "width:100%;" +
                 "top:0;" +
-                "z-index:" + editor.baseZIndex(9999) + ";" +
+                "z-index:" +
+                //覆盖iframe上面即可
+                KE.baseZIndex(KE.zIndexManager.DD_PG)
+                + ";" +
                 "'></div>").appendTo(document.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
@@ -164,8 +167,10 @@ KISSY.Editor.add("dd", function(editor) {
             if (!self._check(t)) return;
             //chrome 包含的按钮不可点了
             if (!UA.webkit) {
-                ev.halt();
+                //firefox 默认会拖动对象地址
+                ev.preventDefault();
             }
+            //
             DDM._start(self);
 
             var node = self.get("node"),
