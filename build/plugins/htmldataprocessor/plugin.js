@@ -452,15 +452,16 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         assembleList(el);
                     }
                 },
-                td:function(
-                    //el
-                    ) {
-                    //if (el.attributes.style) {
-                    //去掉td的style，word copy非常讨厌
-                    //现在要加padding了
-                    //delete el.attributes.style;
-                    //}
-                },
+                /*
+                 td:function(
+                 el
+                 ) {
+                 if (el.attributes.style) {
+                 //去掉td的style，word copy非常讨厌
+                 //现在要加padding了
+                 delete el.attributes.style;
+                 }
+                 },*/
                 /**
                  * ul,li 从 ms word 重建
                  * @param element

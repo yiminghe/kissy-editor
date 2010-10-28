@@ -134,7 +134,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/music/" +
                             "dialog/plugin.js?t=" +
-                           encodeURIComponent("2010-10-27 17:33:10")+
+                           encodeURIComponent("2010-10-28 20:48:57")+
                             ""
                         )
                 }

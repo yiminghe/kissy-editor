@@ -15,7 +15,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         store = window[KE.STORE],
         movie = KE.Config.base +
             KE.Utils.debugUrl("plugins/uploader/uploader.longzang.swf?t=" +
-                encodeURIComponent("2010-10-28 18:51:13") //+
+                encodeURIComponent("2010-10-28 20:48:57") //+
                 // "&rand=" + (+new Date())
                 ),
         progressBars = {},
