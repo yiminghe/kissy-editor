@@ -97,7 +97,7 @@
                 });
 
                 b3.on("offClick", function() {
-                    var as = editor.document.getElementsByTagName("a");
+                    var as = S.makeArray(editor.document.getElementsByTagName("a"));
                     for (var i = 0; i < as.length; i++) {
                         S.DOM._4e_remove(as[i], true);
                     }
