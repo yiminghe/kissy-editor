@@ -134,7 +134,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/music/" +
                             "dialog/plugin.js?t=" +
-                           encodeURIComponent("2010-10-28 11:34:43")+
+                           encodeURIComponent("2010-10-28 11:35:51")+
                             ""
                         )
                 }
@@ -273,7 +273,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/upload/" +
                             "dialog/plugin.js?t=" +
-                            encodeURIComponent("2010-10-28 11:34:43")+
+                            encodeURIComponent("2010-10-28 11:35:51")+
                             ""
                         )
                 }
@@ -442,7 +442,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
                             "dialog/plugin.js?t=" +
-                            encodeURIComponent("2010-10-28 11:34:43") +
+                            encodeURIComponent("2010-10-28 11:35:51") +
                             ""
                         )
                 }
