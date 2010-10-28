@@ -4,8 +4,9 @@
  */
 KISSY.Editor.add("htmldataprocessor", function(editor) {
     var undefined = undefined,
-        KE = KISSY.Editor,
         S = KISSY,
+        KE = S.Editor,
+        Node = S.Node,
         UA = S.UA,
         KEN = KE.NODE,
         HtmlParser = KE.HtmlParser,
@@ -15,17 +16,22 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     //每个编辑器的规则独立
     if (editor.htmlDataProcessor) return;
 
+
+    /**
+     * 给 fragment,Element,Dtd 加一些常用功能
+     */
     (function() {
 
         var fragmentPrototype = KE.HtmlParser.Fragment.prototype,
             elementPrototype = KE.HtmlParser.Element.prototype;
 
-        fragmentPrototype.onlyChild = elementPrototype.onlyChild = function() {
-            var children = this.children,
-                count = children.length,
-                firstChild = ( count == 1 ) && children[ 0 ];
-            return firstChild || null;
-        };
+        fragmentPrototype.onlyChild =
+            elementPrototype.onlyChild = function() {
+                var children = this.children,
+                    count = children.length,
+                    firstChild = ( count == 1 ) && children[ 0 ];
+                return firstChild || null;
+            };
 
         elementPrototype.removeAnyChildWithName = function(tagName) {
             var children = this.children,
@@ -117,267 +123,282 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         };
     })();
 
-    var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
-        filterStyle = stylesFilter([
-            //word 自有类名去除
-            [/mso/i],
-            //qc 3711，只能出现我们规定的字体
-            [ /font-size/i,'',function(v) {
-                var fontSizes = editor.cfg.pluginConfig["font-size"],
-                    fonts = fontSizes.items;
-                for (var i = 0; i < fonts.length; i++) {
-                    if (equalsIgnoreCase(v, fonts[i].value)) return v;
-                }
-                return false;
-            },'font-size'],
-            //限制字体
-            [ /font-family/i,'',function(v) {
-                var fontFamilies = editor.cfg.pluginConfig["font-family"],
-                    fams = fontFamilies.items;
-                for (var i = 0; i < fams.length; i++) {
-                    var v2 = fams[i].value.toLowerCase();
-                    if (equalsIgnoreCase(v, v2)
-                        ||
-                        equalsIgnoreCase(v, fams[i].name))
-                        return v2;
-                }
-                return false;
-            } ,'font-family'],
-            //qc 3701，去除行高，防止乱掉
-            [/line-height/i],
+    /**
+     * 常用的规则：
+     * 1。过滤一些常见东西
+     * 2。处理 word 复制过来的列表
+     */
+    (function() {
+        var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
+            filterStyle = stylesFilter([
+                //word 自有类名去除
+                [/mso/i],
 
-            [/display/i,/none/i]
-        ], undefined);
+                //qc 3711，只能出现我们规定的字体
+                /*
+                 [ /font-size/i,'',function(v) {
+                 var fontSizes = editor.cfg.pluginConfig["font-size"],
+                 fonts = fontSizes.items;
+                 for (var i = 0; i < fonts.length; i++) {
+                 if (equalsIgnoreCase(v, fonts[i].value)) return v;
+                 }
+                 return false;
+                 },'font-size'],
+                 */
 
-    function isListBulletIndicator(element) {
-        var styleText = element.attributes && element.attributes.style;
-        if (/mso-list\s*:\s*Ignore/i.test(styleText))
-            return true;
-        return undefined;
-    }
+                //限制字体
+                /*
+                 [ /font-family/i,'',function(v) {
+                 var fontFamilies = editor.cfg.pluginConfig["font-family"],
+                 fams = fontFamilies.items;
+                 for (var i = 0; i < fams.length; i++) {
+                 var v2 = fams[i].value.toLowerCase();
+                 if (equalsIgnoreCase(v, v2)
+                 ||
+                 equalsIgnoreCase(v, fams[i].name))
+                 return v2;
+                 }
+                 return false;
+                 } ,'font-family'],
+                 */
 
-    // Create a <ke:listbullet> which indicate an list item type.
-    function createListBulletMarker(bulletStyle, bulletText) {
-        var marker = new KE.HtmlParser.Element('ke:listbullet'),
-            listType;
+                //qc 3701，去除行高，防止乱掉
+                [/line-height/i],
+                [/display/i,/none/i]
+            ], undefined);
 
-        // TODO: Support more list style type from MS-Word.
-        if (!bulletStyle) {
-            bulletStyle = 'decimal';
-            listType = 'ol';
+        function isListBulletIndicator(element) {
+            var styleText = element.attributes && element.attributes.style;
+            if (/mso-list\s*:\s*Ignore/i.test(styleText))
+                return true;
+            return undefined;
         }
-        else if (bulletStyle[ 2 ]) {
-            if (!isNaN(bulletStyle[ 1 ]))
+
+        // Create a <ke:listbullet> which indicate an list item type.
+        function createListBulletMarker(bulletStyle, bulletText) {
+            var marker = new KE.HtmlParser.Element('ke:listbullet'),
+                listType;
+
+            // TODO: Support more list style type from MS-Word.
+            if (!bulletStyle) {
                 bulletStyle = 'decimal';
-            // No way to distinguish between Roman numerals and Alphas,
-            // detect them as a whole.
-            else if (/^[a-z]+$/.test(bulletStyle[ 1 ]))
-                bulletStyle = 'lower-alpha';
-            else if (/^[A-Z]+$/.test(bulletStyle[ 1 ]))
-                bulletStyle = 'upper-alpha';
-            // Simply use decimal for the rest forms of unrepresentable
-            // numerals, e.g. Chinese...
-            else
-                bulletStyle = 'decimal';
+                listType = 'ol';
+            }
+            else if (bulletStyle[ 2 ]) {
+                if (!isNaN(bulletStyle[ 1 ]))
+                    bulletStyle = 'decimal';
+                // No way to distinguish between Roman numerals and Alphas,
+                // detect them as a whole.
+                else if (/^[a-z]+$/.test(bulletStyle[ 1 ]))
+                    bulletStyle = 'lower-alpha';
+                else if (/^[A-Z]+$/.test(bulletStyle[ 1 ]))
+                    bulletStyle = 'upper-alpha';
+                // Simply use decimal for the rest forms of unrepresentable
+                // numerals, e.g. Chinese...
+                else
+                    bulletStyle = 'decimal';
 
-            listType = 'ol';
-        }
-        else {
-            if (/[l\u00B7\u2002]/.test(bulletStyle[ 1 ]))
-                bulletStyle = 'disc';
-            else if (/[\u006F\u00D8]/.test(bulletStyle[ 1 ]))
-                bulletStyle = 'circle';
-            else if (/[\u006E\u25C6]/.test(bulletStyle[ 1 ]))
-                bulletStyle = 'square';
-            else
-                bulletStyle = 'disc';
+                listType = 'ol';
+            }
+            else {
+                if (/[l\u00B7\u2002]/.test(bulletStyle[ 1 ]))
+                    bulletStyle = 'disc';
+                else if (/[\u006F\u00D8]/.test(bulletStyle[ 1 ]))
+                    bulletStyle = 'circle';
+                else if (/[\u006E\u25C6]/.test(bulletStyle[ 1 ]))
+                    bulletStyle = 'square';
+                else
+                    bulletStyle = 'disc';
 
-            listType = 'ul';
-        }
-
-        // Represent list type as CSS style.
-        marker.attributes = {
-            'ke:listtype' : listType,
-            'style' : 'list-style-type:' + bulletStyle + ';'
-        };
-        marker.add(new KE.HtmlParser.Text(bulletText));
-        return marker;
-    }
-
-    function resolveList(element) {
-        // <ke:listbullet> indicate a list item.
-        var attrs = element.attributes,
-            listMarker;
-
-        if (( listMarker = element.removeAnyChildWithName('ke:listbullet') )
-            && listMarker.length
-            && ( listMarker = listMarker[ 0 ] )) {
-            element.name = 'ke:li';
-
-            if (attrs.style) {
-                attrs.style = stylesFilter(
-                    [
-                        // Text-indent is not representing list item level any more.
-                        [ 'text-indent' ],
-                        [ 'line-height' ],
-                        // Resolve indent level from 'margin-left' value.
-                        [ ( /^margin(:?-left)?$/ ), null, function(margin) {
-                            // Be able to deal with component/short-hand form style.
-                            var values = margin.split(' ');
-                            margin = values[ 3 ] || values[ 1 ] || values [ 0 ];
-                            margin = parseInt(margin, 10);
-
-                            // Figure out the indent unit by looking at the first increament.
-                            if (!listBaseIndent && previousListItemMargin && margin > previousListItemMargin)
-                                listBaseIndent = margin - previousListItemMargin;
-
-                            attrs[ 'ke:margin' ] = previousListItemMargin = margin;
-                        } ]
-                    ], undefined)(attrs.style, element) || '';
+                listType = 'ul';
             }
 
-            // Inherit list-type-style from bullet.
-            var listBulletAttrs = listMarker.attributes,
-                listBulletStyle = listBulletAttrs.style;
-            element.addStyle(listBulletStyle);
-            S.mix(attrs, listBulletAttrs);
-            return true;
+            // Represent list type as CSS style.
+            marker.attributes = {
+                'ke:listtype' : listType,
+                'style' : 'list-style-type:' + bulletStyle + ';'
+            };
+            marker.add(new KE.HtmlParser.Text(bulletText));
+            return marker;
         }
 
-        return false;
-    }
+        function resolveList(element) {
+            // <ke:listbullet> indicate a list item.
+            var attrs = element.attributes,
+                listMarker;
 
-    function stylesFilter(styles, whitelist) {
-        return function(styleText, element) {
-            var rules = [];
-            // html-encoded quote might be introduced by 'font-family'
-            // from MS-Word which confused the following regexp. e.g.
-            //'font-family: &quot;Lucida, Console&quot;'
-            styleText
-                .replace(/&quot;/g, '"')
-                .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-                function(match, name, value) {
-                    name = name.toLowerCase();
-                    name == 'font-family' && ( value = value.replace(/["']/g, '') );
+            if (( listMarker = element.removeAnyChildWithName('ke:listbullet') )
+                && listMarker.length
+                && ( listMarker = listMarker[ 0 ] )) {
+                element.name = 'ke:li';
 
-                    var namePattern,
-                        valuePattern,
-                        newValue,
-                        newName;
-                    for (var i = 0; i < styles.length; i++) {
-                        if (styles[ i ]) {
-                            namePattern = styles[ i ][ 0 ];
-                            valuePattern = styles[ i ][ 1 ];
-                            newValue = styles[ i ][ 2 ];
-                            newName = styles[ i ][ 3 ];
+                if (attrs.style) {
+                    attrs.style = stylesFilter(
+                        [
+                            // Text-indent is not representing list item level any more.
+                            [ 'text-indent' ],
+                            [ 'line-height' ],
+                            // Resolve indent level from 'margin-left' value.
+                            [ ( /^margin(:?-left)?$/ ), null, function(margin) {
+                                // Be able to deal with component/short-hand form style.
+                                var values = margin.split(' ');
+                                margin = values[ 3 ] || values[ 1 ] || values [ 0 ];
+                                margin = parseInt(margin, 10);
 
-                            if (name.match(namePattern)
-                                && ( !valuePattern || value.match(valuePattern) )) {
-                                name = newName || name;
-                                whitelist && ( newValue = newValue || value );
+                                // Figure out the indent unit by looking at the first increament.
+                                if (!listBaseIndent && previousListItemMargin && margin > previousListItemMargin)
+                                    listBaseIndent = margin - previousListItemMargin;
 
-                                if (typeof newValue == 'function')
-                                    newValue = newValue(value, element, name);
+                                attrs[ 'ke:margin' ] = previousListItemMargin = margin;
+                            } ]
+                        ], undefined)(attrs.style, element) || '';
+                }
 
-                                // Return an couple indicate both name and value
-                                // changed.
-                                if (newValue && newValue.push)
-                                    name = newValue[ 0 ],newValue = newValue[ 1 ];
+                // Inherit list-type-style from bullet.
+                var listBulletAttrs = listMarker.attributes,
+                    listBulletStyle = listBulletAttrs.style;
+                element.addStyle(listBulletStyle);
+                S.mix(attrs, listBulletAttrs);
+                return true;
+            }
 
-                                if (typeof newValue == 'string')
-                                    rules.push([ name, newValue ]);
-                                return;
+            return false;
+        }
+
+        function stylesFilter(styles, whitelist) {
+            return function(styleText, element) {
+                var rules = [];
+                // html-encoded quote might be introduced by 'font-family'
+                // from MS-Word which confused the following regexp. e.g.
+                //'font-family: &quot;Lucida, Console&quot;'
+                styleText
+                    .replace(/&quot;/g, '"')
+                    .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
+                    function(match, name, value) {
+                        name = name.toLowerCase();
+                        name == 'font-family' && ( value = value.replace(/["']/g, '') );
+
+                        var namePattern,
+                            valuePattern,
+                            newValue,
+                            newName;
+                        for (var i = 0; i < styles.length; i++) {
+                            if (styles[ i ]) {
+                                namePattern = styles[ i ][ 0 ];
+                                valuePattern = styles[ i ][ 1 ];
+                                newValue = styles[ i ][ 2 ];
+                                newName = styles[ i ][ 3 ];
+
+                                if (name.match(namePattern)
+                                    && ( !valuePattern || value.match(valuePattern) )) {
+                                    name = newName || name;
+                                    whitelist && ( newValue = newValue || value );
+
+                                    if (typeof newValue == 'function')
+                                        newValue = newValue(value, element, name);
+
+                                    // Return an couple indicate both name and value
+                                    // changed.
+                                    if (newValue && newValue.push)
+                                        name = newValue[ 0 ],newValue = newValue[ 1 ];
+
+                                    if (typeof newValue == 'string')
+                                        rules.push([ name, newValue ]);
+                                    return;
+                                }
                             }
                         }
-                    }
 
-                    !whitelist && rules.push([ name, value ]);
+                        !whitelist && rules.push([ name, value ]);
 
-                });
+                    });
 
-            for (var i = 0; i < rules.length; i++)
-                rules[ i ] = rules[ i ].join(':');
-            return rules.length ?
-                ( rules.join(';') + ';' ) : false;
-        };
-    }
+                for (var i = 0; i < rules.length; i++)
+                    rules[ i ] = rules[ i ].join(':');
 
-    function assembleList(element) {
-        var children = element.children, child,
-            listItem,   // The current processing ke:li element.
-            listItemAttrs,
-            listType,   // Determine the root type of the list.
-            listItemIndent, // Indent level of current list item.
-            lastListItem, // The previous one just been added to the list.
-            list,
-            //parentList, // Current staging list and it's parent list if any.
-            indent;
-
-        for (var i = 0; i < children.length; i++) {
-            child = children[ i ];
-
-            if ('ke:li' == child.name) {
-                child.name = 'li';
-                listItem = child;
-                listItemAttrs = listItem.attributes;
-                listType = listItem.attributes[ 'ke:listtype' ];
-
-                // List item indent level might come from a real list indentation or
-                // been resolved from a pseudo list item's margin value, even get
-                // no indentation at all.
-                listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                    || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent) )
-                    || 1;
-
-                // Ignore the 'list-style-type' attribute if it's matched with
-                // the list root element's default style type.
-                listItemAttrs.style && ( listItemAttrs.style =
-                    stylesFilter([
-                        [ 'list-style-type', listType == 'ol' ? 'decimal' : 'disc' ]
-                    ], undefined)(listItemAttrs.style)
-                        || '' );
-
-                if (!list) {
-                    list = new KE.HtmlParser.Element(listType);
-                    list.add(listItem);
-                    children[ i ] = list;
-                }
-                else {
-                    if (listItemIndent > indent) {
-                        list = new KE.HtmlParser.Element(listType);
-                        list.add(listItem);
-                        lastListItem.add(list);
-                    }
-                    else if (listItemIndent < indent) {
-                        // There might be a negative gap between two list levels. (#4944)
-                        var diff = indent - listItemIndent,
-                            parent;
-                        while (diff-- && ( parent = list.parent ))
-                            list = parent.parent;
-
-                        list.add(listItem);
-                    }
-                    else
-                        list.add(listItem);
-
-                    children.splice(i--, 1);
-                }
-
-                lastListItem = listItem;
-                indent = listItemIndent;
-            }
-            else
-                list = null;
+                return rules.length ?
+                    ( rules.join(';') + ';' ) : false;
+            };
         }
 
-        listBaseIndent = 0;
-    }
+        function assembleList(element) {
+            var children = element.children, child,
+                listItem,   // The current processing ke:li element.
+                listItemAttrs,
+                listType,   // Determine the root type of the list.
+                listItemIndent, // Indent level of current list item.
+                lastListItem, // The previous one just been added to the list.
+                list,
+                //parentList, // Current staging list and it's parent list if any.
+                indent;
 
-    var listBaseIndent,
-        previousListItemMargin = 0,
-        listDtdParents = dtd.parentOf('ol'),
+            for (var i = 0; i < children.length; i++) {
+                child = children[ i ];
+
+                if ('ke:li' == child.name) {
+                    child.name = 'li';
+                    listItem = child;
+                    listItemAttrs = listItem.attributes;
+                    listType = listItem.attributes[ 'ke:listtype' ];
+
+                    // List item indent level might come from a real list indentation or
+                    // been resolved from a pseudo list item's margin value, even get
+                    // no indentation at all.
+                    listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent) )
+                        || 1;
+
+                    // Ignore the 'list-style-type' attribute if it's matched with
+                    // the list root element's default style type.
+                    listItemAttrs.style && ( listItemAttrs.style =
+                        stylesFilter([
+                            [ 'list-style-type', listType == 'ol' ? 'decimal' : 'disc' ]
+                        ], undefined)(listItemAttrs.style)
+                            || '' );
+
+                    if (!list) {
+                        list = new KE.HtmlParser.Element(listType);
+                        list.add(listItem);
+                        children[ i ] = list;
+                    }
+                    else {
+                        if (listItemIndent > indent) {
+                            list = new KE.HtmlParser.Element(listType);
+                            list.add(listItem);
+                            lastListItem.add(list);
+                        }
+                        else if (listItemIndent < indent) {
+                            // There might be a negative gap between two list levels. (#4944)
+                            var diff = indent - listItemIndent,
+                                parent;
+                            while (diff-- && ( parent = list.parent ))
+                                list = parent.parent;
+
+                            list.add(listItem);
+                        }
+                        else
+                            list.add(listItem);
+
+                        children.splice(i--, 1);
+                    }
+
+                    lastListItem = listItem;
+                    indent = listItemIndent;
+                }
+                else
+                    list = null;
+            }
+
+            listBaseIndent = 0;
+        }
+
+        var listBaseIndent,
+            previousListItemMargin = 0,
+            //protectElementNamesRegex = /(<\/?)((?:object|embed|param|html|body|head|title)[^>]*>)/gi,
+            listDtdParents = dtd.parentOf('ol');
+
         //过滤外边来的 html
-        defaultDataFilterRules = {
+        var defaultDataFilterRules = {
             elementNames : [
                 // Remove script,iframe style,link,meta
                 [  /^script$/i , '' ],
@@ -416,7 +437,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                      太激进，只做span*/
                     var style = el.attributes.style;
                     //没有属性的inline去掉了
-                    if (//tagName in dtd.$inline 
+                    if (//tagName in dtd.$inline
                         tagName == "span"
                             && (!style || !filterStyle(style))
                     //&&tagName!=="a"
@@ -431,10 +452,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         assembleList(el);
                     }
                 },
-                td:function(el) {
+                td:function(
+                    //el
+                    ) {
                     //if (el.attributes.style) {
                     //去掉td的style，word copy非常讨厌
-                    delete el.attributes.style;
+                    //现在要加padding了
+                    //delete el.attributes.style;
                     //}
                 },
                 /**
@@ -443,12 +467,15 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  */
                 span:function(element) {
                     // IE/Safari: remove the span if it comes from list bullet text.
-                    if (!UA.gecko && isListBulletIndicator(element.parent))
+                    if (!UA.gecko &&
+                        isListBulletIndicator(element.parent)
+                        )
                         return false;
 
                     // For IE/Safari: List item bullet type is supposed to be indicated by
                     // the text of a span with style 'mso-list : Ignore' or an image.
-                    if (!UA.gecko && isListBulletIndicator(element)) {
+                    if (!UA.gecko &&
+                        isListBulletIndicator(element)) {
                         var listSymbolNode = element.firstChild(function(node) {
                             return node.value || node.name == 'img';
                         });
@@ -489,9 +516,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                     return false;
                 }
-                : function() {
-                return false;
-            },
+                :
+                function() {
+                    return false;
+                },
             attributes :  {
                 //防止word的垃圾class，全部杀掉算了，除了以ke_开头的编辑器内置class
                 'class' : function(value
@@ -513,9 +541,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
             ]
-        },
+        };
         //将编辑区生成html最终化
-        defaultHtmlFilterRules = {
+        var defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
                 [ ( /^ke:/ ), '' ],
@@ -576,7 +604,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             attributes :  {
                 //清除空style
                 style:function(v) {
-                    if (!S.trim(v)) return false;
+                    if (!S.trim(v))
+                        return false;
                 }
             },
             attributeNames :  [
@@ -584,21 +613,21 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [ ( /^_ke.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
             ]
-        }//,
-        //protectElementNamesRegex = /(<\/?)((?:object|embed|param|html|body|head|title)[^>]*>)/gi
-        ;
-    if (UA.ie) {
-        // IE outputs style attribute in capital letters. We should convert
-        // them back to lower case.
-        defaultHtmlFilterRules.attributes.style = function(value
-            // , element
-            ) {
-            return value.toLowerCase();
         };
-    }
+        if (UA.ie) {
+            // IE outputs style attribute in capital letters. We should convert
+            // them back to lower case.
+            defaultHtmlFilterRules.attributes.style = function(value
+                // , element
+                ) {
+                return value.toLowerCase();
+            };
+        }
 
-    htmlFilter.addRules(defaultHtmlFilterRules);
-    dataFilter.addRules(defaultDataFilterRules);
+        htmlFilter.addRules(defaultHtmlFilterRules);
+        dataFilter.addRules(defaultDataFilterRules);
+    })();
+
 
     /**
      * 去除firefox代码末尾自动添加的 <br/>
@@ -695,10 +724,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     //htmlparser fragment 中的 entities 处理
     //el.innerHTML="&nbsp;"
     //alert(el.innerHTML);
+    //http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
             text : function(text) {
-                return text.replace(/&nbsp;/g, "\xa0")
+                return text
+                    //.replace(/&nbsp;/g, "\xa0")
                     .replace(/\xa0/g, "&nbsp;");
             }
         });
@@ -744,6 +775,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi,
                     '$1$2$3');
 
+            //标签不合法可能parser出错，这里先用浏览器帮我们建立棵合法的dom树的html
+            // Call the browser to help us fixing a possibly invalid HTML
+            // structure.
+            var div = new Node("<div>");
+            // Add fake character to workaround IE comments bug. (#3801)
+            div.html('a' + html);
+            html = div.html().substr(1);
 
             // Certain elements has problem to go through DOM operation, protect
             // them by prefixing 'ke' namespace. (#3591)
@@ -757,6 +795,15 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             writer.reset();
             fragment.writeHtml(writer, dataFilter);
 
+            return writer.getHtml(true);
+        },
+        /*
+         最精简html传送到server
+         */
+        toServer:function(html, fixForBody) {
+            var writer = new HtmlParser.BasicWriter(),
+                fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
+            fragment.writeHtml(writer, htmlFilter);
             return writer.getHtml(true);
         }
     };

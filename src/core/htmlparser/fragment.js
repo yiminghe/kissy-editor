@@ -65,6 +65,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
      * "<ul><ul><li>xxx</ul><li>1<li>2<ul>");
      */
     Fragment.FromHtml = function(fragmentHtml, fixForBody) {
+        
         var parser = new KE.HtmlParser(),
             //html = [],
             fragment = new Fragment(),

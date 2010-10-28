@@ -158,9 +158,13 @@
         <p>3</p>
         <p>4</p>
     </textarea>
-    
+
 </div>
 
+
+<div id="preview" style="border:1px solid green;">
+
+</div>
 
 <script src="http://github.com/kissyteam/kissy/raw/master/build/kissy-min.js"></script>
 <script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
@@ -172,7 +176,7 @@
     //var base = "http://kissyteam.github.com/kissy-editor/";
     KISSY.Config.base = base;
 
-    KISSY.ready(function() {
+    KISSY.ready(function(S) {
 
         var KE = KISSY.Editor;
         KE.Config.base = base + "build/";
@@ -311,6 +315,7 @@
             });
             b1.on("offClick", function() {
                 alert(k.getData());
+                S.one("#preview").html(k.getData());
             });
 
 

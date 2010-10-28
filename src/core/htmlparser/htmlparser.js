@@ -29,7 +29,7 @@ KISSY.Editor.add("htmlparser", function(
 
     function HtmlParser() {
         this._ = {
-            htmlPartsRegex : new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
+            htmlPartsRegex :new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
         };
     }
 
@@ -126,6 +126,7 @@ KISSY.Editor.add("htmlparser", function(
                 cdata;	// The collected data inside a CDATA section.
 
             while (( parts = this._.htmlPartsRegex.exec(html) )) {
+
                 var tagIndex = parts.index;
                 if (tagIndex > nextIndex) {
                     var text = html.substring(nextIndex, tagIndex);
@@ -172,6 +173,12 @@ KISSY.Editor.add("htmlparser", function(
                 // Opening tag
                 if (( tagName = parts[ 3 ] )) {
                     tagName = tagName.toLowerCase();
+
+                    // There are some tag names that can break things, so let's
+                    // simply ignore them when parsing. (#5224)
+                    if (/="/.test(tagName))
+                        continue;
+
                     var attribs = {},
                         attribMatch,
                         attribsPart = parts[ 4 ],

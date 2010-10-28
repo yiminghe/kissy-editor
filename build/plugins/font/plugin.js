@@ -3,9 +3,12 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("font", function(editor) {
+
     function wrapFont(vs) {
         var v = [];
-        for (var i = 0; i < vs.length; i++) {
+        for (var i = 0;
+             i < vs.length;
+             i++) {
             v.push({
                 name:vs[i],
                 value:vs[i]
@@ -14,95 +17,113 @@ KISSY.Editor.add("font", function(editor) {
         return v;
     }
 
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         KEStyle = KE.Style,
         TripleButton = KE.TripleButton,
-        Node = S.Node,
-        FONT_SIZES = editor.cfg.pluginConfig["font-size"] || {};
-    S.mix(FONT_SIZES, {
-        items:wrapFont(["8px","10px","12px",
-            "14px","18px","24px",
-            "36px","48px","60px","72px","84px","96px",
-            "108px"]),
-        width:"55px"
-    }, false);
-    var FONT_SIZE_STYLES = {},
-        FONT_SIZE_ITEMS = [
+        pluginConfig = editor.cfg.pluginConfig,
+        Node = S.Node;
 
-        ],
-        fontSize_style = {
-            element        : 'span',
-            styles        : { 'font-size' : '#(size)' },
-            overrides    : [
-                { element : 'font', attributes : { 'size' : null } }
-            ]
-        },
-        FONT_FAMILIES = editor.cfg.pluginConfig["font-family"] || {};
-    S.mix(FONT_FAMILIES, {
-        items:[
-            //ie 不认识中文？？？
-            {name:"宋体",value:"SimSun"},
-            {name:"黑体",value:"SimHei"},
-            {name:"隶书",value:"LiSu"},
-            {name:"楷体",value:"KaiTi_GB2312"},
-            {name:"微软雅黑",value:"Microsoft YaHei"},
-            {name:"Georgia",value:"Georgia"},
-            {name:"Times New Roman",value:"Times New Roman"},
-            {name:"Impact",value:"Impact"},
-            {name:"Courier New",value:"Courier New"},
-            {name:"Arial",value:"Arial"},
-            {name:"Verdana",value:"Verdana"},
-            {name:"Tahoma",value:"Tahoma"}
-        ],
-        width:"130px"
-    }, false);
+    var FONT_SIZES = pluginConfig["font-size"];
 
+    if (FONT_SIZES !== false) {
 
-    var FONT_FAMILY_STYLES = {},
-        FONT_FAMILY_ITEMS = [],
-        fontFamily_style = {
-            element        : 'span',
-            styles        : { 'font-family' : '#(family)' },
-            overrides    : [
-                { element : 'font', attributes : { 'face' : null } }
-            ]
-        },i;
+        FONT_SIZES = FONT_SIZES || {};
 
-    editor.cfg.pluginConfig["font-size"] = FONT_SIZES;
-    editor.cfg.pluginConfig["font-family"] = FONT_FAMILIES;
+        S.mix(FONT_SIZES, {
+            items:wrapFont(["8px","10px","12px",
+                "14px","18px","24px",
+                "36px","48px","60px","72px","84px","96px",
+                "108px"]),
+            width:"55px"
+        }, false);
 
-    for (i = 0; i < FONT_SIZES.items.length; i++) {
-        var item = FONT_SIZES.items[i],
-            name = item.name,
-            attrs = item.attrs,
-            size = item.value;
+        var FONT_SIZE_STYLES = {},
+            FONT_SIZE_ITEMS = [],
+            fontSize_style = {
+                element        : 'span',
+                styles        : { 'font-size' : '#(size)' },
+                overrides    : [
+                    { element : 'font', attributes : { 'size' : null } }
+                ]
+            };
 
-        FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
-            size:size
-        });
-        FONT_SIZE_ITEMS.push({
-            name:name,
-            value:size,
-            attrs:attrs
-        })
+        for (i = 0; i < FONT_SIZES.items.length; i++) {
+            var item = FONT_SIZES.items[i],
+                name = item.name,
+                attrs = item.attrs,
+                size = item.value;
+
+            FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
+                size:size
+            });
+
+            FONT_SIZE_ITEMS.push({
+                name:name,
+                value:size,
+                attrs:attrs
+            });
+        }
+
+        pluginConfig["font-size"] = FONT_SIZES;
     }
 
-    for (i = 0; i < FONT_FAMILIES.items.length; i++) {
-        var item = FONT_FAMILIES.items[i],
-            name = item.name,
-            attrs = item.attrs || {},
-            value = item.value;
-        attrs.style = attrs.style || "";
-        attrs.style += ";font-family:" + value;
-        FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
-            family:value
-        });
-        FONT_FAMILY_ITEMS.push({
-            name:name,
-            value:value,
-            attrs:attrs
-        })
+    var FONT_FAMILIES = pluginConfig["font-family"];
+
+    if (FONT_FAMILIES !== false) {
+
+        FONT_FAMILIES = FONT_FAMILIES || {};
+
+        S.mix(FONT_FAMILIES, {
+            items:[
+                //ie 不认识中文？？？
+                {name:"宋体",value:"SimSun"},
+                {name:"黑体",value:"SimHei"},
+                {name:"隶书",value:"LiSu"},
+                {name:"楷体",value:"KaiTi_GB2312"},
+                {name:"微软雅黑",value:"Microsoft YaHei"},
+                {name:"Georgia",value:"Georgia"},
+                {name:"Times New Roman",value:"Times New Roman"},
+                {name:"Impact",value:"Impact"},
+                {name:"Courier New",value:"Courier New"},
+                {name:"Arial",value:"Arial"},
+                {name:"Verdana",value:"Verdana"},
+                {name:"Tahoma",value:"Tahoma"}
+            ],
+            width:"130px"
+        }, false);
+
+
+        var FONT_FAMILY_STYLES = {},
+            FONT_FAMILY_ITEMS = [],
+            fontFamily_style = {
+                element        : 'span',
+                styles        : { 'font-family' : '#(family)' },
+                overrides    : [
+                    { element : 'font', attributes : { 'face' : null } }
+                ]
+            },i;
+
+
+        pluginConfig["font-family"] = FONT_FAMILIES;
+
+
+        for (i = 0; i < FONT_FAMILIES.items.length; i++) {
+            var item = FONT_FAMILIES.items[i],
+                name = item.name,
+                attrs = item.attrs || {},
+                value = item.value;
+            attrs.style = attrs.style || "";
+            attrs.style += ";font-family:" + value;
+            FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
+                family:value
+            });
+            FONT_FAMILY_ITEMS.push({
+                name:name,
+                value:value,
+                attrs:attrs
+            });
+        }
     }
 
     if (!KE.Font) {
@@ -267,7 +288,6 @@ KISSY.Editor.add("font", function(editor) {
                     } else {
                         el.set("state", TripleButton.OFF);
                     }
-
                 }
             });
             Font.SingleFont = SingleFont;
@@ -276,9 +296,8 @@ KISSY.Editor.add("font", function(editor) {
     }
     editor.addPlugin(function() {
 
-        var cfg = editor.cfg.pluginConfig;
 
-        if (false !== cfg["font-size"]) {
+        if (false !== pluginConfig["font-size"]) {
             new KE.Font({
                 editor:editor,
                 title:"大小",
@@ -290,7 +309,7 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
-        if (false !== cfg["font-family"]) {
+        if (false !== pluginConfig["font-family"]) {
             new KE.Font({
                 editor:editor,
                 title:"字体",
@@ -301,7 +320,7 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
-        if (false !== cfg["font-bold"]) {
+        if (false !== pluginConfig["font-bold"]) {
             new KE.Font.SingleFont({
                 contentCls:"ke-toolbar-bold",
                 title:"粗体 ",
@@ -317,7 +336,7 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
-        if (false !== cfg["font-italic"]) {
+        if (false !== pluginConfig["font-italic"]) {
             new KE.Font.SingleFont({
                 contentCls:"ke-toolbar-italic",
                 title:"斜体 ",
@@ -333,7 +352,7 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
-        if (false !== cfg["font-underline"]) {
+        if (false !== pluginConfig["font-underline"]) {
             new KE.Font.SingleFont({
                 contentCls:"ke-toolbar-underline",
                 title:"下划线 ",
@@ -348,7 +367,7 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
-        if (false !== cfg["font-strikeThrough"]) {
+        if (false !== pluginConfig["font-strikeThrough"]) {
             new KE.Font.SingleFont({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",

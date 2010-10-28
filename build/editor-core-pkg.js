@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-28 15:51:19
+ * @buildtime: 2010-10-28 20:43:56
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-28 15:51:19")+
+                encodeURIComponent("2010-10-28 20:43:56")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-28 15:51:19")+
+                encodeURIComponent("2010-10-28 20:43:56")+
                 "")
         };
     }
@@ -990,19 +990,22 @@ KISSY.Editor.add("definition", function(KE) {
                 KE.SOURCE_MODE;
         },
         getData:function(format) {
-            var self = this,html;
+            var self = this,
+                html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
-                if (self.htmlDataProcessor)
-                    html = self.htmlDataProcessor.toHtml(html, "p");
+
             } else {
                 //代码模式下不需过滤
                 html = self.textarea.val();
             }
             //如果不需要要格式化，例如提交数据给服务器
-            if (!format) {
-                html = html || "";
-                html = html.replace(/\s+/g, " ");
+            if (self.htmlDataProcessor) {
+                if (format) {
+                    html = self.htmlDataProcessor.toHtml(html, "p");
+                } else {
+                    html = self.htmlDataProcessor.toServer(html, "p");
+                }
             }
             return html;
         } ,
@@ -7504,7 +7507,7 @@ KISSY.Editor.add("htmlparser", function(
 
     function HtmlParser() {
         this._ = {
-            htmlPartsRegex : new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
+            htmlPartsRegex :new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
         };
     }
 
@@ -7601,6 +7604,7 @@ KISSY.Editor.add("htmlparser", function(
                 cdata;	// The collected data inside a CDATA section.
 
             while (( parts = this._.htmlPartsRegex.exec(html) )) {
+
                 var tagIndex = parts.index;
                 if (tagIndex > nextIndex) {
                     var text = html.substring(nextIndex, tagIndex);
@@ -7647,6 +7651,12 @@ KISSY.Editor.add("htmlparser", function(
                 // Opening tag
                 if (( tagName = parts[ 3 ] )) {
                     tagName = tagName.toLowerCase();
+
+                    // There are some tag names that can break things, so let's
+                    // simply ignore them when parsing. (#5224)
+                    if (/="/.test(tagName))
+                        continue;
+
                     var attribs = {},
                         attribMatch,
                         attribsPart = parts[ 4 ],
@@ -8176,6 +8186,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
      * "<ul><ul><li>xxx</ul><li>1<li>2<ul>");
      */
     Fragment.FromHtml = function(fragmentHtml, fixForBody) {
+        
         var parser = new KE.HtmlParser(),
             //html = [],
             fragment = new Fragment(),
