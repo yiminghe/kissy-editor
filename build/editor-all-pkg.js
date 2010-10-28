@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-28 12:54:22
+ * @buildtime: 2010-10-28 15:33:52
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-28 12:54:22")+
+                encodeURIComponent("2010-10-28 15:33:52")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-28 12:54:22")+
+                encodeURIComponent("2010-10-28 15:33:52")+
                 "")
         };
     }
@@ -10115,23 +10115,27 @@ KISSY.Editor.add("dd", function() {
      */
     S.extend(Manager, S.Base, {
         _init:function() {
-            KE.Utils.lazyRun(this, "_prepare", "_real");
+            var self = this;
+            KE.Utils.lazyRun(self, "_prepare", "_real");
+            self._realMove = KE.Utils.throttle(self._move, self, 10);
         },
         /*
          注册所有可拖动对象
          */
-        reg:function(node) {
-            var drags = this.get("drags");
-            if (!node[0].id) {
-                node[0].id = S.guid("drag-");
-            }
-            drags[node[0].id] = node;
-        },
+        /*
+         reg:function(node) {
+         var drags = this.get("drags");
+         if (!node[0].id) {
+         node[0].id = S.guid("drag-");
+         }
+         drags[node[0].id] = node;
+         },*/
         /*
          全局鼠标移动事件通知当前拖动对象正在移动
          */
         _move:function(ev) {
             var activeDrag = this.get("activeDrag");
+            //S.log("move");
             if (!activeDrag) return;
             activeDrag._move(ev);
         },
@@ -10144,16 +10148,21 @@ KISSY.Editor.add("dd", function() {
         _start:function(drag) {
             var self = this,
                 timeThred = self.get("timeThred") || 0;
+
+            //事件先要注册好，防止点击，导致 mouseup 时还没注册事件
+            self._registerEvent();
+
+            //是否中央管理，强制限制拖放延迟
             if (timeThred) {
                 self._timeThredTimer = setTimeout(function() {
                     self._bufferStart(drag);
                 }, timeThred);
-            }
-            else {
+            } else {
                 self._bufferStart(drag);
             }
         },
         _bufferStart:function(drag) {
+            //S.log("_bufferStart");
             var self = this;
             self.set("activeDrag", drag);
             self._prepare();
@@ -10166,6 +10175,7 @@ KISSY.Editor.add("dd", function() {
         _end:function(ev) {
             var self = this,
                 activeDrag = self.get("activeDrag");
+            //self._unregisterEvent();
             if (self._timeThredTimer) {
                 clearTimeout(self._timeThredTimer);
                 self._timeThredTimer = null;
@@ -10178,7 +10188,7 @@ KISSY.Editor.add("dd", function() {
             });
         },
         /**
-         * 全局拖动管理器的中驱神经，只创建一次
+         * 垫片只需创建一次
          */
         _prepare:function() {
             var self = this,doc = document;
@@ -10198,16 +10208,36 @@ KISSY.Editor.add("dd", function() {
                 "'></div>").appendTo(doc.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
-            Event.on(doc, "mousemove", KE.Utils.throttle(self._move, self, 10));
-            Event.on(doc, "mouseup", self._end, self);
         },
 
         _real:function() {
-            this._pg.css({
+            var self = this;
+            self._pg.css({
                 display: "",
                 height: DOM.docHeight()
             });
+        },
+
+        /**
+         * 开始时注册全局监听事件
+         */
+        _registerEvent:function() {
+            var self = this,doc = document;
+            //S.log("_registerEvent");
+            Event.on(doc, "mouseup", self._end, self);
+            Event.on(doc, "mousemove", self._realMove);
+        },
+
+        /**
+         * 结束时需要取消掉，防止平时无谓的监听
+         */
+        _unregisterEvent:function() {
+            var self = this,doc = document;
+            //S.log("_unregisterEvent");
+            Event.remove(doc, "mousemove", self._realMove);
+            Event.remove(doc, "mouseup", self._end, self);
         }
+
 
     });
 
@@ -10235,7 +10265,7 @@ KISSY.Editor.add("dd", function() {
             var self = this,
                 node = self.get("node"),
                 handlers = self.get("handlers");
-            DDM.reg(node);
+            //DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }
@@ -12048,84 +12078,98 @@ KISSY.Editor.add("font", function(editor) {
         })();
     }
     editor.addPlugin(function() {
-        new KE.Font({
-            editor:editor,
-            title:"大小",
-            width:"30px",
-            showValue:true,
-            popUpWidth:FONT_SIZES.width,
-            styles:FONT_SIZE_STYLES,
-            html:FONT_SIZE_ITEMS
-        });
 
-        new KE.Font({
-            editor:editor,
-            title:"字体",
-            width:"110px",
-            popUpWidth:FONT_FAMILIES.width,
-            styles:FONT_FAMILY_STYLES,
-            html:FONT_FAMILY_ITEMS
-        });
+        var cfg = editor.cfg.pluginConfig;
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-bold",
-            title:"粗体 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'strong',
-                overrides    : [
-                    { element : 'b' },
-                    {element        : 'span',
-                        attributes         : { style:'font-weight: bold;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-size"]) {
+            new KE.Font({
+                editor:editor,
+                title:"大小",
+                width:"30px",
+                showValue:true,
+                popUpWidth:FONT_SIZES.width,
+                styles:FONT_SIZE_STYLES,
+                html:FONT_SIZE_ITEMS
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-italic",
-            title:"斜体 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'em',
-                overrides    : [
-                    { element : 'i' },
-                    {element        : 'span',
-                        attributes         : { style:'font-style: italic;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-family"]) {
+            new KE.Font({
+                editor:editor,
+                title:"字体",
+                width:"110px",
+                popUpWidth:FONT_FAMILIES.width,
+                styles:FONT_FAMILY_STYLES,
+                html:FONT_FAMILY_ITEMS
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-underline",
-            title:"下划线 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'u',
-                overrides    : [
-                    {element        : 'span',
-                        attributes         : { style:'text-decoration: underline;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-bold"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-bold",
+                title:"粗体 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'strong',
+                    overrides    : [
+                        { element : 'b' },
+                        {element        : 'span',
+                            attributes         : { style:'font-weight: bold;' }}
+                    ]
+                })
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-strikeThrough",
-            title:"删除线 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'del',
-                overrides    : [
-                    {element        : 'span',
-                        attributes         : { style:'text-decoration: line-through;' }},
-                    { element : 's' }
-                ]
-            })
-        });
+        if (false !== cfg["font-italic"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-italic",
+                title:"斜体 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'em',
+                    overrides    : [
+                        { element : 'i' },
+                        {element        : 'span',
+                            attributes         : { style:'font-style: italic;' }}
+                    ]
+                })
+            });
+        }
+
+        if (false !== cfg["font-underline"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-underline",
+                title:"下划线 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'u',
+                    overrides    : [
+                        {element        : 'span',
+                            attributes         : { style:'text-decoration: underline;' }}
+                    ]
+                })
+            });
+        }
+
+        if (false !== cfg["font-strikeThrough"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-strikeThrough",
+                title:"删除线 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'del',
+                    overrides    : [
+                        {element        : 'span',
+                            attributes         : { style:'text-decoration: line-through;' }},
+                        { element : 's' }
+                    ]
+                })
+            });
+        }
 
     });
 
-})
-    ;
+});
 /**
  * forecolor support for kissy editor
  * @author : yiminghe@gmail.com
@@ -14485,7 +14529,7 @@ KISSY.Editor.add("localStorage", function() {
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE.Config.base +
         KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?t=" +
-            encodeURIComponent("2010-10-28 12:54:22") +
+            encodeURIComponent("2010-10-28 15:33:52") +
             "&rand=" +
             (+new Date())
             );
@@ -16600,8 +16644,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
             TableUI.showBorderClassName = showBorderClassName;
 
 
-
-
             S.augment(TableUI, {
                 _init:function() {
                     var self = this,
@@ -16641,10 +16683,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 enable:function() {
                     this.el.enable();
                 },
-                _tableShow:function(ev, selectedTable) {
+                _tableShow:function(ev, selectedTable,td) {
                     var editor = this.editor;
                     editor.useDialog("table/dialog", function(dialog) {
-                        dialog.show(selectedTable);
+                        dialog.show(selectedTable,td);
                     });
                 }
             });
@@ -16926,8 +16968,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         table = startElement && startElement._4e_ascendant('table', true);
                     if (!table)
                         return;
-                    var tableUI = editor._toolbars["table"];
-                    tableUI._tableShow(null, table);
+                    var tableUI = editor._toolbars["table"],
+                        td= startElement._4e_ascendant('td', true);
+                    //!TODO 修改单个 cell 的间距
+                    tableUI._tableShow(null, table,td);
                 },
 
                 "删除表格" : function(editor) {

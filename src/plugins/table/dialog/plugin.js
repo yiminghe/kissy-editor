@@ -104,6 +104,18 @@ KISSY.Editor.add("table/dialog", function(editor) {
             "</label> &nbsp;像素" +
             "</td>" +
             "<td>" +
+            "<label " +
+            "class='ke-table-cellpadding-holder'" +
+            ">边&nbsp;&nbsp;&nbsp;距： " +
+            "<input " +
+            " data-verify='^(\\d+)?$' " +
+            " data-warning='边框请输入非负整数' " +
+            "value='0' " +
+            "style='" +
+            alignStyle + MIDDLE + "'" +
+            "class='ke-table-cellpadding ke-input' " +
+            "size='" + IN_SIZE + "'/>" +
+            " &nbsp;像素</label>" +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -122,7 +134,8 @@ KISSY.Editor.add("table/dialog", function(editor) {
         footHtml = "<a " +
             "class='ke-table-ok ke-button' " +
             "style='margin-right:20px;'>确定</a> " +
-            "<a class='ke-table-cancel ke-button'>取消</a>";
+            "<a " +
+            "class='ke-table-cancel ke-button'>取消</a>";
 
     if (!TableUI.Dialog) {
         (function() {
@@ -160,6 +173,8 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     d.trows = dbody.one(".ke-table-rows");
                     d.tcols = dbody.one(".ke-table-cols");
                     d.thead = KE.Select.decorate(dbody.one(".ke-table-head"));
+                    d.cellpaddingHolder = dbody.one(".ke-table-cellpadding-holder");
+                    d.cellpadding = dbody.one(".ke-table-cellpadding");
                     var tok = d.foot.one(".ke-table-ok"),
                         tclose = d.foot.one(".ke-table-cancel");
                     d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
@@ -234,6 +249,9 @@ KISSY.Editor.add("table/dialog", function(editor) {
                             trim(d.theight.val()));
                     else
                         selectedTable.css("height", "");
+
+                    d.cellpadding.val(parseInt(d.cellpadding.val()) || 0);
+                    self.selectedTd.css("padding", d.cellpadding.val());
                     if (valid(d.tcaption.val())) {
                         var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
                         if (caption && caption[0])
@@ -324,6 +342,10 @@ KISSY.Editor.add("table/dialog", function(editor) {
                         selectedTable = self.selectedTable,
                         caption = selectedTable.one("caption");
 
+                    d.cellpadding.val(
+                        parseInt(self.selectedTd.css("padding"))
+                            || "0"
+                        );
 
                     d.talign.val(selectedTable.attr("align") ||
                         "");
@@ -369,15 +391,20 @@ KISSY.Editor.add("table/dialog", function(editor) {
                             .removeAttr("disabled");
                         d.thead.enable();
                     }
+                    if (self.selectedTd)
+                        d.cellpaddingHolder.show();
+                    else
+                        d.cellpaddingHolder.hide();
                     self.tableDialog.show();
                 },
                 _prepareTableShow:function() {
                     var self = this;
                     self._tableInit();
                 },
-                show:    function(selectedTable) {
+                show:    function(selectedTable, td) {
                     var self = this;
                     self.selectedTable = selectedTable;
+                    self.selectedTd = td;
                     self._prepareTableShow();
                 }
             });

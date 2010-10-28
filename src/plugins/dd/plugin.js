@@ -41,23 +41,27 @@ KISSY.Editor.add("dd", function() {
      */
     S.extend(Manager, S.Base, {
         _init:function() {
-            KE.Utils.lazyRun(this, "_prepare", "_real");
+            var self = this;
+            KE.Utils.lazyRun(self, "_prepare", "_real");
+            self._realMove = KE.Utils.throttle(self._move, self, 10);
         },
         /*
          注册所有可拖动对象
          */
-        reg:function(node) {
-            var drags = this.get("drags");
-            if (!node[0].id) {
-                node[0].id = S.guid("drag-");
-            }
-            drags[node[0].id] = node;
-        },
+        /*
+         reg:function(node) {
+         var drags = this.get("drags");
+         if (!node[0].id) {
+         node[0].id = S.guid("drag-");
+         }
+         drags[node[0].id] = node;
+         },*/
         /*
          全局鼠标移动事件通知当前拖动对象正在移动
          */
         _move:function(ev) {
             var activeDrag = this.get("activeDrag");
+            //S.log("move");
             if (!activeDrag) return;
             activeDrag._move(ev);
         },
@@ -70,16 +74,21 @@ KISSY.Editor.add("dd", function() {
         _start:function(drag) {
             var self = this,
                 timeThred = self.get("timeThred") || 0;
+
+            //事件先要注册好，防止点击，导致 mouseup 时还没注册事件
+            self._registerEvent();
+
+            //是否中央管理，强制限制拖放延迟
             if (timeThred) {
                 self._timeThredTimer = setTimeout(function() {
                     self._bufferStart(drag);
                 }, timeThred);
-            }
-            else {
+            } else {
                 self._bufferStart(drag);
             }
         },
         _bufferStart:function(drag) {
+            //S.log("_bufferStart");
             var self = this;
             self.set("activeDrag", drag);
             self._prepare();
@@ -92,6 +101,7 @@ KISSY.Editor.add("dd", function() {
         _end:function(ev) {
             var self = this,
                 activeDrag = self.get("activeDrag");
+            //self._unregisterEvent();
             if (self._timeThredTimer) {
                 clearTimeout(self._timeThredTimer);
                 self._timeThredTimer = null;
@@ -104,7 +114,7 @@ KISSY.Editor.add("dd", function() {
             });
         },
         /**
-         * 全局拖动管理器的中驱神经，只创建一次
+         * 垫片只需创建一次
          */
         _prepare:function() {
             var self = this,doc = document;
@@ -124,16 +134,36 @@ KISSY.Editor.add("dd", function() {
                 "'></div>").appendTo(doc.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
-            Event.on(doc, "mousemove", KE.Utils.throttle(self._move, self, 10));
-            Event.on(doc, "mouseup", self._end, self);
         },
 
         _real:function() {
-            this._pg.css({
+            var self = this;
+            self._pg.css({
                 display: "",
                 height: DOM.docHeight()
             });
+        },
+
+        /**
+         * 开始时注册全局监听事件
+         */
+        _registerEvent:function() {
+            var self = this,doc = document;
+            //S.log("_registerEvent");
+            Event.on(doc, "mouseup", self._end, self);
+            Event.on(doc, "mousemove", self._realMove);
+        },
+
+        /**
+         * 结束时需要取消掉，防止平时无谓的监听
+         */
+        _unregisterEvent:function() {
+            var self = this,doc = document;
+            //S.log("_unregisterEvent");
+            Event.remove(doc, "mousemove", self._realMove);
+            Event.remove(doc, "mouseup", self._end, self);
         }
+
 
     });
 
@@ -161,7 +191,7 @@ KISSY.Editor.add("dd", function() {
             var self = this,
                 node = self.get("node"),
                 handlers = self.get("handlers");
-            DDM.reg(node);
+            //DDM.reg(node);
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }

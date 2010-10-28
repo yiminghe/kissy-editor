@@ -92,8 +92,6 @@ KISSY.Editor.add("table", function(editor, undefined) {
             TableUI.showBorderClassName = showBorderClassName;
 
 
-
-
             S.augment(TableUI, {
                 _init:function() {
                     var self = this,
@@ -133,10 +131,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 enable:function() {
                     this.el.enable();
                 },
-                _tableShow:function(ev, selectedTable) {
+                _tableShow:function(ev, selectedTable,td) {
                     var editor = this.editor;
                     editor.useDialog("table/dialog", function(dialog) {
-                        dialog.show(selectedTable);
+                        dialog.show(selectedTable,td);
                     });
                 }
             });
@@ -418,8 +416,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                         table = startElement && startElement._4e_ascendant('table', true);
                     if (!table)
                         return;
-                    var tableUI = editor._toolbars["table"];
-                    tableUI._tableShow(null, table);
+                    var tableUI = editor._toolbars["table"],
+                        td= startElement._4e_ascendant('td', true);
+                    //!TODO 修改单个 cell 的间距
+                    tableUI._tableShow(null, table,td);
                 },
 
                 "删除表格" : function(editor) {

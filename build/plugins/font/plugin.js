@@ -275,81 +275,95 @@ KISSY.Editor.add("font", function(editor) {
         })();
     }
     editor.addPlugin(function() {
-        new KE.Font({
-            editor:editor,
-            title:"大小",
-            width:"30px",
-            showValue:true,
-            popUpWidth:FONT_SIZES.width,
-            styles:FONT_SIZE_STYLES,
-            html:FONT_SIZE_ITEMS
-        });
 
-        new KE.Font({
-            editor:editor,
-            title:"字体",
-            width:"110px",
-            popUpWidth:FONT_FAMILIES.width,
-            styles:FONT_FAMILY_STYLES,
-            html:FONT_FAMILY_ITEMS
-        });
+        var cfg = editor.cfg.pluginConfig;
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-bold",
-            title:"粗体 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'strong',
-                overrides    : [
-                    { element : 'b' },
-                    {element        : 'span',
-                        attributes         : { style:'font-weight: bold;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-size"]) {
+            new KE.Font({
+                editor:editor,
+                title:"大小",
+                width:"30px",
+                showValue:true,
+                popUpWidth:FONT_SIZES.width,
+                styles:FONT_SIZE_STYLES,
+                html:FONT_SIZE_ITEMS
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-italic",
-            title:"斜体 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'em',
-                overrides    : [
-                    { element : 'i' },
-                    {element        : 'span',
-                        attributes         : { style:'font-style: italic;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-family"]) {
+            new KE.Font({
+                editor:editor,
+                title:"字体",
+                width:"110px",
+                popUpWidth:FONT_FAMILIES.width,
+                styles:FONT_FAMILY_STYLES,
+                html:FONT_FAMILY_ITEMS
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-underline",
-            title:"下划线 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'u',
-                overrides    : [
-                    {element        : 'span',
-                        attributes         : { style:'text-decoration: underline;' }}
-                ]
-            })
-        });
+        if (false !== cfg["font-bold"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-bold",
+                title:"粗体 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'strong',
+                    overrides    : [
+                        { element : 'b' },
+                        {element        : 'span',
+                            attributes         : { style:'font-weight: bold;' }}
+                    ]
+                })
+            });
+        }
 
-        new KE.Font.SingleFont({
-            contentCls:"ke-toolbar-strikeThrough",
-            title:"删除线 ",
-            editor:editor,
-            style:new KEStyle({
-                element        : 'del',
-                overrides    : [
-                    {element        : 'span',
-                        attributes         : { style:'text-decoration: line-through;' }},
-                    { element : 's' }
-                ]
-            })
-        });
+        if (false !== cfg["font-italic"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-italic",
+                title:"斜体 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'em',
+                    overrides    : [
+                        { element : 'i' },
+                        {element        : 'span',
+                            attributes         : { style:'font-style: italic;' }}
+                    ]
+                })
+            });
+        }
+
+        if (false !== cfg["font-underline"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-underline",
+                title:"下划线 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'u',
+                    overrides    : [
+                        {element        : 'span',
+                            attributes         : { style:'text-decoration: underline;' }}
+                    ]
+                })
+            });
+        }
+
+        if (false !== cfg["font-strikeThrough"]) {
+            new KE.Font.SingleFont({
+                contentCls:"ke-toolbar-strikeThrough",
+                title:"删除线 ",
+                editor:editor,
+                style:new KEStyle({
+                    element        : 'del',
+                    overrides    : [
+                        {element        : 'span',
+                            attributes         : { style:'text-decoration: line-through;' }},
+                        { element : 's' }
+                    ]
+                })
+            });
+        }
 
     });
 
-})
-    ;
+});
