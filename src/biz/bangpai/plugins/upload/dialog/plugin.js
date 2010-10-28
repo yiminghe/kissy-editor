@@ -220,6 +220,12 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                     self.uploader = uploader;
 
+                    uploader.on("mouseOver", function() {
+                        btn.el.addClass("ke-button-hover");
+                    });
+                    uploader.on("mouseOut", function() {
+                        btn.el.removeClass("ke-button-hover");
+                    });
                     insertAll.on("click", function() {
                         var trs = list.all("tr");
                         for (var i = 0; i < trs.length; i++) {
