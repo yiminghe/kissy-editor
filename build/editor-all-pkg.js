@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-27 21:04:54
+ * @buildtime: 2010-10-28 11:34:43
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-27 21:04:54")+
+                encodeURIComponent("2010-10-28 11:34:43")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-27 21:04:54")+
+                encodeURIComponent("2010-10-28 11:34:43")+
                 "")
         };
     }
@@ -1180,11 +1180,21 @@ KISSY.Editor.add("definition", function(KE) {
                 KEN = KE.NODE,
                 isBlock = xhtml_dtd.$block[ elementName ],
                 selection = self.getSelection(),
-                ranges = selection.getRanges(),
+                ranges = selection && selection.getRanges(),
                 range,
                 clone,
                 lastElement,
                 current, dtd;
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
 
             self.fire("save");
             for (var i = ranges.length - 1; i >= 0; i--) {
@@ -1279,10 +1289,23 @@ KISSY.Editor.add("definition", function(KE) {
                     self.insertElement(new Node(nodes[i]));
                 return;
             }
-
             self.focus();
+
+            var selection = self.getSelection(),
+                ranges = selection && selection.getRanges();
+
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
+
             self.fire("save");
-            var selection = self.getSelection();
             if (UA.ie) {
                 var $sel = selection.getNative();
                 if ($sel.type == 'Control')
@@ -10064,8 +10087,9 @@ KISSY.Editor.add("dd", function() {
     KE.DD = {};
 
     function Manager() {
-        Manager.superclass.constructor.apply(this, arguments);
-        this._init();
+        var self = this;
+        Manager.superclass.constructor.apply(self, arguments);
+        self._init();
     }
 
     Manager.ATTRS = {
@@ -10074,7 +10098,7 @@ KISSY.Editor.add("dd", function() {
          */
         timeThred:{value:100},
         /**
-         * 当前激活的拖对象
+         * 当前激活的拖对象，在同一时间只有一个值，所以不是数组
          */
         activeDrag:{},
         /**
@@ -10083,24 +10107,40 @@ KISSY.Editor.add("dd", function() {
         drags:{value:{}}
     };
 
+    /*
+     负责拖动涉及的全局事件：
+     1.全局统一的鼠标移动监控
+     2.全局统一的鼠标弹起监控，用来通知当前拖动对象停止
+     3.为了跨越iframe而统一在底下的遮罩层
+     */
     S.extend(Manager, S.Base, {
         _init:function() {
             KE.Utils.lazyRun(this, "_prepare", "_real");
-
         },
+        /*
+         注册所有可拖动对象
+         */
         reg:function(node) {
             var drags = this.get("drags");
             if (!node[0].id) {
                 node[0].id = S.guid("drag-");
             }
             drags[node[0].id] = node;
-            this._prepare();
         },
+        /*
+         全局鼠标移动事件通知当前拖动对象正在移动
+         */
         _move:function(ev) {
             var activeDrag = this.get("activeDrag");
             if (!activeDrag) return;
             activeDrag._move(ev);
         },
+        /**
+         * 当前拖动对象通知全局：我要开始啦
+         * 全局设置当前拖动对象，
+         * 还要根据配置进行buffer处理
+         * @param drag
+         */
         _start:function(drag) {
             var self = this,
                 timeThred = self.get("timeThred") || 0;
@@ -10116,12 +10156,13 @@ KISSY.Editor.add("dd", function() {
         _bufferStart:function(drag) {
             var self = this;
             self.set("activeDrag", drag);
-            self._pg.css({
-                display: "",
-                height: DOM.docHeight()
-            });
-            drag.fire("start");
+            self._prepare();
+            drag._start();
         },
+        /**
+         * 全局通知当前拖动对象：你结束拖动了！
+         * @param ev
+         */
         _end:function(ev) {
             var self = this,
                 activeDrag = self.get("activeDrag");
@@ -10136,8 +10177,11 @@ KISSY.Editor.add("dd", function() {
                 display:"none"
             });
         },
+        /**
+         * 全局拖动管理器的中驱神经，只创建一次
+         */
         _prepare:function() {
-            var self = this;
+            var self = this,doc = document;
             //创造垫片，防止进入iframe，外面document监听不到 mousedown/up/move
             self._pg = new Node("<div " +
                 "style='" +
@@ -10151,15 +10195,18 @@ KISSY.Editor.add("dd", function() {
                 //覆盖iframe上面即可
                 KE.baseZIndex(KE.zIndexManager.DD_PG)
                 + ";" +
-                "'></div>").appendTo(document.body);
+                "'></div>").appendTo(doc.body);
             //0.5 for debug
             self._pg.css("opacity", 0);
-            Event.on(document, "mousemove", KE.Utils.throttle(this._move, this, 10));
-            Event.on(document, "mouseup", this._end, this);
+            Event.on(doc, "mousemove", KE.Utils.throttle(self._move, self, 10));
+            Event.on(doc, "mouseup", self._end, self);
         },
 
         _real:function() {
-
+            this._pg.css({
+                display: "",
+                height: DOM.docHeight()
+            });
         }
 
     });
@@ -10167,15 +10214,19 @@ KISSY.Editor.add("dd", function() {
     KE.DD.DDM = new Manager();
     var DDM = KE.DD.DDM;
 
+    /*
+     拖放纯功能类
+     */
     function Draggable() {
-        Draggable.superclass.constructor.apply(this, arguments);
-        this._init();
+        var self = this;
+        Draggable.superclass.constructor.apply(self, arguments);
+        self._init();
     }
 
     Draggable.ATTRS = {
         //拖放节点
         node:{},
-        //handler 集合
+        //handler 集合，注意暂时必须在 node 里面
         handlers:{value:{}}
     };
 
@@ -10199,7 +10250,7 @@ KISSY.Editor.add("dd", function() {
                 }
             }
             node.on("mousedown", self._handleMouseDown, self);
-            node.on("mouseup", DDM._end, DDM);
+            //node.on("mouseup", DDM._end, DDM);
         },
         _check:function(t) {
             var handlers = this.get("handlers");
@@ -10212,6 +10263,13 @@ KISSY.Editor.add("dd", function() {
             }
             return false;
         },
+
+        /**
+         * 鼠标按下时，查看触发源是否是属于 handler 集合，
+         * 保存当前状态
+         * 通知全局管理器开始作用
+         * @param ev
+         */
         _handleMouseDown:function(ev) {
             var self = this,
                 t = new Node(ev.target);
@@ -10243,18 +10301,25 @@ KISSY.Editor.add("dd", function() {
             this.fire("move", ev)
         },
         _end:function() {
+            this.fire("end");
+        },
+        _start:function() {
+            this.fire("start");
         }
     });
 
-
+    /*
+     拖放实体，功能反应移动时，同时移动节点
+     */
     function Drag() {
         Drag.superclass.constructor.apply(this, arguments);
     }
 
     S.extend(Drag, Draggable, {
         _init:function() {
-            Drag.superclass._init.apply(this, arguments);
-            var node = this.get("node"),self = this;
+            var self = this;
+            Drag.superclass._init.apply(self, arguments);
+            var node = self.get("node");
             self.on("move", function(ev) {
                 var left = ev.pageX - self._diff.left,
                     top = ev.pageY - self._diff.top;
@@ -14420,7 +14485,7 @@ KISSY.Editor.add("localStorage", function() {
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE.Config.base +
         KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?t=" +
-            encodeURIComponent("2010-10-27 21:04:54") +
+            encodeURIComponent("2010-10-28 11:34:43") +
             "&rand=" +
             (+new Date())
             );

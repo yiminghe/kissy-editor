@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-27 21:04:54
+ * @buildtime: 2010-10-28 11:34:43
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-27 21:04:54")+
+                encodeURIComponent("2010-10-28 11:34:43")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-27 21:04:54")+
+                encodeURIComponent("2010-10-28 11:34:43")+
                 "")
         };
     }
@@ -1180,11 +1180,21 @@ KISSY.Editor.add("definition", function(KE) {
                 KEN = KE.NODE,
                 isBlock = xhtml_dtd.$block[ elementName ],
                 selection = self.getSelection(),
-                ranges = selection.getRanges(),
+                ranges = selection && selection.getRanges(),
                 range,
                 clone,
                 lastElement,
                 current, dtd;
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
 
             self.fire("save");
             for (var i = ranges.length - 1; i >= 0; i--) {
@@ -1279,10 +1289,23 @@ KISSY.Editor.add("definition", function(KE) {
                     self.insertElement(new Node(nodes[i]));
                 return;
             }
-
             self.focus();
+
+            var selection = self.getSelection(),
+                ranges = selection && selection.getRanges();
+
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
+
             self.fire("save");
-            var selection = self.getSelection();
             if (UA.ie) {
                 var $sel = selection.getNative();
                 if ($sel.type == 'Control')

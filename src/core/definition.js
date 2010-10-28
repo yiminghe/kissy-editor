@@ -399,11 +399,21 @@ KISSY.Editor.add("definition", function(KE) {
                 KEN = KE.NODE,
                 isBlock = xhtml_dtd.$block[ elementName ],
                 selection = self.getSelection(),
-                ranges = selection.getRanges(),
+                ranges = selection && selection.getRanges(),
                 range,
                 clone,
                 lastElement,
                 current, dtd;
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
 
             self.fire("save");
             for (var i = ranges.length - 1; i >= 0; i--) {
@@ -498,10 +508,23 @@ KISSY.Editor.add("definition", function(KE) {
                     self.insertElement(new Node(nodes[i]));
                 return;
             }
-
             self.focus();
+
+            var selection = self.getSelection(),
+                ranges = selection && selection.getRanges();
+
+            //give sometime to breath
+            if (!ranges
+                ||
+                ranges.length == 0) {
+                var args = arguments,fn = args.callee;
+                setTimeout(function() {
+                    fn.apply(self, args);
+                }, 30);
+                return;
+            }
+
             self.fire("save");
-            var selection = self.getSelection();
             if (UA.ie) {
                 var $sel = selection.getNative();
                 if ($sel.type == 'Control')
