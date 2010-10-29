@@ -217,7 +217,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     alert("请先选择文件!");
                     return;
                 }
-                console.log(imgLocalUrl.val());
+                //console.log(imgLocalUrl.val());
                 if (!surfix_reg.test(imgLocalUrl.val())) {
                     alert(surfix_warning);
                     //清除已选文件， ie 不能使用 val("")
