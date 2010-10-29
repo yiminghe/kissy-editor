@@ -36,7 +36,7 @@ build file for kissy editor
     <!--
     注意：核心文件有顺序依赖
     -->
-    <filelist id="core_js" dir="${src.dir}/core" files="
+    <filelist id="core_js" dir="${build.dir}/core" files="
     ../editor.js,
     utils.js,
     focusmanager.js,
@@ -60,10 +60,10 @@ build file for kissy editor
     htmlparser/comment.js
     "/>
 
-    <fileset dir="${src.dir}"
+    <fileset dir="${build.dir}"
              includes="plugins/**/plugin.js"
              excludes="**/dialog/plugin.js"
-             id="main_js">
+             id="core_plugin_js">
     </fileset>
 
     <tstamp>
@@ -83,6 +83,27 @@ build file for kissy editor
             <fileset dir="${src.dir}"
                      includes="**/*"/>
         </copy>
+
+        <!--
+        remove accidental debug info
+        -->
+        <replaceregexp match="^\s*console\.log\(.+$"
+                       replace=""
+                       flags="g"
+                       byline="true"
+                       encoding="${charset}">
+            <fileset dir="${build.dir}"
+                     includes="**/*.js"/>
+        </replaceregexp>
+
+        <replaceregexp match="@TIMESTAMP@"
+                       replace="${timestamp.isoformat}"
+                       flags="g"
+                       byline="true"
+                       encoding="${charset}">
+            <fileset dir="${build.dir}"
+                     includes="**/*.js"/>
+        </replaceregexp>
     </target>
 
     <!--
@@ -181,10 +202,10 @@ build file for kissy editor
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${src.dir}"
-                     includes="**/*.js"/>
             <fileset dir="${build.dir}"
-                     includes="**/*-pkg.js"/>
+                     includes="**/*.js"
+                     excludes="**/*-min*.js"
+                    />
             <arg line="-jar"/>
             <arg path="${ks-tools.dir}/closure-compiler/compiler.jar"/>
             <arg line="--charset ${charset}"/>
@@ -203,10 +224,9 @@ build file for kissy editor
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${src.dir}"
-                     includes="**/*.css"/>
             <fileset dir="${build.dir}"
-                     includes="**/*-pkg.css"/>
+                     includes="**/*.css"
+                     excludes="**/*-min*.css"/>
             <arg line="-jar"/>
             <arg path="${ks-tools.dir}/yuicompressor/yuicompressor.jar"/>
             <arg line="--charset ${charset}"/>
@@ -215,27 +235,6 @@ build file for kissy editor
             <targetfile/>
             <mapper type="regexp" from="^(.*)\.(css|js)$" to="\1-min.\2"/>
         </apply>
-
-        <!--
-        remove debug info
-        -->
-        <replaceregexp match="^\s*console\.log\(.+$"
-                       replace=""
-                       flags="g"
-                       byline="true"
-                       encoding="${charset}">
-            <fileset dir="${build.dir}"
-                     includes="**/*.js"/>
-        </replaceregexp>
-
-        <replaceregexp match="@TIMESTAMP@"
-                       replace="${timestamp.isoformat}"
-                       flags="g"
-                       byline="true"
-                       encoding="${charset}">
-            <fileset dir="${build.dir}"
-                     includes="**/*.js"/>
-        </replaceregexp>
 
     </target>
 
@@ -341,7 +340,7 @@ build file for kissy editor
                 encoding="${charset}"
                 outputencoding="${charset}">
             <path location="${build.dir}/editor-core-pkg.js"/>
-            <fileset refid="main_js"/>
+            <fileset refid="core_plugin_js"/>
         </concat>
 
         <!--
@@ -367,7 +366,7 @@ build file for kissy editor
                                 encoding="${charset}"
                                 outputencoding="${charset}">
                             <fileset
-                                    dir="${src.dir}/${biz.dir}/${var.biz.dirname}/plugins"
+                                    dir="@{biz}/plugins"
                                     includes="**/plugin.js"
                                     excludes="**/dialog/plugin.js"
                                     />
@@ -397,7 +396,7 @@ build file for kissy editor
                         destfile="@{theme}/editor-pkg.css"
                         encoding="${charset}"
                         outputencoding="${charset}">
-                    <filelist dir="${src.dir}/${theme.dir}" files="editor-common.css"/>
+                    <filelist dir="@{theme}" files="../editor-common.css"/>
                     <fileset
                             dir="${src.dir}/${theme.dir}/${var.theme.dirname}"
                             includes="*.css"/>

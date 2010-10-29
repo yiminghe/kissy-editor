@@ -13,10 +13,11 @@ KISSY.Editor.add("zindex", function() {
     S.mix(manager, {
         BUBBLE_VIEW:(1100),
         POPUP_MENU:(1200),
-        DD_PG: (1500),
+        //拖动垫片要最最高
+        DD_PG: (99999),
         MAXIMIZE:(900),
         OVERLAY:(9999),
-        LOADING:(99999),
+        LOADING:(11000),
         SELECT:(1200)
     });
 

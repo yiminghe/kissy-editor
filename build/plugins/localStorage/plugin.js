@@ -35,7 +35,7 @@ KISSY.Editor.add("localStorage", function() {
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE.Config.base +
         KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?t=" +
-            encodeURIComponent("2010-10-28 20:48:57") +
+            encodeURIComponent("2010-10-29 19:20:07") +
             "&rand=" +
             (+new Date())
             );

@@ -2,7 +2,7 @@
  * Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-29 16:09:25
+ * @buildtime: 2010-10-29 19:20:07
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM;
@@ -295,10 +295,10 @@ KISSY.add("editor", function(S, undefined) {
             charset:"utf-8",
             requires: mod.requires,
             csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-29 16:09:25")+
+                encodeURIComponent("2010-10-29 19:20:07")+
                 "") : undefined),
             path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-29 16:09:25")+
+                encodeURIComponent("2010-10-29 19:20:07")+
                 "")
         };
     }
@@ -1678,10 +1678,11 @@ KISSY.Editor.add("zindex", function() {
     S.mix(manager, {
         BUBBLE_VIEW:(1100),
         POPUP_MENU:(1200),
-        DD_PG: (1500),
+        //拖动垫片要最最高
+        DD_PG: (99999),
         MAXIMIZE:(900),
         OVERLAY:(9999),
-        LOADING:(99999),
+        LOADING:(11000),
         SELECT:(1200)
     });
 

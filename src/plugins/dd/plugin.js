@@ -22,7 +22,7 @@ KISSY.Editor.add("dd", function() {
         /**
          * mousedown 后 buffer 触发时间,100毫秒
          */
-        timeThred:{value:100},
+        timeThred:{value:200},
         /**
          * 当前激活的拖对象，在同一时间只有一个值，所以不是数组
          */
@@ -42,8 +42,8 @@ KISSY.Editor.add("dd", function() {
     S.extend(Manager, S.Base, {
         _init:function() {
             var self = this;
-            KE.Utils.lazyRun(self, "_prepare", "_real");
-            self._realMove = KE.Utils.throttle(self._move, self, 10);
+            KE.Utils.lazyRun(self, "_activePg", "_showPg");
+            self._showPgMove = KE.Utils.throttle(self._move, self, 30);
         },
         /*
          注册所有可拖动对象
@@ -58,6 +58,7 @@ KISSY.Editor.add("dd", function() {
          },*/
         /*
          全局鼠标移动事件通知当前拖动对象正在移动
+         注意：chrome8 :click 时 mousedown-mousemove-mouseup-click 也会触发 mousemove
          */
         _move:function(ev) {
             var activeDrag = this.get("activeDrag");
@@ -91,7 +92,8 @@ KISSY.Editor.add("dd", function() {
             //S.log("_bufferStart");
             var self = this;
             self.set("activeDrag", drag);
-            self._prepare();
+            //真正开始移动了才激活垫片
+            self._activePg();
             drag._start();
         },
         /**
@@ -106,17 +108,17 @@ KISSY.Editor.add("dd", function() {
                 clearTimeout(self._timeThredTimer);
                 self._timeThredTimer = null;
             }
+            self._pg && self._pg.css({
+                display:"none"
+            });
             if (!activeDrag) return;
             activeDrag._end(ev);
             self.set("activeDrag", null);
-            self._pg.css({
-                display:"none"
-            });
         },
         /**
          * 垫片只需创建一次
          */
-        _prepare:function() {
+        _activePg:function() {
             var self = this,doc = document;
             //创造垫片，防止进入iframe，外面document监听不到 mousedown/up/move
             self._pg = new Node("<div " +
@@ -136,12 +138,16 @@ KISSY.Editor.add("dd", function() {
             self._pg.css("opacity", 0);
         },
 
-        _real:function() {
+        _showPg:function() {
             var self = this;
             self._pg.css({
                 display: "",
                 height: DOM.docHeight()
             });
+            //防止 ie 莫名选择文字
+            if (UA.ie < 9) {
+                document.selection.clear();
+            }
         },
 
         /**
@@ -151,7 +157,7 @@ KISSY.Editor.add("dd", function() {
             var self = this,doc = document;
             //S.log("_registerEvent");
             Event.on(doc, "mouseup", self._end, self);
-            Event.on(doc, "mousemove", self._realMove);
+            Event.on(doc, "mousemove", self._showPgMove);
         },
 
         /**
@@ -160,7 +166,7 @@ KISSY.Editor.add("dd", function() {
         _unregisterEvent:function() {
             var self = this,doc = document;
             //S.log("_unregisterEvent");
-            Event.remove(doc, "mousemove", self._realMove);
+            Event.remove(doc, "mousemove", self._showPgMove);
             Event.remove(doc, "mouseup", self._end, self);
         }
 
@@ -231,6 +237,7 @@ KISSY.Editor.add("dd", function() {
                 t = new Node(ev.target);
             if (!self._check(t)) return;
             //chrome 包含的按钮不可点了
+            //bug?父级阻止子级的默认事件
             if (!UA.webkit) {
                 //firefox 默认会拖动对象地址
                 ev.preventDefault();
