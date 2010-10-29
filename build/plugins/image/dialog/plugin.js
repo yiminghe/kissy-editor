@@ -131,7 +131,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
         footHtml = "<a class='ke-img-insert ke-button' " +
             "style='margin-right:30px;'>确定</a> " +
             "<a  class='ke-img-cancel ke-button'>取消</a>",
-        surfix_reg = /(png|jpg|jpeg|gif)$/ig,
+        //不要加g：http://yiminghe.javaeye.com/blog/581347
+        surfix_reg = /(png|jpg|jpeg|gif)$/i,
         surfix_warning = "只允许后缀名为png,jpg,jpeg,gif的图片";
 
     var d,
@@ -216,6 +217,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     alert("请先选择文件!");
                     return;
                 }
+
                 if (!surfix_reg.test(imgLocalUrl.val())) {
                     alert(surfix_warning);
                     //清除已选文件， ie 不能使用 val("")
