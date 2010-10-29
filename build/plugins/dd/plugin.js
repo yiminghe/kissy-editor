@@ -63,6 +63,8 @@ KISSY.Editor.add("dd", function() {
         _move:function(ev) {
             var activeDrag = this.get("activeDrag");
             //S.log("move");
+            //防止ie选择到字
+            ev.preventDefault();
             if (!activeDrag) return;
             activeDrag._move(ev);
         },
@@ -144,8 +146,13 @@ KISSY.Editor.add("dd", function() {
                 display: "",
                 height: DOM.docHeight()
             });
+
+            //清除由于浏览器导致的选择文字
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
             //防止 ie 莫名选择文字
-            if (UA.ie < 9) {
+            else if (document.selection) {
                 document.selection.clear();
             }
         },
@@ -212,7 +219,6 @@ KISSY.Editor.add("dd", function() {
                 }
             }
             node.on("mousedown", self._handleMouseDown, self);
-            //node.on("mouseup", DDM._end, DDM);
         },
         _check:function(t) {
             var handlers = this.get("handlers");
@@ -236,8 +242,7 @@ KISSY.Editor.add("dd", function() {
             var self = this,
                 t = new Node(ev.target);
             if (!self._check(t)) return;
-            //chrome 包含的按钮不可点了
-            //bug?父级阻止子级的默认事件
+            //chrome 阻止了 flash 点击？？
             if (!UA.webkit) {
                 //firefox 默认会拖动对象地址
                 ev.preventDefault();
