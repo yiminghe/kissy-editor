@@ -251,7 +251,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
                         selectedTable.css("height", "");
 
                     d.cellpadding.val(parseInt(d.cellpadding.val()) || 0);
-                    self.selectedTd.css("padding", d.cellpadding.val());
+                    if (self.selectedTd)self.selectedTd.css("padding", d.cellpadding.val());
                     if (valid(d.tcaption.val())) {
                         var tcv = KE.Utils.htmlEncode(trim(d.tcaption.val()));
                         if (caption && caption[0])
@@ -341,11 +341,12 @@ KISSY.Editor.add("table/dialog", function(editor) {
                         d = self.tableDialog,
                         selectedTable = self.selectedTable,
                         caption = selectedTable.one("caption");
-
-                    d.cellpadding.val(
-                        parseInt(self.selectedTd.css("padding"))
-                            || "0"
-                        );
+                    if (self.selectedTd) {
+                        d.cellpadding.val(
+                            parseInt(self.selectedTd.css("padding"))
+                                || "0"
+                            );
+                    }
 
                     d.talign.val(selectedTable.attr("align") ||
                         "");
@@ -391,10 +392,11 @@ KISSY.Editor.add("table/dialog", function(editor) {
                             .removeAttr("disabled");
                         d.thead.enable();
                     }
-                    if (self.selectedTd)
+                    if (self.selectedTd) {
                         d.cellpaddingHolder.show();
-                    else
+                    } else {
                         d.cellpaddingHolder.hide();
+                    }
                     self.tableDialog.show();
                 },
                 _prepareTableShow:function() {

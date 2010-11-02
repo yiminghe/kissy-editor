@@ -2,7 +2,7 @@
  * @preserve Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-02 12:37:53
+ * @buildtime: 2010-11-02 17:12:38
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -139,7 +139,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-02 12:37:53");
+        re += "t=" + encodeURIComponent("2010-11-02 17:12:38");
         return  re;
     }
 
@@ -391,7 +391,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-02 12:05:37");
+                re += "t=" + encodeURIComponent("2010-11-02 17:12:38");
                 return  re;
             },
             /**
@@ -17979,10 +17979,10 @@ KISSY.Editor.add("table", function(editor, undefined) {
                 enable:function() {
                     this.el.enable();
                 },
-                _tableShow:function(ev, selectedTable,td) {
+                _tableShow:function(ev, selectedTable, td) {
                     var editor = this.editor;
                     editor.useDialog("table/dialog", function(dialog) {
-                        dialog.show(selectedTable,td);
+                        dialog.show(selectedTable, td);
                     });
                 }
             });
@@ -18265,9 +18265,12 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     if (!table)
                         return;
                     var tableUI = editor._toolbars["table"],
-                        td= startElement._4e_ascendant('td', true);
+                        td = startElement._4e_ascendant(function(n) {
+                            var name = n._4e_name();
+                            return name == "td" || name == "th";
+                        }, true);
                     //!TODO 修改单个 cell 的间距
-                    tableUI._tableShow(null, table,td);
+                    tableUI._tableShow(null, table, td);
                 },
 
                 "删除表格" : function(editor) {
