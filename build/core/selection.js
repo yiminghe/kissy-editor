@@ -493,6 +493,14 @@ KISSY.Editor.add("selection", function(KE) {
         selectRanges : function(ranges) {
             var self = this;
             if (UA.ie) {
+
+                if (ranges.length > 1) {
+                    // IE doesn't accept multiple ranges selection, so we join all into one.
+                    var last = ranges[ ranges.length - 1 ];
+                    ranges[ 0 ].setEnd(last.endContainer, last.endOffset);
+                    ranges.length = 1;
+                }
+
                 // IE doesn't accept multiple ranges selection, so we just
                 // select the first one.
                 if (ranges[ 0 ])
@@ -534,13 +542,13 @@ KISSY.Editor.add("selection", function(KE) {
 
             return bookmarks;
         },
-        createBookmarks : function(serializable) {
+        createBookmarks : function(serializable, ranges) {
             var self = this,
                 retval = [],
-                ranges = self.getRanges(),
-                length = ranges.length,
                 doc = self.document,
                 bookmark;
+            ranges = ranges || self.getRanges();
+            var length = ranges.length;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, TRUE));
                 serializable = bookmark.serializable;
@@ -607,10 +615,13 @@ KISSY.Editor.add("selection", function(KE) {
         function(forceExpand) {
 
             var self = this,
-                collapsed = self.collapsed,isStartMarkerAlone,dummySpan;
+                collapsed = self.collapsed,
+                isStartMarkerAlone,
+                dummySpan;
             //选的是元素，直接使用selectElement
             //还是有差异的，特别是img选择框问题
-            if (self.startContainer[0] === self.endContainer[0] && self.endOffset - self.startOffset == 1) {
+            if (self.startContainer[0] === self.endContainer[0]
+                && self.endOffset - self.startOffset == 1) {
                 var selEl = self.startContainer[0].childNodes[self.startOffset];
                 if (selEl.nodeType == KEN.NODE_ELEMENT) {
                     new KESelection(self.document).selectElement(new Node(selEl));
@@ -630,7 +641,6 @@ KISSY.Editor.add("selection", function(KE) {
                 // Create marker tags for the start and end boundaries.
                 startNode = bookmark.startNode,
                 endNode;
-
             if (!collapsed)
                 endNode = bookmark.endNode;
 

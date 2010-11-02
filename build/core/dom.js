@@ -54,7 +54,7 @@ KISSY.Editor.add("dom", function(KE) {
         NODE_COMMENT : 8,
         NODE_DOCUMENT_FRAGMENT:11
     };
-    KE["NODE"]=KE.NODE;
+    KE["NODE"] = KE.NODE;
     /**
      * Enum for node position
      * @enum {number}
@@ -67,7 +67,7 @@ KISSY.Editor.add("dom", function(KE) {
         POSITION_IS_CONTAINED:8,
         POSITION_CONTAINS:16
     };
-    KE["POSITION"]=KE.POSITION;
+    KE["POSITION"] = KE.POSITION;
     var KEN = KE.NODE,KEP = KE.POSITION;
 
     /*
@@ -478,10 +478,17 @@ KISSY.Editor.add("dom", function(KE) {
 
                 // IE BUG: IE8 does not update the childNodes array in DOM after splitText(),
                 // we need to make some DOM changes to make it update. (#3436)
-                if (UA.ie == 8) {
+                //我靠！UA.ie==8 不对，
+                //判断不出来:UA.ie==7 && doc.documentMode==7
+                //浏览器模式：当ie8处于兼容视图以及ie7时，UA.ie==7
+                //文本模式: mode=5 ,mode=7, mode=8
+                //alert("ua:"+UA.ie);
+                //alert("mode:"+doc.documentMode);
+                //ie8 浏览器有问题，而不在于是否哪个模式
+                if (!!doc.documentMode) {
                     var workaround = doc.createTextNode("");
                     DOM.insertAfter(workaround, retval[0]);
-                    workaround.parentNode.removeChild(workaround);
+                    DOM._4e_remove(workaround);
                 }
 
                 return retval;

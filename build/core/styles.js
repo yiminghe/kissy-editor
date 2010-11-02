@@ -101,20 +101,19 @@ KISSY.Editor.add("styles", function(KE) {
      */
     function applyStyle(document, remove) {
         // Get all ranges from the selection.
-
         var self = this,
             func = remove ? self.removeFromRange : self.applyToRange;
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        var selection = new KESelection(document),
-            ranges = selection.getRanges();
-        for (var i = 0; i < ranges.length; i++)
+        var selection = new KESelection(document);
+        // Bookmark the range so we can re-select it after processing.
+        var ranges = selection.getRanges();
+        for (var i = 0; i < ranges.length; i++) {
             //格式化后，range进入格式标签内
             func.call(self, ranges[ i ]);
-        // Select the ranges again.
+        }
         selection.selectRanges(ranges);
-
     }
 
     KEStyle.prototype = {
@@ -516,7 +515,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
-        var document = range.document;
+        var self = this,document = range.document;
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
@@ -527,16 +526,15 @@ KISSY.Editor.add("styles", function(KE) {
             range.moveToPosition(collapsedElement, KER.POSITION_BEFORE_END);
             return;
         }
-
         var elementName = this["element"],
             def = this._["definition"],
             isUnknownElement,
             // Get the DTD definition for the element. Defaults to "span".
             dtd = KE.XHTML_DTD[ elementName ]
-                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] ),
+                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] );
 
-            // Bookmark the range so we can re-select it after processing.
-            bookmark = range.createBookmark();
+        // Bookmark the range so we can re-select it after processing.
+        var bookmark = range.createBookmark();
 
         // Expand the range.
 
@@ -656,7 +654,7 @@ KISSY.Editor.add("styles", function(KE) {
             // Apply the style if we have something to which apply it.
             if (applyStyle && styleRange && !styleRange.collapsed) {
                 // Build the style element, based on the style object definition.
-                var styleNode = getElement(this, document),
+                var styleNode = getElement(self, document),
 
                     // Get the element that holds the entire range.
                     parent = styleRange.getCommonAncestor();
@@ -695,7 +693,7 @@ KISSY.Editor.add("styles", function(KE) {
 
                     // Here we do some cleanup, removing all duplicated
                     // elements from the style element.
-                    removeFromInsideElement(this, styleNode);
+                    removeFromInsideElement(self, styleNode);
 
                     // Insert it into the range position (it is collapsed after
                     // extractContents.
@@ -725,6 +723,7 @@ KISSY.Editor.add("styles", function(KE) {
         range.moveToBookmark(bookmark);
         // Minimize the result range to exclude empty text nodes. (#5374)
         range.shrink(KER.SHRINK_TEXT);
+
     }
 
     /**

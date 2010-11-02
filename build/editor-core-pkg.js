@@ -1091,6 +1091,7 @@ KISSY.Editor.add("definition", function(KE) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
+            //+ "<meta http-equiv='X-UA-Compatible' content='IE=8' />"
             + "<title>${title}</title>"
             + "<link href='"
             + KE["Config"]["base"]
@@ -2438,7 +2439,7 @@ KISSY.Editor.add("dom", function(KE) {
         NODE_COMMENT : 8,
         NODE_DOCUMENT_FRAGMENT:11
     };
-    KE["NODE"]=KE.NODE;
+    KE["NODE"] = KE.NODE;
     /**
      * Enum for node position
      * @enum {number}
@@ -2451,7 +2452,7 @@ KISSY.Editor.add("dom", function(KE) {
         POSITION_IS_CONTAINED:8,
         POSITION_CONTAINS:16
     };
-    KE["POSITION"]=KE.POSITION;
+    KE["POSITION"] = KE.POSITION;
     var KEN = KE.NODE,KEP = KE.POSITION;
 
     /*
@@ -2862,10 +2863,17 @@ KISSY.Editor.add("dom", function(KE) {
 
                 // IE BUG: IE8 does not update the childNodes array in DOM after splitText(),
                 // we need to make some DOM changes to make it update. (#3436)
-                if (UA.ie == 8) {
+                //我靠！UA.ie==8 不对，
+                //判断不出来:UA.ie==7 && doc.documentMode==7
+                //浏览器模式：当ie8处于兼容视图以及ie7时，UA.ie==7
+                //文本模式: mode=5 ,mode=7, mode=8
+                //alert("ua:"+UA.ie);
+                //alert("mode:"+doc.documentMode);
+                //ie8 浏览器有问题，而不在于是否哪个模式
+                if (!!doc.documentMode) {
                     var workaround = doc.createTextNode("");
                     DOM.insertAfter(workaround, retval[0]);
-                    workaround.parentNode.removeChild(workaround);
+                    DOM._4e_remove(workaround);
                 }
 
                 return retval;
@@ -4286,7 +4294,7 @@ KISSY.Editor.add("range", function(KE) {
         SHRINK_ELEMENT:1,
         SHRINK_TEXT:2
     };
-    KE["RANGE"]=KE.RANGE;
+    KE["RANGE"] = KE.RANGE;
 
     var TRUE = true,
         FALSE = false,
@@ -4961,7 +4969,8 @@ KISSY.Editor.add("range", function(KE) {
                 endNode,
                 baseId,
                 clone,
-                self = this;
+                self = this,
+                collapsed = self.collapsed;
             startNode = new Node("<span>", NULL, self.document);
             startNode.attr('_ke_bookmark', 1);
             startNode.css('display', 'none');
@@ -4976,7 +4985,7 @@ KISSY.Editor.add("range", function(KE) {
             }
 
             // If collapsed, the endNode will not be created.
-            if (!self.collapsed) {
+            if (!collapsed) {
                 endNode = startNode._4e_clone();
                 endNode.html('&nbsp;');
 
@@ -4985,9 +4994,11 @@ KISSY.Editor.add("range", function(KE) {
 
                 clone = self.clone();
                 clone.collapse();
+                //S.log(clone.endContainer[0].nodeType);
+                //S.log(clone.endOffset);
                 clone.insertNode(endNode);
             }
-
+            //S.log(endNode[0].parentNode.outerHTML);
             clone = self.clone();
             clone.collapse(TRUE);
             clone.insertNode(startNode);
@@ -5003,7 +5014,8 @@ KISSY.Editor.add("range", function(KE) {
             return {
                 startNode : serializable ? baseId + 'S' : startNode,
                 endNode : serializable ? baseId + 'E' : endNode,
-                serializable : serializable
+                serializable : serializable,
+                collapsed:collapsed
             };
         },
         moveToPosition : function(node, position) {
@@ -5012,7 +5024,8 @@ KISSY.Editor.add("range", function(KE) {
             self.collapse(TRUE);
         },
         trim : function(ignoreStart, ignoreEnd) {
-            var self = this,startContainer = self.startContainer,
+            var self = this,
+                startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 collapsed = self.collapsed;
             if (( !ignoreStart || collapsed )
@@ -5088,9 +5101,6 @@ KISSY.Editor.add("range", function(KE) {
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset];
-            self.optimizeBookmark();
-            self.trim(FALSE, TRUE);
-
 
             if (nextNode) {
                 DOM.insertBefore(node[0] || node, nextNode);
@@ -6834,6 +6844,14 @@ KISSY.Editor.add("selection", function(KE) {
         selectRanges : function(ranges) {
             var self = this;
             if (UA.ie) {
+
+                if (ranges.length > 1) {
+                    // IE doesn't accept multiple ranges selection, so we join all into one.
+                    var last = ranges[ ranges.length - 1 ];
+                    ranges[ 0 ].setEnd(last.endContainer, last.endOffset);
+                    ranges.length = 1;
+                }
+
                 // IE doesn't accept multiple ranges selection, so we just
                 // select the first one.
                 if (ranges[ 0 ])
@@ -6875,13 +6893,13 @@ KISSY.Editor.add("selection", function(KE) {
 
             return bookmarks;
         },
-        createBookmarks : function(serializable) {
+        createBookmarks : function(serializable, ranges) {
             var self = this,
                 retval = [],
-                ranges = self.getRanges(),
-                length = ranges.length,
                 doc = self.document,
                 bookmark;
+            ranges = ranges || self.getRanges();
+            var length = ranges.length;
             for (var i = 0; i < length; i++) {
                 retval.push(bookmark = ranges[ i ].createBookmark(serializable, TRUE));
                 serializable = bookmark.serializable;
@@ -6948,10 +6966,13 @@ KISSY.Editor.add("selection", function(KE) {
         function(forceExpand) {
 
             var self = this,
-                collapsed = self.collapsed,isStartMarkerAlone,dummySpan;
+                collapsed = self.collapsed,
+                isStartMarkerAlone,
+                dummySpan;
             //选的是元素，直接使用selectElement
             //还是有差异的，特别是img选择框问题
-            if (self.startContainer[0] === self.endContainer[0] && self.endOffset - self.startOffset == 1) {
+            if (self.startContainer[0] === self.endContainer[0]
+                && self.endOffset - self.startOffset == 1) {
                 var selEl = self.startContainer[0].childNodes[self.startOffset];
                 if (selEl.nodeType == KEN.NODE_ELEMENT) {
                     new KESelection(self.document).selectElement(new Node(selEl));
@@ -6971,7 +6992,6 @@ KISSY.Editor.add("selection", function(KE) {
                 // Create marker tags for the start and end boundaries.
                 startNode = bookmark.startNode,
                 endNode;
-
             if (!collapsed)
                 endNode = bookmark.endNode;
 
@@ -7507,20 +7527,19 @@ KISSY.Editor.add("styles", function(KE) {
      */
     function applyStyle(document, remove) {
         // Get all ranges from the selection.
-
         var self = this,
             func = remove ? self.removeFromRange : self.applyToRange;
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        var selection = new KESelection(document),
-            ranges = selection.getRanges();
-        for (var i = 0; i < ranges.length; i++)
+        var selection = new KESelection(document);
+        // Bookmark the range so we can re-select it after processing.
+        var ranges = selection.getRanges();
+        for (var i = 0; i < ranges.length; i++) {
             //格式化后，range进入格式标签内
             func.call(self, ranges[ i ]);
-        // Select the ranges again.
+        }
         selection.selectRanges(ranges);
-
     }
 
     KEStyle.prototype = {
@@ -7922,7 +7941,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
-        var document = range.document;
+        var self = this,document = range.document;
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
@@ -7933,16 +7952,15 @@ KISSY.Editor.add("styles", function(KE) {
             range.moveToPosition(collapsedElement, KER.POSITION_BEFORE_END);
             return;
         }
-
         var elementName = this["element"],
             def = this._["definition"],
             isUnknownElement,
             // Get the DTD definition for the element. Defaults to "span".
             dtd = KE.XHTML_DTD[ elementName ]
-                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] ),
+                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] );
 
-            // Bookmark the range so we can re-select it after processing.
-            bookmark = range.createBookmark();
+        // Bookmark the range so we can re-select it after processing.
+        var bookmark = range.createBookmark();
 
         // Expand the range.
 
@@ -8062,7 +8080,7 @@ KISSY.Editor.add("styles", function(KE) {
             // Apply the style if we have something to which apply it.
             if (applyStyle && styleRange && !styleRange.collapsed) {
                 // Build the style element, based on the style object definition.
-                var styleNode = getElement(this, document),
+                var styleNode = getElement(self, document),
 
                     // Get the element that holds the entire range.
                     parent = styleRange.getCommonAncestor();
@@ -8101,7 +8119,7 @@ KISSY.Editor.add("styles", function(KE) {
 
                     // Here we do some cleanup, removing all duplicated
                     // elements from the style element.
-                    removeFromInsideElement(this, styleNode);
+                    removeFromInsideElement(self, styleNode);
 
                     // Insert it into the range position (it is collapsed after
                     // extractContents.
@@ -8131,6 +8149,7 @@ KISSY.Editor.add("styles", function(KE) {
         range.moveToBookmark(bookmark);
         // Minimize the result range to exclude empty text nodes. (#5374)
         range.shrink(KER.SHRINK_TEXT);
+
     }
 
     /**

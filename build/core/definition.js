@@ -78,6 +78,7 @@ KISSY.Editor.add("definition", function(KE) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
+            //+ "<meta http-equiv='X-UA-Compatible' content='IE=8' />"
             + "<title>${title}</title>"
             + "<link href='"
             + KE["Config"]["base"]

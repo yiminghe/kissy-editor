@@ -22,7 +22,7 @@ KISSY.Editor.add("range", function(KE) {
         SHRINK_ELEMENT:1,
         SHRINK_TEXT:2
     };
-    KE["RANGE"]=KE.RANGE;
+    KE["RANGE"] = KE.RANGE;
 
     var TRUE = true,
         FALSE = false,
@@ -697,7 +697,8 @@ KISSY.Editor.add("range", function(KE) {
                 endNode,
                 baseId,
                 clone,
-                self = this;
+                self = this,
+                collapsed = self.collapsed;
             startNode = new Node("<span>", NULL, self.document);
             startNode.attr('_ke_bookmark', 1);
             startNode.css('display', 'none');
@@ -712,7 +713,7 @@ KISSY.Editor.add("range", function(KE) {
             }
 
             // If collapsed, the endNode will not be created.
-            if (!self.collapsed) {
+            if (!collapsed) {
                 endNode = startNode._4e_clone();
                 endNode.html('&nbsp;');
 
@@ -721,9 +722,11 @@ KISSY.Editor.add("range", function(KE) {
 
                 clone = self.clone();
                 clone.collapse();
+                //S.log(clone.endContainer[0].nodeType);
+                //S.log(clone.endOffset);
                 clone.insertNode(endNode);
             }
-
+            //S.log(endNode[0].parentNode.outerHTML);
             clone = self.clone();
             clone.collapse(TRUE);
             clone.insertNode(startNode);
@@ -739,7 +742,8 @@ KISSY.Editor.add("range", function(KE) {
             return {
                 startNode : serializable ? baseId + 'S' : startNode,
                 endNode : serializable ? baseId + 'E' : endNode,
-                serializable : serializable
+                serializable : serializable,
+                collapsed:collapsed
             };
         },
         moveToPosition : function(node, position) {
@@ -748,7 +752,8 @@ KISSY.Editor.add("range", function(KE) {
             self.collapse(TRUE);
         },
         trim : function(ignoreStart, ignoreEnd) {
-            var self = this,startContainer = self.startContainer,
+            var self = this,
+                startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 collapsed = self.collapsed;
             if (( !ignoreStart || collapsed )
@@ -824,9 +829,6 @@ KISSY.Editor.add("range", function(KE) {
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset];
-            self.optimizeBookmark();
-            self.trim(FALSE, TRUE);
-
 
             if (nextNode) {
                 DOM.insertBefore(node[0] || node, nextNode);

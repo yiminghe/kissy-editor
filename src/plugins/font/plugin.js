@@ -195,7 +195,7 @@ KISSY.Editor.add("font", function(editor) {
                         elementPath = ev.path,
                         elements = elementPath.elements,
                         styles = self.get("styles");
-                   S.log(ev);
+                   //S.log(ev);
                     // For each element into the elements path.
                     for (var i = 0, element; i < elements.length; i++) {
                         element = elements[i];
@@ -203,7 +203,7 @@ KISSY.Editor.add("font", function(editor) {
                         // the styles.
                         for (var value in styles) {                            
                             if (styles[ value ].checkElementRemovable(element, true)) {
-                                S.log(value);
+                                //S.log(value);
                                 self.el.set("value", value);
                                 return;
                             }

@@ -351,7 +351,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     var self = this,
                         data = S.trim(ev.data).replace(/\r|\n/g, ""),
                         id = ev.file.id;
-                    S.log(data);
+                    //S.log(data);
                     if (!data) return;
                     data = JSON.parse(data);
                     if (data.error) {
