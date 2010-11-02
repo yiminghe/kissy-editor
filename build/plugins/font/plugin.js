@@ -16,7 +16,7 @@ KISSY.Editor.add("font", function(editor) {
         }
         return v;
     }
-
+    
     var S = KISSY,
         KE = S.Editor,
         KEStyle = KE.Style,
@@ -195,13 +195,15 @@ KISSY.Editor.add("font", function(editor) {
                         elementPath = ev.path,
                         elements = elementPath.elements,
                         styles = self.get("styles");
+                   S.log(ev);
                     // For each element into the elements path.
                     for (var i = 0, element; i < elements.length; i++) {
                         element = elements[i];
                         // Check if the element is removable by any of
                         // the styles.
-                        for (var value in styles) {
+                        for (var value in styles) {                            
                             if (styles[ value ].checkElementRemovable(element, true)) {
+                                S.log(value);
                                 self.el.set("value", value);
                                 return;
                             }

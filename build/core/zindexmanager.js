@@ -7,10 +7,11 @@ KISSY.Editor.add("zindex", function() {
 
     if (KE.zIndexManager) return;
 
-    KE.zIndexManager = {};
-    var manager = KE.zIndexManager;
-
-    S.mix(manager, {
+    /**
+     * z-index manager
+     *@enum {number}
+     */
+    KE.zIndexManager = {
         BUBBLE_VIEW:(1100),
         POPUP_MENU:(1200),
         //拖动垫片要最最高
@@ -18,8 +19,10 @@ KISSY.Editor.add("zindex", function() {
         MAXIMIZE:(900),
         OVERLAY:(9999),
         LOADING:(11000),
+        LOADING_CANCEL:12000,
         SELECT:(1200)
-    });
+    };
+
 
     /**
      * 获得全局最大值
@@ -33,4 +36,7 @@ KISSY.Editor.add("zindex", function() {
         }
         return r;
     };
+
+    KE["baseZIndex"] = KE.baseZIndex;
+    KE["zIndexManager"] = KE.zIndexManager;
 });

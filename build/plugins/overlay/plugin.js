@@ -107,7 +107,9 @@ KISSY.Editor.add("overlay", function() {
             offset = el.offset();
             width = el[0].offsetWidth;
             height = el[0].offsetHeight;
-            zIndex = el.css("z-index") + 1;
+            zIndex = parseInt(el.css("z-index")) + 1;
+            //在元素的中间
+            loadingMask.el.css("background-attachment", "scroll");
         } else {
             //DOM.addClass(document.documentElement, "ke-overflow-hidden");
             offset = {
@@ -117,6 +119,8 @@ KISSY.Editor.add("overlay", function() {
             width = "100%";
             height = DOM.docHeight();
             zIndex = loadingBaseZindex;
+            //在视窗的中间
+            loadingMask.el.css("background-attachment", "fixed");
         }
 
         loadingMask.el.css({
@@ -125,6 +129,7 @@ KISSY.Editor.add("overlay", function() {
             "z-index":zIndex
         });
         loadingMask.show(offset);
+        return loadingMask;
     };
 
     Overlay.unloading = function() {
@@ -424,7 +429,7 @@ KISSY.Editor.add("overlay", function() {
         },
 
         loading:function() {
-            Overlay.loading(this.el);
+            return Overlay.loading(this.el);
         },
 
         unloading:function() {

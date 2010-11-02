@@ -1,10 +1,15 @@
 KISSY.Editor.add("htmlparser-htmlwriter", function(
-    //editor
     ) {
     var S = KISSY,
         KE = S.Editor,
-        Utils = KE.Utils;
-    //if (KE.HtmlParser.HtmlWriter) return;
+        Utils = KE.Utils,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     */
     function HtmlWriter() {
         // Call the base contructor.
 
@@ -12,7 +17,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         /**
          * The characters to be used for each identation step.
-         * @type String
+         * @type {string}
          * @default "\t" (tab)
          * @example
          * // Use two spaces for indentation.
@@ -23,7 +28,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         /**
          * The characters to be used to close "self-closing" elements, like "br" or
          * "img".
-         * @type String
+         * @type {string}
          * @default " /&gt;"
          * @example
          * // Use HTML4 notation for self-closing elements.
@@ -33,7 +38,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         /**
          * The characters to be used for line breaks.
-         * @type String
+         * @type {string}
          * @default "\n" (LF)
          * @example
          * // Use CRLF for line breaks.
@@ -41,11 +46,11 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          */
         this.lineBreakChars = '\n';
 
-        this.forceSimpleAmpersand = false;
+        this.forceSimpleAmpersand = FALSE;
 
-        this.sortAttributes = true;
+        this.sortAttributes = TRUE;
 
-        this._.indent = false;
+        this._.indent = FALSE;
         this._.indentation = '';
         this._.rules = {};
 
@@ -56,35 +61,35 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
             dtd.$block, dtd.$listItem,
             dtd.$tableContent)) {
             this.setRules(e, {
-                indent : true,
-                breakBeforeOpen : true,
-                breakAfterOpen : true,
+                indent : TRUE,
+                breakBeforeOpen : TRUE,
+                breakAfterOpen : TRUE,
                 breakBeforeClose : !dtd[ e ][ '#' ],
-                breakAfterClose : true
+                breakAfterClose : TRUE
             });
         }
 
         this.setRules('br',
         {
-            breakAfterOpen : true
+            breakAfterOpen : TRUE
         });
 
         this.setRules('title',
         {
-            indent : false,
-            breakAfterOpen : false
+            indent : FALSE,
+            breakAfterOpen : FALSE
         });
 
         this.setRules('style',
         {
-            indent : false,
-            breakBeforeClose : true
+            indent : FALSE,
+            breakBeforeClose : TRUE
         });
 
         // Disable indentation on <pre>.
         this.setRules('pre',
         {
-            indent: false
+            indent: FALSE
         });
     }
 
@@ -92,15 +97,13 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         /**
          * Writes the tag opening part for a opener tag.
          * @param {String} tagName The element name for this tag.
-         *  {Object} attributes The attributes defined for this tag. The
+         * @param {Object} attributes The attributes defined for this tag. The
          *        attributes could be used to inspect the tag.
          * @example
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName
-            //, attributes
-            ) {
+        openTag : function(tagName, attributes) {
             var rules = this._.rules[ tagName ];
 
             if (this._.indent)
@@ -121,10 +124,10 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          *        like "br" or "img".
          * @example
          * // Writes "&gt;".
-         * writer.openTagClose( 'p', false );
+         * writer.openTagClose( 'p', FALSE );
          * @example
          * // Writes " /&gt;".
-         * writer.openTagClose( 'br', true );
+         * writer.openTagClose( 'br', TRUE );
          */
         openTagClose : function(tagName, isSelfClose) {
             var rules = this._.rules[ tagName ];
@@ -227,7 +230,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         lineBreak : function() {
             if (this._.output.length > 0)
                 this._.output.push(this.lineBreakChars);
-            this._.indent = true;
+            this._.indent = TRUE;
         },
 
         /**
@@ -240,7 +243,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          */
         indentation : function() {
             this._.output.push(this._.indentation);
-            this._.indent = false;
+            this._.indent = FALSE;
         },
 
         /**
@@ -253,21 +256,21 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          *    <li><b>breakAfterClose</b>: break line after the closer tag for this element.</li>
          * </ul>
          *
-         * All rules default to "false". Each call to the function overrides
+         * All rules default to "FALSE". Each call to the function overrides
          * already present rules, leaving the undefined untouched.
          *
          * By default, all elements available in the { XHTML_DTD.$block),
          * { XHTML_DTD.$listItem} and { XHTML_DTD.$tableContent}
-         * lists have all the above rules set to "true". Additionaly, the "br"
-         * element has the "breakAfterOpen" set to "true".
+         * lists have all the above rules set to "TRUE". Additionaly, the "br"
+         * element has the "breakAfterOpen" set to "TRUE".
          * @param {String} tagName The element name to which set the rules.
          * @param {Object} rules An object containing the element rules.
          * @example
          * // Break line before and after "img" tags.
          * writer.setRules( 'img',
          *     {
-         *         breakBeforeOpen : true
-         *         breakAfterOpen : true
+         *         breakBeforeOpen : TRUE
+         *         breakAfterOpen : TRUE
          *     });
          * @example
          * // Reset the rules for the "h1" tag.
@@ -284,4 +287,17 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
     });
 
     KE.HtmlParser.HtmlWriter = HtmlWriter;
+    KE.HtmlParser["HtmlWriter"] = HtmlWriter;
+    var HtmlWriterP = HtmlWriter.prototype;
+    KE.Utils.extern(HtmlWriterP, {
+        "openTag":HtmlWriterP.openTag,
+        "openTagClose":HtmlWriterP.openTagClose,
+        "attribute":HtmlWriterP.attribute,
+        "closeTag":HtmlWriterP.closeTag,
+        "text":HtmlWriterP.text,
+        "comment":HtmlWriterP.comment,
+        "lineBreak":HtmlWriterP.lineBreak,
+        "indentation":HtmlWriterP.indentation,
+        "setRules":HtmlWriterP.setRules
+    });
 });

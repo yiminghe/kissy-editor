@@ -1,10 +1,23 @@
 /**
- * modified from ckeditor core plugin : selection
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * modified from ckeditor core plugin - selection
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("selection", function(KE) {
-    KE.SELECTION = {};
-    var S = KISSY,
+    /**
+     * selection type enum
+     * @enum {number}
+     */
+    KE.SELECTION = {
+        SELECTION_NONE:1,
+        SELECTION_TEXT:2,
+        SELECTION_ELEMENT:3
+
+    };
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         UA = S.UA,
         DOM = S.DOM,
         Event = S.Event,
@@ -17,56 +30,35 @@ KISSY.Editor.add("selection", function(KE) {
         Walker = KE.Walker,
         //ElementPath = KE.ElementPath,
         KERange = KE.Range;
-    /**
-     * No selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_NONE )
-     *     alert( 'Nothing is selected' );
-     */
-    KES.SELECTION_NONE = 1;
 
     /**
-     * Text or collapsed selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_TEXT )
-     *     alert( 'Text is selected' );
+     * @constructor
+     * @param document {Document}
      */
-    KES.SELECTION_TEXT = 2;
-
-    /**
-     * Element selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_ELEMENT )
-     *     alert( 'An element is selected' );
-     */
-    KES.SELECTION_ELEMENT = 3;
     function KESelection(document) {
         var self = this;
-        self.document = document;
+        self["document"] = self.document = document;
         self._ = {
             cache : {}
         };
 
         /**
          * IE BUG: The selection's document may be a different document than the
-         * editor document. Return null if that's the case.
+         * editor document. Return NULL if that's the case.
          */
         if (UA.ie) {
             var range = self.getNative().createRange();
             if (!range
                 || ( range.item && range.item(0).ownerDocument != document )
                 || ( range.parentElement && range.parentElement().ownerDocument != document )) {
-                self.isInvalid = true;
+                self.isInvalid = TRUE;
             }
         }
     }
 
     var styleObjectElements = {
-        img:1,hr:1,li:1,table:1,tr:1,td:1,th:1,embed:1,object:1,ol:1,ul:1,
-        a:1, input:1, form:1, select:1, textarea:1, button:1, fieldset:1, thead:1, tfoot:1
+        "img":1,"hr":1,"li":1,"table":1,"tr":1,"td":1,"th":1,"embed":1,"object":1,"ol":1,"ul":1,
+        "a":1, "input":1, "form":1, "select":1, "textarea":1, "button":1, "fieldset":1, "thead":1, "tfoot":1
     };
 
     S.augment(KESelection, {
@@ -74,7 +66,6 @@ KISSY.Editor.add("selection", function(KE) {
 
         /**
          * Gets the native selection object from the browser.
-         * @function
          * @returns {Object} The native selection object.
          * @example
          * var selection = editor.getSelection().<b>getNative()</b>;
@@ -101,8 +92,7 @@ KISSY.Editor.add("selection", function(KE) {
          *        <li> SELECTION_ELEMENT (3): A element
          *            selection.</li>
          * </ul>
-         * @function
-         * @returns {Number} One of the following constant values:
+         * @returns {number} One of the following constant values:
          *         SELECTION_NONE,  SELECTION_TEXT or
          *         SELECTION_ELEMENT.
          * @example
@@ -175,6 +165,11 @@ KISSY.Editor.add("selection", function(KE) {
                 ( function() {
                     // Finds the container and offset for a specific boundary
                     // of an IE range.
+                    /**
+                     *
+                     * @param {KISSY.Editor.Range} range
+                     * @param {boolean=} start
+                     */
                     var getBoundaryInformation = function(range, start) {
                         // Creates a collapsed range at the requested boundary.
                         range = range.duplicate();
@@ -208,14 +203,14 @@ KISSY.Editor.add("selection", function(KE) {
                                 else if (!comparisonEnd)
                                     return { container : parent, offset : i + 1 };
 
-                                testRange = null;
+                                testRange = NULL;
                             }
                         }
 
                         if (!testRange) {
                             testRange = range.duplicate();
                             testRange.moveToElementText(parent);
-                            testRange.collapse(false);
+                            testRange.collapse(FALSE);
                         }
 
                         testRange.setEndPoint('StartToStart', range);
@@ -270,7 +265,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                         if (type == KES.SELECTION_TEXT) {
                             range = new KERange(self.document);
-                            var boundaryInfo = getBoundaryInformation(nativeRange, true);
+                            var boundaryInfo = getBoundaryInformation(nativeRange, TRUE);
                             range.setStart(new Node(boundaryInfo.container), boundaryInfo.offset);
                             boundaryInfo = getBoundaryInformation(nativeRange);
                             range.setEnd(new Node(boundaryInfo.container), boundaryInfo.offset);
@@ -327,11 +322,11 @@ KISSY.Editor.add("selection", function(KE) {
 
         /**
          * Gets the DOM element in which the selection starts.
-         * @returns {Node} The element at the beginning of the
+         * @returns {KISSY.Node} The element at the beginning of the
          *        selection.
          * @example
          * var element = editor.getSelection().<b>getStartElement()</b>;
-         * alert( element.getName() );
+         * alert( element._4e_name() );
          */
         getStartElement : function() {
             var self = this,cache = self._.cache;
@@ -356,7 +351,7 @@ KISSY.Editor.add("selection", function(KE) {
                             // Decrease the range content to exclude particial
                             // selected node on the start which doesn't have
                             // visual impact. ( #3231 )
-                            while (true) {
+                            while (TRUE) {
                                 var startContainer = range.startContainer,
                                     startOffset = range.startOffset;
                                 // Limit the fix only to non-block elements.(#3950)
@@ -388,7 +383,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                     if (UA.ie) {
                         range = sel.createRange();
-                        range.collapse(true);
+                        range.collapse(TRUE);
                         node = range.parentElement();
                     }
                     else {
@@ -398,17 +393,17 @@ KISSY.Editor.add("selection", function(KE) {
                     }
             }
 
-            return cache.startElement = ( node ? DOM._4e_wrap(node) : null );
+            return cache.startElement = ( node ? DOM._4e_wrap(node) : NULL );
         },
 
         /**
          * Gets the current selected element.
-         * @returns {Node} The selected element. Null if no
+         * @returns {KISSY.Node} The selected element. Null if no
          *        selection is available or the selection type is not
          *       SELECTION_ELEMENT.
          * @example
          * var element = editor.getSelection().<b>getSelectedElement()</b>;
-         * alert( element.getName() );
+         * alert( element._4e_name() );
          */
         getSelectedElement : function() {
             var self = this,
@@ -547,7 +542,7 @@ KISSY.Editor.add("selection", function(KE) {
                 doc = self.document,
                 bookmark;
             for (var i = 0; i < length; i++) {
-                retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
+                retval.push(bookmark = ranges[ i ].createBookmark(serializable, TRUE));
                 serializable = bookmark.serializable;
 
                 var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
@@ -605,10 +600,9 @@ KISSY.Editor.add("selection", function(KE) {
     });
 
 
-    KE.Selection = KESelection;
-    var nonCells = { table:1,tbody:1,tr:1 }, notWhitespaces = Walker.whitespaces(true),
+    var nonCells = { "table":1,"tbody":1,"tr":1 }, notWhitespaces = Walker.whitespaces(TRUE),
         fillerTextRegex = /\ufeff|\u00a0/;
-    KERange.prototype.select = UA.ie ?
+    KERange.prototype["select"] = KERange.prototype.select = UA.ie ?
         // V2
         function(forceExpand) {
 
@@ -629,7 +623,7 @@ KISSY.Editor.add("selection", function(KE) {
                 self.startContainer._4e_name() in nonCells
                 || self.endContainer[0].nodeType == KEN.NODE_ELEMENT &&
                 self.endContainer._4e_name() in nonCells) {
-                self.shrink(KER.SHRINK_ELEMENT, true);
+                self.shrink(KER.SHRINK_ELEMENT, TRUE);
             }
 
             var bookmark = self.createBookmark(),
@@ -740,7 +734,7 @@ KISSY.Editor.add("selection", function(KE) {
             // otherwise). The new start can't be after the end (W3C says it can).
             // So, let's create a new range and collapse it to the desired point.
             if (e.toString().indexOf('NS_ERROR_ILLEGAL_VALUE') >= 0) {
-                self.collapse(true);
+                self.collapse(TRUE);
                 nativeRange.setEnd(self.endContainer[0], self.endOffset);
             }
             else
@@ -755,7 +749,7 @@ KISSY.Editor.add("selection", function(KE) {
 
     function getSelection(doc) {
         var sel = new KESelection(doc);
-        return ( !sel || sel.isInvalid ) ? null : sel;
+        return ( !sel || sel.isInvalid ) ? NULL : sel;
     }
 
     KESelection.getSelection = getSelection;
@@ -849,14 +843,14 @@ KISSY.Editor.add("selection", function(KE) {
                     catch (e) {
                     }
 
-                    savedRange = null;
+                    savedRange = NULL;
                 }
             });
 
             body.on('focus', function() {
                 //S.log("body focus");
                 // Enable selections to be saved.
-                saveEnabled = true;
+                saveEnabled = TRUE;
                 saveSelection();
             });
 
@@ -867,7 +861,7 @@ KISSY.Editor.add("selection", function(KE) {
                     return;
                 //console.log("body beforedeactivate");
                 // Disable selections from being saved.
-                saveEnabled = false;
+                saveEnabled = FALSE;
                 restoreEnabled = 1;
             });
 
@@ -906,28 +900,20 @@ KISSY.Editor.add("selection", function(KE) {
             });
             body.on('mouseup', function() {
                 //console.log("body mouseup");
-                saveEnabled = true;
+                saveEnabled = TRUE;
                 setTimeout(function() {
-                    saveSelection(true);
+                    saveSelection(TRUE);
                 }, 0);
             });
-
-            body.on('keydown', disableSave);
-            body.on('keyup', function() {
-                saveEnabled = true;
-                saveSelection();
-            });
-
-            // IE is the only to provide the "selectionchange"
-            // event.
-            // 注意：ie右键短暂点击并不能改变选择范围
-            Event.on(doc, 'selectionchange', saveSelection);
-
             function disableSave() {
-                saveEnabled = false;
+                saveEnabled = FALSE;
                 //console.log("disableSave");
             }
 
+            /**
+             *
+             * @param {boolean=} testIt
+             */
             function saveSelection(testIt) {
                 //console.log("saveSelection");
                 if (saveEnabled) {
@@ -953,7 +939,7 @@ KISSY.Editor.add("selection", function(KE) {
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
                                 //console.log("retry");
-                                saveSelection(true);
+                                saveSelection(TRUE);
                             }, 50);
                             return;
                         }
@@ -963,7 +949,7 @@ KISSY.Editor.add("selection", function(KE) {
                     var parentTag;
                     if (nativeSel && type == KES.SELECTION_TEXT
                         && ( parentTag = DOM._4e_name(nativeSel.createRange().parentElement()))
-                        && parentTag in { input: 1, textarea : 1 }) {
+                        && parentTag in { "input": 1, "textarea": 1 }) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
@@ -971,6 +957,17 @@ KISSY.Editor.add("selection", function(KE) {
                     editor._monitor();
                 }
             }
+
+            body.on('keydown', disableSave);
+            body.on('keyup', function() {
+                saveEnabled = TRUE;
+                saveSelection();
+            });
+
+            // IE is the only to provide the "selectionchange"
+            // event.
+            // 注意：ie右键短暂点击并不能改变选择范围
+            Event.on(doc, 'selectionchange', saveSelection);
 
 
         } else {
@@ -982,7 +979,7 @@ KISSY.Editor.add("selection", function(KE) {
         }
 
         // List of elements in which has no way to move editing focus outside.
-        var nonExitableElementNames = { table:1,pre:1 };
+        var nonExitableElementNames = { "table":1,"pre":1 };
 
         // Matching an empty paragraph at the end of document.
         var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
@@ -992,8 +989,8 @@ KISSY.Editor.add("selection", function(KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(true);//,
-        //isNotBookmark = KE.Walker.bookmark(false, true);
+        var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
+        //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p
@@ -1007,7 +1004,7 @@ KISSY.Editor.add("selection", function(KE) {
             if (range.collapse
                 && !path.block
                 && blockLimit._4e_name() == "body") {
-                var fixedBlock = range.fixBlock(true, "p");
+                var fixedBlock = range.fixBlock(TRUE, "p");
                 //firefox选择区域变化时自动添加空行，不要出现裸的text
                 if (isBlankParagraph(fixedBlock)) {
                     var element = fixedBlock._4e_next(isNotWhitespace);
@@ -1023,7 +1020,7 @@ KISSY.Editor.add("selection", function(KE) {
                             !nonExitableElementNames[element._4e_name()]) {
                             range.moveToElementEditablePosition(element,
                                 //空行的话还是要移到开头的
-                                isBlankParagraph(element) ? false : true);
+                                isBlankParagraph(element) ? FALSE : TRUE);
                             fixedBlock._4e_remove();
                         }
                     }
@@ -1037,6 +1034,29 @@ KISSY.Editor.add("selection", function(KE) {
 
         });
     }
+
+    KE.Selection = KESelection;
+    KE["Selection"] = KESelection;
+    var SelectionP = KESelection.prototype;
+    KE.Utils.extern(SelectionP, {
+        "getNative":SelectionP.getNative,
+        "getType":SelectionP.getType,
+        "getRanges":SelectionP.getRanges,
+        "getStartElement":SelectionP.getStartElement,
+        "getSelectedElement":SelectionP.getSelectedElement,
+        "reset":SelectionP.reset,
+        "selectElement":SelectionP.selectElement,
+        "selectRanges":SelectionP.selectRanges,
+        "createBookmarks2":SelectionP.createBookmarks2,
+        "createBookmarks":SelectionP.createBookmarks,
+        "selectBookmarks":SelectionP.selectBookmarks,
+
+        "getCommonAncestor":SelectionP.getCommonAncestor,
+        "scrollIntoView":SelectionP.scrollIntoView,
+        "selectBookmarks":SelectionP.selectBookmarks,
+        "removeAllRanges":SelectionP.removeAllRanges
+    });
+
 
     KE.on("instanceCreated", function(ev) {
         var editor = ev.editor;

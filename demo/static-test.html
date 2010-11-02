@@ -191,6 +191,7 @@
 </div>
 
 
+
 <script src="../src/editor.js"></script>
 <script src="../src/core/utils.js"></script>
 <script src="../src/core/focusmanager.js"></script>
@@ -289,14 +290,15 @@
 youku,ku6,tudou视频
 -->
 <script src="../src/biz/bangpai/plugins/video/plugin.js"></script>
+
 <!--
 xiami 音乐
 -->
 <script src="../src/biz/bangpai/plugins/music/plugin.js"></script>
+
 <!--
 xiami 音乐
 -->
-
 <script src="../src/biz/bangpai/plugins/upload/plugin.js"></script>
 
 <!--
@@ -324,7 +326,7 @@ xiami 音乐
                 attachForm:true,
                 baseZIndex:10000,
                 //自定义样式
-                //customStyle:"p{color:red;}",
+                //customStyle:"p{color:purple;}",
                 //是否一开始自动聚焦
                 //focus:true,
                 pluginConfig: {
@@ -351,13 +353,13 @@ xiami 音乐
                             html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                         }
                     ],
-                   "font-size":false,
-                    "font-family":false,
+                    //"font-size":false,
+                    //"font-family":false,
                     //"font-bold":false,
-                    "font-italic":false,
-                    "font-underline":false,
-                    "font-strikeThrough":false
-                    ,"bangpai-upload":{
+                    // "font-italic":false,
+                    //"font-underline":false,
+                    //"font-strikeThrough":false,
+                    "bangpai-upload":{
                         serverUrl:"/code/upload/upload.jsp",
                         serverParams:{
                             waterMark:function() {

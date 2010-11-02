@@ -19,16 +19,15 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
-
                     "链接网址： " +
-
                     "<input " +
                     " data-verify='^(https?://[^\\s]+)|(#.+)$' " +
                     " data-warning='请输入合适的网址格式' " +
                     "class='ke-link-url ke-input' " +
                     "style='width:390px;" +
-                    MIDDLE + "' " +
-                    " value='http://' />" +
+                    MIDDLE +
+                    "'" +
+                    " />" +
                     "</label>" +
                     "</p>" +
                     "<p " +
@@ -75,6 +74,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     cancel.on("click", function() {
                         d.hide();
                     }, self);
+                    KE.Utils.placeholder(d.urlEl, "http://");
                 },
                 //得到当前选中的 link a
                 _getSelectedLink:function() {
@@ -151,6 +151,8 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     if (link) {
                         d.urlEl.val(link.attr(_ke_saved_href) || link.attr("href"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
+                    } else {
+                        KE.Utils.resetInput(d.urlEl);
                     }
                     d.show();
                 },

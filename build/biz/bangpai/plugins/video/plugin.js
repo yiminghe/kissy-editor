@@ -152,9 +152,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                     requires:["flash/dialog"],
                     path:KE.Utils.debugUrl(
                         "biz/bangpai/plugins/video/" +
-                            "dialog/plugin.js?t=" +
-                            encodeURIComponent("2010-10-29 19:20:07") +
-                            ""
+                            "dialog/plugin.js"
                         )
                 }
             });

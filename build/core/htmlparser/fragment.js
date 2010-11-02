@@ -1,8 +1,11 @@
 KISSY.Editor.add("htmlparser-fragment", function(
-    //editor
     ) {
-    var KE = KISSY.Editor;
-    //if (KE.HtmlParser.Fragment) return;
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        KE = KISSY.Editor;
+
     /**
      * A lightweight representation of an HTML DOM structure.
      * @constructor
@@ -19,23 +22,23 @@ KISSY.Editor.add("htmlparser-fragment", function(
         this.children = [];
 
         /**
-         * Get the fragment parent. Should always be null.
+         * Get the fragment parent. Should always be NULL.
          * @type Object
-         * @default null
+         * @default NULL
          * @example
          */
-        this.parent = null;
+        this.parent = NULL;
 
         /** @private */
         this._ = {
-            isBlockLike : true,
-            hasInlineStarted : false
+            isBlockLike : TRUE,
+            hasInlineStarted : FALSE
         };
     }
 
     // Elements which the end tag is marked as optional in the HTML 4.01 DTD
     // (expect empty elements).
-    var optionalClose = {colgroup:1,dd:1,dt:1,li:1,option:1,p:1,td:1,tfoot:1,th:1,thead:1,tr:1};
+    var optionalClose = {"colgroup":1,"dd":1,"dt":1,"li":1,"option":1,"p":1,"td":1,"tfoot":1,"th":1,"thead":1,"tr":1};
 
     // Block-level elements whose internal structure should be respected during
     // parser fixing.
@@ -43,15 +46,15 @@ KISSY.Editor.add("htmlparser-fragment", function(
         Utils = KE.Utils,
         KEN = KE.NODE,
         XHTML_DTD = KE.XHTML_DTD,
-        nonBreakingBlocks = Utils.mix({table:1,ul:1,ol:1,dl:1},
-            XHTML_DTD.table, XHTML_DTD.ul, XHTML_DTD.ol, XHTML_DTD.dl),
+        nonBreakingBlocks = Utils.mix({"table":1,"ul":1,"ol":1,"dl":1},
+            XHTML_DTD["table"], XHTML_DTD["ul"], XHTML_DTD["ol"], XHTML_DTD["dl"]),
         listBlocks = XHTML_DTD.$list,
         listItems = XHTML_DTD.$listItem;
 
     /**
      * Creates a  Fragment from an HTML string.
      * @param {String} fragmentHtml The HTML to be parsed, filling the fragment.
-     * @param {Number} [fixForBody=false] Wrap body with specified element if needed.
+     * @param {boolean|string|undefined} [fixForBody=FALSE] Wrap body with specified element if needed.
      * @returns Fragment The fragment created.
      * @example
      * var fragment = Fragment.fromHtml( '<b>Sample</b> Text' );
@@ -65,7 +68,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
      * "<ul><ul><li>xxx</ul><li>1<li>2<ul>");
      */
     Fragment.FromHtml = function(fragmentHtml, fixForBody) {
-        
+
         var parser = new KE.HtmlParser(),
             //html = [],
             fragment = new Fragment(),
@@ -73,9 +76,13 @@ KISSY.Editor.add("htmlparser-fragment", function(
             pendingBRs = [],
             currentNode = fragment,
             // Indicate we're inside a <pre> element, spaces should be touched differently.
-            inPre = false,
+            inPre = FALSE,
             returnPoint;
 
+        /**
+         *
+         * @param {boolean|undefined|string=} newTagName
+         */
         function checkPending(newTagName) {
             var pendingBRsSent;
 
@@ -114,11 +121,17 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 currentNode.add(pendingBRs.shift());
         }
 
+        /**
+         *
+         * @param  element
+         * @param  {*=} target
+         * @param {boolean=} enforceCurrent
+         */
         function addElement(element, target, enforceCurrent) {
             target = target || currentNode || fragment;
 
             // If the target is the fragment and this element can't go inside
-            // body (if fixForBody).
+            // body
             if (fixForBody && !target.type) {
                 var elementName, realElementName;
                 if (element.attributes
@@ -171,17 +184,17 @@ KISSY.Editor.add("htmlparser-fragment", function(
 
         /**
          * 遇到标签开始建立节点和父亲关联 ==  node.parent=parent
-         * @param tagName
-         * @param attributes
-         * @param selfClosing
+         * @param {string|boolean|undefined} tagName
+         * @param {Object} attributes
+         * @param {boolean=} selfClosing
          */
         parser.onTagOpen = function(tagName, attributes, selfClosing) {
             var element = new KE.HtmlParser.Element(tagName, attributes);
 
-            // "isEmpty" will be always "false" for unknown elements, so we
+            // "isEmpty" will be always "FALSE" for unknown elements, so we
             // must force it if the parser has identified it as a selfClosing tag.
             if (element.isUnknown && selfClosing)
-                element.isEmpty = true;
+                element.isEmpty = TRUE;
 
             // This is a tag to be removed if empty, so do not add it immediately.
             if (XHTML_DTD.$removeEmpty[ tagName ]) {
@@ -189,7 +202,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 return;
             }
             else if (tagName == 'pre')
-                inPre = true;
+                inPre = TRUE;
             else if (tagName == 'br' && inPre) {
                 currentNode.add(new KE.HtmlParser.Text('\n'));
                 return;
@@ -204,13 +217,13 @@ KISSY.Editor.add("htmlparser-fragment", function(
 
             var currentDtd = currentName
                 && ( XHTML_DTD[ currentName ]
-                || ( currentNode._.isBlockLike ? XHTML_DTD.div : XHTML_DTD.span ) );
+                || ( currentNode._.isBlockLike ? XHTML_DTD["div"] : XHTML_DTD["span"] ) );
 
             // If the element cannot be child of the current element.
             if (currentDtd   // Fragment could receive any elements.
                 && !element.isUnknown && !currentNode.isUnknown && !currentDtd[ tagName ]) {
 
-                var reApply = false,
+                var reApply = FALSE,
                     addPoint;   // New position to start adding nodes.
 
                 // Fixing malformed nested lists by moving it into a previous list item. (#3828)
@@ -241,7 +254,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                     }
                     else {
                         //拆分，闭合掉
-                        addElement(currentNode, currentNode.parent, true);
+                        addElement(currentNode, currentNode.parent, TRUE);
                         //li,p等现在就闭合，以后都不用再管了
                         if (!optionalClose[ currentName ]) {
                             // The current element is an inline element, which
@@ -251,7 +264,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                         }
                     }
 
-                    reApply = true;
+                    reApply = TRUE;
                 }
 
                 if (addPoint)
@@ -324,7 +337,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 currentNode = candidate;
 
                 if (currentNode.name == 'pre')
-                    inPre = false;
+                    inPre = FALSE;
 
                 if (candidate._.isBlockLike)
                     sendPendingBRs();
@@ -340,7 +353,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
             }
 
             if (tagName == 'body')
-                fixForBody = false;
+                fixForBody = FALSE;
         };
 
         parser.onText = function(text) {
@@ -417,7 +430,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
          */
         add : function(node) {
             var len = this.children.length,
-                previous = len > 0 && this.children[ len - 1 ] || null;
+                previous = len > 0 && this.children[ len - 1 ] || NULL;
 
             if (previous) {
                 // If the block to be appended is following text, trim spaces at
@@ -456,16 +469,16 @@ KISSY.Editor.add("htmlparser-fragment", function(
             var isChildrenFiltered;
             this.filterChildren = function() {
                 var writer = new KE.HtmlParser.BasicWriter();
-                this.writeChildrenHtml.call(this, writer, filter, true);
+                this.writeChildrenHtml.call(this, writer, filter, TRUE);
                 var html = writer.getHtml();
                 this.children = new Fragment.FromHtml(html).children;
                 isChildrenFiltered = 1;
             };
-
+            this["filterChildren"] = this.filterChildren;
             // Filtering the root fragment before anything else.
             !this.name && filter && filter.onFragment(this);
 
-            this.writeChildrenHtml(writer, isChildrenFiltered ? null : filter);
+            this.writeChildrenHtml(writer, isChildrenFiltered ? NULL : filter);
         },
 
         writeChildrenHtml : function(writer, filter) {
@@ -475,5 +488,12 @@ KISSY.Editor.add("htmlparser-fragment", function(
     });
 
     KE.HtmlParser.Fragment = Fragment;
-
+    KE.HtmlParser["Fragment"] = Fragment;
+    Fragment["FromHtml"] = Fragment.FromHtml;
+    var FragmentP = Fragment.prototype;
+    KE.Utils.extern(FragmentP, {
+        "add":FragmentP.add,
+        "writeHtml":FragmentP.writeHtml,
+        "writeChildrenHtml":FragmentP.writeChildrenHtml
+    });
 });

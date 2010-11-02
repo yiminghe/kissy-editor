@@ -1,10 +1,16 @@
 /**
  * modified from ckeditor,html generator for kissy editor
- * @modifier: yiminghe@gmail.com
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("htmlparser-basicwriter", function() {
-    var S = KISSY,KE = S.Editor,Utils = KE.Utils;
-    //if (KE.HtmlParser.BasicWriter)return;
+    var S = KISSY,KE = S.Editor,Utils = KE.Utils,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     */
     function BasicWriter() {
         this._ = {
             output : []
@@ -14,30 +20,28 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
     S.augment(BasicWriter, {
         /**
          * Writes the tag opening part for a opener tag.
-         * @param {String} tagName The element name for this tag.
-         * param {Object} attributes The attributes defined for this tag. The
+         * @param {string} tagName The element name for this tag.
+         * param {Object=} attributes The attributes defined for this tag. The
          *        attributes could be used to inspect the tag.
          * @example
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName
-            //, attributes
-            ) {
+        openTag : function(tagName, attributes) {
             this._.output.push('<', tagName);
         },
 
         /**
          * Writes the tag closing part for a opener tag.
-         * @param {String} tagName The element name for this tag.
-         * @param {Boolean} isSelfClose Indicates that this is a self-closing tag,
+         * @param {string} tagName The element name for this tag.
+         * @param {boolean=} isSelfClose Indicates that this is a self-closing tag,
          *        like "br" or "img".
          * @example
          * // Writes "&gt;".
-         * writer.openTagClose( 'p', false );
+         * writer.openTagClose( 'p', FALSE );
          * @example
          * // Writes " /&gt;".
-         * writer.openTagClose( 'br', true );
+         * writer.openTagClose( 'br', TRUE );
          */
         openTagClose : function(tagName, isSelfClose) {
             if (isSelfClose)
@@ -49,8 +53,8 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
         /**
          * Writes an attribute. This function should be called after opening the
          * tag with {@link #openTagClose}.
-         * @param {String} attName The attribute name.
-         * @param {String} attValue The attribute value.
+         * @param {string} attName The attribute name.
+         * @param {string} attValue The attribute value.
          * @example
          * // Writes ' class="MyClass"'.
          * writer.attribute( 'class', 'MyClass' );
@@ -65,7 +69,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes a closer tag.
-         * @param {String} tagName The element name for this tag.
+         * @param {string} tagName The element name for this tag.
          * @example
          * // Writes "&lt;/p&gt;".
          * writer.closeTag( 'p' );
@@ -76,7 +80,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes text.
-         * @param {String} text The text value
+         * @param {string} text The text value
          * @example
          * // Writes "Hello Word".
          * writer.text( 'Hello Word' );
@@ -87,7 +91,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes a comment.
-         * @param {String} comment The comment text.
+         * @param {string} comment The comment text.
          * @example
          * // Writes "&lt;!-- My comment --&gt;".
          * writer.comment( ' My comment ' );
@@ -112,14 +116,14 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
          */
         reset : function() {
             this._.output = [];
-            this._.indent = false;
+            this._.indent = FALSE;
         },
 
         /**
          * Empties the current output buffer.
-         * @param {Boolean} reset Indicates that the { reset} function is to
+         * @param {boolean} reset Indicates that the { reset} function is to
          *        be automatically called after retrieving the HTML.
-         * @returns {String} The HTML written to the writer so far.
+         * @returns {string} The HTML written to the writer so far.
          * @example
          * var html = writer.getHtml();
          */
@@ -134,4 +138,17 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
     });
 
     KE.HtmlParser.BasicWriter = BasicWriter;
+    KE.HtmlParser["BasicWriter"] = BasicWriter;
+    var BasicWriterP = BasicWriter.prototype;
+    KE.Utils.extern(BasicWriterP, {
+        "openTag":BasicWriterP.openTag,
+        "openTagClose":BasicWriterP.openTagClose,
+        "attribute":BasicWriterP.attribute,
+        "closeTag":BasicWriterP.closeTag,
+        "text":BasicWriterP.text,
+        "comment":BasicWriterP.comment,
+        "write":BasicWriterP.write,
+        "reset":BasicWriterP.reset,
+        "getHtml":BasicWriterP.getHtml
+    });
 });

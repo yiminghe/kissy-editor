@@ -1,8 +1,13 @@
 /**
  * modified from ckeditor,range implementation across browsers for kissy editor
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("range", function(KE) {
+
+    /**
+     * Enum for range
+     * @enum {number}
+     */
     KE.RANGE = {
         POSITION_AFTER_START:1,// <element>^contents</element>		"^text"
         POSITION_BEFORE_END:2,// <element>contents^</element>		"text^"
@@ -17,8 +22,13 @@ KISSY.Editor.add("range", function(KE) {
         SHRINK_ELEMENT:1,
         SHRINK_TEXT:2
     };
+    KE["RANGE"]=KE.RANGE;
 
-    var S = KISSY,KEN = KE.NODE,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
+        KEN = KE.NODE,
         KER = KE.RANGE,
         KEP = KE.POSITION,
         Walker = KE.Walker,
@@ -28,15 +38,19 @@ KISSY.Editor.add("range", function(KE) {
         dtd = KE.XHTML_DTD,
         ElementPath = KE.ElementPath,
         Node = S.Node,
-        EMPTY = {area:1,base:1,br:1,col:1,hr:1,img:1,input:1,link:1,meta:1,param:1};
+        EMPTY = {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1};
 
+    /**
+     * @constructor
+     * @param document {Document}
+     */
     function KERange(document) {
         var self = this;
-        self.startContainer = null;
-        self.startOffset = null;
-        self.endContainer = null;
-        self.endOffset = null;
-        self.collapsed = true;
+        self.startContainer = NULL;
+        self.startOffset = NULL;
+        self.endContainer = NULL;
+        self.endOffset = NULL;
+        self.collapsed = TRUE;
         self.document = document;
     }
 
@@ -241,7 +255,7 @@ KISSY.Editor.add("range", function(KE) {
                         endNode = new Node(
                             endNode[0].appendChild(doc.createTextNode(""))
                             );
-                        removeEndNode = true;
+                        removeEndNode = TRUE;
                     }
                     else
                         endNode = new Node(endNode[0].childNodes[endOffset]);
@@ -273,7 +287,7 @@ KISSY.Editor.add("range", function(KE) {
                     else
                         startNode.append(t);
                     startNode = t;
-                    removeStartNode = true;
+                    removeStartNode = TRUE;
                 }
                 else if (startOffset >= startNode[0].childNodes.length) {
                     // Let's create a temporary node and mark it for removal.
@@ -281,7 +295,7 @@ KISSY.Editor.add("range", function(KE) {
                     t = new Node(doc.createTextNode(""));
                     startNode.append(t);
                     startNode = t;
-                    removeStartNode = true;
+                    removeStartNode = TRUE;
                 } else
                     startNode = new Node(
                         startNode[0].childNodes[startOffset].previousSibling
@@ -338,7 +352,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // If cloning, just clone it.
                     if (action == 2)    // 2 = Clone
-                        clone.appendChild(currentNode.cloneNode(true));
+                        clone.appendChild(currentNode.cloneNode(TRUE));
                     else {
                         // Both Delete and Extract will remove the node.
                         currentNode.parentNode.removeChild(currentNode);
@@ -350,7 +364,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     currentNode = currentSibling;
                 }
-                //ckeditor这里错了，当前节点的路径所在父节点不能clone(true)，要在后面深入子节点处理
+                //ckeditor这里错了，当前节点的路径所在父节点不能clone(TRUE)，要在后面深入子节点处理
                 if (levelClone)
                     clone = levelClone;
             }
@@ -390,7 +404,7 @@ KISSY.Editor.add("range", function(KE) {
 
                         // If cloning, just clone it.
                         if (action == 2) {    // 2 = Clone
-                            clone.insertBefore(currentNode.cloneNode(true),
+                            clone.insertBefore(currentNode.cloneNode(TRUE),
                                 clone.firstChild);
                         } else {
                             // Both Delete and Extract will remove the node.
@@ -456,7 +470,7 @@ KISSY.Editor.add("range", function(KE) {
                 }
 
                 // Collapse it to the start.
-                self.collapse(true);
+                self.collapse(TRUE);
             }
 
             // Cleanup any marked node.
@@ -477,7 +491,7 @@ KISSY.Editor.add("range", function(KE) {
                 self.startContainer = self.endContainer;
                 self.startOffset = self.endOffset;
             }
-            self.collapsed = true;
+            self.collapsed = TRUE;
         },
 
         clone : function() {
@@ -498,11 +512,11 @@ KISSY.Editor.add("range", function(KE) {
             walkerRange.optimize();
             if (walkerRange.startContainer[0].nodeType != KEN.NODE_ELEMENT
                 || walkerRange.endContainer[0].nodeType != KEN.NODE_ELEMENT)
-                return null;
+                return NULL;
             //var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
             var walker = new KE.Walker(walkerRange),
-                isNotBookmarks = bookmark(true, undefined),
-                isNotWhitespaces = whitespaces(true),node,pre;
+                isNotBookmarks = bookmark(TRUE, undefined),
+                isNotWhitespaces = whitespaces(TRUE),node,pre;
             walkerRange.evaluator = function(node) {
                 return isNotWhitespaces(node) && isNotBookmarks(node);
             };
@@ -515,7 +529,7 @@ KISSY.Editor.add("range", function(KE) {
             walker.reset();
             pre = walker.previous();
             //前后相等，则脱一层皮 :)
-            return node && node._4e_equals(pre) ? node : null;
+            return node && node._4e_equals(pre) ? node : NULL;
         },
         shrink : function(mode, selectContents) {
             // Unable to shrink a collapsed range.
@@ -572,16 +586,16 @@ KISSY.Editor.add("range", function(KE) {
                     node = node[0] || node;
                     // Stop when we're shrink in element mode while encountering a text node.
                     if (mode == KER.SHRINK_ELEMENT && node.nodeType == KEN.NODE_TEXT)
-                        return false;
+                        return FALSE;
 
                     // Stop when we've already walked "through" an element.
                     if (movingOut && node == currentElement)
-                        return false;
+                        return FALSE;
 
                     if (!movingOut && node.nodeType == KEN.NODE_ELEMENT)
                         currentElement = node;
 
-                    return true;
+                    return TRUE;
                 };
 
                 if (moveStart) {
@@ -671,11 +685,11 @@ KISSY.Editor.add("range", function(KE) {
 
             return {
                 start        : startContainer._4e_address(normalized),
-                end            : self.collapsed ? null : endContainer._4e_address(normalized),
+                end            : self.collapsed ? NULL : endContainer._4e_address(normalized),
                 startOffset    : startOffset,
                 endOffset    : endOffset,
                 normalized    : normalized,
-                is2            : true        // It's a createBookmark2 bookmark.
+                is2            : TRUE        // It's a createBookmark2 bookmark.
             };
         },
         createBookmark : function(serializable) {
@@ -684,7 +698,7 @@ KISSY.Editor.add("range", function(KE) {
                 baseId,
                 clone,
                 self = this;
-            startNode = new Node("<span>", null, self.document);
+            startNode = new Node("<span>", NULL, self.document);
             startNode.attr('_ke_bookmark', 1);
             startNode.css('display', 'none');
 
@@ -711,7 +725,7 @@ KISSY.Editor.add("range", function(KE) {
             }
 
             clone = self.clone();
-            clone.collapse(true);
+            clone.collapse(TRUE);
             clone.insertNode(startNode);
 
             // Update the range position.
@@ -731,7 +745,7 @@ KISSY.Editor.add("range", function(KE) {
         moveToPosition : function(node, position) {
             var self = this;
             self.setStartAt(node, position);
-            self.collapse(true);
+            self.collapse(TRUE);
         },
         trim : function(ignoreStart, ignoreEnd) {
             var self = this,startContainer = self.startContainer,
@@ -769,7 +783,7 @@ KISSY.Editor.add("range", function(KE) {
                 self.setStart(startContainer, startOffset);
 
                 if (collapsed) {
-                    self.collapse(true);
+                    self.collapse(TRUE);
                     return;
                 }
             }
@@ -806,12 +820,12 @@ KISSY.Editor.add("range", function(KE) {
         insertNode : function(node) {
             var self = this;
             self.optimizeBookmark();
-            self.trim(false, true);
+            self.trim(FALSE, TRUE);
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset];
             self.optimizeBookmark();
-            self.trim(false, true);
+            self.trim(FALSE, TRUE);
 
 
             if (nextNode) {
@@ -844,7 +858,7 @@ KISSY.Editor.add("range", function(KE) {
                 if (endContainer)
                     self.setEnd(endContainer, endOffset);
                 else
-                    self.collapse(true);
+                    self.collapse(TRUE);
             } else {
                 // Created with createBookmark().
                 var serializable = bookmark.serializable,
@@ -864,7 +878,7 @@ KISSY.Editor.add("range", function(KE) {
                     endNode._4e_remove();
                 }
                 else
-                    self.collapse(true);
+                    self.collapse(TRUE);
             }
         },
         getCommonAncestor : function(includeSelf, ignoreTextNode) {
@@ -905,7 +919,7 @@ KISSY.Editor.add("range", function(KE) {
 
                         // Indicates that the node can be added only if whitespace
                         // is available before it.
-                        needsWhiteSpace = false, isWhiteSpace, siblingText,
+                        needsWhiteSpace = FALSE, isWhiteSpace, siblingText,
 
                         // Process the start boundary.
 
@@ -915,7 +929,7 @@ KISSY.Editor.add("range", function(KE) {
                     if (container[0].nodeType == KEN.NODE_TEXT) {
                         if (offset) {
                             // Check if there is any non-space text before the
-                            // offset. Otherwise, container is null.
+                            // offset. Otherwise, container is NULL.
                             container = !S.trim(container[0].nodeValue.substring(0, offset)).length && container;
 
                             // If we found only whitespace in the node, it
@@ -947,7 +961,7 @@ KISSY.Editor.add("range", function(KE) {
                             // If we reached the common ancestor, mark the flag
                             // for it.
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
-                                commonReached = true;
+                                commonReached = TRUE;
 
                             if (!body._4e_contains(enlargeable))
                                 break;
@@ -955,7 +969,7 @@ KISSY.Editor.add("range", function(KE) {
                             // If we don't need space or this element breaks
                             // the line, then enlarge it.
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
-                                needsWhiteSpace = false;
+                                needsWhiteSpace = FALSE;
 
                                 // If the common ancestor has been reached,
                                 // we'll not enlarge it immediately, but just
@@ -976,13 +990,13 @@ KISSY.Editor.add("range", function(KE) {
                         while (sibling) {
                             // This flag indicates that this node has
                             // whitespaces at the end.
-                            isWhiteSpace = false;
+                            isWhiteSpace = FALSE;
 
                             if (sibling.nodeType == KEN.NODE_TEXT) {
                                 siblingText = sibling.nodeValue;
 
                                 if (/[^\s\ufeff]/.test(siblingText))
-                                    sibling = null;
+                                    sibling = NULL;
 
                                 isWhiteSpace = /[\s\ufeff]$/.test(siblingText);
                             }
@@ -1000,12 +1014,12 @@ KISSY.Editor.add("range", function(KE) {
                                         siblingText = DOM.text(sibling);
 
                                         if ((/[^\s\ufeff]/).test(siblingText))    // Spaces + Zero Width No-Break Space (U+FEFF)
-                                            sibling = null;
+                                            sibling = NULL;
                                         else {
                                             var allChildren = sibling.all || sibling.getElementsByTagName('*');
                                             for (var i = 0, child; child = allChildren[ i++ ];) {
                                                 if (!dtd.$removeEmpty[ child.nodeName.toLowerCase() ]) {
-                                                    sibling = null;
+                                                    sibling = NULL;
                                                     break;
                                                 }
                                             }
@@ -1015,7 +1029,7 @@ KISSY.Editor.add("range", function(KE) {
                                             isWhiteSpace = !!siblingText.length;
                                     }
                                     else
-                                        sibling = null;
+                                        sibling = NULL;
                                 }
                             }
 
@@ -1030,7 +1044,7 @@ KISSY.Editor.add("range", function(KE) {
                                         self.setStartBefore(enlargeable);
                                 }
                                 else
-                                    needsWhiteSpace = true;
+                                    needsWhiteSpace = TRUE;
                             }
 
                             if (sibling) {
@@ -1040,16 +1054,16 @@ KISSY.Editor.add("range", function(KE) {
                                     // Set the sibling as enlargeable, so it's
                                     // parent will be get later outside this while.
                                     enlargeable = new Node(sibling);
-                                    sibling = null;
+                                    sibling = NULL;
                                     break;
                                 }
 
                                 sibling = next;
                             }
                             else {
-                                // If sibling has been set to null, then we
+                                // If sibling has been set to NULL, then we
                                 // need to stop enlarging.
-                                enlargeable = null;
+                                enlargeable = NULL;
                             }
                         }
 
@@ -1067,12 +1081,12 @@ KISSY.Editor.add("range", function(KE) {
                     offset = self.endOffset;
 
                     // Reset the common variables.
-                    enlargeable = sibling = null;
-                    commonReached = needsWhiteSpace = false;
+                    enlargeable = sibling = NULL;
+                    commonReached = needsWhiteSpace = FALSE;
 
                     if (container[0].nodeType == KEN.NODE_TEXT) {
                         // Check if there is any non-space text after the
-                        // offset. Otherwise, container is null.
+                        // offset. Otherwise, container is NULL.
                         container = !S.trim(container[0].nodeValue.substring(offset)).length && container;
 
                         // If we found only whitespace in the node, it
@@ -1098,13 +1112,13 @@ KISSY.Editor.add("range", function(KE) {
                     while (enlargeable || sibling) {
                         if (enlargeable && !sibling) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
-                                commonReached = true;
+                                commonReached = TRUE;
 
                             if (!body._4e_contains(enlargeable))
                                 break;
 
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
-                                needsWhiteSpace = false;
+                                needsWhiteSpace = FALSE;
 
                                 if (commonReached)
                                     endTop = enlargeable;
@@ -1116,13 +1130,13 @@ KISSY.Editor.add("range", function(KE) {
                         }
 
                         while (sibling) {
-                            isWhiteSpace = false;
+                            isWhiteSpace = FALSE;
 
                             if (sibling.nodeType == KEN.NODE_TEXT) {
                                 siblingText = sibling.nodeValue;
 
                                 if (/[^\s\ufeff]/.test(siblingText))
-                                    sibling = null;
+                                    sibling = NULL;
 
                                 isWhiteSpace = /^[\s\ufeff]/.test(siblingText);
                             }
@@ -1140,12 +1154,12 @@ KISSY.Editor.add("range", function(KE) {
                                         siblingText = DOM.text(sibling);
 
                                         if ((/[^\s\ufeff]/).test(siblingText))
-                                            sibling = null;
+                                            sibling = NULL;
                                         else {
                                             allChildren = sibling.all || sibling.getElementsByTagName('*');
                                             for (i = 0; child = allChildren[ i++ ];) {
                                                 if (!dtd.$removeEmpty[ child.nodeName.toLowerCase() ]) {
-                                                    sibling = null;
+                                                    sibling = NULL;
                                                     break;
                                                 }
                                             }
@@ -1155,7 +1169,7 @@ KISSY.Editor.add("range", function(KE) {
                                             isWhiteSpace = !!siblingText.length;
                                     }
                                     else
-                                        sibling = null;
+                                        sibling = NULL;
                                 }
                             }
 
@@ -1173,16 +1187,16 @@ KISSY.Editor.add("range", function(KE) {
 
                                 if (!enlargeable && !next) {
                                     enlargeable = new Node(sibling);
-                                    sibling = null;
+                                    sibling = NULL;
                                     break;
                                 }
 
                                 sibling = next;
                             }
                             else {
-                                // If sibling has been set to null, then we
+                                // If sibling has been set to NULL, then we
                                 // need to stop enlarging.
-                                enlargeable = null;
+                                enlargeable = NULL;
                             }
                         }
 
@@ -1213,7 +1227,7 @@ KISSY.Editor.add("range", function(KE) {
                         tailBr, //
                         defaultGuard = Walker.blockBoundary(
                             ( unit == KER.ENLARGE_LIST_ITEM_CONTENTS ) ?
-                            { br : 1 } : null),
+                            { br : 1 } : NULL),
                         // Record the encountered 'blockBoundary' for later use.
                         boundaryGuard = function(node) {
                             var retval = defaultGuard(node);
@@ -1255,7 +1269,7 @@ KISSY.Editor.add("range", function(KE) {
                     // tailBrGuard only used for on range end.
                     walker.guard = ( unit == KER.ENLARGE_LIST_ITEM_CONTENTS ) ?
                         tailBrGuard : boundaryGuard;
-                    blockBoundary = null;
+                    blockBoundary = NULL;
                     // End the range right before the block boundary node.
 
                     enlargeable = walker.lastForward();
@@ -1286,7 +1300,7 @@ KISSY.Editor.add("range", function(KE) {
             if (startOffset && startContainer[0].nodeType == KEN.NODE_TEXT) {
                 var textBefore = S.trim(startContainer[0].nodeValue.substring(0, startOffset));
                 if (textBefore.length)
-                    return false;
+                    return FALSE;
             }
 
             // Antecipate the trim() call here, so the walker will not make
@@ -1300,11 +1314,11 @@ KISSY.Editor.add("range", function(KE) {
 
             // Creates a range starting at the block start until the range start.
             var walkerRange = self.clone();
-            walkerRange.collapse(true);
+            walkerRange.collapse(TRUE);
             walkerRange.setStartAt(path.block || path.blockLimit, KER.POSITION_AFTER_START);
 
             var walker = new Walker(walkerRange);
-            walker.evaluator = getCheckStartEndBlockEvalFunction(true);
+            walker.evaluator = getCheckStartEndBlockEvalFunction(TRUE);
 
             return walker.checkBackward();
         },
@@ -1318,7 +1332,7 @@ KISSY.Editor.add("range", function(KE) {
             if (endContainer[0].nodeType == KEN.NODE_TEXT) {
                 var textAfter = S.trim(endContainer[0].nodeValue.substring(endOffset));
                 if (textAfter.length)
-                    return false;
+                    return FALSE;
             }
 
             // Antecipate the trim() call here, so the walker will not make
@@ -1332,11 +1346,11 @@ KISSY.Editor.add("range", function(KE) {
 
             // Creates a range starting at the block start until the range start.
             var walkerRange = self.clone();
-            walkerRange.collapse(false);
+            walkerRange.collapse(FALSE);
             walkerRange.setEndAt(path.block || path.blockLimit, KER.POSITION_BEFORE_END);
 
             var walker = new Walker(walkerRange);
-            walker.evaluator = getCheckStartEndBlockEvalFunction(false);
+            walker.evaluator = getCheckStartEndBlockEvalFunction(FALSE);
 
             return walker.checkForward();
         },
@@ -1404,7 +1418,7 @@ KISSY.Editor.add("range", function(KE) {
             if (endNode[0].nodeType == KEN.NODE_ELEMENT) {
                 childCount = endNode[0].childNodes.length;
                 if (childCount > endOffset)
-                    endNode = new Node(endNode[0].childNodes[endOffset])._4e_previousSourceNode(true);
+                    endNode = new Node(endNode[0].childNodes[endOffset])._4e_previousSourceNode(TRUE);
                 else if (childCount < 1)
                     endNode = endNode._4e_previousSourceNode();
                 else        // endOffset > childCount but childCount is not 0
@@ -1450,20 +1464,20 @@ KISSY.Editor.add("range", function(KE) {
                 endBlockLimit = endPath.blockLimit,
                 startBlock = startPath.block,
                 endBlock = endPath.block,
-                elementPath = null;
+                elementPath = NULL;
             // Do nothing if the boundaries are in different block limits.
             if (!startBlockLimit._4e_equals(endBlockLimit))
-                return null;
+                return NULL;
 
             // Get or fix current blocks.
             if (blockTag != 'br') {
                 if (!startBlock) {
-                    startBlock = self.fixBlock(true, blockTag);
+                    startBlock = self.fixBlock(TRUE, blockTag);
                     endBlock = new ElementPath(self.endContainer).block;
                 }
 
                 if (!endBlock)
-                    endBlock = self.fixBlock(false, blockTag);
+                    endBlock = self.fixBlock(FALSE, blockTag);
             }
 
             // Get the range position.
@@ -1478,12 +1492,12 @@ KISSY.Editor.add("range", function(KE) {
                 if (isEndOfBlock) {
                     elementPath = new ElementPath(self.startContainer);
                     self.moveToPosition(endBlock, KER.POSITION_AFTER_END);
-                    endBlock = null;
+                    endBlock = NULL;
                 }
                 else if (isStartOfBlock) {
                     elementPath = new ElementPath(self.startContainer);
                     self.moveToPosition(startBlock, KER.POSITION_BEFORE_START);
-                    startBlock = null;
+                    startBlock = NULL;
                 }
                 else {
                     endBlock = self.splitElement(startBlock);
@@ -1507,7 +1521,7 @@ KISSY.Editor.add("range", function(KE) {
         splitElement : function(toSplit) {
             var self = this;
             if (!self.collapsed)
-                return null;
+                return NULL;
 
             // Extract the contents of the block from the selection point to the end
             // of its contents.
@@ -1515,7 +1529,7 @@ KISSY.Editor.add("range", function(KE) {
             var documentFragment = self.extractContents(),
 
                 // Duplicate the element after it.
-                clone = toSplit._4e_clone(false);
+                clone = toSplit._4e_clone(FALSE);
 
             // Place the extracted contents into the duplicated element.
             clone[0].appendChild(documentFragment);
@@ -1528,7 +1542,7 @@ KISSY.Editor.add("range", function(KE) {
 
             // Empty elements are rejected.
             if (xhtml_dtd.$empty[ el._4e_name() ])
-                return false;
+                return FALSE;
 
             while (el && el[0].nodeType == KEN.NODE_ELEMENT) {
                 isEditable = el._4e_isEditable();
@@ -1543,7 +1557,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.moveToPosition(el, isMoveToEnd ?
                         KER.POSITION_AFTER_END :
                         KER.POSITION_BEFORE_START);
-                    return true;
+                    return TRUE;
                 }
 
                 // Non-editable non-inline elements are to be bypassed, getting the next one.
@@ -1557,7 +1571,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.moveToPosition(el, isMoveToEnd ?
                         KER.POSITION_AFTER_END :
                         KER.POSITION_BEFORE_START);
-                    return true;
+                    return TRUE;
                 }
             }
 
@@ -1571,7 +1585,11 @@ KISSY.Editor.add("range", function(KE) {
                 node[0].childNodes.length);
         }
     });
-    var inlineChildReqElements = { abbr:1,acronym:1,b:1,bdo:1,big:1,cite:1,code:1,del:1,dfn:1,em:1,font:1,i:1,ins:1,label:1,kbd:1,q:1,samp:1,small:1,span:1,strike:1,strong:1,sub:1,sup:1,tt:1,u:1,'var':1 };
+    var inlineChildReqElements = { "abbr":1,"acronym":1,"b":1,"bdo":1,
+        "big":1,"cite":1,"code":1,"del":1,"dfn":1,
+        "em":1,"font":1,"i":1,"ins":1,"label":1,
+        "kbd":1,"q":1,"samp":1,"small":1,"span":1,
+        "strike":1,"strong":1,"sub":1,"sup":1,"tt":1,"u":1,'var':1 };
 
     // Evaluator for CKEDITOR.dom.element::checkBoundaryOfElement, reject any
     // text node and non-empty elements unless it's being bookmark text.
@@ -1597,16 +1615,16 @@ KISSY.Editor.add("range", function(KE) {
     }
 
     function getCheckStartEndBlockEvalFunction(isStart) {
-        var hadBr = false, bookmarkEvaluator = Walker.bookmark(true);
+        var hadBr = FALSE, bookmarkEvaluator = Walker.bookmark(TRUE);
         return function(node) {
             // First ignore bookmark nodes.
             if (bookmarkEvaluator(node))
-                return true;
+                return TRUE;
 
             if (node[0].nodeType == KEN.NODE_TEXT) {
                 // If there's any visible text, then we're not at the start.
                 if (S.trim(node[0].nodeValue).length)
-                    return false;
+                    return FALSE;
             }
             else if (node[0].nodeType == KEN.NODE_ELEMENT) {
                 // If there are non-empty inline elements (e.g. <img />), then we're not
@@ -1615,12 +1633,12 @@ KISSY.Editor.add("range", function(KE) {
                     // If we're working at the end-of-block, forgive the first <br /> in non-IE
                     // browsers.
                     if (!isStart && !UA.ie && node._4e_name() == 'br' && !hadBr)
-                        hadBr = true;
+                        hadBr = TRUE;
                     else
-                        return false;
+                        return FALSE;
                 }
             }
-            return true;
+            return TRUE;
         };
     }
 
@@ -1652,4 +1670,50 @@ KISSY.Editor.add("range", function(KE) {
 
 
     KE.Range = KERange;
+    KE["Range"] = KERange;
+    var RangeP = KERange.prototype;
+    KE.Utils.extern(RangeP, {
+        "updateCollapsed":RangeP.updateCollapsed,
+        "optimize":RangeP.optimize,
+        "setStartAfter":RangeP.setStartAfter,
+        "setEndAfter":RangeP.setEndAfter,
+        "setStartBefore":RangeP.setStartBefore,
+        "setEndBefore":RangeP.setEndBefore,
+        "optimizeBookmark":RangeP.optimizeBookmark,
+
+        "setStart":RangeP.setStart,
+        "setEnd":RangeP.setEnd,
+        "setStartAt":RangeP.setStartAt,
+        "setEndAt":RangeP.setEndAt,
+        "execContentsAction":RangeP.execContentsAction,
+        "collapse":RangeP.collapse,
+        "clone":RangeP.clone,
+        "getEnclosedNode":RangeP.getEnclosedNode,
+        "shrink":RangeP.shrink,
+        "getTouchedStartNode":RangeP.getTouchedStartNode,
+        "createBookmark2":RangeP.createBookmark2,
+        "createBookmark":RangeP.createBookmark,
+
+
+
+        "moveToPosition":RangeP.moveToPosition,
+        "trim":RangeP.trim,
+        "insertNode":RangeP.insertNode,
+        "moveToBookmark":RangeP.moveToBookmark,
+        "getCommonAncestor":RangeP.getCommonAncestor,
+        "enlarge":RangeP.enlarge,
+        "checkStartOfBlock":RangeP.checkStartOfBlock,
+        "checkEndOfBlock":RangeP.checkEndOfBlock,
+        "deleteContents":RangeP.deleteContents,
+        "extractContents":RangeP.extractContents,
+
+
+        "checkBoundaryOfElement":RangeP.checkBoundaryOfElement,
+        "getBoundaryNodes":RangeP.getBoundaryNodes,
+        "fixBlock":RangeP.fixBlock,
+        "splitBlock":RangeP.splitBlock,
+        "splitElement":RangeP.splitElement,
+        "moveToElementEditablePosition":RangeP.moveToElementEditablePosition,
+        "selectNodeContents":RangeP.selectNodeContents
+    });
 });

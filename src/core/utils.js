@@ -1,404 +1,561 @@
 /**
- * modified from ckeditor,common utils for kissy editor
- * @modifier: <yiminghe@gmail.com>
+ * common utils for kissy editor
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("utils", function(KE) {
 
-    var S = KISSY,
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         Node = S.Node,
         DOM = S.DOM,
         UA = S.UA,
-        Event = S.Event;
-    KE.Utils = {
-
-        debugUrl:function (url) {
-            var debug = S.Config.debug;
-            if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
-            if (debug === "dev") {
-                return  "../src/" + url;
-            }
-            return  url;
-        }
-        ,
-        /**
-         * 懒惰一下
-         * @param obj
-         * @param before
-         * @param after
-         */
-        lazyRun:function(obj, before, after) {
-            var b = obj[before],a = obj[after];
-            obj[before] = function() {
-                b.apply(this, arguments);
-                obj[before] = obj[after];
-                return a.apply(this, arguments);
-            };
-        }
-        ,
-
-        getXY:function(x, y, srcDoc, destDoc) {
-            var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
-
-            //x,y相对于当前iframe文档,防止当前iframe有滚动条
-            x -= DOM.scrollLeft(currentWindow);
-            y -= DOM.scrollTop(currentWindow);
-            if (destDoc) {
-                var refWindow = destDoc.defaultView || destDoc.parentWindow;
-                if (currentWindow != refWindow && currentWindow.frameElement) {
-                    //note:when iframe is static ,still some mistake
-                    var iframePosition = DOM._4e_getOffset(currentWindow.frameElement, destDoc);
-                    x += iframePosition.left;
-                    y += iframePosition.top;
+        Event = S.Event,
+        Utils = {
+            /**
+             * for debug and production switch
+             * @param url {string}
+             * @return {string}
+             */
+            debugUrl:function (url) {
+                var debug = S["Config"]["debug"],re;
+                if (!debug) re = url.replace(/\.(js|css)/i, "-min.$1");
+                else if (debug === "dev") {
+                    re = "../src/" + url;
+                } else {
+                    re = url
                 }
-            }
-            return {left:x,top:y};
-        }
-        ,
-
-        tryThese : function() {
-
-            var returnValue;
-            for (var i = 0, length = arguments.length; i < length; i++) {
-                var lambda = arguments[i];
-                try {
-                    returnValue = lambda();
-                    break;
+                if (re.indexOf("?") != -1) {
+                    re += "&";
+                } else {
+                    re += "?";
                 }
-                catch (e) {
-                }
+                re += "t=" + encodeURIComponent("@TIMESTAMP@");
+                return  re;
+            },
+            /**
+             * 懒惰一下
+             * @param obj {Object} 包含方法的对象
+             * @param before {string} 准备方法
+             * @param after {string} 真正方法
+             */
+            lazyRun:function(obj, before, after) {
+                var b = obj[before],a = obj[after];
+                obj[before] = function() {
+                    b.apply(this, arguments);
+                    obj[before] = obj[after];
+                    return a.apply(this, arguments);
+                };
             }
-            return returnValue;
-        }
-        ,
-        arrayCompare: function(arrayA, arrayB) {
-            if (!arrayA && !arrayB)
-                return true;
+            ,
 
-            if (!arrayA || !arrayB || arrayA.length != arrayB.length)
-                return false;
+            /**
+             * srcDoc 中的位置在 destDoc 的对应位置
+             * @param x {number}
+             * @param y {number}
+             * @param srcDoc {Document}
+             * @param destDoc {Document}
+             * @return {{left:number,top:number}} 在最终文档中的位置
+             */
+            getXY:function(x, y, srcDoc, destDoc) {
+                var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
 
-            for (var i = 0; i < arrayA.length; i++) {
-                if (arrayA[ i ] !== arrayB[ i ])
-                    return false;
+                //x,y相对于当前iframe文档,防止当前iframe有滚动条
+                x -= DOM.scrollLeft(currentWindow);
+                y -= DOM.scrollTop(currentWindow);
+                if (destDoc) {
+                    var refWindow = destDoc.defaultView || destDoc.parentWindow;
+                    if (currentWindow != refWindow && currentWindow.frameElement) {
+                        //note:when iframe is static ,still some mistake
+                        var iframePosition = DOM._4e_getOffset(currentWindow.frameElement, destDoc);
+                        x += iframePosition.left;
+                        y += iframePosition.top;
+                    }
+                }
+                return {left:x,top:y};
             }
+            ,
+            /**
+             * 执行一系列函数
+             * @param var_args {...function()}
+             * @return {*} 得到成功的返回
+             */
+            tryThese : function(var_args) {
+                var returnValue;
+                for (var i = 0, length = arguments.length; i < length; i++) {
+                    var lambda = arguments[i];
+                    try {
+                        returnValue = lambda();
+                        break;
+                    }
+                    catch (e) {
+                    }
+                }
+                return returnValue;
+            },
 
-            return true;
-        }
-        ,
-        getByAddress : function(doc, address, normalized) {
-            var $ = doc.documentElement;
+            /**
+             * 是否两个数组完全相同
+             * @param arrayA {Array}
+             * @param arrayB {Array}
+             * @return {boolean}
+             */
+            arrayCompare: function(arrayA, arrayB) {
+                if (!arrayA && !arrayB)
+                    return TRUE;
 
-            for (var i = 0; $ && i < address.length; i++) {
-                var target = address[ i ];
+                if (!arrayA || !arrayB || arrayA.length != arrayB.length)
+                    return FALSE;
 
-                if (!normalized) {
-                    $ = $.childNodes[ target ];
-                    continue;
+                for (var i = 0; i < arrayA.length; i++) {
+                    if (arrayA[ i ] !== arrayB[ i ])
+                        return FALSE;
                 }
 
-                var currentIndex = -1;
+                return TRUE;
+            }
+            ,
 
-                for (var j = 0; j < $.childNodes.length; j++) {
-                    var candidate = $.childNodes[ j ];
+            /**
+             * 根据dom路径得到某个节点
+             * @param doc {Document}
+             * @param address {Array.<number>}
+             * @param normalized {boolean}
+             * @return {KISSY.Node}
+             */
+            getByAddress : function(doc, address, normalized) {
+                var $ = doc.documentElement;
 
-                    if (normalized === true &&
-                        candidate.nodeType == 3 &&
-                        candidate.previousSibling &&
-                        candidate.previousSibling.nodeType == 3) {
+                for (var i = 0; $ && i < address.length; i++) {
+                    var target = address[ i ];
+
+                    if (!normalized) {
+                        $ = $.childNodes[ target ];
                         continue;
                     }
 
-                    currentIndex++;
+                    var currentIndex = -1;
 
-                    if (currentIndex == target) {
-                        $ = candidate;
-                        break;
+                    for (var j = 0; j < $.childNodes.length; j++) {
+                        var candidate = $.childNodes[ j ];
+
+                        if (normalized === TRUE &&
+                            candidate.nodeType == 3 &&
+                            candidate.previousSibling &&
+                            candidate.previousSibling.nodeType == 3) {
+                            continue;
+                        }
+
+                        currentIndex++;
+
+                        if (currentIndex == target) {
+                            $ = candidate;
+                            break;
+                        }
                     }
                 }
+
+                return $ ? new Node($) : NULL;
             }
-
-            return $ ? new Node($) : null;
-        }
-        ,
-
-        clearAllMarkers:function(database) {
-            for (var i in database)
-                database[i]._4e_clearMarkers(database, true);
-        }
-        ,
-        htmlEncodeAttr : function(text) {
-            return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/, '&gt;');
-        }
-        ,
-        ltrim:function(str) {
-            return str.replace(/^\s+/, "");
-        }
-        ,
-
-        rtrim:function(str) {
-            return str.replace(/\s+$/, "");
-        }
-        ,
-        trim:function(str) {
-            return this.ltrim(this.rtrim(str));
-        }
-        ,
-        mix:function() {
-            var r = {};
-            for (var i = 0; i < arguments.length; i++) {
-                var ob = arguments[i];
-                r = S.mix(r, ob);
+            ,
+            /**
+             * @param database {Object.<string,KISSY.Node>}
+             */
+            clearAllMarkers:function(database) {
+                for (var i in database)
+                    database[i]._4e_clearMarkers(database, TRUE);
             }
-            return r;
-        }
-        ,
-        isCustomDomain : function() {
-            if (!UA.ie)
-                return false;
+            ,
+            /**
+             *
+             * @param text {string}
+             * @return {string}
+             */
+            htmlEncodeAttr : function(text) {
+                return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/, '&gt;');
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            ltrim:function(str) {
+                return str.replace(/^\s+/, "");
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            rtrim:function(str) {
+                return str.replace(/\s+$/, "");
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            trim:function(str) {
+                return this.ltrim(this.rtrim(str));
+            }
+            ,
+            /**
+             *
+             * @param var_args {...Object}
+             * @return {Object}
+             */
+            mix:function(var_args) {
+                var r = {};
+                for (var i = 0; i < arguments.length; i++) {
+                    var ob = arguments[i];
+                    r = S.mix(r, ob);
+                }
+                return r;
+            }
+            ,
+            isCustomDomain : function() {
+                if (!UA.ie)
+                    return FALSE;
 
-            var domain = document.domain,
-                hostname = window.location.hostname;
+                var domain = document.domain,
+                    hostname = window.location.hostname;
 
-            return domain != hostname &&
-                domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
-        },
+                return domain != hostname &&
+                    domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
+            },
+            /**
+             *
+             * @param delim {string} 分隔符
+             * @param loop {number}
+             * @return {string}
+             */
+            duplicateStr:function(delim, loop) {
+                return new Array(loop + 1).join(delim);
+            },
+            /**
+             * Throttles a call to a method based on the time between calls.
+             * Based on work by Simon Willison: http://gist.github.com/292562
+             * @param fn {function()} The function call to throttle.
+             * @param ms {number} The number of milliseconds to throttle the method call. Defaults to 150
+             * @return {function()} Returns a wrapped function that calls fn throttled.
+             */
+            throttle : function(fn, scope, ms) {
+                ms = ms || 150;
 
-        duplicateStr:function(str, loop) {
-            return new Array(loop + 1).join(str);
-        },
-        /**
-         * Throttles a call to a method based on the time between calls.
-         * @method throttle
-         * @for YUI
-         * @param fn {function} The function call to throttle.
-         * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
-         * @return {function} Returns a wrapped function that calls fn throttled.
-         * @since 3.1.0
-         */
+                if (ms === -1) {
+                    return (function() {
+                        fn.apply(scope, arguments);
+                    });
+                }
 
-        /*! Based on work by Simon Willison: http://gist.github.com/292562 */
+                var last = (new Date()).getTime();
 
-        throttle : function(fn, scope, ms) {
-            ms = ms || 150;
-
-            if (ms === -1) {
+                return function() {
+                    var now = (new Date()).getTime();
+                    if (now - last > ms) {
+                        last = now;
+                        fn.apply(scope, arguments);
+                    }
+                };
+            },
+            /**
+             *
+             * @param fn {function()}
+             * @param scope {Object}
+             * @param ms {number}
+             * @return {function()}
+             */
+            buffer : function(fn, scope, ms) {
+                ms = ms || 0;
+                var timer = NULL;
                 return (function() {
-                    fn.apply(scope, arguments);
+                    timer && clearTimeout(timer);
+                    var args = arguments;
+                    timer = setTimeout(function() {
+                        return fn.apply(scope, args);
+                    }, ms);
                 });
-            }
+            },
 
-            var last = (new Date()).getTime();
+            isNumber:function(n) {
+                return /^\d+(.\d+)?$/.test(S.trim(n));
+            },
 
-            return (function() {
-                var now = (new Date()).getTime();
-                if (now - last > ms) {
-                    last = now;
-                    fn.apply(scope, arguments);
+            /**
+             *
+             * @param inputs {Array.<Node>}
+             * @param warn {string}
+             * @return {boolean} 是否验证成功
+             */
+            verifyInputs:function(inputs, warn) {
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = DOM._4e_wrap(inputs[i]),
+                        v = S.trim(input.val()),
+                        verify = input.attr("data-verify"),
+                        warning = input.attr("data-warning");
+                    if (verify &&
+                        !new RegExp(verify).test(v)) {
+                        alert(warning);
+                        return FALSE;
+                    }
                 }
-            });
-        },
-        buffer : function(fn, scope, ms) {
-            ms = ms || 0;
-            var timer = null;
-            return (function() {
-                timer && clearTimeout(timer);
-                var args = arguments;
-                timer = setTimeout(function() {
-                    return fn.apply(scope, args);
-                }, ms);
-            });
-        },
-        isNumber:function(n) {
-            return /^\d+(.\d+)?$/.test(S.trim(n));
-        },
-        verifyInputs:function(inputs, warn) {
-            for (var i = 0; i < inputs.length; i++) {
-                var input = DOM._4e_wrap(inputs[i]),
-                    v = S.trim(input.val()),
-                    verify = input.attr("data-verify"),
-                    warning = input.attr("data-warning");
-                if (verify &&
-                    !new RegExp(verify).test(v)) {
-                    alert(warning);
-                    return;
-                }
-            }
-            return true;
-        },
-        sourceDisable:function(editor, plugin) {
-            editor.on("sourcemode", plugin.disable, plugin);
-            editor.on("wysiwygmode", plugin.enable, plugin);
-        },
-        resetInput:function(inp) {
-            var placeholder = inp.attr("placeholder");
-            if (placeholder && !UA.webkit) {
-                inp.val(placeholder);
-                inp.addClass("ke-input-tip");
-            } else if (UA.webkit) {
-                inp.val("");
-            }
-        },
+                return TRUE;
+            },
+            /**
+             *
+             * @param editor {KISSY.Editor}
+             * @param plugin {Object}
+             */
+            sourceDisable:function(editor, plugin) {
+                editor.on("sourcemode", plugin.disable, plugin);
+                editor.on("wysiwygmode", plugin.enable, plugin);
+            },
 
-        placeholder:function(inp, tip) {
-            inp.attr("placeholder", tip);
-            if (UA.webkit) {
-                return;
-            }
-            inp.on("blur", function() {
-                if (!S.trim(inp.val())) {
-                    inp.val(tip);
+            /**
+             *
+             * @param inp {Node}
+             */
+            resetInput:function(inp) {
+                var placeholder = inp.attr("placeholder");
+                if (placeholder && !UA.webkit) {
+                    inp.val(placeholder);
                     inp.addClass("ke-input-tip");
-                }
-            });
-            inp.on("focus", function() {
-                if (S.trim(inp.val()) == tip) {
+                } else if (UA.webkit) {
                     inp.val("");
                 }
-                inp.removeClass("ke-input-tip");
-            });
-        },
-        clean:function(node) {
-            node = node[0] || node;
-            var cs = S.makeArray(node.childNodes);
-            for (var i = 0; i < cs.length; i++) {
-                var c = cs[i];
-                if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
-                    node.removeChild(c);
+            },
+
+            /**
+             *
+             * @param inp {Node}
+             * @param tip {string}
+             */
+            placeholder:function(inp, tip) {
+                inp.attr("placeholder", tip);
+                if (UA.webkit) {
+                    return;
                 }
-            }
-        },
-        /**
-         * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
-         * @param {String} value The string to encode
-         * @return {String} The encoded text
-         */
-        htmlEncode : function(value) {
-            return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-        },
+                inp.on("blur", function() {
+                    if (!S.trim(inp.val())) {
+                        inp.val(tip);
+                        inp.addClass("ke-input-tip");
+                    }
+                });
+                inp.on("focus", function() {
+                    if (S.trim(inp.val()) == tip) {
+                        inp.val("");
+                    }
+                    inp.removeClass("ke-input-tip");
+                });
+            },
 
-        /**
-         * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
-         * @param {String} value The string to decode
-         * @return {String} The decoded text
-         */
-        htmlDecode : function(value) {
-            return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
-        },
-        equalsIgnoreCase:function(str1, str2) {
-            return str1.toLowerCase() == str2.toLowerCase();
-        },
-
-        normParams:function (params) {
-            params = S.clone(params);
-            for (var p in params) {
-                if (params.hasOwnProperty(p)) {
-                    var v = params[p];
-                    if (S.isFunction(v)) {
-                        params[p] = v();
+            /**
+             *
+             * @param node {(Node|KISSY.Node)}
+             */
+            clean:function(node) {
+                node = node[0] || node;
+                var cs = S.makeArray(node.childNodes);
+                for (var i = 0; i < cs.length; i++) {
+                    var c = cs[i];
+                    if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
+                        node.removeChild(c);
                     }
                 }
-            }
-            return params;
-        },
+            },
+            /**
+             * Convert certain characters (&, <, >, and ') to their HTML character equivalents
+             *  for literal display in web pages.
+             * @param {string} value The string to encode
+             * @return {string} The encoded text
+             */
+            htmlEncode : function(value) {
+                return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+            },
 
-        doFormUpload : function(o, ps, url) {
-            var id = S.guid("form-upload-");
-            var frame = document.createElement('iframe');
-            frame.id = id;
-            frame.name = id;
-            frame.className = 'ke-hidden';
-            if (UA.ie) {
-                frame.src = "javascript:false";
-            }
-            document.body.appendChild(frame);
+            /**
+             * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+             * @param {string} value The string to decode
+             * @return {string} The decoded text
+             */
+            htmlDecode : function(value) {
+                return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+            },
 
-            if (UA.ie) {
-                document.frames[id].name = id;
-            }
 
-            var form = DOM._4e_unwrap(o.form),
-                buf = {
-                    target: form.target,
-                    method: form.method,
-                    encoding: form.encoding,
-                    enctype: form.enctype,
-                    action: form.action
-                };
-            form.target = id;
-            form.method = 'POST';
-            form.enctype = form.encoding = 'multipart/form-data';
-            if (url) {
-                form.action = url;
-            }
+            equalsIgnoreCase:function(str1, str2) {
+                return str1.toLowerCase() == str2.toLowerCase();
+            },
 
-            var hiddens, hd;
-            if (ps) { // add dynamic params
-                hiddens = [];
-                ps = KE.Utils.normParams(ps);
-                for (var k in ps) {
-                    if (ps.hasOwnProperty(k)) {
-                        hd = document.createElement('input');
-                        hd.type = 'hidden';
-                        hd.name = k;
-                        hd.value = ps[k];
-                        form.appendChild(hd);
-                        hiddens.push(hd);
+            /**
+             *
+             * @param params {Object.<string,(function|string|number)>}
+             * @return {Object.<string,(string|number)>}
+             */
+            normParams:function (params) {
+                params = S.clone(params);
+                for (var p in params) {
+                    if (params.hasOwnProperty(p)) {
+                        var v = params[p];
+                        if (S.isFunction(v)) {
+                            params[p] = v();
+                        }
                     }
                 }
-            }
+                return params;
+            },
 
-            function cb() {
-                var r = {  // bogus response object
-                    responseText : '',
-                    responseXML : null
-                };
-
-                r.argument = o ? o.argument : null;
-
-                try { //
-                    var doc;
-                    if (UA.ie) {
-                        doc = frame.contentWindow.document;
-                    } else {
-                        doc = (frame.contentDocument || window.frames[id].document);
-                    }
-                    if (doc && doc.body) {
-                        r.responseText = doc.body.innerHTML;
-                    }
-                    if (doc && doc.XMLDocument) {
-                        r.responseXML = doc.XMLDocument;
-                    } else {
-                        r.responseXML = doc;
-                    }
+            /**
+             *
+             * @param o {Object} 提交 form 配置
+             * @param ps {Object} 动态参数
+             * @param url {string} 目的地 url
+             */
+            doFormUpload : function(o, ps, url) {
+                var id = S.guid("form-upload-");
+                var frame = document.createElement('iframe');
+                frame.id = id;
+                frame.name = id;
+                frame.className = 'ke-hidden';
+                if (UA.ie) {
+                    frame.src = "javascript:FALSE";
                 }
-                catch(e) {
-                    // ignore
+                document.body.appendChild(frame);
+
+                if (UA.ie) {
+                    document.frames[id].name = id;
                 }
 
-                Event.remove(frame, 'load', cb);
-                o.callback && o.callback(r);
+                var form = DOM._4e_unwrap(o.form),
+                    buf = {
+                        target: form.target,
+                        method: form.method,
+                        encoding: form.encoding,
+                        enctype: form.enctype,
+                        action: form.action
+                    };
+                form.target = id;
+                form.method = 'POST';
+                form.enctype = form.encoding = 'multipart/form-data';
+                if (url) {
+                    form.action = url;
+                }
 
-                setTimeout(function() {
-                    DOM._4e_remove(frame);
-                }, 100);
-            }
+                var hiddens, hd;
+                if (ps) { // add dynamic params
+                    hiddens = [];
+                    ps = KE.Utils.normParams(ps);
+                    for (var k in ps) {
+                        if (ps.hasOwnProperty(k)) {
+                            hd = document.createElement('input');
+                            hd.type = 'hidden';
+                            hd.name = k;
+                            hd.value = ps[k];
+                            form.appendChild(hd);
+                            hiddens.push(hd);
+                        }
+                    }
+                }
 
-            Event.on(frame, 'load', cb);
-            form.submit();
+                function cb() {
+                    var r = {  // bogus response object
+                        responseText : '',
+                        responseXML : NULL
+                    };
 
-            form.target = buf.target;
-            form.method = buf.method;
-            form.enctype = buf.enctype;
-            form.encoding = buf.encoding;
-            form.action = buf.action;
+                    r.argument = o ? o.argument : NULL;
 
-            if (hiddens) { // remove dynamic params
-                for (var i = 0, len = hiddens.length; i < len; i++) {
-                    DOM._4e_remove(hiddens[i]);
+                    try { //
+                        var doc;
+                        if (UA.ie) {
+                            doc = frame.contentWindow.document;
+                        } else {
+                            doc = (frame.contentDocument || window.frames[id].document);
+                        }
+                        if (doc && doc.body) {
+                            r.responseText = doc.body.innerHTML;
+                        }
+                        if (doc && doc.XMLDocument) {
+                            r.responseXML = doc.XMLDocument;
+                        } else {
+                            r.responseXML = doc;
+                        }
+                    }
+                    catch(e) {
+                        // ignore
+                    }
+
+                    Event.remove(frame, 'load', cb);
+                    o.callback && o.callback(r);
+
+                    setTimeout(function() {
+                        DOM._4e_remove(frame);
+                    }, 100);
+                }
+
+                Event.on(frame, 'load', cb);
+
+                form.submit();
+
+                form.target = buf.target;
+                form.method = buf.method;
+                form.enctype = buf.enctype;
+                form.encoding = buf.encoding;
+                form.action = buf.action;
+
+                if (hiddens) { // remove dynamic params
+                    for (var i = 0, len = hiddens.length; i < len; i++) {
+                        DOM._4e_remove(hiddens[i]);
+                    }
+                }
+                return frame;
+            },
+            /**
+             * extern for closure compiler
+             */
+            extern:function(obj, cfg) {
+                for (var i in cfg) {
+                    obj[i] = cfg[i];
                 }
             }
-        }
-    };
-
-
+        };
+    KE.Utils = Utils;
+    /**
+     * export for closure compiler
+     */
+    KE["Utils"] = Utils;
+    Utils.extern(Utils, {
+        "debugUrl": Utils.debugUrl,
+        "lazyRun": Utils.lazyRun,
+        "getXY": Utils.getXY,
+        "tryThese": Utils.tryThese,
+        "arrayCompare": Utils.arrayCompare,
+        "getByAddress": Utils.getByAddress,
+        "clearAllMarkers": Utils.clearAllMarkers,
+        "htmlEncodeAttr": Utils.htmlEncodeAttr,
+        "ltrim": Utils.ltrim,
+        "rtrim": Utils.rtrim,
+        "trim": Utils.trim,
+        "mix": Utils.mix,
+        "isCustomDomain": Utils.isCustomDomain,
+        "duplicateStr": Utils.duplicateStr,
+        "buffer": Utils.buffer,
+        "isNumber": Utils.isNumber,
+        "verifyInputs": Utils.verifyInputs,
+        "sourceDisable": Utils.sourceDisable,
+        "resetInput": Utils.resetInput,
+        "placeholder": Utils.placeholder,
+        "clean": Utils.clean,
+        "htmlEncode": Utils.htmlEncode,
+        "htmlDecode": Utils.htmlDecode,
+        "equalsIgnoreCase": Utils.equalsIgnoreCase,
+        "normParams": Utils.normParams,
+        "throttle": Utils.throttle,
+        "doFormUpload": Utils.doFormUpload
+    });
 });

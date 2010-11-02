@@ -1,12 +1,23 @@
 /**
  * modified from ckeditor for kissy editor,use style to gen element and wrap range's elements
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("styles", function(KE) {
 
-    var S = KISSY,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         DOM = S.DOM,
-        KEST = KE.STYLE = {},
+        /**
+         * enum for style type
+         * @enum {number}
+         */
+        KEST = {
+            STYLE_BLOCK:1,
+            STYLE_INLINE:2,
+            STYLE_OBJECT:3
+        },
         KER = KE.RANGE,
         KESelection = KE.Selection,
         KEN = KE.NODE,
@@ -16,19 +27,41 @@ KISSY.Editor.add("styles", function(KE) {
         Node = S.Node,
         UA = S.UA,
         ElementPath = KE.ElementPath,
-        blockElements = { address:1,div:1,h1:1,h2:1,h3:1,h4:1,h5:1,h6:1,p:1,pre:1 },
+        blockElements = {
+            "address":1,
+            "div":1,
+            "h1":1,
+            "h2":1,
+            "h3":1,
+            "h4":1,
+            "h5":1,
+            "h6":1,
+            "p":1,
+            "pre":1
+        },
         objectElements = {
             //why? a should be same to inline? 但是不能互相嵌套
             //a:1,
-            embed:1,hr:1,img:1,li:1,object:1,ol:1,table:1,td:1,tr:1,th:1,ul:1,dl:1,dt:1,dd:1,form:1},
+            "embed":1,
+            "hr":1,
+            "img":1,
+            "li":1,
+            "object":1,
+            "ol":1,
+            "table":1,
+            "td":1,
+            "tr":1,
+            "th":1,
+            "ul":1,
+            "dl":1,
+            "dt":1,
+            "dd":1,
+            "form":1
+        },
         semicolonFixRegex = /\s*(?:;\s*|$)/,
         varRegex = /#\((.+?)\)/g;
 
-    KEST.STYLE_BLOCK = 1;
-    KEST.STYLE_INLINE = 2;
-    KEST.STYLE_OBJECT = 3;
-
-
+    KE.STYLE = KEST;
     function replaceVariables(list, variablesValues) {
         for (var item in list) {
             list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
@@ -37,33 +70,45 @@ KISSY.Editor.add("styles", function(KE) {
         }
     }
 
+    /**
+     * @constructor
+     * @param styleDefinition {Object}
+     * @param variablesValues {Object}
+     */
     function KEStyle(styleDefinition, variablesValues) {
         if (variablesValues) {
             styleDefinition = S.clone(styleDefinition);
-            replaceVariables(styleDefinition.attributes, variablesValues);
-            replaceVariables(styleDefinition.styles, variablesValues);
+            replaceVariables(styleDefinition["attributes"], variablesValues);
+            replaceVariables(styleDefinition["styles"], variablesValues);
         }
 
-        var element = this.element = ( styleDefinition.element || '*' ).toLowerCase();
+        var element = this["element"] = this.element = ( styleDefinition["element"] || '*' ).toLowerCase();
 
-        this.type = ( element == '#' || blockElements[ element ] ) ?
+        this["type"] = this.type = ( element == '#' || blockElements[ element ] ) ?
             KEST.STYLE_BLOCK
             : objectElements[ element ] ?
             KEST.STYLE_OBJECT : KEST.STYLE_INLINE;
 
         this._ = {
-            definition : styleDefinition
+            "definition" : styleDefinition
         };
     }
 
+    /**
+     * @this {KEStyle}
+     * @param {Document} document
+     * @param {boolean=} remove
+     */
     function applyStyle(document, remove) {
         // Get all ranges from the selection.
 
-        var func = remove ? this.removeFromRange : this.applyToRange,self = this;
+        var self = this,
+            func = remove ? self.removeFromRange : self.applyToRange;
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        var selection = new KESelection(document),ranges = selection.getRanges();
+        var selection = new KESelection(document),
+            ranges = selection.getRanges();
         for (var i = 0; i < ranges.length; i++)
             //格式化后，range进入格式标签内
             func.call(self, ranges[ i ]);
@@ -74,11 +119,11 @@ KISSY.Editor.add("styles", function(KE) {
 
     KEStyle.prototype = {
         apply : function(document) {
-            applyStyle.call(this, document, false);
+            applyStyle.call(this, document, FALSE);
         },
 
         remove : function(document) {
-            applyStyle.call(this, document, true);
+            applyStyle.call(this, document, TRUE);
         },
 
         applyToRange : function(range) {
@@ -89,10 +134,10 @@ KISSY.Editor.add("styles", function(KE) {
                     : self.type == KEST.STYLE_BLOCK ?
                     applyBlockStyle
                     : self.type == KEST.STYLE_OBJECT ?
-                    null
+                    NULL
                     //yiminghe note:no need!
                     //applyObjectStyle
-                    : null ).call(self, range);
+                    : NULL ).call(self, range);
         },
 
         removeFromRange : function(range) {
@@ -100,7 +145,7 @@ KISSY.Editor.add("styles", function(KE) {
             return ( self.removeFromRange =
                 self.type == KEST.STYLE_INLINE ?
                     removeInlineStyle
-                    : null ).call(self, range);
+                    : NULL ).call(self, range);
         },
 
         applyToObject : function(element) {
@@ -110,7 +155,7 @@ KISSY.Editor.add("styles", function(KE) {
         // current style definition.
         checkElementRemovable : function(element, fullMatch) {
             if (!element)
-                return false;
+                return FALSE;
 
             var def = this._.definition,
                 attribs;
@@ -119,38 +164,40 @@ KISSY.Editor.add("styles", function(KE) {
             if (element._4e_name() == this.element) {
                 // If no attributes are defined in the element.
                 if (!fullMatch && !element._4e_hasAttributes())
-                    return true;
+                    return TRUE;
 
                 attribs = getAttributesForComparison(def);
 
-                if (attribs._length) {
+                if (attribs["_length"]) {
                     for (var attName in attribs) {
                         if (attName == '_length')
                             continue;
 
                         var elementAttr = element.attr(attName) || '';
                         if (attName == 'style' ?
-                            compareCssText(attribs[ attName ], normalizeCssText(elementAttr, false))
+                            compareCssText(attribs[ attName ],
+                                normalizeCssText(elementAttr, FALSE))
                             : attribs[ attName ] == elementAttr) {
                             if (!fullMatch)
-                                return true;
+                                return TRUE;
                         }
                         else if (fullMatch)
-                            return false;
+                            return FALSE;
                     }
                     if (fullMatch)
-                        return true;
+                        return TRUE;
                 }
                 else
-                    return true;
+                    return TRUE;
             }
 
             // Check if the element can be somehow overriden.
             var override = getOverrides(this)[ element._4e_name() ];
+
             if (override) {
                 // If no attributes have been defined, remove the element.
                 if (!( attribs = override.attributes ))
-                    return true;
+                    return TRUE;
 
                 for (var i = 0; i < attribs.length; i++) {
                     attName = attribs[i][0];
@@ -158,29 +205,31 @@ KISSY.Editor.add("styles", function(KE) {
                     if (actualAttrValue) {
                         var attValue = attribs[i][1];
                         // Remove the attribute if:
-                        //    - The override definition value is null;
+                        //    - The override definition value is NULL;
                         //    - The override definition value is a string that
                         //      matches the attribute value exactly.
                         //    - The override definition value is a regex that
                         //      has matches in the attribute value.
-                        if (attValue === null ||
-                            ( typeof attValue == 'string' && actualAttrValue == attValue ) ||
+                        if (attValue === NULL ||
+                            ( typeof attValue == 'string'
+                                && actualAttrValue == attValue ) ||
                             attValue.test && attValue.test(actualAttrValue))
-                            return true;
+                            return TRUE;
                     }
                 }
             }
-            return false;
+            return FALSE;
         },
 
         /**
-         * Get the style state inside an element path. Returns "true" if the
+         * Get the style state inside an element path. Returns "TRUE" if the
          * element is active in the path.
          */
         checkActive : function(elementPath) {
             switch (this.type) {
                 case KEST.STYLE_BLOCK :
-                    return this.checkElementRemovable(elementPath.block || elementPath.blockLimit, true);
+                    return this.checkElementRemovable(elementPath.block
+                        || elementPath.blockLimit, TRUE);
 
                 case KEST.STYLE_OBJECT :
                 case KEST.STYLE_INLINE :
@@ -199,11 +248,11 @@ KISSY.Editor.add("styles", function(KE) {
                             && !( element._4e_name() in objectElements ))
                             continue;
 
-                        if (this.checkElementRemovable(element, true))
-                            return true;
+                        if (this.checkElementRemovable(element, TRUE))
+                            return TRUE;
                     }
             }
-            return false;
+            return FALSE;
         }
 
     };
@@ -214,10 +263,11 @@ KISSY.Editor.add("styles", function(KE) {
         if (stylesDef)
             return stylesDef;
 
-        stylesDef = styleDefinition.styles;
+        stylesDef = styleDefinition["styles"];
 
         // Builds the StyleText.
-        var stylesText = ( styleDefinition.attributes && styleDefinition.attributes[ 'style' ] ) || '',
+        var stylesText = ( styleDefinition["attributes"]
+            && styleDefinition["attributes"][ 'style' ] ) || '',
             specialStylesText = '';
 
         if (stylesText.length)
@@ -248,7 +298,7 @@ KISSY.Editor.add("styles", function(KE) {
     function getElement(style, targetDocument) {
         var el,
             //def = style._.definition,
-            elementName = style.element;
+            elementName = style["element"];
 
         // The "*" element name will always be a span for this function.
         if (elementName == '*')
@@ -261,7 +311,9 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     function setupElement(el, style) {
-        var def = style._.definition,attributes = def.attributes,styles = KEStyle.getStyleText(def);
+        var def = style._["definition"],
+            attributes = def["attributes"],
+            styles = KEStyle.getStyleText(def);
 
         // Assign all defined attributes.
         if (attributes) {
@@ -281,12 +333,13 @@ KISSY.Editor.add("styles", function(KE) {
     function applyBlockStyle(range) {
         // Serializible bookmarks is needed here since
         // elements may be merged.
-        var bookmark = range.createBookmark(true),iterator = range.createIterator();
-        iterator.enforceRealBlocks = true;
+        var bookmark = range.createBookmark(TRUE),
+            iterator = range.createIterator();
+        iterator.enforceRealBlocks = TRUE;
 
         // make recognize <br /> tag as a separator in ENTER_BR mode (#5121)
         //if (this._.enterMode)
-        iterator.enlargeBr = true;//( this._.enterMode != CKEDITOR.ENTER_BR );
+        iterator.enlargeBr = TRUE;//( this._.enterMode != CKEDITOR.ENTER_BR );
 
         var block, doc = range.document;
         // Only one =
@@ -361,9 +414,10 @@ KISSY.Editor.add("styles", function(KE) {
                 });
 
         var pres = [];
-        splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi, function(match, preContent) {
-            pres.push(preContent);
-        });
+        splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
+            function(match, preContent) {
+                pres.push(preContent);
+            });
         return pres;
     }
 
@@ -371,8 +425,10 @@ KISSY.Editor.add("styles", function(KE) {
     // for <pre> blocks to make sure content format is well preserved, and merging/splitting adjacent
     // when necessary.(#3188)
     function replaceBlock(block, newBlock) {
-        var newBlockIsPre = newBlock._4e_name == ('pre'),blockIsPre = block._4e_name == ('pre'),
-            isToPre = newBlockIsPre && !blockIsPre, isFromPre = !newBlockIsPre && blockIsPre;
+        var newBlockIsPre = newBlock._4e_name == ('pre'),
+            blockIsPre = block._4e_name == ('pre'),
+            isToPre = newBlockIsPre && !blockIsPre,
+            isFromPre = !newBlockIsPre && blockIsPre;
 
         if (isToPre)
             newBlock = toPre(block, newBlock);
@@ -394,8 +450,8 @@ KISSY.Editor.add("styles", function(KE) {
      */
     function mergePre(preBlock) {
         var previousBlock;
-        if (!( ( previousBlock = preBlock._4e_previousSourceNode(true, KEN.NODE_ELEMENT) )
-            && previousBlock._4e_name() == ('pre') ))
+        if (!( ( previousBlock = preBlock._4e_previousSourceNode(TRUE, KEN.NODE_ELEMENT) )
+            && previousBlock._4e_name() == 'pre' ))
             return;
 
         // Merge the previous <pre> block contents into the current <pre>
@@ -455,6 +511,10 @@ KISSY.Editor.add("styles", function(KE) {
         return docFrag;
     }
 
+    /**
+     * @this {KEStyle}
+     * @param range {KISSY.Editor.Range}
+     */
     function applyInlineStyle(range) {
         var document = range.document;
 
@@ -468,11 +528,12 @@ KISSY.Editor.add("styles", function(KE) {
             return;
         }
 
-        var elementName = this.element, def = this._.definition,
+        var elementName = this["element"],
+            def = this._["definition"],
             isUnknownElement,
-
             // Get the DTD definition for the element. Defaults to "span".
-            dtd = KE.XHTML_DTD[ elementName ] || ( isUnknownElement = true,KE.XHTML_DTD.span ),
+            dtd = KE.XHTML_DTD[ elementName ]
+                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] ),
 
             // Bookmark the range so we can re-select it after processing.
             bookmark = range.createBookmark();
@@ -485,38 +546,46 @@ KISSY.Editor.add("styles", function(KE) {
         // processing.
         var boundaryNodes = range.createBookmark(),
             firstNode = boundaryNodes.startNode,
-            lastNode = boundaryNodes.endNode,currentNode = firstNode,
+            lastNode = boundaryNodes.endNode,
+            currentNode = firstNode,
             styleRange;
 
         while (currentNode && currentNode[0]) {
-            var applyStyle = false;
+            var applyStyle = FALSE;
 
             if (DOM._4e_equals(currentNode, lastNode)) {
-                currentNode = null;
-                applyStyle = true;
+                currentNode = NULL;
+                applyStyle = TRUE;
             }
             else {
                 var nodeType = currentNode[0].nodeType,
-                    nodeName = nodeType == KEN.NODE_ELEMENT ? currentNode._4e_name() : null;
+                    nodeName = nodeType == KEN.NODE_ELEMENT ?
+                        currentNode._4e_name() : NULL;
 
                 if (nodeName && currentNode.attr('_ke_bookmark')) {
-                    currentNode = currentNode._4e_nextSourceNode(true);
+                    currentNode = currentNode._4e_nextSourceNode(TRUE);
                     continue;
                 }
 
                 // Check if the current node can be a child of the style element.
                 if (!nodeName || ( dtd[ nodeName ]
                     && ( currentNode._4e_position(lastNode) |
-                    ( KEP.POSITION_PRECEDING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED) )
-                    == ( KEP.POSITION_PRECEDING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
-                    && ( !def.childRule || def.childRule(currentNode) ) )) {
+                    ( KEP.POSITION_PRECEDING |
+                        KEP.POSITION_IDENTICAL |
+                        KEP.POSITION_IS_CONTAINED) )
+                    == ( KEP.POSITION_PRECEDING +
+                    KEP.POSITION_IDENTICAL +
+                    KEP.POSITION_IS_CONTAINED )
+                    && ( !def["childRule"] || def["childRule"](currentNode) ) )) {
                     var currentParent = currentNode.parent();
 
                     // Check if the style element can be a child of the current
                     // node parent or if the element is not defined in the DTD.
                     if (currentParent && currentParent[0]
-                        && ( ( KE.XHTML_DTD[currentParent._4e_name()] || KE.XHTML_DTD.span )[ elementName ] || isUnknownElement )
-                        && ( !def.parentRule || def.parentRule(currentParent) )) {
+                        && ( ( KE.XHTML_DTD[currentParent._4e_name()] ||
+                        KE.XHTML_DTD["span"] )[ elementName ] ||
+                        isUnknownElement )
+                        && ( !def["parentRule"] || def["parentRule"](currentParent) )) {
                         // This node will be part of our range, so if it has not
                         // been started, place its start right before the node.
                         // In the case of an element node, it will be included
@@ -525,9 +594,13 @@ KISSY.Editor.add("styles", function(KE) {
                             ( !nodeName
                                 || !KE.XHTML_DTD.$removeEmpty[ nodeName ]
                                 || ( currentNode._4e_position(lastNode) |
-                                ( KEP.POSITION_PRECEDING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED ))
+                                ( KEP.POSITION_PRECEDING |
+                                    KEP.POSITION_IDENTICAL |
+                                    KEP.POSITION_IS_CONTAINED ))
                                 ==
-                                ( KEP.POSITION_PRECEDING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
+                                ( KEP.POSITION_PRECEDING +
+                                    KEP.POSITION_IDENTICAL +
+                                    KEP.POSITION_IS_CONTAINED )
                                 )) {
                             styleRange = new KERange(document);
                             styleRange.setStartBefore(currentNode);
@@ -535,7 +608,9 @@ KISSY.Editor.add("styles", function(KE) {
 
                         // Non element nodes, or empty elements can be added
                         // completely to the range.
-                        if (nodeType == KEN.NODE_TEXT || ( nodeType == KEN.NODE_ELEMENT && !currentNode[0].childNodes.length )) {
+                        if (nodeType == KEN.NODE_TEXT ||
+                            ( nodeType == KEN.NODE_ELEMENT &&
+                                !currentNode[0].childNodes.length )) {
                             var includedNode = currentNode,
                                 parentNode;
 
@@ -544,9 +619,17 @@ KISSY.Editor.add("styles", function(KE) {
                             // check if the parent itself can be added completelly
                             // to the range.
                             while (!includedNode[0].nextSibling
-                                && ( parentNode = includedNode.parent(),dtd[ parentNode._4e_name() ] )
-                                && ( parentNode._4e_position(firstNode) | KEP.POSITION_FOLLOWING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED) == ( KEP.POSITION_FOLLOWING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
-                                && ( !def.childRule || def.childRule(parentNode) )) {
+                                && ( parentNode = includedNode.parent(),
+                                dtd[ parentNode._4e_name() ] )
+                                && ( parentNode._4e_position(firstNode) |
+                                KEP.POSITION_FOLLOWING |
+                                KEP.POSITION_IDENTICAL |
+                                KEP.POSITION_IS_CONTAINED) ==
+                                ( KEP.POSITION_FOLLOWING +
+                                    KEP.POSITION_IDENTICAL +
+                                    KEP.POSITION_IS_CONTAINED )
+                                && ( !def["childRule"] ||
+                                def["childRule"](parentNode) )) {
                                 includedNode = parentNode;
                             }
 
@@ -556,15 +639,15 @@ KISSY.Editor.add("styles", function(KE) {
                             // parent, it means that the parent can't be included
                             // in this style DTD, so apply the style immediately.
                             if (!includedNode[0].nextSibling)
-                                applyStyle = true;
+                                applyStyle = TRUE;
 
                         }
                     }
                     else
-                        applyStyle = true;
+                        applyStyle = TRUE;
                 }
                 else
-                    applyStyle = true;
+                    applyStyle = TRUE;
 
                 // Get the next node to be processed.
                 currentNode = currentNode._4e_nextSourceNode();
@@ -582,22 +665,23 @@ KISSY.Editor.add("styles", function(KE) {
                 // from the element to be applied.
                 while (styleNode && parent && styleNode[0] && parent[0]) {
                     if (parent._4e_name() == elementName) {
-                        for (var attName in def.attributes) {
+                        for (var attName in def["attributes"]) {
                             if (styleNode.attr(attName) == parent.attr(attName))
                                 styleNode[0].removeAttribute(attName);
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
                         //下一次格式xxx为70px
-                        //var exit = false;
-                        for (var styleName in def.styles) {
-                            if (styleNode._4e_style(styleName) == parent._4e_style(styleName)) {
+                        //var exit = FALSE;
+                        for (var styleName in def["styles"]) {
+                            if (styleNode._4e_style(styleName) ==
+                                parent._4e_style(styleName)) {
                                 styleNode._4e_style(styleName, "");
                             }
                         }
 
                         if (!styleNode._4e_hasAttributes()) {
-                            styleNode = null;
+                            styleNode = NULL;
                             break;
                         }
                     }
@@ -632,7 +716,7 @@ KISSY.Editor.add("styles", function(KE) {
 
                 // Style applied, let's release the range, so it gets
                 // re-initialization in the next loop.
-                styleRange = null;
+                styleRange = NULL;
             }
         }
 
@@ -643,6 +727,10 @@ KISSY.Editor.add("styles", function(KE) {
         range.shrink(KER.SHRINK_TEXT);
     }
 
+    /**
+     * @this {KEStyle}
+     * @param range {KISSY.Editor.Range}
+     */
     function removeInlineStyle(range) {
         /*
          * Make sure our range has included all "collpased" parent inline nodes so
@@ -669,12 +757,14 @@ KISSY.Editor.add("styles", function(KE) {
                  *  outside the styles instead of removing the whole tag,
                  *  also make sure other inner styles were well preserverd.(#3309)
                  */
-                if (element == startPath.block || element == startPath.blockLimit)
+                if (element == startPath.block ||
+                    element == startPath.blockLimit)
                     break;
 
                 if (this.checkElementRemovable(element)) {
                     var endOfElement = range.checkBoundaryOfElement(element, KER.END),
-                        startOfElement = !endOfElement && range.checkBoundaryOfElement(element, KER.START);
+                        startOfElement = !endOfElement &&
+                            range.checkBoundaryOfElement(element, KER.START);
                     if (startOfElement || endOfElement) {
                         boundaryElement = element;
                         boundaryElement.match = startOfElement ? 'start' : 'end';
@@ -692,7 +782,8 @@ KISSY.Editor.add("styles", function(KE) {
                         if (element._4e_name() == this.element)
                             removeFromElement(this, element);
                         else
-                            removeOverrides(element, getOverrides(this)[ element._4e_name() ]);
+                            removeOverrides(element,
+                                getOverrides(this)[ element._4e_name() ]);
                     }
                 }
             }
@@ -732,12 +823,13 @@ KISSY.Editor.add("styles", function(KE) {
             function breakNodes() {
                 var startPath = new ElementPath(startNode.parent()),
                     endPath = new ElementPath(endNode.parent()),
-                    breakStart = null,
-                    breakEnd = null;
+                    breakStart = NULL,
+                    breakEnd = NULL;
                 for (var i = 0; i < startPath.elements.length; i++) {
                     var element = startPath.elements[ i ];
 
-                    if (element == startPath.block || element == startPath.blockLimit)
+                    if (element == startPath.block ||
+                        element == startPath.blockLimit)
                         break;
 
                     if (me.checkElementRemovable(element))
@@ -746,7 +838,8 @@ KISSY.Editor.add("styles", function(KE) {
                 for (i = 0; i < endPath.elements.length; i++) {
                     element = endPath.elements[ i ];
 
-                    if (element == endPath.block || element == endPath.blockLimit)
+                    if (element == endPath.block ||
+                        element == endPath.blockLimit)
                         break;
 
                     if (me.checkElementRemovable(element))
@@ -769,12 +862,15 @@ KISSY.Editor.add("styles", function(KE) {
                  * the current node from DOM tree.
                  */
                 var nextNode = currentNode._4e_nextSourceNode();
-                if (currentNode[0] && currentNode[0].nodeType == KEN.NODE_ELEMENT && this.checkElementRemovable(currentNode)) {
+                if (currentNode[0] &&
+                    currentNode[0].nodeType == KEN.NODE_ELEMENT &&
+                    this.checkElementRemovable(currentNode)) {
                     // Remove style from element or overriding element.
-                    if (currentNode._4e_name() == this.element)
+                    if (currentNode._4e_name() == this["element"])
                         removeFromElement(this, currentNode);
                     else
-                        removeOverrides(currentNode, getOverrides(this)[ currentNode._4e_name() ]);
+                        removeOverrides(currentNode,
+                            getOverrides(this)[ currentNode._4e_name() ]);
 
                     /*
                      * removeFromElement() may have merged the next node with something before
@@ -782,7 +878,8 @@ KISSY.Editor.add("styles", function(KE) {
                      * contain startNode and we'll have to call breakNodes() again and also
                      * reassign the nextNode to something after startNode.
                      */
-                    if (nextNode[0].nodeType == KEN.NODE_ELEMENT && nextNode._4e_contains(startNode)) {
+                    if (nextNode[0].nodeType == KEN.NODE_ELEMENT &&
+                        nextNode._4e_contains(startNode)) {
                         breakNodes();
                         nextNode = new Node(startNode[0].nextSibling);
                     }
@@ -797,9 +894,10 @@ KISSY.Editor.add("styles", function(KE) {
     function parseStyleText(styleText) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
-            .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function(match, name, value) {
-            retval[ name ] = value;
-        });
+            .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
+            function(match, name, value) {
+                retval[ name ] = value;
+            });
         return retval;
     }
 
@@ -813,15 +911,20 @@ KISSY.Editor.add("styles", function(KE) {
                 ( target[ name ] == source[ name ]
                     || source[ name ] == 'inherit'
                     || target[ name ] == 'inherit' ) )) {
-                return false;
+                return FALSE;
             }
         }
-        return true;
+        return TRUE;
     }
 
+    /**
+     *
+     * @param {string} unparsedCssText
+     * @param {boolean=} nativeNormalize
+     */
     function normalizeCssText(unparsedCssText, nativeNormalize) {
         var styleText;
-        if (nativeNormalize !== false) {
+        if (nativeNormalize !== FALSE) {
             // Injects the style in a temporary span object, so the browser parses it,
             // retrieving its final format.
             var temp = document.createElement('span');
@@ -835,7 +938,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Shrinking white-spaces around colon and semi-colon (#4147).
         // Compensate tail semi-colon.
         return styleText.replace(/\s*([;:])\s*/, '$1')
-            .replace(/([^\s;])$/, '$1;')
+            .replace(/([^\s;])$/, "$1;")
             .replace(/,\s+/g, ',')// Trimming spaces after comma (e.g. font-family name)(#4107).
             .toLowerCase();
     }
@@ -851,7 +954,7 @@ KISSY.Editor.add("styles", function(KE) {
         var length = 0,
 
             // Loop through all defined attributes.
-            styleAttribs = styleDefinition.attributes;
+            styleAttribs = styleDefinition["attributes"];
         if (styleAttribs) {
             for (var styleAtt in styleAttribs) {
                 length++;
@@ -868,7 +971,8 @@ KISSY.Editor.add("styles", function(KE) {
         }
 
         // Appends the "length" information to the object.
-        attribs._length = length;
+        //防止被compiler优化
+        attribs["_length"] = length;
 
         // Return it, saving it to the next request.
         return ( styleDefinition._AC = attribs );
@@ -886,7 +990,7 @@ KISSY.Editor.add("styles", function(KE) {
             return style._.overrides;
 
         var overrides = ( style._.overrides = {} ),
-            definition = style._.definition.overrides;
+            definition = style._.definition["overrides"];
 
         if (definition) {
             // The override description can be a string, object or array.
@@ -906,20 +1010,24 @@ KISSY.Editor.add("styles", function(KE) {
                     elementName = override.toLowerCase();
                 // Or an object.
                 else {
-                    elementName = override.element ? override.element.toLowerCase() : style.element;
-                    attrs = override.attributes;
+                    elementName = override["element"] ?
+                        override["element"].toLowerCase() :
+                        style.element;
+                    attrs = override["attributes"];
                 }
 
                 // We can have more than one override definition for the same
                 // element name, so we attempt to simply append information to
                 // it if it already exists.
-                overrideEl = overrides[ elementName ] || ( overrides[ elementName ] = {} );
+                overrideEl = overrides[ elementName ] ||
+                    ( overrides[ elementName ] = {} );
 
                 if (attrs) {
                     // The returning attributes list is an array, because we
                     // could have different override definitions for the same
                     // attribute name.
-                    var overrideAttrs = ( overrideEl.attributes = overrideEl.attributes || new Array() );
+                    var overrideAttrs = ( overrideEl["attributes"] =
+                        overrideEl["attributes"] || new Array() );
                     for (var attName in attrs) {
                         // Each item in the attributes array is also an array,
                         // where [0] is the attribute name and [1] is the
@@ -937,16 +1045,19 @@ KISSY.Editor.add("styles", function(KE) {
     // Removes a style from an element itself, don't care about its subtree.
     function removeFromElement(style, element) {
         var def = style._.definition,
-            attributes = S.mix(S.mix({}, def.attributes), getOverrides(style)[ element._4e_name()]),
-            styles = def.styles,
+            attributes = S.mix(S.mix({}, def["attributes"]),
+                getOverrides(style)[ element._4e_name()]),
+            styles = def["styles"],
             // If the style is only about the element itself, we have to remove the element.
-            removeEmpty = S.isEmptyObject(attributes) && S.isEmptyObject(styles);
+            removeEmpty = S.isEmptyObject(attributes) &&
+                S.isEmptyObject(styles);
 
         // Remove definition attributes/style from the elemnt.
         for (var attName in attributes) {
             // The 'class' element value must match (#1318).
-            if (( attName == 'class' || style._.definition.fullMatch )
-                && element.attr(attName) != normalizeProperty(attName, attributes[ attName ]))
+            if (( attName == 'class' || style._.definition["fullMatch"] )
+                && element.attr(attName) != normalizeProperty(attName,
+                attributes[ attName ]))
                 continue;
             removeEmpty = removeEmpty || !!element._4e_hasAttribute(attName);
             element.removeAttr(attName);
@@ -954,8 +1065,8 @@ KISSY.Editor.add("styles", function(KE) {
 
         for (var styleName in styles) {
             // Full match style insist on having fully equivalence. (#5018)
-            if (style._.definition.fullMatch
-                && element._4e_style(styleName) != normalizeProperty(styleName, styles[ styleName ], true))
+            if (style._.definition["fullMatch"]
+                && element._4e_style(styleName) != normalizeProperty(styleName, styles[ styleName ], TRUE))
                 continue;
 
             removeEmpty = removeEmpty || !!element._4e_style(styleName);
@@ -965,8 +1076,14 @@ KISSY.Editor.add("styles", function(KE) {
         removeEmpty && removeNoAttribsElement(element);
     }
 
+    /**
+     *
+     * @param {string} name
+     * @param {string} value
+     * @param {boolean=} isStyle
+     */
     function normalizeProperty(name, value, isStyle) {
-        var temp = new Node('<span></span>');
+        var temp = new Node('<span>');
         temp [ isStyle ? '_4e_style' : 'attr' ](name, value);
         return temp[ isStyle ? '_4e_style' : 'attr' ](name);
     }
@@ -978,7 +1095,7 @@ KISSY.Editor.add("styles", function(KE) {
             //attribs = def.attributes,
             //styles = def.styles,
             overrides = getOverrides(style),
-            innerElements = element.all(style.element);
+            innerElements = element.all(style["element"]);
 
         for (var i = innerElements.length; --i >= 0;)
             removeFromElement(style, new Node(innerElements[i]));
@@ -986,7 +1103,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Now remove any other element with different name that is
         // defined to be overriden.
         for (var overrideElement in overrides) {
-            if (overrideElement != style.element) {
+            if (overrideElement != style["element"]) {
                 innerElements = element.all(overrideElement);
                 for (i = innerElements.length - 1; i >= 0; i--) {
                     var innerElement = new Node(innerElements[i]);
@@ -1004,7 +1121,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param {Object} overrides
      */
     function removeOverrides(element, overrides) {
-        var attributes = overrides && overrides.attributes;
+        var attributes = overrides && overrides["attributes"];
 
         if (attributes) {
             for (var i = 0; i < attributes.length; i++) {
@@ -1014,12 +1131,12 @@ KISSY.Editor.add("styles", function(KE) {
                     var attValue = attributes[i][1];
 
                     // Remove the attribute if:
-                    //    - The override definition value is null ;
+                    //    - The override definition value is NULL ;
                     //    - The override definition valie is a string that
                     //      matches the attribute value exactly.
                     //    - The override definition value is a regex that
                     //      has matches in the attribute value.
-                    if (attValue === null ||
+                    if (attValue === NULL ||
                         ( attValue.test && attValue.test(actualAttrValue) ) ||
                         ( typeof attValue == 'string' && actualAttrValue == attValue ))
                         element[0].removeAttribute(attName);
@@ -1037,13 +1154,15 @@ KISSY.Editor.add("styles", function(KE) {
         if (!element._4e_hasAttributes()) {
             // Removing elements may open points where merging is possible,
             // so let's cache the first and last nodes for later checking.
-            var firstChild = element[0].firstChild,lastChild = element[0].lastChild;
+            var firstChild = element[0].firstChild,
+                lastChild = element[0].lastChild;
 
-            element._4e_remove(true);
+            element._4e_remove(TRUE);
 
             if (firstChild) {
                 // Check the cached nodes for merging.
-                firstChild.nodeType == KEN.NODE_ELEMENT && DOM._4e_mergeSiblings(firstChild);
+                firstChild.nodeType == KEN.NODE_ELEMENT &&
+                DOM._4e_mergeSiblings(firstChild);
 
                 if (lastChild && !firstChild === lastChild
                     && lastChild.nodeType == KEN.NODE_ELEMENT)
@@ -1053,4 +1172,16 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     KE.Style = KEStyle;
+    KE["Style"] = KEStyle;
+
+    var StyleP = KEStyle.prototype;
+    KE.Utils.extern(StyleP, {
+        "apply":StyleP.apply,
+        "remove":StyleP.remove,
+        "applyToRange":StyleP.applyToRange,
+        "removeFromRange":StyleP.removeFromRange,
+        "applyToObject":StyleP.applyToObject,
+        "checkElementRemovable":StyleP.checkElementRemovable,
+        "checkActive":StyleP.checkActive
+    });
 });

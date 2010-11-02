@@ -1,32 +1,41 @@
 /**
  * modified from ckeditor,htmlparser for malform html string
- * @modifier: yiminghe@gmail.com
+ * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("htmlparser", function(
     // editor
     ) {
 
-    var S = KISSY,KE = S.Editor;
+    var S = KISSY
+        ,
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        emptyFunc = function() {
+        },
+        KE = S.Editor;
     //if (KE.HtmlParser) return;
     var attribsRegex = /([\w\-:.]+)(?:(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s>]+)))|(?=\s|$))/g,
         emptyAttribs = {
-            checked:1,
-            compact:1,
-            declare:1,
-            defer:1,
-            disabled:1,
-            ismap:1,
-            multiple:1,
-            nohref:1,
-            noresize:1,
-            noshade:1,
-            nowrap:1,
-            readonly:1,
-            selected:1
+            "checked":1,
+            "compact":1,
+            "declare":1,
+            "defer":1,
+            "disabled":1,
+            "ismap":1,
+            "multiple":1,
+            "nohref":1,
+            "noresize":1,
+            "noshade":1,
+            "nowrap":1,
+            "readonly":1,
+            "selected":1
         },
         XHTML_DTD = KE.XHTML_DTD;
 
-
+    /**
+     * @constructor
+     */
     function HtmlParser() {
         this._ = {
             htmlPartsRegex :new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
@@ -38,67 +47,57 @@ KISSY.Editor.add("htmlparser", function(
         /**
          * Function to be fired when a tag opener is found. This function
          * should be overriden when using this class.
-         *  {String} tagName The tag name. The name is guarantted to be
+         *  {string} tagName The tag name. The name is guarantted to be
          *        lowercased.
          *  {Object} attributes An object containing all tag attributes. Each
          *        property in this object represent and attribute name and its
          *        value is the attribute value.
-         * {Boolean} selfClosing true if the tag closes itself, false if the
+         * {boolean} selfClosing TRUE if the tag closes itself, FALSE if the
          *         tag doesn't.
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onTagOpen = function( tagName, attributes, selfClosing )
          *     {
          *         alert( tagName );  // e.g. "b"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onTagOpen    : function() {
-        },
+        onTagOpen    : emptyFunc,
 
         /**
          * Function to be fired when a tag closer is found. This function
          * should be overriden when using this class.
 
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onTagClose = function( tagName )
          *     {
          *         alert( tagName );  // e.g. "b"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onTagClose    : function(
-            //tagName
-            ) {
-        },
+        onTagClose    : emptyFunc,
 
         /**
          * Function to be fired when text is found. This function
          * should be overriden when using this class.
 
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onText = function( text )
          *     {
          *         alert( text );  // e.g. "Hello"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onText        : function(
-            //text
-            ) {
-        },
+        onText        : emptyFunc,
 
         /**
          * Function to be fired when CDATA section is found. This function
          * should be overriden when using this class.
 
          */
-        onCDATA        : function(
-            //cdata
-            ) {
-        },
+        onCDATA        : emptyFunc,
 
         /**
          * Function to be fired when a commend is found. This function
@@ -106,16 +105,13 @@ KISSY.Editor.add("htmlparser", function(
 
 
          */
-        onComment : function(
-            //comment
-            ) {
-        },
+        onComment :emptyFunc,
 
         /**
          * Parses text, looking for HTML tokens, like tag openers or closers,
          * or comments. This function fires the onTagOpen, onTagClose, onText
          * and onComment function during its execution.
-         * @param {String} html The HTML to be parsed.
+         * @param {string} html The HTML to be parsed.
 
          */
         parse : function(html) {
@@ -155,7 +151,7 @@ KISSY.Editor.add("htmlparser", function(
                     if (cdata && XHTML_DTD.$cdata[ tagName ]) {
                         // Send the CDATA data.
                         this.onCDATA(cdata.join(''));
-                        cdata = null;
+                        cdata = NULL;
                     }
 
                     if (!cdata) {
@@ -216,4 +212,5 @@ KISSY.Editor.add("htmlparser", function(
     });
 
     KE.HtmlParser = HtmlParser;
+    KE["HtmlParser"] = HtmlParser;
 });

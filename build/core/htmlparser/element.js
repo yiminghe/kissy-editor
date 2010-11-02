@@ -1,15 +1,18 @@
 KISSY.Editor.add("htmlparser-element", function() {
-    var KE = KISSY.Editor;
-    //if (KE.HtmlParser.Element)return;
+    var KE = KISSY.Editor,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
     /**
      * A lightweight representation of an HTML element.
-     * @param {String} name The element name.
+     * @constructor
+     * @param {!String} name The element name.
      * @param {Object} attributes And object holding all attributes defined for
      *        this element.
-     * @constructor
      * @example
      */
-    function Element(name, attributes) {
+    function MElement(name, attributes) {
         /**
          * The element name.
          * @type String
@@ -57,7 +60,7 @@ KISSY.Editor.add("htmlparser-element", function() {
             b = b[0];
             return a < b ? -1 : a > b ? 1 : 0;
         };
-    S.augment(Element, {
+    S.augment(MElement, {
         /**
          * The node type. This is a constant value set to { KEN.NODE_ELEMENT}.
          * @type Number
@@ -75,11 +78,11 @@ KISSY.Editor.add("htmlparser-element", function() {
 
         /**
          * Clone this element.
-         * @returns {Element} The element clone.
+         * @returns {MElement} The element clone.
          * @example
          */
         clone : function() {
-            return new Element(this.name, this.attributes);
+            return new MElement(this.name, this.attributes);
         },
 
         /**
@@ -109,9 +112,9 @@ KISSY.Editor.add("htmlparser-element", function() {
                     isChildrenFiltered = 1;
                 }
             };
-
+            element["filterChildren"] = element.filterChildren;
             if (filter) {
-                while (true) {
+                while (TRUE) {
                     if (!( writeName = filter.onElementName(writeName) ))
                         return;
 
@@ -137,7 +140,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                     // This indicate that the element has been dropped by
                     // filter but not the children.
                     if (!writeName) {
-                        this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                        this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? NULL : filter);
                         return;
                     }
                 }
@@ -161,7 +164,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                     if (i == 1)
                         attribsArray.push([ a, value ]);
                     else if (filter) {
-                        while (true) {
+                        while (TRUE) {
                             if (!( newAttrName = filter.onAttributeName(a) )) {
                                 delete attributes[ a ];
                                 break;
@@ -175,7 +178,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                                 break;
                         }
                         if (newAttrName) {
-                            if (( value = filter.onAttribute(element, newAttrName, value) ) === false)
+                            if (( value = filter.onAttribute(element, newAttrName, value) ) === FALSE)
                                 delete attributes[ newAttrName ];
                             else
                                 attributes [ newAttrName ] = value;
@@ -198,7 +201,7 @@ KISSY.Editor.add("htmlparser-element", function() {
             writer.openTagClose(writeName, element.isEmpty);
 
             if (!element.isEmpty) {
-                this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? NULL : filter);
                 // Close the element.
                 writer.closeTag(writeName);
             }
@@ -209,6 +212,18 @@ KISSY.Editor.add("htmlparser-element", function() {
             KE.HtmlParser.Fragment.prototype.writeChildrenHtml.apply(this, arguments);
         }
     });
+    /**
+     * @constructor
+     */
+    KE.HtmlParser.Element = MElement;
 
-    KE.HtmlParser.Element = Element;
+    KE.HtmlParser["Element"] = MElement;
+    var MElementP = MElement.prototype;
+    KE.Utils.extern(MElementP, {
+        "type":MElementP.type,
+        "add":MElementP.add,
+        "clone":MElementP.clone,
+        "writeHtml":MElementP.writeHtml,
+        "writeChildrenHtml":MElementP.writeChildrenHtml
+    });
 });

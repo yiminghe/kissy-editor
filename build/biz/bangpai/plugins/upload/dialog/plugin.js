@@ -14,9 +14,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
         movie = KE.Config.base +
-            KE.Utils.debugUrl("plugins/uploader/uploader.longzang.swf?t=" +
-                encodeURIComponent("2010-10-29 19:20:07") //+
-                // "&rand=" + (+new Date())
+            KE.Utils.debugUrl("plugins/uploader/uploader.longzang.swf"
                 ),
         progressBars = {},
         name = "ke-bangpai-upload",

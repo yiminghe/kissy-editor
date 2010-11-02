@@ -1,8 +1,14 @@
 KISSY.Editor.add("htmlparser-filter", function(
-    //editor
     ) {
-    var S = KISSY,KE = S.Editor,KEN = KE.NODE;
-    //if (KE.HtmlParser.Filter)return;
+    var S = KISSY,KE = S.Editor,KEN = KE.NODE,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     * @param rules {Object}
+     */
     function Filter(rules) {
         this._ = {
             elementNames : [],
@@ -77,8 +83,8 @@ KISSY.Editor.add("htmlparser-filter", function(
                 if (filter) {
                     ret = filter.filter(element, this);
 
-                    if (ret === false)
-                        return null;
+                    if (ret === FALSE)
+                        return NULL;
 
                     if (ret && ret != element)
                         return this.onNode(ret);
@@ -97,7 +103,7 @@ KISSY.Editor.add("htmlparser-filter", function(
 
             return type == KEN.NODE_ELEMENT ? this.onElement(node) :
                 type == KEN.NODE_TEXT ? new KE.HtmlParser.Text(this.onText(node.value)) :
-                    null;
+                    NULL;
         },
 
         onAttribute : function(element, name, value) {
@@ -106,8 +112,8 @@ KISSY.Editor.add("htmlparser-filter", function(
             if (filter) {
                 var ret = filter.filter(value, element, this);
 
-                if (ret === false)
-                    return false;
+                if (ret === FALSE)
+                    return FALSE;
 
                 if (typeof ret != 'undefined')
                     return ret;
@@ -208,7 +214,7 @@ KISSY.Editor.add("htmlparser-filter", function(
             var item = this[ i ],
                 ret = item.apply(window, arguments);
 
-            if (ret === false)
+            if (ret === FALSE)
                 return ret;
 
             // We're filtering node (element/fragment).
@@ -234,4 +240,17 @@ KISSY.Editor.add("htmlparser-filter", function(
     }
 
     KE.HtmlParser.Filter = Filter;
+    var FilterP = Filter.prototype;
+    KE.Utils.extern(FilterP, {
+        "addRules":FilterP.addRules,
+        "onElementName":FilterP.onElementName,
+        "onAttributeName":FilterP.onAttributeName,
+        "onText":FilterP.onText,
+        "onComment":FilterP.onComment,
+        "onFragment":FilterP.onFragment,
+        "onElement":FilterP.onElement,
+        "onNode":FilterP.onNode,
+        "onAttribute":FilterP.onAttribute
+    });
+    KE.HtmlParser["Filter"] = Filter;
 });

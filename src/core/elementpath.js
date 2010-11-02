@@ -1,18 +1,46 @@
 /**
  * modified from ckeditor ,elementpath represents element's tree path from body
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("elementpath", function(KE) {
     var S = KISSY,
         DOM = S.DOM,
         dtd = KE.XHTML_DTD,
         KEN = KE.NODE,
-        UA = S.UA;
+        UA = S.UA,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
     // Elements that may be considered the "Block boundary" in an element path.
-    var pathBlockElements = { address:1,blockquote:1,dl:1,h1:1,h2:1,h3:1,h4:1,h5:1,h6:1,p:1,pre:1,li:1,dt:1,dd:1 };
+    var pathBlockElements = {
+        "address":1,
+        "blockquote":1,
+        "dl":1,
+        "h1":1,
+        "h2":1,
+        "h3":1,
+        "h4":1,
+        "h5":1,
+        "h6":1,
+        "p":1,
+        "pre":1,
+        "li":1,
+        "dt":1,
+        "dd":1
+    };
 
     // Elements that may be considered the "Block limit" in an element path.
-    var pathBlockLimitElements = { body:1,div:1,table:1,tbody:1,tr:1,td:1,th:1,caption:1,form:1 };
+    var pathBlockLimitElements = {
+        "body":1,
+        "div":1,
+        "table":1,
+        "tbody":1,
+        "tr":1,
+        "td":1,
+        "th":1,
+        "caption":1,
+        "form":1
+    };
 
     // Check if an element contains any block element.
     var checkHasBlock = function(element) {
@@ -22,16 +50,21 @@ KISSY.Editor.add("elementpath", function(KE) {
         for (var i = 0, count = childNodes.length; i < count; i++) {
             var child = childNodes[i];
 
-            if (child.nodeType == KEN.NODE_ELEMENT && dtd.$block[ child.nodeName.toLowerCase() ])
-                return true;
+            if (child.nodeType == KEN.NODE_ELEMENT
+                && dtd.$block[ child.nodeName.toLowerCase() ])
+                return TRUE;
         }
 
-        return false;
+        return FALSE;
     };
 
+    /**
+     * @constructor
+     * @param lastNode {KISSY.Node}
+     */
     function ElementPath(lastNode) {
-        var block = null;
-        var blockLimit = null;
+        var block = NULL;
+        var blockLimit = NULL;
         var elements = [];
         var e = lastNode;
 
@@ -41,8 +74,6 @@ KISSY.Editor.add("elementpath", function(KE) {
                     this.lastElement = e;
 
                 var elementName = e._4e_name();
-                if (UA.ie && e[0].scopeName != 'HTML')
-                    elementName = e[0].scopeName.toLowerCase() + ':' + elementName;
 
                 if (!blockLimit) {
                     if (!block && pathBlockElements[ elementName ])
@@ -65,17 +96,17 @@ KISSY.Editor.add("elementpath", function(KE) {
             e = e.parent();
         }
 
-        this.block = block;
-        this.blockLimit = blockLimit;
-        this.elements = elements;
+        this["block"] = this.block = block;
+        this["blockLimit"] = this.blockLimit = blockLimit;
+        this["elements"] = this.elements = elements;
     }
 
     ElementPath.prototype = {
         /**
          * Compares this element path with another one.
-         * @param otherPath The elementPath object to be
+         * @param otherPath {ElementPath} The elementPath object to be
          * compared with this one.
-         * @returns {Boolean} "true" if the paths are equal, containing the same
+         * @return {boolean} "TRUE" if the paths are equal, containing the same
          * number of elements and the same elements in the same order.
          */
         compare : function(otherPath) {
@@ -83,14 +114,14 @@ KISSY.Editor.add("elementpath", function(KE) {
             var otherElements = otherPath && otherPath.elements;
 
             if (!otherElements || thisElements.length != otherElements.length)
-                return false;
+                return FALSE;
 
             for (var i = 0; i < thisElements.length; i++) {
                 if (!DOM._4e_equals(thisElements[ i ], otherElements[ i ]))
-                    return false;
+                    return FALSE;
             }
 
-            return true;
+            return TRUE;
         },
 
         contains : function(tagNames) {
@@ -99,10 +130,15 @@ KISSY.Editor.add("elementpath", function(KE) {
                 if (elements[ i ]._4e_name() in tagNames)
                     return elements[ i ];
             }
-            return null;
+            return NULL;
         }
     };
 
-    KE.ElementPath = ElementPath;
+    KE["ElementPath"] = KE.ElementPath = ElementPath;
+    var ElementPathP = ElementPath.prototype;
+    KE.Utils.extern(ElementPathP, {
+        "compare":ElementPathP.compare,
+        "contains":ElementPathP.contains
+    });
 
 });

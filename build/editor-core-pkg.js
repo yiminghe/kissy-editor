@@ -1,12 +1,22 @@
 /**
- * Constructor for kissy editor and module dependency definition
+ * @preserve Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-10-29 19:20:07
+ * @buildtime: 2010-11-02 12:37:53
  */
 KISSY.add("editor", function(S, undefined) {
-    var DOM = S.DOM;
+    var DOM = S.DOM,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
 
+    /**
+     * 初始化编辑器
+     * @constructor
+     * @param textarea {(string|KISSY.Node)} 将要替换的 textarea
+     * @param cfg {Object} 编辑器配置
+     * @return {Editor} 返回编辑器实例
+     */
     function Editor(textarea, cfg) {
         var self = this;
 
@@ -19,32 +29,36 @@ KISSY.add("editor", function(S, undefined) {
         }
         textarea = DOM._4e_wrap(textarea);
         cfg = cfg || {};
-        cfg.pluginConfig = cfg.pluginConfig || {};
+        cfg.pluginConfig = cfg["pluginConfig"] || {};
         self.cfg = cfg;
+        //export for closure compiler
+        cfg["pluginConfig"] = cfg.pluginConfig;
+        self["cfg"] = cfg;
         S.app(self, S.EventTarget);
 
         /**
          * templates,separator,image,separator ->
          * templates,separator,image,separator2
          * work around for 重复 attach
-         * @param mods
+         * @param mods {Array.<string>}
          */
         function duplicateMods(mods) {
-            var existMods = Editor.Env.mods;
+            var existMods = Editor["Env"]["mods"];
             for (var i = 0; i < mods.length; i++) {
-                var mod = mods[i],dup = false;
+                var mod = mods[i],dup = FALSE;
                 for (var j = 0; j < i; j++) {
                     var mod2 = mods[j];
                     if (mod == mod2) {
-                        dup = true;
+                        dup = TRUE;
                         break;
                     }
                 }
                 var existMod = existMods[mod];
 
                 if (dup && existMod) {
-                    var newMod = S.clone(existMod),newName = mod + "_" + i;
-                    newMod.name = newName;
+                    var newMod = S.clone(existMod),
+                        newName = mod + "_" + i;
+                    newMod["name"] = newName;
                     mods[i] = newName;
                     if (!existMods[newName]) {
                         existMods[newName] = newMod;
@@ -53,16 +67,17 @@ KISSY.add("editor", function(S, undefined) {
             }
         }
 
+
+        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"],
+            initial = FALSE;
         /**
          * 存在问题：
          * use 涉及动态加载时
-         * 1.相同的模块名不会重复attach
-         * 2.不同模块名相同js路径也不会重复attach
-         * @param mods
-         * @param callback
+         * 1.相同的模块名不会重复 attach
+         * 2.不同模块名相同 js 路径也不会重复 attach
+         * @param mods {Array.<string>} ，模块名可以重复
+         * @param callback {function()} ，插件载入后回调
          */
-        var BASIC = ["htmldataprocessor", "enterkey", "clipboard"],
-            initial = false;
         self.use = function(mods, callback) {
             mods = mods.split(",");
             duplicateMods(mods);
@@ -82,7 +97,7 @@ KISSY.add("editor", function(S, undefined) {
                     if (!initial) {
                         self.setData(textarea.val());
                         //是否自动focus
-                        if (cfg.focus) {
+                        if (cfg["focus"]) {
                             self.focus();
                         }
                         //否则清空选择区域
@@ -91,28 +106,47 @@ KISSY.add("editor", function(S, undefined) {
                             sel && sel.removeAllRanges();
                         }
                         self.fire("save");
-                        initial = true;
+                        initial = TRUE;
                     }
                 });
 
-            }, { order:  true, global:  Editor });
+            }, { "order":  TRUE, "global":  Editor });
             return self;
         };
+        self["use"] = self.use;
         self.init(textarea);
         return self;
     }
 
     S.app(Editor, S.EventTarget);
-    Editor.Config.base = S.Config.base + "editor/";
+    Editor["Config"]["base"] = S["Config"]["base"] + "editor/";
+
+    /**
+     * 便于在开发环境与部署环境下切换
+     * @param url {string}
+     * @return {string} 对应环境的 url
+     */
     function debugUrl(url) {
-        if (!debug) return  url.replace(/\.(js|css)/i, "-min.$1");
-        if (debug === "dev") {
-            return "../src/" + url;
+        var debug = S["Config"]["debug"],re;
+        if (!debug) re = url.replace(/\.(js|css)/i, "-min.$1");
+        else if (debug === "dev") {
+            re = "../src/" + url;
+        } else {
+            re = url
         }
-        return url;
+        if (re.indexOf("?") != -1) {
+            re += "&";
+        } else {
+            re += "?";
+        }
+        re += "t=" + encodeURIComponent("2010-11-02 12:37:53");
+        return  re;
     }
 
-    var debug = S.Config.debug,
+    var debug = S["Config"]["debug"],
+        /**
+         * @type {Array.<string>}
+         */
         core_mods = [
             "utils",
             "focusmanager",
@@ -134,6 +168,9 @@ KISSY.add("editor", function(S, undefined) {
             "htmlparser-htmlwriter",
             "htmlparser-text"
         ],
+        /**
+         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
+         */
         plugin_mods = [
             "separator",
             "sourcearea/support",
@@ -141,574 +178,745 @@ KISSY.add("editor", function(S, undefined) {
             "flashbridge",
             "flashutils",
             "clipboard",
+
             {
-                name: "colorsupport",
-                requires:["overlay"]
+                "name": "colorsupport",
+                "requires":["overlay"]
             },
             {
-                name: "forecolor",
-                requires:["colorsupport"]
+                "name": "forecolor",
+                "requires":["colorsupport"]
             },
             {
-                name: "bgcolor",
-                requires:["colorsupport"]
+                "name": "bgcolor",
+                "requires":["colorsupport"]
             },
             {
-                name: "elementpaths"
+                "name": "elementpaths"
             },
             "enterkey",
             {
-                name:"pagebreak",
-                requires:["fakeobjects"]
+                "name":"pagebreak",
+                "requires":["fakeobjects"]
             },
             {
-                name:"fakeobjects",
-                requires:["htmldataprocessor"]
+                "name":"fakeobjects",
+                "requires":["htmldataprocessor"]
             },
             {
-                name:"draft",
-                requires:["localStorage"]
+                "name":"draft",
+                "requires":["localStorage"]
             },
             {
-                name:"flash",
-                requires:["flash/support"]
+                "name":"flash",
+                "requires":["flash/support"]
             },
             {
-                name:"flash/dialog"
+                "name":"flash/dialog"
             },
             {
-                name: "flash/support",
-                requires: ["flashutils","contextmenu",
+                "name": "flash/support",
+                "requires": ["flashutils","contextmenu",
                     "fakeobjects","bubbleview"]
             },
             {
-                name:"font",
-                requires:["select"]
+                "name":"font",
+                "requires":["select"]
             },
             "format",
             {
-                name: "htmldataprocessor"
+                "name": "htmldataprocessor"
             },
             {
-                name: "image",
-                requires: ["contextmenu","bubbleview"]
+                "name": "image",
+                "requires": ["contextmenu","bubbleview"]
             },
             {
-                name:"image/dialog",
-                requires:["tabs"]
+                "name":"image/dialog",
+                "requires":["tabs"]
             },
             "indent",
             "justify",
             {
-                name:"link",
-                requires: ["bubbleview"]
+                "name":"link",
+                "requires": ["bubbleview"]
             },
             {
-                name:"link/dialog"
+                "name":"link/dialog"
             },
             "list",
             "maximize",
             {
-                name:"music",
-                requires:["flash/support"]
+                "name":"music",
+                "requires":["flash/support"]
             },
             {
-                name:"music/dialog",
-                requires:["flash/dialog"]
+                "name":"music/dialog",
+                "requires":["flash/dialog"]
             },
             "preview",
             "removeformat",
             {
-                name: "smiley"
+                "name": "smiley"
             },
             {
-                name:"sourcearea",
-                requires:["sourcearea/support"]
+                "name":"sourcearea",
+                "requires":["sourcearea/support"]
             },
             {
-                name: "table",
-                requires: ["contextmenu"]
+                "name": "table",
+                "requires": ["contextmenu"]
             },
             {
-                name: "table/dialog"
+                "name": "table/dialog"
             },
             {
-                name: "templates",
-                requires: ["overlay"]
+                "name": "templates",
+                "requires": ["overlay"]
             },
             "undo",
             {
-                name:"resize",
-                requires:["dd"]
+                "name":"resize",
+                "requires":["dd"]
             }
         ],
-
+        /**
+         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
+         */
         mis_mods = [
             {
-                name:"localStorage",
-                requires:["flashutils",
+                "name":"localStorage",
+                "requires":["flashutils",
                     "flashbridge"]
             },
-            {name:"button"},
-            {name:"dd"},
-            {name:"progressbar"},
+            {"name":"button"},
+            {"name":"dd"},
+            {"name":"progressbar"},
             {
-                name:"overlay",
-                requires:["dd"]
+                "name":"overlay",
+                "requires":["dd"]
             },
             {
-                name: "contextmenu",
-                requires: ["overlay"]
+                "name": "contextmenu",
+                "requires": ["overlay"]
             },
             {
-                name: "bubbleview",
-                requires: ["overlay"]
+                "name": "bubbleview",
+                "requires": ["overlay"]
             },
             {
-                name: "select",
-                requires: ["overlay"]
+                "name": "select",
+                "requires": ["overlay"]
             }
         ],
-        i, len, mod, name, requires,mods = {};
+        i, len,
+        /**
+         * @type {(string|{name:string,requires:Array.<string>})}
+         */
+        mod,
+        name, requires,mods = {};
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
             mod = plugin_mods[i] = {
-                name:mod
+                //强制转型，防止compiler报错
+                "name":(mod + ""),
+                //强制转型，防止compiler报错
+                "requires":NULL
             };
         }
-        requires = mod.requires || [];
+        requires = mod["requires"] || [];
         var basicMod = ["button"];
-        if (mod.name.indexOf("/dialog") != -1) {
+        if (mod["name"].indexOf("/dialog") != -1) {
             basicMod.push("overlay");
         }
-        mod.requires = requires.concat(basicMod);
+        mod["requires"] = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
     // ui modules
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod.name;
+        name = mod["name"];
         mods[name] = {
-            attach: false,
-            charset:"utf-8",
-            requires: mod.requires,
-            csspath: (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css?t=" +
-                encodeURIComponent("2010-10-29 19:20:07")+
-                "") : undefined),
-            path: debugUrl("plugins/" + name + "/plugin.js?t=" +
-                encodeURIComponent("2010-10-29 19:20:07")+
-                "")
+            "attach": FALSE,
+            "charset":"utf-8",
+            "requires": mod["requires"],
+            "csspath": (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
+            "path": debugUrl("plugins/" + name + "/plugin.js")
         };
     }
     Editor.add(mods);
+    /**
+     * @constructor
+     */
     S.Editor = Editor;
-    S.log(core_mods);
+    /**
+     * @constructor
+     */
+    S["Editor"] = Editor;
+    //S.log(core_mods);
 });
 /**
- * modified from ckeditor,common utils for kissy editor
- * @modifier: <yiminghe@gmail.com>
+ * common utils for kissy editor
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("utils", function(KE) {
 
-    var S = KISSY,
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         Node = S.Node,
         DOM = S.DOM,
         UA = S.UA,
-        Event = S.Event;
-    KE.Utils = {
-
-        debugUrl:function (url) {
-            var debug = S.Config.debug;
-            if (!debug) return url.replace(/\.(js|css)/i, "-min.$1");
-            if (debug === "dev") {
-                return  "../src/" + url;
-            }
-            return  url;
-        }
-        ,
-        /**
-         * 懒惰一下
-         * @param obj
-         * @param before
-         * @param after
-         */
-        lazyRun:function(obj, before, after) {
-            var b = obj[before],a = obj[after];
-            obj[before] = function() {
-                b.apply(this, arguments);
-                obj[before] = obj[after];
-                return a.apply(this, arguments);
-            };
-        }
-        ,
-
-        getXY:function(x, y, srcDoc, destDoc) {
-            var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
-
-            //x,y相对于当前iframe文档,防止当前iframe有滚动条
-            x -= DOM.scrollLeft(currentWindow);
-            y -= DOM.scrollTop(currentWindow);
-            if (destDoc) {
-                var refWindow = destDoc.defaultView || destDoc.parentWindow;
-                if (currentWindow != refWindow && currentWindow.frameElement) {
-                    //note:when iframe is static ,still some mistake
-                    var iframePosition = DOM._4e_getOffset(currentWindow.frameElement, destDoc);
-                    x += iframePosition.left;
-                    y += iframePosition.top;
+        Event = S.Event,
+        Utils = {
+            /**
+             * for debug and production switch
+             * @param url {string}
+             * @return {string}
+             */
+            debugUrl:function (url) {
+                var debug = S["Config"]["debug"],re;
+                if (!debug) re = url.replace(/\.(js|css)/i, "-min.$1");
+                else if (debug === "dev") {
+                    re = "../src/" + url;
+                } else {
+                    re = url
                 }
-            }
-            return {left:x,top:y};
-        }
-        ,
-
-        tryThese : function() {
-
-            var returnValue;
-            for (var i = 0, length = arguments.length; i < length; i++) {
-                var lambda = arguments[i];
-                try {
-                    returnValue = lambda();
-                    break;
+                if (re.indexOf("?") != -1) {
+                    re += "&";
+                } else {
+                    re += "?";
                 }
-                catch (e) {
-                }
+                re += "t=" + encodeURIComponent("2010-11-02 12:05:37");
+                return  re;
+            },
+            /**
+             * 懒惰一下
+             * @param obj {Object} 包含方法的对象
+             * @param before {string} 准备方法
+             * @param after {string} 真正方法
+             */
+            lazyRun:function(obj, before, after) {
+                var b = obj[before],a = obj[after];
+                obj[before] = function() {
+                    b.apply(this, arguments);
+                    obj[before] = obj[after];
+                    return a.apply(this, arguments);
+                };
             }
-            return returnValue;
-        }
-        ,
-        arrayCompare: function(arrayA, arrayB) {
-            if (!arrayA && !arrayB)
-                return true;
+            ,
 
-            if (!arrayA || !arrayB || arrayA.length != arrayB.length)
-                return false;
+            /**
+             * srcDoc 中的位置在 destDoc 的对应位置
+             * @param x {number}
+             * @param y {number}
+             * @param srcDoc {Document}
+             * @param destDoc {Document}
+             * @return {{left:number,top:number}} 在最终文档中的位置
+             */
+            getXY:function(x, y, srcDoc, destDoc) {
+                var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
 
-            for (var i = 0; i < arrayA.length; i++) {
-                if (arrayA[ i ] !== arrayB[ i ])
-                    return false;
+                //x,y相对于当前iframe文档,防止当前iframe有滚动条
+                x -= DOM.scrollLeft(currentWindow);
+                y -= DOM.scrollTop(currentWindow);
+                if (destDoc) {
+                    var refWindow = destDoc.defaultView || destDoc.parentWindow;
+                    if (currentWindow != refWindow && currentWindow.frameElement) {
+                        //note:when iframe is static ,still some mistake
+                        var iframePosition = DOM._4e_getOffset(currentWindow.frameElement, destDoc);
+                        x += iframePosition.left;
+                        y += iframePosition.top;
+                    }
+                }
+                return {left:x,top:y};
             }
+            ,
+            /**
+             * 执行一系列函数
+             * @param var_args {...function()}
+             * @return {*} 得到成功的返回
+             */
+            tryThese : function(var_args) {
+                var returnValue;
+                for (var i = 0, length = arguments.length; i < length; i++) {
+                    var lambda = arguments[i];
+                    try {
+                        returnValue = lambda();
+                        break;
+                    }
+                    catch (e) {
+                    }
+                }
+                return returnValue;
+            },
 
-            return true;
-        }
-        ,
-        getByAddress : function(doc, address, normalized) {
-            var $ = doc.documentElement;
+            /**
+             * 是否两个数组完全相同
+             * @param arrayA {Array}
+             * @param arrayB {Array}
+             * @return {boolean}
+             */
+            arrayCompare: function(arrayA, arrayB) {
+                if (!arrayA && !arrayB)
+                    return TRUE;
 
-            for (var i = 0; $ && i < address.length; i++) {
-                var target = address[ i ];
+                if (!arrayA || !arrayB || arrayA.length != arrayB.length)
+                    return FALSE;
 
-                if (!normalized) {
-                    $ = $.childNodes[ target ];
-                    continue;
+                for (var i = 0; i < arrayA.length; i++) {
+                    if (arrayA[ i ] !== arrayB[ i ])
+                        return FALSE;
                 }
 
-                var currentIndex = -1;
+                return TRUE;
+            }
+            ,
 
-                for (var j = 0; j < $.childNodes.length; j++) {
-                    var candidate = $.childNodes[ j ];
+            /**
+             * 根据dom路径得到某个节点
+             * @param doc {Document}
+             * @param address {Array.<number>}
+             * @param normalized {boolean}
+             * @return {KISSY.Node}
+             */
+            getByAddress : function(doc, address, normalized) {
+                var $ = doc.documentElement;
 
-                    if (normalized === true &&
-                        candidate.nodeType == 3 &&
-                        candidate.previousSibling &&
-                        candidate.previousSibling.nodeType == 3) {
+                for (var i = 0; $ && i < address.length; i++) {
+                    var target = address[ i ];
+
+                    if (!normalized) {
+                        $ = $.childNodes[ target ];
                         continue;
                     }
 
-                    currentIndex++;
+                    var currentIndex = -1;
 
-                    if (currentIndex == target) {
-                        $ = candidate;
-                        break;
+                    for (var j = 0; j < $.childNodes.length; j++) {
+                        var candidate = $.childNodes[ j ];
+
+                        if (normalized === TRUE &&
+                            candidate.nodeType == 3 &&
+                            candidate.previousSibling &&
+                            candidate.previousSibling.nodeType == 3) {
+                            continue;
+                        }
+
+                        currentIndex++;
+
+                        if (currentIndex == target) {
+                            $ = candidate;
+                            break;
+                        }
                     }
                 }
+
+                return $ ? new Node($) : NULL;
             }
-
-            return $ ? new Node($) : null;
-        }
-        ,
-
-        clearAllMarkers:function(database) {
-            for (var i in database)
-                database[i]._4e_clearMarkers(database, true);
-        }
-        ,
-        htmlEncodeAttr : function(text) {
-            return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/, '&gt;');
-        }
-        ,
-        ltrim:function(str) {
-            return str.replace(/^\s+/, "");
-        }
-        ,
-
-        rtrim:function(str) {
-            return str.replace(/\s+$/, "");
-        }
-        ,
-        trim:function(str) {
-            return this.ltrim(this.rtrim(str));
-        }
-        ,
-        mix:function() {
-            var r = {};
-            for (var i = 0; i < arguments.length; i++) {
-                var ob = arguments[i];
-                r = S.mix(r, ob);
+            ,
+            /**
+             * @param database {Object.<string,KISSY.Node>}
+             */
+            clearAllMarkers:function(database) {
+                for (var i in database)
+                    database[i]._4e_clearMarkers(database, TRUE);
             }
-            return r;
-        }
-        ,
-        isCustomDomain : function() {
-            if (!UA.ie)
-                return false;
+            ,
+            /**
+             *
+             * @param text {string}
+             * @return {string}
+             */
+            htmlEncodeAttr : function(text) {
+                return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/, '&gt;');
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            ltrim:function(str) {
+                return str.replace(/^\s+/, "");
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            rtrim:function(str) {
+                return str.replace(/\s+$/, "");
+            }
+            ,
+            /**
+             *
+             * @param str {string}
+             * @return {string}
+             */
+            trim:function(str) {
+                return this.ltrim(this.rtrim(str));
+            }
+            ,
+            /**
+             *
+             * @param var_args {...Object}
+             * @return {Object}
+             */
+            mix:function(var_args) {
+                var r = {};
+                for (var i = 0; i < arguments.length; i++) {
+                    var ob = arguments[i];
+                    r = S.mix(r, ob);
+                }
+                return r;
+            }
+            ,
+            isCustomDomain : function() {
+                if (!UA.ie)
+                    return FALSE;
 
-            var domain = document.domain,
-                hostname = window.location.hostname;
+                var domain = document.domain,
+                    hostname = window.location.hostname;
 
-            return domain != hostname &&
-                domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
-        },
+                return domain != hostname &&
+                    domain != ( '[' + hostname + ']' );	// IPv6 IP support (#5434)
+            },
+            /**
+             *
+             * @param delim {string} 分隔符
+             * @param loop {number}
+             * @return {string}
+             */
+            duplicateStr:function(delim, loop) {
+                return new Array(loop + 1).join(delim);
+            },
+            /**
+             * Throttles a call to a method based on the time between calls.
+             * Based on work by Simon Willison: http://gist.github.com/292562
+             * @param fn {function()} The function call to throttle.
+             * @param ms {number} The number of milliseconds to throttle the method call. Defaults to 150
+             * @return {function()} Returns a wrapped function that calls fn throttled.
+             */
+            throttle : function(fn, scope, ms) {
+                ms = ms || 150;
 
-        duplicateStr:function(str, loop) {
-            return new Array(loop + 1).join(str);
-        },
-        /**
-         * Throttles a call to a method based on the time between calls.
-         * @method throttle
-         * @for YUI
-         * @param fn {function} The function call to throttle.
-         * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
-         * @return {function} Returns a wrapped function that calls fn throttled.
-         * @since 3.1.0
-         */
+                if (ms === -1) {
+                    return (function() {
+                        fn.apply(scope, arguments);
+                    });
+                }
 
-        /*! Based on work by Simon Willison: http://gist.github.com/292562 */
+                var last = (new Date()).getTime();
 
-        throttle : function(fn, scope, ms) {
-            ms = ms || 150;
-
-            if (ms === -1) {
+                return function() {
+                    var now = (new Date()).getTime();
+                    if (now - last > ms) {
+                        last = now;
+                        fn.apply(scope, arguments);
+                    }
+                };
+            },
+            /**
+             *
+             * @param fn {function()}
+             * @param scope {Object}
+             * @param ms {number}
+             * @return {function()}
+             */
+            buffer : function(fn, scope, ms) {
+                ms = ms || 0;
+                var timer = NULL;
                 return (function() {
-                    fn.apply(scope, arguments);
+                    timer && clearTimeout(timer);
+                    var args = arguments;
+                    timer = setTimeout(function() {
+                        return fn.apply(scope, args);
+                    }, ms);
                 });
-            }
+            },
 
-            var last = (new Date()).getTime();
+            isNumber:function(n) {
+                return /^\d+(.\d+)?$/.test(S.trim(n));
+            },
 
-            return (function() {
-                var now = (new Date()).getTime();
-                if (now - last > ms) {
-                    last = now;
-                    fn.apply(scope, arguments);
+            /**
+             *
+             * @param inputs {Array.<Node>}
+             * @param warn {string}
+             * @return {boolean} 是否验证成功
+             */
+            verifyInputs:function(inputs, warn) {
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = DOM._4e_wrap(inputs[i]),
+                        v = S.trim(input.val()),
+                        verify = input.attr("data-verify"),
+                        warning = input.attr("data-warning");
+                    if (verify &&
+                        !new RegExp(verify).test(v)) {
+                        alert(warning);
+                        return FALSE;
+                    }
                 }
-            });
-        },
-        buffer : function(fn, scope, ms) {
-            ms = ms || 0;
-            var timer = null;
-            return (function() {
-                timer && clearTimeout(timer);
-                var args = arguments;
-                timer = setTimeout(function() {
-                    return fn.apply(scope, args);
-                }, ms);
-            });
-        },
-        isNumber:function(n) {
-            return /^\d+(.\d+)?$/.test(S.trim(n));
-        },
-        verifyInputs:function(inputs, warn) {
-            for (var i = 0; i < inputs.length; i++) {
-                var input = DOM._4e_wrap(inputs[i]),
-                    v = S.trim(input.val()),
-                    verify = input.attr("data-verify"),
-                    warning = input.attr("data-warning");
-                if (verify &&
-                    !new RegExp(verify).test(v)) {
-                    alert(warning);
-                    return;
-                }
-            }
-            return true;
-        },
-        sourceDisable:function(editor, plugin) {
-            editor.on("sourcemode", plugin.disable, plugin);
-            editor.on("wysiwygmode", plugin.enable, plugin);
-        },
-        resetInput:function(inp) {
-            var placeholder = inp.attr("placeholder");
-            if (placeholder && !UA.webkit) {
-                inp.val(placeholder);
-                inp.addClass("ke-input-tip");
-            } else if (UA.webkit) {
-                inp.val("");
-            }
-        },
+                return TRUE;
+            },
+            /**
+             *
+             * @param editor {KISSY.Editor}
+             * @param plugin {Object}
+             */
+            sourceDisable:function(editor, plugin) {
+                editor.on("sourcemode", plugin.disable, plugin);
+                editor.on("wysiwygmode", plugin.enable, plugin);
+            },
 
-        placeholder:function(inp, tip) {
-            inp.attr("placeholder", tip);
-            if (UA.webkit) {
-                return;
-            }
-            inp.on("blur", function() {
-                if (!S.trim(inp.val())) {
-                    inp.val(tip);
+            /**
+             *
+             * @param inp {Node}
+             */
+            resetInput:function(inp) {
+                var placeholder = inp.attr("placeholder");
+                if (placeholder && !UA.webkit) {
+                    inp.val(placeholder);
                     inp.addClass("ke-input-tip");
-                }
-            });
-            inp.on("focus", function() {
-                if (S.trim(inp.val()) == tip) {
+                } else if (UA.webkit) {
                     inp.val("");
                 }
-                inp.removeClass("ke-input-tip");
-            });
-        },
-        clean:function(node) {
-            node = node[0] || node;
-            var cs = S.makeArray(node.childNodes);
-            for (var i = 0; i < cs.length; i++) {
-                var c = cs[i];
-                if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
-                    node.removeChild(c);
+            },
+
+            /**
+             *
+             * @param inp {Node}
+             * @param tip {string}
+             */
+            placeholder:function(inp, tip) {
+                inp.attr("placeholder", tip);
+                if (UA.webkit) {
+                    return;
                 }
-            }
-        },
-        /**
-         * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
-         * @param {String} value The string to encode
-         * @return {String} The encoded text
-         */
-        htmlEncode : function(value) {
-            return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-        },
+                inp.on("blur", function() {
+                    if (!S.trim(inp.val())) {
+                        inp.val(tip);
+                        inp.addClass("ke-input-tip");
+                    }
+                });
+                inp.on("focus", function() {
+                    if (S.trim(inp.val()) == tip) {
+                        inp.val("");
+                    }
+                    inp.removeClass("ke-input-tip");
+                });
+            },
 
-        /**
-         * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
-         * @param {String} value The string to decode
-         * @return {String} The decoded text
-         */
-        htmlDecode : function(value) {
-            return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
-        },
-        equalsIgnoreCase:function(str1, str2) {
-            return str1.toLowerCase() == str2.toLowerCase();
-        },
-
-        normParams:function (params) {
-            params = S.clone(params);
-            for (var p in params) {
-                if (params.hasOwnProperty(p)) {
-                    var v = params[p];
-                    if (S.isFunction(v)) {
-                        params[p] = v();
+            /**
+             *
+             * @param node {(Node|KISSY.Node)}
+             */
+            clean:function(node) {
+                node = node[0] || node;
+                var cs = S.makeArray(node.childNodes);
+                for (var i = 0; i < cs.length; i++) {
+                    var c = cs[i];
+                    if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
+                        node.removeChild(c);
                     }
                 }
-            }
-            return params;
-        },
+            },
+            /**
+             * Convert certain characters (&, <, >, and ') to their HTML character equivalents
+             *  for literal display in web pages.
+             * @param {string} value The string to encode
+             * @return {string} The encoded text
+             */
+            htmlEncode : function(value) {
+                return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+            },
 
-        doFormUpload : function(o, ps, url) {
-            var id = S.guid("form-upload-");
-            var frame = document.createElement('iframe');
-            frame.id = id;
-            frame.name = id;
-            frame.className = 'ke-hidden';
-            if (UA.ie) {
-                frame.src = "javascript:false";
-            }
-            document.body.appendChild(frame);
+            /**
+             * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+             * @param {string} value The string to decode
+             * @return {string} The decoded text
+             */
+            htmlDecode : function(value) {
+                return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+            },
 
-            if (UA.ie) {
-                document.frames[id].name = id;
-            }
 
-            var form = DOM._4e_unwrap(o.form),
-                buf = {
-                    target: form.target,
-                    method: form.method,
-                    encoding: form.encoding,
-                    enctype: form.enctype,
-                    action: form.action
-                };
-            form.target = id;
-            form.method = 'POST';
-            form.enctype = form.encoding = 'multipart/form-data';
-            if (url) {
-                form.action = url;
-            }
+            equalsIgnoreCase:function(str1, str2) {
+                return str1.toLowerCase() == str2.toLowerCase();
+            },
 
-            var hiddens, hd;
-            if (ps) { // add dynamic params
-                hiddens = [];
-                ps = KE.Utils.normParams(ps);
-                for (var k in ps) {
-                    if (ps.hasOwnProperty(k)) {
-                        hd = document.createElement('input');
-                        hd.type = 'hidden';
-                        hd.name = k;
-                        hd.value = ps[k];
-                        form.appendChild(hd);
-                        hiddens.push(hd);
+            /**
+             *
+             * @param params {Object.<string,(function|string|number)>}
+             * @return {Object.<string,(string|number)>}
+             */
+            normParams:function (params) {
+                params = S.clone(params);
+                for (var p in params) {
+                    if (params.hasOwnProperty(p)) {
+                        var v = params[p];
+                        if (S.isFunction(v)) {
+                            params[p] = v();
+                        }
                     }
                 }
-            }
+                return params;
+            },
 
-            function cb() {
-                var r = {  // bogus response object
-                    responseText : '',
-                    responseXML : null
-                };
-
-                r.argument = o ? o.argument : null;
-
-                try { //
-                    var doc;
-                    if (UA.ie) {
-                        doc = frame.contentWindow.document;
-                    } else {
-                        doc = (frame.contentDocument || window.frames[id].document);
-                    }
-                    if (doc && doc.body) {
-                        r.responseText = doc.body.innerHTML;
-                    }
-                    if (doc && doc.XMLDocument) {
-                        r.responseXML = doc.XMLDocument;
-                    } else {
-                        r.responseXML = doc;
-                    }
+            /**
+             *
+             * @param o {Object} 提交 form 配置
+             * @param ps {Object} 动态参数
+             * @param url {string} 目的地 url
+             */
+            doFormUpload : function(o, ps, url) {
+                var id = S.guid("form-upload-");
+                var frame = document.createElement('iframe');
+                frame.id = id;
+                frame.name = id;
+                frame.className = 'ke-hidden';
+                if (UA.ie) {
+                    frame.src = "javascript:FALSE";
                 }
-                catch(e) {
-                    // ignore
+                document.body.appendChild(frame);
+
+                if (UA.ie) {
+                    document.frames[id].name = id;
                 }
 
-                Event.remove(frame, 'load', cb);
-                o.callback && o.callback(r);
+                var form = DOM._4e_unwrap(o.form),
+                    buf = {
+                        target: form.target,
+                        method: form.method,
+                        encoding: form.encoding,
+                        enctype: form.enctype,
+                        action: form.action
+                    };
+                form.target = id;
+                form.method = 'POST';
+                form.enctype = form.encoding = 'multipart/form-data';
+                if (url) {
+                    form.action = url;
+                }
 
-                setTimeout(function() {
-                    DOM._4e_remove(frame);
-                }, 100);
-            }
+                var hiddens, hd;
+                if (ps) { // add dynamic params
+                    hiddens = [];
+                    ps = KE.Utils.normParams(ps);
+                    for (var k in ps) {
+                        if (ps.hasOwnProperty(k)) {
+                            hd = document.createElement('input');
+                            hd.type = 'hidden';
+                            hd.name = k;
+                            hd.value = ps[k];
+                            form.appendChild(hd);
+                            hiddens.push(hd);
+                        }
+                    }
+                }
 
-            Event.on(frame, 'load', cb);
-            form.submit();
+                function cb() {
+                    var r = {  // bogus response object
+                        responseText : '',
+                        responseXML : NULL
+                    };
 
-            form.target = buf.target;
-            form.method = buf.method;
-            form.enctype = buf.enctype;
-            form.encoding = buf.encoding;
-            form.action = buf.action;
+                    r.argument = o ? o.argument : NULL;
 
-            if (hiddens) { // remove dynamic params
-                for (var i = 0, len = hiddens.length; i < len; i++) {
-                    DOM._4e_remove(hiddens[i]);
+                    try { //
+                        var doc;
+                        if (UA.ie) {
+                            doc = frame.contentWindow.document;
+                        } else {
+                            doc = (frame.contentDocument || window.frames[id].document);
+                        }
+                        if (doc && doc.body) {
+                            r.responseText = doc.body.innerHTML;
+                        }
+                        if (doc && doc.XMLDocument) {
+                            r.responseXML = doc.XMLDocument;
+                        } else {
+                            r.responseXML = doc;
+                        }
+                    }
+                    catch(e) {
+                        // ignore
+                    }
+
+                    Event.remove(frame, 'load', cb);
+                    o.callback && o.callback(r);
+
+                    setTimeout(function() {
+                        DOM._4e_remove(frame);
+                    }, 100);
+                }
+
+                Event.on(frame, 'load', cb);
+
+                form.submit();
+
+                form.target = buf.target;
+                form.method = buf.method;
+                form.enctype = buf.enctype;
+                form.encoding = buf.encoding;
+                form.action = buf.action;
+
+                if (hiddens) { // remove dynamic params
+                    for (var i = 0, len = hiddens.length; i < len; i++) {
+                        DOM._4e_remove(hiddens[i]);
+                    }
+                }
+                return frame;
+            },
+            /**
+             * extern for closure compiler
+             */
+            extern:function(obj, cfg) {
+                for (var i in cfg) {
+                    obj[i] = cfg[i];
                 }
             }
-        }
-    };
-
-
+        };
+    KE.Utils = Utils;
+    /**
+     * export for closure compiler
+     */
+    KE["Utils"] = Utils;
+    Utils.extern(Utils, {
+        "debugUrl": Utils.debugUrl,
+        "lazyRun": Utils.lazyRun,
+        "getXY": Utils.getXY,
+        "tryThese": Utils.tryThese,
+        "arrayCompare": Utils.arrayCompare,
+        "getByAddress": Utils.getByAddress,
+        "clearAllMarkers": Utils.clearAllMarkers,
+        "htmlEncodeAttr": Utils.htmlEncodeAttr,
+        "ltrim": Utils.ltrim,
+        "rtrim": Utils.rtrim,
+        "trim": Utils.trim,
+        "mix": Utils.mix,
+        "isCustomDomain": Utils.isCustomDomain,
+        "duplicateStr": Utils.duplicateStr,
+        "buffer": Utils.buffer,
+        "isNumber": Utils.isNumber,
+        "verifyInputs": Utils.verifyInputs,
+        "sourceDisable": Utils.sourceDisable,
+        "resetInput": Utils.resetInput,
+        "placeholder": Utils.placeholder,
+        "clean": Utils.clean,
+        "htmlEncode": Utils.htmlEncode,
+        "htmlDecode": Utils.htmlDecode,
+        "equalsIgnoreCase": Utils.equalsIgnoreCase,
+        "normParams": Utils.normParams,
+        "throttle": Utils.throttle,
+        "doFormUpload": Utils.doFormUpload
+    });
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
@@ -720,98 +928,172 @@ KISSY.Editor.add("focusmanager", function(KE) {
     var S = KISSY,
         DOM = S.DOM,
         Event = S.Event,
-        focusManager = {},
         INSTANCES = {},
         //当前焦点所在处
         currentInstance,
         focusManager = {
+            /**
+             * 刷新全部实例
+             */
             refreshAll:function() {
-                //console.log("refresh all!");
                 for (var i in INSTANCES) {
                     var e = INSTANCES[i];
                     e.document.designMode = "off";
                     e.document.designMode = "on";
                 }
             },
+            /**
+             * 得到当前获得焦点的实例
+             */
             currentInstance :function() {
                 return currentInstance;
             },
+            /**
+             *
+             * @param id {string}
+             */
             getInstance : function(id) {
                 return INSTANCES[id];
             },
+            /**
+             *
+             * @param editor {KISSY.Editor}
+             */
             add : function(editor) {
                 var win = DOM._4e_getWin(editor.document);
                 Event.on(win, "focus", focus, editor);
                 Event.on(win, "blur", blur, editor);
             },
+            /**
+             *
+             * @param editor {KISSY.Editor}
+             */
             register : function(editor) {
                 INSTANCES[editor._UUID] = editor;
             },
+            /**
+             *
+             * @param editor {KISSY.Editor}
+             */
             remove : function(editor) {
                 delete INSTANCES[editor._UUID];
                 var win = DOM._4e_getWin(editor.document);
                 Event.remove(win, "focus", focus, editor);
                 Event.remove(win, "blur", blur, editor);
             }
-        };
+        },
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
 
+    /**
+     * @this {KISSY.Editor}
+     */
     function focus() {
-        //console.log(" i got focus");
         var editor = this;
-        editor.iframeFocus = true;
+        editor.iframeFocus = TRUE;
         currentInstance = editor;
-        /*for (var i in INSTANCES) {
-         if (i != editor._UUID)
-         INSTANCES[i].blur();
-         }*/
     }
 
+    /**
+     * @this {KISSY.Editor}
+     */
     function blur() {
-        //console.log(" i lost focus");
         var editor = this;
-        editor.iframeFocus = false;
-        currentInstance = null;
+        editor.iframeFocus = FALSE;
+        currentInstance = NULL;
     }
 
     KE.focusManager = focusManager;
-
+    KE["focusManager"] = focusManager;
     KE.getInstances = function() {
         return INSTANCES;
     };
+    KE["getInstances"] = KE.getInstances;
 });
 /**
  * definition of editor class for kissy editor
  * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("definition", function(KE) {
-    var S = KISSY,
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        DOC = document,
+        /** @const */S = KISSY,
+        /**
+         * @const
+         */
         UA = S.UA,
+        /**
+         * @const
+         */
         DOM = S.DOM,
+        /**
+         * @const
+         */
         Node = S.Node,
+        /**
+         * @const
+         */
         Event = S.Event,
+        /**
+         * @const
+         */
         DISPLAY = "display",
+        /**
+         * @const
+         */
         WIDTH = "width",
+        /**
+         * @const
+         */
         HEIGHT = "height",
+        /**
+         * @const
+         */
         NONE = "none",
-        //VISIBILITY = "visibility",
-        //HIDDEN = "hidden",
         focusManager = KE.focusManager,
         tryThese = KE.Utils.tryThese,
+        /**
+         * @const
+         */
         HTML5_DTD = '<!doctype html>',
+        /**
+         * @const
+         */
         DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" ' +
             '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+        /**
+         * @const
+         */
         ke_textarea_wrap = ".ke-textarea-wrap",
+        /**
+         * @const
+         */
         ke_editor_tools = ".ke-editor-tools",
+        /**
+         * @const
+         */
         ke_editor_status = ".ke-editor-status",
+        /**
+         * @const
+         */
         CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
 
+    /**
+     *
+     * @param id {string}
+     * @param customStyle {string}
+     */
     function prepareIFrameHtml(id, customStyle) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
             + "<title>${title}</title>"
             + "<link href='"
-            + KE.Config.base
+            + KE["Config"]["base"]
             + CSS_FILE
             + "'" +
             " rel='stylesheet'/>"
@@ -829,7 +1111,7 @@ KISSY.Editor.add("definition", function(KE) {
             // is fully editable even before the editing iframe is fully loaded (#4455).
             //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
             '<script id="ke_actscript" type="text/javascript">' +
-                ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
+                ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
                 'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
                 '</script>' : ''
             )
@@ -839,11 +1121,13 @@ KISSY.Editor.add("definition", function(KE) {
     }
 
     var INSTANCE_ID = 1,
+
         srcScript = 'document.open();' +
             // The document domain must be set any time we
             // call document.open().
-            ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
+            ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
             'document.close();',
+
         editorHtml = "<div " +
             " class='ke-editor-wrap' " +
             " > " +
@@ -869,12 +1153,18 @@ KISSY.Editor.add("definition", function(KE) {
 
     KE.SOURCE_MODE = 0;
     KE.WYSIWYG_MODE = 1;
+    KE["SOURCE_MODE"] = KE.SOURCE_MODE;
+    KE["WYSIWYG_MODE"] = KE.WYSIWYG_MODE;
 
     S.augment(KE, {
+        /**
+         * @this {KISSY.Editor}
+         * @param textarea {KISSY.Node}
+         */
         init:function(textarea) {
-            if (UA.ie)DOM.addClass(document.body, "ie" + UA.ie);
-            else if (UA.gecko) DOM.addClass(document.body, "gecko");
-            else if (UA.webkit) DOM.addClass(document.body, "webkit");
+            if (UA.ie)DOM.addClass(DOC.body, "ie" + UA.ie);
+            else if (UA.gecko) DOM.addClass(DOC.body, "gecko");
+            else if (UA.webkit) DOM.addClass(DOC.body, "webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
             //!!编辑器内焦点不失去,firefox?
@@ -882,7 +1172,7 @@ KISSY.Editor.add("definition", function(KE) {
                 if (UA.webkit) {
                     //chrome select 弹不出来
                     var n = DOM._4e_name(ev.target);
-                    if (n == "select" || n == "option")return true;
+                    if (n == "select" || n == "option")return TRUE;
                 }
                 ev.halt();
             });
@@ -897,10 +1187,15 @@ KISSY.Editor.add("definition", function(KE) {
             //实例集中管理
             focusManager.register(self);
             self.wrap = editorWrap.one(ke_textarea_wrap);
+            self["wrap"] = self.wrap;
             self.iframe = self.wrap.one("iframe");
+            self["iframe"] = self.iframe;
             self.toolBarDiv = editorWrap.one(ke_editor_tools);
+            self["toolBarDiv"] = self.toolBarDiv;
             self.textarea = textarea;
+            self["textarea"] = self.textarea;
             self.statusDiv = editorWrap.one(ke_editor_status);
+            self["statusDiv"] = self.statusDiv;
             //ie 点击按钮不丢失焦点
             self.toolBarDiv._4e_unselectable();
             //可以直接调用插件功能
@@ -923,7 +1218,7 @@ KISSY.Editor.add("definition", function(KE) {
             var iframe = self.iframe;
 
             self.on("dataReady", function() {
-                self._ready = true;
+                self._ready = TRUE;
                 KE.fire("instanceCreated", {editor:self});
             });
             // With FF, it's better to load the data on iframe.load. (#3894,#4058)
@@ -936,16 +1231,25 @@ KISSY.Editor.add("definition", function(KE) {
             if (self.cfg.attachForm && textarea[0].form)
                 self._attachForm();
         },
+        /**
+         *  @this {KISSY.Editor}
+         */
         _attachForm:function() {
             var self = this,
                 textarea = self.textarea,
                 form = new Node(textarea[0].form);
             form.on("submit", self.sync, self);
         },
+        /**
+         * @this {KISSY.Editor}
+         * @param name {string}
+         * @param callback {function(Object)}
+         * @param cfg {Object}
+         */
         useDialog:function(name, callback, cfg) {
             var self = this,
-                Overlay = KE.SimpleOverlay,
-                cfg = cfg || {};
+                Overlay = KE.SimpleOverlay;
+            cfg = cfg || {};
             Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
@@ -953,42 +1257,68 @@ KISSY.Editor.add("definition", function(KE) {
                 Overlay.unloading();
             });
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param name {string}
+         * @param obj {Object}
+         */
         addDialog:function(name, obj) {
-
             this._dialogs[name] = obj;
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param name {string}
+         */
         getDialog:function(name) {
-
             return this._dialogs[name];
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param func {function()}
+         */
         addPlugin:function(func) {
             this.ready(func);
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param name {string}
+         * @param obj {Object}
+         */
         addCommand:function(name, obj) {
             this._commands[name] = obj;
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param name {string}
+         */
         hasCommand:function(name) {
             return this._commands[name];
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param name {string}
+         */
         execCommand:function(name) {
-            //console.log(name);
             var self = this,
                 cmd = self._commands[name],
                 args = S.makeArray(arguments);
             args.shift();
             args.unshift(self);
-            //if (self._commands[name]) {
-            //self.fire("save");
             return cmd.exec.apply(cmd, args);
-            //self.fire("save");
-
-            //}
         },
+        /**
+         * @this {KISSY.Editor}
+         * @return {number}
+         */
         getMode:function() {
             return this.textarea.css("display") == "none" ?
                 KE.WYSIWYG_MODE :
                 KE.SOURCE_MODE;
         },
+        /**
+         *@this {KISSY.Editor}
+         * @param format {boolean}
+         */
         getData:function(format) {
             var self = this,
                 html;
@@ -1000,19 +1330,25 @@ KISSY.Editor.add("definition", function(KE) {
                 html = self.textarea.val();
             }
             //如果不需要要格式化，例如提交数据给服务器
-            if (self.htmlDataProcessor) {
+            if (self["htmlDataProcessor"]) {
                 if (format) {
-                    html = self.htmlDataProcessor.toHtml(html, "p");
+                    html = self["htmlDataProcessor"]["toHtml"](html, "p");
                 } else {
-                    html = self.htmlDataProcessor.toServer(html, "p");
+                    html = self["htmlDataProcessor"]["toServer"](html, "p");
                 }
             }
             return html;
         } ,
+
+        /**
+         *@this {KISSY.Editor}
+         * @param data {string}
+         */
         setData:function(data) {
-            var self = this,afterData;
-            if (self.htmlDataProcessor)
-                afterData = self.htmlDataProcessor.toDataFormat(data, "p");
+            var self = this,
+                afterData = data;
+            if (self["htmlDataProcessor"])
+                afterData = self["htmlDataProcessor"]["toDataFormat"](data, "p");
             self.document.body.innerHTML = afterData;
             if (self.getMode() == KE.WYSIWYG_MODE) {
             } else {
@@ -1020,64 +1356,80 @@ KISSY.Editor.add("definition", function(KE) {
                 self.textarea.val(data);
             }
         },
-
+        /**
+         * @this {KISSY.Editor}
+         */
         sync:function() {
             this.textarea.val(this.getData());
         },
-        //ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
+
+        /**
+         * ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
+         * @this {KISSY.Editor}
+         * @param v {number}
+         */
         baseZIndex:function(v) {
             v = v || 0;
             var zIndex = this.cfg.baseZIndex || 0;
             return v + zIndex;
         },
 
-        //撤销重做时，不需要格式化代码，直接取自身
+        /**
+         * 撤销重做时，不需要格式化代码，直接取自身
+         * @this {KISSY.Editor}
+         */
+
         _getRawData:function() {
             return this.document.body.innerHTML;
         },
 
-        //撤销重做时，不需要格式化代码，直接取自身
+
+        /**
+         * 撤销重做时，不需要格式化代码，直接取自身
+         * @this {KISSY.Editor}
+         * @param data {string}
+         */
         _setRawData:function(data) {
             this.document.body.innerHTML = data;
         },
-
+        /**
+         * @this {KISSY.Editor}
+         */
         _prepareIFrameHtml:prepareIFrameHtml,
-
+        /**
+         * @this {KISSY.Editor}
+         */
         getSelection:function() {
             return KE.Selection.getSelection(this.document);
         },
-
+        /**
+         * @this {KISSY.Editor}
+         */
         focus:function() {
-            //console.log("manually focus");
             var self = this,
                 doc = self.document,
                 win = DOM._4e_getWin(doc);
             UA.webkit && win && win.parent && win.parent.focus();
-            //win && win.blur();
-            //yiminghe note:firefox need this ,暂时使得iframe先失去焦点，触发 blinkCursor 补丁
-            //if (UA.gecko)self.blur();
             //yiminghe note:webkit need win.focus
             win && win.focus();
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
         } ,
+        /**
+         * @this {KISSY.Editor}
+         */
         blur:function() {
-            /*
-             工具栏有焦点，iframe也有焦点？？
-             this.toolBarDiv.children().each(function(el) {
-             el[0].focus();
-             });
-             */
             var self = this,
                 win = DOM._4e_getWin(self.document);
             win.blur();
             self.document && self.document.body.blur();
-            //self.notifySelectionChange();
-
-            //firefox 焦点相关，强制 mousedown 刷新光标
-            //this.iframeFocus = false;
         },
+
+        /**
+         *@this {KISSY.Editor}
+         * @param cssText {string}
+         */
         addCustomStyle:function(cssText) {
             var self = this,
                 cfg = self.cfg,
@@ -1094,6 +1446,9 @@ KISSY.Editor.add("definition", function(KE) {
                 elem.appendChild(doc.createTextNode(cssText));
             }
         },
+        /**
+         * @this {KISSY.Editor}
+         */
         _setUpIFrame:function() {
             var self = this,
                 iframe = self.iframe,
@@ -1136,7 +1491,10 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.close();
             }
         },
-
+        /**
+         *@this {KISSY.Editor}
+         * @param func {function()}
+         */
         ready:function(func) {
             var self = this;
             if (self._ready)func();
@@ -1144,6 +1502,9 @@ KISSY.Editor.add("definition", function(KE) {
                 self.on("dataReady", func);
             }
         },
+        /**
+         * @this {KISSY.Editor}
+         */
         _monitor:function() {
             var self = this;
             if (self._monitorId) {
@@ -1166,13 +1527,19 @@ KISSY.Editor.add("definition", function(KE) {
         ,
         /**
          * 强制通知插件更新状态，防止插件修改编辑器内容，自己反而得不到通知
+         * @this {KISSY.Editor}
          */
         notifySelectionChange:function() {
             var self = this;
-            self.previousPath = null;
+            self.previousPath = NULL;
             self._monitor();
         },
 
+        /**
+         *@this {KISSY.Editor}
+         * @param element {KISSY.Node}
+         * @param init {function()}
+         */
         insertElement:function(element, init) {
             var self = this;
             self.focus();
@@ -1204,23 +1571,23 @@ KISSY.Editor.add("definition", function(KE) {
                 range = ranges[ i ];
                 // Remove the original contents.
                 range.deleteContents();
-                clone = !i && element || element._4e_clone(true);
+                clone = !i && element || element._4e_clone(TRUE);
                 init && init(clone);
                 // If we're inserting a block at dtd-violated position, split
                 // the parent blocks until we reach blockLimit.
                 if (isBlock) {
-                    while (( current = range.getCommonAncestor(false, true) )
+                    while (( current = range.getCommonAncestor(FALSE, TRUE) )
                         && ( dtd = xhtml_dtd[ current._4e_name() ] )
                         && !( dtd && dtd [ elementName ] )) {
                         // Split up inline elements.
-                        if (current._4e_name() in xhtml_dtd.span)
+                        if (current._4e_name() in xhtml_dtd["span"])
                             range.splitElement(current);
                         // If we're in an empty block which indicate a new paragraph,
                         // simply replace it with the inserting block.(#3664)
                         else if (range.checkStartOfBlock()
                             && range.checkEndOfBlock()) {
                             range.setStartBefore(current);
-                            range.collapse(true);
+                            range.collapse(TRUE);
                             current._4e_remove();
                         }
                         else
@@ -1235,8 +1602,9 @@ KISSY.Editor.add("definition", function(KE) {
                 if (!lastElement)
                     lastElement = clone;
             }
+            if (!lastElement) return;
 
-            var next = lastElement._4e_nextSourceNode(true),p,
+            var next = lastElement._4e_nextSourceNode(TRUE),p,
                 doc = self.document;
             dtd = KE.XHTML_DTD;
 
@@ -1244,7 +1612,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (!dtd.$inline[clone._4e_name()]) {
                 //末尾时 ie 不会自动产生br，手动产生
                 if (!next) {
-                    p = new Node("<p>&nbsp;</p>", null, doc);
+                    p = new Node("<p>&nbsp;</p>", NULL, doc);
                     p.insertAfter(lastElement);
                     next = p;
                 }
@@ -1254,7 +1622,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //必须符合嵌套规则
                     dtd[next.parent()._4e_name()]["p"]
                     ) {
-                    p = new Node("<p>&nbsp;</p>", null, doc);
+                    p = new Node("<p>&nbsp;</p>", NULL, doc);
                     next[0].parentNode.replaceChild(p[0], next[0]);
                     next = p;
                 }
@@ -1277,15 +1645,19 @@ KISSY.Editor.add("definition", function(KE) {
             return clone;
         },
 
+        /**
+         *@this {KISSY.Editor}
+         * @param data {string}
+         */
         insertHtml:function(data) {
             var self = this;
-            if (self.htmlDataProcessor)
-                data = self.htmlDataProcessor.toDataFormat(data);//, "p");
+            if (self["htmlDataProcessor"])
+                data = self["htmlDataProcessor"]["toDataFormat"](data);//, "p");
             /**
              * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
              */
             if (UA.webkit) {
-                var nodes = DOM.create(data, null, this.document);
+                var nodes = DOM.create(data, NULL, this.document);
                 if (nodes.nodeType == 11) nodes = S.makeArray(nodes.childNodes);
                 else nodes = [nodes];
                 for (var i = 0; i < nodes.length; i++)
@@ -1315,7 +1687,7 @@ KISSY.Editor.add("definition", function(KE) {
                     $sel.clear();
                 $sel.createRange().pasteHTML(data);
             } else {
-                self.document.execCommand('inserthtml', false, data);
+                self.document.execCommand('inserthtml', FALSE, data);
             }
 
             self.focus();
@@ -1327,8 +1699,10 @@ KISSY.Editor.add("definition", function(KE) {
     /**
      * 初始化iframe内容以及浏览器间兼容性处理，
      * 必须等待iframe内的脚本向父窗口通知
+     * @this {KISSY.Editor}
+     * @param id {string}
      */
-    KE._initIFrame = function(id) {
+    KE["_initIFrame"] = function(id) {
 
         var self = focusManager.getInstance(id),
             iframe = self.iframe,
@@ -1364,12 +1738,12 @@ KISSY.Editor.add("definition", function(KE) {
         //2.0 body.contentEditable=true body外不是编辑模式
         if (UA.ie) {
             // Don't display the focus border.
-            body.hideFocus = true;
+            body.hideFocus = TRUE;
 
             // Disable and re-enable the body to avoid IE from
             // taking the editing focus at startup. (#141 / #523)
-            body.disabled = true;
-            body.contentEditable = true;
+            body.disabled = TRUE;
+            body.contentEditable = TRUE;
             body.removeAttribute('disabled');
         } else {
             // Avoid opening design mode in a frame window thread,
@@ -1377,10 +1751,10 @@ KISSY.Editor.add("definition", function(KE) {
             setTimeout(function() {
                 // Prefer 'contentEditable' instead of 'designMode'. (#3593)
                 if (UA.gecko || UA.opera) {
-                    body.contentEditable = true;
+                    body.contentEditable = TRUE;
                 }
                 else if (UA.webkit)
-                    body.parentNode.contentEditable = true;
+                    body.parentNode.contentEditable = TRUE;
                 else
                     doc.designMode = 'on';
             }, 0);
@@ -1419,7 +1793,7 @@ KISSY.Editor.add("definition", function(KE) {
                         body.focus();
                         // Try it again once..
                         if (!arguments.callee.retry) {
-                            arguments.callee.retry = true;
+                            arguments.callee.retry = TRUE;
                             //arguments.callee();
                         }
                     }, 50);
@@ -1430,8 +1804,8 @@ KISSY.Editor.add("definition", function(KE) {
                     // Refresh the 'contentEditable' is a cue to this.
                     doc.designMode = 'off';
 
-                    DOM.attr(body, 'contentEditable', false);
-                    DOM.attr(body, 'contentEditable', true);
+                    DOM.attr(body, 'contentEditable', FALSE);
+                    DOM.attr(body, 'contentEditable', TRUE);
                     // Try it again once..
                     !retry && blinkCursor(1);
                     //console.log("path2");
@@ -1478,7 +1852,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //self.focus();
                     //return;
                     if (UA.gecko)
-                        blinkCursor(false);
+                        blinkCursor(FALSE);
                     //setTimeout(function() {
                     //这种：html mousedown -> body beforedeactivate
                     //    self.focus();
@@ -1499,7 +1873,7 @@ KISSY.Editor.add("definition", function(KE) {
              * focus后再恢复range
              */
             if (UA.gecko)
-                blinkCursor(false);
+                blinkCursor(FALSE);
             else if (UA.opera)
                 body.focus();
 
@@ -1515,7 +1889,7 @@ KISSY.Editor.add("definition", function(KE) {
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
                     //console.log("i am fixed");
-                    blinkCursor(false);
+                    blinkCursor(FALSE);
                 }
             });
         }
@@ -1596,8 +1970,8 @@ KISSY.Editor.add("definition", function(KE) {
             if (disableObjectResizing || disableInlineTableEditing) {
                 // IE, Opera and Safari may not support it and throw errors.
                 try {
-                    doc.execCommand('enableObjectResizing', false, !disableObjectResizing);
-                    doc.execCommand('enableInlineTableEditing', false, !disableInlineTableEditing);
+                    doc.execCommand('enableObjectResizing', FALSE, !disableObjectResizing);
+                    doc.execCommand('enableInlineTableEditing', FALSE, !disableInlineTableEditing);
                 }
                 catch(e) {
                     //只能ie能用？，目前只有firefox,ie支持图片缩放
@@ -1663,6 +2037,34 @@ KISSY.Editor.add("definition", function(KE) {
      } )();
      }
      */
+
+
+    var KEP = KE.prototype;
+    KE.Utils.extern(KEP, {
+        "setData":KEP.setData,
+        "getData":KEP.getData,
+        "insertElement":KEP.insertElement,
+        "insertHtml":KEP.insertHtml,
+        "ready":KEP.ready,
+        "addCustomStyle":KEP.addCustomStyle,
+        "addCommand":KEP.addCommand,
+        "hasCommand":KEP.hasCommand,
+        "execCommand":KEP.execCommand,
+        "addPlugin":KEP.addPlugin,
+
+
+        "useDialog":KEP.useDialog,
+        "addDialog":KEP.addDialog,
+        "getDialog":KEP.getDialog,
+        "getMode":KEP.getMode,
+        "sync":KEP.sync,
+        "baseZIndex":KEP.baseZIndex,
+        "getSelection":KEP.getSelection,
+        "focus":KEP.focus,
+        "blur":KEP.blur,
+        "notifySelectionChange":KEP.notifySelectionChange
+    });
+
 });/**
  * 集中管理各个z-index
  * @author:yiminghe@gmail.com
@@ -1672,10 +2074,11 @@ KISSY.Editor.add("zindex", function() {
 
     if (KE.zIndexManager) return;
 
-    KE.zIndexManager = {};
-    var manager = KE.zIndexManager;
-
-    S.mix(manager, {
+    /**
+     * z-index manager
+     *@enum {number}
+     */
+    KE.zIndexManager = {
         BUBBLE_VIEW:(1100),
         POPUP_MENU:(1200),
         //拖动垫片要最最高
@@ -1683,8 +2086,10 @@ KISSY.Editor.add("zindex", function() {
         MAXIMIZE:(900),
         OVERLAY:(9999),
         LOADING:(11000),
+        LOADING_CANCEL:12000,
         SELECT:(1200)
-    });
+    };
+
 
     /**
      * 获得全局最大值
@@ -1698,9 +2103,12 @@ KISSY.Editor.add("zindex", function() {
         }
         return r;
     };
+
+    KE["baseZIndex"] = KE.baseZIndex;
+    KE["zIndexManager"] = KE.zIndexManager;
 });/**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("dtd", function(KE) {
     /**
@@ -1716,48 +2124,93 @@ KISSY.Editor.add("dtd", function(KE) {
      * @namespace
      * @example
      * // Check if "div" can be contained in a "p" element.
-     * alert( !!CKEDITOR.dtd[ 'p' ][ 'div' ] );  "false"
+     * alert( !!dtd[ 'p' ][ 'div' ] );  "false"
      * @example
      * // Check if "p" can be contained in a "div" element.
-     * alert( !!CKEDITOR.dtd[ 'div' ][ 'p' ] );  "true"
+     * alert( !!dtd[ 'div' ][ 'p' ] );  "true"
      * @example
      * // Check if "p" is a block element.
-     * alert( !!CKEDITOR.dtd.$block[ 'p' ] );  "true"
+     * alert( !!dtd.$block[ 'p' ] );  "true"
      */
     KE.XHTML_DTD = (function() {
-        var X = function(r) {
+        /**
+         *
+         * @param {...Object} r
+         */
+        function X(r) {
             var i = arguments.length - 1;
             while (i > 0) {
                 KISSY.mix(r, arguments[i--]);
             }
             return r;
-        },
+        }
 
-            A = {isindex:1,fieldset:1},
-            B = {input:1,button:1,select:1,textarea:1,label:1},
-            C = X({a:1}, B),
-            D = X({iframe:1}, C),
-            E = {hr:1,ul:1,menu:1,div:1,blockquote:1,noscript:1,table:1,center:1,address:1,dir:1,pre:1,h5:1,dl:1,h4:1,noframes:1,h6:1,ol:1,h1:1,h3:1,h2:1},
-            F = {ins:1,del:1,script:1,style:1},
-            G = X({b:1,acronym:1,bdo:1,'var':1,'#':1,abbr:1,code:1,br:1,i:1,cite:1,kbd:1,u:1,strike:1,s:1,tt:1,strong:1,q:1,samp:1,em:1,dfn:1,span:1}, F),
-            H = X({sub:1,img:1,object:1,sup:1,basefont:1,map:1,applet:1,font:1,big:1,small:1}, G),
-            I = X({p:1}, H),
-            J = X({iframe:1}, H, B),
-            K = {img:1,noscript:1,br:1,kbd:1,center:1,button:1,basefont:1,h5:1,h4:1,samp:1,h6:1,ol:1,h1:1,h3:1,h2:1,form:1,font:1,'#':1,select:1,menu:1,ins:1,abbr:1,label:1,code:1,table:1,script:1,cite:1,input:1,iframe:1,strong:1,textarea:1,noframes:1,big:1,small:1,span:1,hr:1,sub:1,bdo:1,'var':1,div:1,object:1,sup:1,strike:1,dir:1,map:1,dl:1,applet:1,del:1,isindex:1,fieldset:1,ul:1,b:1,acronym:1,a:1,blockquote:1,i:1,u:1,s:1,tt:1,address:1,q:1,pre:1,p:1,em:1,dfn:1},
+        var A = {"isindex":1,"fieldset":1},
+            B = {"input":1,"button":1,"select":1,"textarea":1,"label":1},
+            C = X({"a":1}, B),
+            D = X({"iframe":1}, C),
+            E = {"hr":1,"ul":1,"menu":1,"div":1,
+                "blockquote":1,"noscript":1,"table":1,
+                "center":1,"address":1,"dir":1,"pre":1,"h5":1,
+                "dl":1,"h4":1,"noframes":1,"h6":1,
+                "ol":1,"h1":1,"h3":1,"h2":1},
+            F = {"ins":1,"del":1,"script":1,"style":1},
+            G = X({"b":1,"acronym":1,"bdo":1,'var':1,'#':1,
+                "abbr":1,"code":1,
+                "br":1,"i":1,"cite":1,
+                "kbd":1,
+                "u":1,
+                "strike":1,
+                "s":1,
+                "tt":1,
+                "strong":1,
+                "q":1,
+                "samp":1,
+                "em":1,
+                "dfn":1,
+                "span":1}, F),
+            H = X({"sub":1,
+                "img":1,
+                "object":1,
+                "sup":1,
+                "basefont":1,
+                "map":1,
+                "applet":1,
+                "font":1,
+                "big":1,
+                "small":1
+            }, G),
+            I = X({"p":1}, H),
+            J = X({"iframe":1}, H, B),
+            K = {"img":1,"noscript":1,"br":1,"kbd":1,"center":1,"button":1,
+                "basefont":1,"h5":1,"h4":1,"samp":1,"h6":1,"ol":1,
+                "h1":1,"h3":1,"h2":1,
+                "form":1,
+                "font":1,
+                '#':1,
+                "select":1,
+                "menu":1,
+                "ins":1,
+                "abbr":1,
+                "label":1,
+                "code":1,
+                "table":1,
+                "script":1,"cite":1,"input":1,"iframe":1,"strong":1,"textarea":1,"noframes":1,"big":1,"small":1,"span":1,"hr":1,"sub":1,"bdo":1,
+                'var':1,"div":1,"object":1,"sup":1,"strike":1,"dir":1,"map":1,"dl":1,"applet":1,"del":1,"isindex":1,"fieldset":1,"ul":1,"b":1,"acronym":1,"a":1,"blockquote":1,"i":1,"u":1,"s":1,"tt":1,"address":1,"q":1,"pre":1,"p":1,"em":1,"dfn":1},
 
-            L = X({a:1}, J),
-            M = {tr:1},
+            L = X({"a":1}, J),
+            M = {"tr":1},
             N = {'#':1},
-            O = X({param:1}, K),
-            P = X({form:1}, A, D, E, I),
-            Q = {li:1},
-            R = {style:1,script:1},
-            S = {base:1,link:1,meta:1,title:1},
+            O = X({"param":1}, K),
+            P = X({"form":1}, A, D, E, I),
+            Q = {"li":1},
+            R = {"style":1,"script":1},
+            S = {"base":1,"link":1,"meta":1,"title":1},
             T = X(S, R),
-            U = {head:1,body:1},
-            V = {html:1};
+            U = {"head":1,"body":1},
+            V = {"html":1};
 
-        var block = {address:1,blockquote:1,center:1,dir:1,div:1,dl:1,fieldset:1,form:1,h1:1,h2:1,h3:1,h4:1,h5:1,h6:1,hr:1,isindex:1,menu:1,noframes:1,ol:1,p:1,pre:1,table:1,ul:1};
+        var block = {"address":1,"blockquote":1,"center":1,"dir":1,"div":1,"dl":1,"fieldset":1,"form":1,"h1":1,"h2":1,"h3":1,"h4":1,"h5":1,"h6":1,"hr":1,"isindex":1,"menu":1,"noframes":1,"ol":1,"p":1,"pre":1,"table":1,"ul":1};
 
         return  {
 
@@ -1768,197 +2221,238 @@ KISSY.Editor.add("dtd", function(KE) {
 
             /**
              * List of block elements, like "p" or "div".
-             * @type Object
+             * @type {Object}
              * @example
              */
             $block : block,
 
             /**
              * List of block limit elements.
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $blockLimit : { body:1,div:1,td:1,th:1,caption:1,form:1 },
+            $blockLimit : {"body":1,"div":1,"td":1,"th":1,"caption":1,"form":1 },
 
             $inline : L,    // Just like span.
 
-            $body : X({script:1,style:1}, block),
+            $body : X({"script":1,"style":1}, block),
 
-            $cdata : {script:1,style:1},
+            $cdata : {"script":1,"style":1},
 
             /**
              * List of empty (self-closing) elements, like "br" or "img".
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $empty : {area:1,base:1,br:1,col:1,hr:1,img:1,input:1,link:1,meta:1,param:1},
+            $empty : {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1},
 
             /**
              * List of list item elements, like "li" or "dd".
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $listItem : {dd:1,dt:1,li:1},
+            $listItem : {"dd":1,"dt":1,"li":1},
 
             /**
              * List of list root elements.
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $list: { ul:1,ol:1,dl:1},
+            $list: {"ul":1,"ol":1,"dl":1},
 
             /**
              * Elements that accept text nodes, but are not possible to edit into
              * the browser.
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $nonEditable : {applet:1,button:1,embed:1,iframe:1,map:1,object:1,option:1,script:1,textarea:1,param:1},
+            $nonEditable : {"applet":1,"button":1,"embed":1,"iframe":1,"map":1,"object":1,"option":1,"script":1,"textarea":1,"param":1},
 
             /**
              * List of elements that can be ignored if empty, like "b" or "span".
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $removeEmpty : {abbr:1,acronym:1,address:1,b:1,bdo:1,big:1,cite:1,code:1,del:1,dfn:1,em:1,font:1,i:1,ins:1,label:1,kbd:1,q:1,s:1,samp:1,small:1,span:1,strike:1,strong:1,sub:1,sup:1,tt:1,u:1,'var':1},
+            $removeEmpty : {"abbr":1,"acronym":1,"address":1,"b":1,"bdo":1,"big":1,"cite":1,"code":1,"del":1,"dfn":1,"em":1,"font":1,"i":1,"ins":1,"label":1,"kbd":1,"q":1,"s":1,"samp":1,"small":1,"span":1,"strike":1,"strong":1,"sub":1,"sup":1,"tt":1,"u":1,'var':1},
 
             /**
              * List of elements that have tabindex set to zero by default.
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $tabIndex : {a:1,area:1,button:1,input:1,object:1,select:1,textarea:1},
+            $tabIndex : {"a":1,"area":1,"button":1,"input":1,"object":1,"select":1,"textarea":1},
 
             /**
              * List of elements used inside the "table" element, like "tbody" or "td".
-             * @type Object
+             * @type {Object}
              * @example
              */
-            $tableContent : {caption:1,col:1,colgroup:1,tbody:1,td:1,tfoot:1,th:1,thead:1,tr:1},
-
-            html: U,
-            head: T,
-            style: N,
-            //script: N,
-            body: P,
-            base: {},
-            link: {},
-            meta: {},
-            title: N,
-            col : {},
-            tr : {td:1,th:1},
-            img : {},
-            colgroup : {col:1},
-            noscript : P,
-            td : P,
-            br : {},
-            th : P,
-            center : P,
-            kbd : L,
-            button : X(I, E),
-            basefont : {},
-            h5 : L,
-            h4 : L,
-            samp : L,
-            h6 : L,
-            ol : Q,
-            h1 : L,
-            h3 : L,
-            option : N,
-            h2 : L,
-            form : X(A, D, E, I),
-            select : {optgroup:1,option:1},
-            font : L,
-            ins : L,
-            menu : Q,
-            abbr : L,
-            label : L,
-            table : {thead:1,col:1,tbody:1,tr:1,colgroup:1,caption:1,tfoot:1},
-            code : L,
-            script : N,
-            tfoot : M,
-            cite : L,
-            li : P,
-            input : {},
-            iframe : P,
-            strong : L,
-            textarea : N,
-            noframes : P,
-            big : L,
-            small : L,
-            span : L,
-            hr : {},
-            dt : L,
-            sub : L,
-            optgroup : {option:1},
-            param : {},
-            bdo : L,
+            $tableContent : {"caption":1,"col":1,"colgroup":1,
+                "tbody":1,"td":1,"tfoot":1,"th":1,"thead":1,"tr":1},
+            "html": U,
+            "head": T,
+            "style": N,
+            "body": P,
+            "base": {},
+            "link": {},
+            "meta": {},
+            "title": N,
+            "col": {},
+            "tr": {"td":1,"th":1},
+            "img": {},
+            "colgroup": {"col":1},
+            "noscript": P,
+            "td": P,
+            "br": {},
+            "th": P,
+            "center": P,
+            "kbd": L,
+            "button": X(I, E),
+            "basefont": {},
+            "h5": L,
+            "h4": L,
+            "samp": L,
+            "h6": L,
+            "ol": Q,
+            "h1": L,
+            "h3": L,
+            "option": N,
+            "h2": L,
+            "form" : X(A, D, E, I),
+            "select" : {"optgroup":1,"option":1},
+            "font" : L,
+            "ins": L,
+            "menu" : Q,
+            "abbr": L,
+            "label": L,
+            "table": {"thead":1,"col":1,"tbody":1,"tr":1,"colgroup":1,"caption":1,"tfoot":1},
+            "code": L,
+            "script": N,
+            "tfoot": M,
+            "cite": L,
+            "li": P,
+            "input": {},
+            "iframe": P,
+            "strong": L,
+            "textarea": N,
+            "noframes": P,
+            "big": L,
+            "small": L,
+            "span": L,
+            "hr": {},
+            "dt": L,
+            "sub": L,
+            "optgroup": {"option":1},
+            "param": {},
+            "bdo": L,
             'var' : L,
-            div : P,
-            object : O,
-            sup : L,
-            dd : P,
-            strike : L,
-            area : {},
-            dir : Q,
-            map : X({area:1,form:1,p:1}, A, F, E),
-            applet : O,
-            dl : {dt:1,dd:1},
-            del : L,
-            isindex : {},
-            fieldset : X({legend:1}, K),
-            thead : M,
-            ul : Q,
-            acronym : L,
-            b : L,
-            a : J,
-            blockquote : P,
-            caption : L,
-            i : L,
-            u : L,
-            tbody : M,
-            s : L,
-            address : X(D, I),
-            tt : L,
-            legend : L,
-            q : L,
-            pre : X(G, C),
-            p : L,
-            em : L,
-            dfn : L
+            "div": P,
+            "object": O,
+            "sup": L,
+            "dd": P,
+            "strike": L,
+            "area": {},
+            "dir": Q,
+            "map": X({"area":1,"form":1,"p":1}, A, F, E),
+            "applet": O,
+            "dl": {"dt":1,"dd":1},
+            "del": L,
+            "isindex": {},
+            "fieldset": X({"legend":1}, K),
+            "thead": M,
+            "ul": Q,
+            "acronym": L,
+            "b": L,
+            "a": J,
+            "blockquote": P,
+            "caption": L,
+            "i": L,
+            "u": L,
+            "tbody": M,
+            "s": L,
+            "address": X(D, I),
+            "tt": L,
+            "legend": L,
+            "q": L,
+            "pre": X(G, C),
+            "p": L,
+            "em": L,
+            "dfn": L
         };
     })();
-
+    KE["XHTML_DTD"] = KE.XHTML_DTD;
 });
 /**
- * modified from ckeditor,dom utils for kissy editor
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * dom utils for kissy editor,mainly from ckeditor
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("dom", function(KE) {
 
-    var S = KISSY,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         DOM = S.DOM,
         UA = S.UA,
         doc = document,
         Node = S.Node,
         Utils = KE.Utils,
         GET_BOUNDING_CLIENT_RECT = 'getBoundingClientRect',
-        REMOVE_EMPTY = {abbr:1,acronym:1,address:1,b:1,bdo:1,big:1,cite:1,code:1,del:1,dfn:1,em:1,font:1,i:1,ins:1,label:1,kbd:1,q:1,s:1,samp:1,small:1,span:1,strike:1,strong:1,sub:1,sup:1,tt:1,u:1,'var':1};
+        REMOVE_EMPTY = {
+            "abbr":1,
+            "acronym":1,
+            "address":1,
+            "b":1,
+            "bdo":1,
+            "big":1,
+            "cite":1,
+            "code":1,
+            "del":1,
+            "dfn":1,
+            "em":1,
+            "font":1,
+            "i":1,
+            "ins":1,
+            "label":1,
+            "kbd":1,
+            "q":1,
+            "s":1,
+            "samp":1,
+            "small":1,
+            "span":1,
+            "strike":1,
+            "strong":1,
+            "sub":1,
+            "sup":1,
+            "tt":1,
+            "u":1,
+            'var':1
+        };
+    /**
+     * Enum for node type
+     * @enum {number}
+     */
     KE.NODE = {
         NODE_ELEMENT:1,
         NODE_TEXT:3,
         NODE_COMMENT : 8,
         NODE_DOCUMENT_FRAGMENT:11
     };
-    KE.POSITION = {};
+    KE["NODE"]=KE.NODE;
+    /**
+     * Enum for node position
+     * @enum {number}
+     */
+    KE.POSITION = {
+        POSITION_IDENTICAL:0,
+        POSITION_DISCONNECTED:1,
+        POSITION_FOLLOWING:2,
+        POSITION_PRECEDING:4,
+        POSITION_IS_CONTAINED:8,
+        POSITION_CONTAINS:16
+    };
+    KE["POSITION"]=KE.POSITION;
     var KEN = KE.NODE,KEP = KE.POSITION;
-
-    KEP.POSITION_IDENTICAL = 0;
-    KEP.POSITION_DISCONNECTED = 1;
-    KEP.POSITION_FOLLOWING = 2;
-    KEP.POSITION_PRECEDING = 4;
-    KEP.POSITION_IS_CONTAINED = 8;
-    KEP.POSITION_CONTAINS = 16;
 
     /*
      * Anything whose display computed style is block, list-item, table,
@@ -1966,23 +2460,30 @@ KISSY.Editor.add("dom", function(KE) {
      * table-column-group, table-column, table-cell, table-caption, or whose node
      * name is hr, br (when enterMode is br only) is a block boundary.
      */
-    var customData = {},blockBoundaryDisplayMatch = {
-        block : 1,
-        'list-item' : 1,
-        table : 1,
-        'table-row-group' : 1,
-        'table-header-group' : 1,
-        'table-footer-group' : 1,
-        'table-row' : 1,
-        'table-column-group' : 1,
-        'table-column' : 1,
-        'table-cell' : 1,
-        'table-caption' : 1
-    },
-        blockBoundaryNodeNameMatch = { hr : 1 },
+    var customData = {},
+        blockBoundaryDisplayMatch = {
+            "block": 1,
+            'list-item' : 1,
+            "table": 1,
+            'table-row-group' : 1,
+            'table-header-group' : 1,
+            'table-footer-group' : 1,
+            'table-row' : 1,
+            'table-column-group' : 1,
+            'table-column' : 1,
+            'table-cell' : 1,
+            'table-caption' : 1
+        },
+        blockBoundaryNodeNameMatch = { "hr": 1 },
+        /**
+         * @param el {(Node|KISSY.Node)}
+         */
         normalElDom = function(el) {
             return   el[0] || el;
         },
+        /**
+         * @param el {(Node|KISSY.Node)}
+         */
         normalEl = function(el) {
             if (el && !el[0]) return new Node(el);
             return el;
@@ -1990,16 +2491,25 @@ KISSY.Editor.add("dom", function(KE) {
         editorDom = {
             _4e_wrap:normalEl,
             _4e_unwrap:normalElDom,
+            /**
+             *
+             * @param e1 {(Node|KISSY.Node)}
+             * @param e2 {(Node|KISSY.Node)}
+             */
             _4e_equals:function(e1, e2) {
                 //全部为空
-                if (!e1 && !e2)return true;
+                if (!e1 && !e2)return TRUE;
                 //一个为空，一个不为空
-                if (!e1 || !e2)return false;
+                if (!e1 || !e2)return FALSE;
                 e1 = normalElDom(e1);
                 e2 = normalElDom(e2);
                 return e1 === e2;
             },
-
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param customNodeNames {Object.<string,number>}
+             */
             _4e_isBlockBoundary:function(el, customNodeNames) {
                 el = normalEl(el);
                 var nodeNameMatches = S.mix(S.mix({}, blockBoundaryNodeNameMatch), customNodeNames || {});
@@ -2007,13 +2517,22 @@ KISSY.Editor.add("dom", function(KE) {
                 return blockBoundaryDisplayMatch[ el.css('display') ] ||
                     nodeNameMatches[ el._4e_name() ];
             },
+
+            /**
+             *
+             * @param elem {Node|Document}
+             */
             _4e_getWin:function(elem) {
                 return (elem && ('scrollTo' in elem) && elem["document"]) ?
                     elem :
                     elem && elem.nodeType === 9 ?
                         elem.defaultView || elem.parentWindow :
-                        false;
+                        FALSE;
             },
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_index:function(el) {
                 el = normalElDom(el);
                 var siblings = el.parentNode.childNodes;
@@ -2022,6 +2541,11 @@ KISSY.Editor.add("dom", function(KE) {
                 }
                 return -1;
             },
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param evaluator {function(KISSY.Node)}
+             */
             _4e_first:function(el, evaluator) {
                 el = normalElDom(el);
                 var first = el.firstChild,
@@ -2031,10 +2555,15 @@ KISSY.Editor.add("dom", function(KE) {
 
                 return retval;
             },
-
+            /**
+             *
+             * @param thisElement {(Node|KISSY.Node)}
+             * @param target {(Node|KISSY.Node)}
+             * @param toStart {boolean}
+             */
             _4e_move : function(thisElement, target, toStart) {
-                thisElement._4e_remove();
                 thisElement = normalElDom(thisElement);
+                DOM._4e_remove(thisElement);
                 target = normalElDom(target);
                 if (toStart) {
                     target.insertBefore(thisElement, target.firstChild);
@@ -2044,6 +2573,10 @@ KISSY.Editor.add("dom", function(KE) {
                 }
             },
 
+            /**
+             *
+             * @param thisElement {(Node|KISSY.Node)}
+             */
             _4e_name:function(thisElement) {
                 thisElement = normalElDom(thisElement);
                 var nodeName = thisElement.nodeName.toLowerCase();
@@ -2055,22 +2588,27 @@ KISSY.Editor.add("dom", function(KE) {
                 }
                 return nodeName;
             },
+            /**
+             *
+             * @param thisElement {(Node|KISSY.Node)}
+             * @param otherElement {(Node|KISSY.Node)}
+             */
             _4e_isIdentical : function(thisElement, otherElement) {
                 if (thisElement._4e_name() != otherElement._4e_name())
-                    return false;
+                    return FALSE;
 
                 var thisAttribs = thisElement[0].attributes,
                     otherAttribs = otherElement[0].attributes,thisLength = thisAttribs.length,
                     otherLength = otherAttribs.length;
 
                 if (!UA.ie && thisLength != otherLength)
-                    return false;
+                    return FALSE;
 
                 for (var i = 0; i < thisLength; i++) {
                     var attribute = thisAttribs[ i ];
 
                     if (( !UA.ie || ( attribute.specified && attribute.nodeName != '_ke_expando' ) ) && attribute.nodeValue != otherElement.attr(attribute.nodeName))
-                        return false;
+                        return FALSE;
                 }
 
                 // For IE, we have to for both elements, because it's difficult to
@@ -2080,12 +2618,17 @@ KISSY.Editor.add("dom", function(KE) {
                         attribute = otherAttribs[ i ];
                         if (attribute.specified && attribute.nodeName != '_ke_expando'
                             && attribute.nodeValue != thisElement.attr(attribute.nodeName))
-                            return false;
+                            return FALSE;
                     }
                 }
 
-                return true;
+                return TRUE;
             },
+
+            /**
+             *
+             * @param thisElement {(Node|KISSY.Node)}
+             */
             _4e_isEmptyInlineRemoveable : function(thisElement) {
                 var children = normalElDom(thisElement).childNodes;
                 for (var i = 0, count = children.length; i < count; i++) {
@@ -2097,11 +2640,18 @@ KISSY.Editor.add("dom", function(KE) {
 
                     if (nodeType == KEN.NODE_ELEMENT && !editorDom._4e_isEmptyInlineRemoveable(child)
                         || nodeType == KEN.NODE_TEXT && S.trim(child.nodeValue)) {
-                        return false;
+                        return FALSE;
                     }
                 }
-                return true;
+                return TRUE;
             },
+
+            /**
+             *
+             * @param thisElement {(Node|KISSY.Node)}
+             * @param target {(Node|KISSY.Node)}
+             * @param toStart {boolean}
+             */
             _4e_moveChildren : function(thisElement, target, toStart) {
                 var $ = normalElDom(thisElement);
                 target = target[0] || target;
@@ -2119,7 +2669,19 @@ KISSY.Editor.add("dom", function(KE) {
                         target.appendChild($.removeChild(child));
                 }
             },
+
+            /**
+             *
+             * @param elem {(Node|KISSY.Node)}
+             */
             _4e_mergeSiblings : ( function() {
+
+                /**
+                 *
+                 * @param element {(Node|KISSY.Node)}
+                 * @param sibling {(Node|KISSY.Node)}
+                 * @param  {boolean=} isNext
+                 */
                 function mergeElements(element, sibling, isNext) {
                     if (sibling[0] && sibling[0].nodeType == KEN.NODE_ELEMENT) {
                         // Jumping over bookmark nodes and empty inline elements, e.g. <b><i></i></b>,
@@ -2160,10 +2722,15 @@ KISSY.Editor.add("dom", function(KE) {
                     if (!( REMOVE_EMPTY[ thisElement._4e_name() ] || thisElement._4e_name() == "a" ))
                         return;
 
-                    mergeElements(thisElement, new Node(thisElement[0].nextSibling), true);
+                    mergeElements(thisElement, new Node(thisElement[0].nextSibling), TRUE);
                     mergeElements(thisElement, new Node(thisElement[0].previousSibling));
                 };
             } )(),
+
+            /**
+             *
+             * @param elem {(Node|KISSY.Node)}
+             */
             _4e_unselectable :
                 UA.gecko ?
                     function(el) {
@@ -2200,6 +2767,11 @@ KISSY.Editor.add("dom", function(KE) {
                         }
                     },
 
+            /**
+             *
+             * @param elem {(Node|KISSY.Node)}
+             * @param refDocument {Document}
+             */
             _4e_getOffset:function(elem, refDocument) {
                 elem = normalElDom(elem);
                 var box,
@@ -2230,6 +2802,10 @@ KISSY.Editor.add("dom", function(KE) {
                 return { left: x, top: y };
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_getFrameDocument : function(el) {
                 var $ = normalElDom(el),t;
 
@@ -2263,6 +2839,11 @@ KISSY.Editor.add("dom", function(KE) {
                 return $ && $.contentWindow.document;
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param offset {number}
+             */
             _4e_splitText : function(el, offset) {
                 el = normalElDom(el);
                 var doc = el.ownerDocument;
@@ -2290,6 +2871,11 @@ KISSY.Editor.add("dom", function(KE) {
                 return retval;
             },
 
+            /**
+             *
+             * @param node {(Node|KISSY.Node)}
+             * @param closerFirst {boolean}
+             */
             _4e_parents : function(node, closerFirst) {
                 node = normalEl(node);
                 var parents = [];
@@ -2300,6 +2886,12 @@ KISSY.Editor.add("dom", function(KE) {
                 return parents;
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param includeChildren {boolean}
+             * @param cloneId {string}
+             */
             _4e_clone : function(el, includeChildren, cloneId) {
                 el = normalElDom(el);
                 var $clone = el.cloneNode(includeChildren);
@@ -2309,9 +2901,9 @@ KISSY.Editor.add("dom", function(KE) {
                         if (node.nodeType != KEN.NODE_ELEMENT)
                             return;
 
-                        node.removeAttribute('id', false);
+                        node.removeAttribute('id', FALSE);
                         //复制时不要复制expando
-                        node.removeAttribute('_ke_expando', false);
+                        node.removeAttribute('_ke_expando', FALSE);
 
                         var childs = node.childNodes;
                         for (var i = 0; i < childs.length; i++)
@@ -2325,10 +2917,10 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 深度优先遍历获取下一结点
-             * @param el
-             * @param startFromSibling
-             * @param nodeType
-             * @param guard
+             * @param el {(Node|KISSY.Node)}
+             * @param startFromSibling {boolean}
+             * @param nodeType {number}
+             * @param guard {function(KISSY.Node)}
              */
             _4e_nextSourceNode : function(el, startFromSibling, nodeType, guard) {
                 el = normalElDom(el);
@@ -2347,31 +2939,39 @@ KISSY.Editor.add("dom", function(KE) {
                 // Guarding when we're skipping the current element( no children or 'startFromSibling' ).
                 // send the 'moving out' signal even we don't actually dive into.
                 if (!node) {
-                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, true) === false)
-                        return null;
+                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, TRUE) === FALSE)
+                        return NULL;
                     node = el.nextSibling;
                 }
 
                 while (!node && ( parent = parent.parent())) {
-                    // The guard check sends the "true" paramenter to indicate that
+                    // The guard check sends the "TRUE" paramenter to indicate that
                     // we are moving "out" of the element.
-                    if (guard && guard(parent, true) === false)
-                        return null;
+                    if (guard && guard(parent, TRUE) === FALSE)
+                        return NULL;
 
                     node = parent[0].nextSibling;
                 }
 
                 if (!node)
-                    return null;
+                    return NULL;
                 node = DOM._4e_wrap(node);
-                if (guard && guard(node) === false)
-                    return null;
+                if (guard && guard(node) === FALSE)
+                    return NULL;
 
                 if (nodeType && nodeType != node[0].nodeType)
-                    return node._4e_nextSourceNode(false, nodeType, guard);
+                    return node._4e_nextSourceNode(FALSE, nodeType, guard);
 
                 return node;
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param startFromSibling {boolean}
+             * @param nodeType {number}
+             * @param guard {function(KISSY.Node)}
+             */
             _4e_previousSourceNode : function(el, startFromSibling, nodeType, guard) {
                 el = normalElDom(el);
                 if (guard && !guard.call) {
@@ -2388,30 +2988,36 @@ KISSY.Editor.add("dom", function(KE) {
                 // Guarding when we're skipping the current element( no children or 'startFromSibling' ).
                 // send the 'moving out' signal even we don't actually dive into.
                 if (!node) {
-                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, true) === false)
-                        return null;
+                    if (el.nodeType == KEN.NODE_ELEMENT && guard && guard(el, TRUE) === FALSE)
+                        return NULL;
                     node = el.previousSibling;
                 }
 
                 while (!node && ( parent = parent.parent() )) {
-                    // The guard check sends the "true" paramenter to indicate that
+                    // The guard check sends the "TRUE" paramenter to indicate that
                     // we are moving "out" of the element.
-                    if (guard && guard(parent, true) === false)
-                        return null;
+                    if (guard && guard(parent, TRUE) === FALSE)
+                        return NULL;
                     node = parent[0].previousSibling;
                 }
 
                 if (!node)
-                    return null;
+                    return NULL;
                 node = DOM._4e_wrap(node);
-                if (guard && guard(node) === false)
-                    return null;
+                if (guard && guard(node) === FALSE)
+                    return NULL;
 
                 if (nodeType && node[0].nodeType != nodeType)
-                    return node._4e_previousSourceNode(false, nodeType, guard);
+                    return node._4e_previousSourceNode(FALSE, nodeType, guard);
 
                 return node;
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param node {(Node|KISSY.Node)}
+             */
             _4e_contains :
                 UA.ie || UA.webkit ?
                     function(el, node) {
@@ -2427,6 +3033,12 @@ KISSY.Editor.add("dom", function(KE) {
                         node = normalElDom(node);
                         return !!( el.compareDocumentPosition(node) & 16 );
                     },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param node {(Node|KISSY.Node)}
+             */
             _4e_commonAncestor:function(el, node) {
                 if (el._4e_equals(node))
                     return el;
@@ -2441,8 +3053,15 @@ KISSY.Editor.add("dom", function(KE) {
                         return start;
                 } while (( start = start.parent() ));
 
-                return null;
+                return NULL;
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param name {string}
+             * @param includeSelf {boolean}
+             */
             _4e_ascendant : function(el, name, includeSelf) {
                 var $ = normalElDom(el);
 
@@ -2456,18 +3075,29 @@ KISSY.Editor.add("dom", function(KE) {
                 }
                 //到document就完了
                 while ($ && $.nodeType != 9) {
-                    if (!name || name(new Node($)) === true)
+                    if (!name || name(new Node($)) === TRUE)
                         return new Node($);
 
                     $ = $.parentNode;
                 }
-                return null;
+                return NULL;
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param name {string}
+             */
             _4e_hasAttribute : function(el, name) {
                 el = normalElDom(el);
                 var $attr = el.attributes.getNamedItem(name);
                 return !!( $attr && $attr.specified );
             },
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param otherNode {(Node|KISSY.Node)}
+             */
             _4e_hasAttributes: UA.ie ?
                 function(el) {
                     el = normalElDom(el);
@@ -2485,7 +3115,7 @@ KISSY.Editor.add("dom", function(KE) {
                                 // Note : I was not able to reproduce it outside the editor,
                                 // but I've faced it while working on the TC of #1391.
                                 if (el.getAttribute('class'))
-                                    return true;
+                                    return TRUE;
                                 break;
                             // Attributes to be ignored.
                             case '_ke_expando' :
@@ -2495,11 +3125,11 @@ KISSY.Editor.add("dom", function(KE) {
 
                             default :
                                 if (attribute.specified)
-                                    return true;
+                                    return TRUE;
                         }
                     }
 
-                    return false;
+                    return FALSE;
                 }
                 :
                 function(el) {
@@ -2510,6 +3140,11 @@ KISSY.Editor.add("dom", function(KE) {
                     return ( attributes.length > 1 || ( attributes.length == 1 && attributes[0].nodeName != '_ke_expando' ) );
                 },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param otherNode {(Node|KISSY.Node)}
+             */
             _4e_position : function(el, otherNode) {
                 var $ = normalElDom(el),$other = normalElDom(otherNode);
 
@@ -2563,6 +3198,11 @@ KISSY.Editor.add("dom", function(KE) {
                     KEP.POSITION_IS_CONTAINED + KEP.POSITION_FOLLOWING;
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param normalized {boolean}
+             */
             _4e_address:function(el, normalized) {
                 el = normalElDom(el);
                 var address = [],
@@ -2596,9 +3236,14 @@ KISSY.Editor.add("dom", function(KE) {
 
                     node = parentNode;
                 }
-
                 return address;
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param parent {(Node|KISSY.Node)}
+             */
             _4e_breakParent : function(el, parent) {
                 var KERange = KE.Range,range = new KERange(el[0].ownerDocument);
 
@@ -2616,13 +3261,27 @@ KISSY.Editor.add("dom", function(KE) {
                 // Re-insert the extracted piece after the element.
                 el[0].parentNode.insertBefore(docFrag, el[0].nextSibling);
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param styleName {string}
+             * @param val {string=}
+             */
             _4e_style:function(el, styleName, val) {
+                el = normalEl(el);
                 if (val !== undefined) {
                     return el.css(styleName, val);
                 }
-                el = el[0] || el;
+                el = normalElDom(el);
                 return el.style[normalizeStyle(styleName)];
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param preserveChildren {boolean}
+             */
             _4e_remove : function(el, preserveChildren) {
                 var $ = normalElDom(el), parent = $.parentNode;
                 if (parent) {
@@ -2636,11 +3295,19 @@ KISSY.Editor.add("dom", function(KE) {
                 }
                 return el;
             },
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_trim : function(el) {
                 DOM._4e_ltrim(el);
                 DOM._4e_rtrim(el);
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_ltrim : function(el) {
                 el = normalElDom(el);
                 var child;
@@ -2663,6 +3330,10 @@ KISSY.Editor.add("dom", function(KE) {
                 }
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_rtrim : function(el) {
                 el = normalElDom(el);
                 var child;
@@ -2693,6 +3364,10 @@ KISSY.Editor.add("dom", function(KE) {
                 }
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_appendBogus : function(el) {
                 el = normalElDom(el);
                 var lastChild = el.lastChild;
@@ -2711,6 +3386,12 @@ KISSY.Editor.add("dom", function(KE) {
                     el.appendChild(bogus);
                 }
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param evaluator {function(KISSY.Node)}
+             */
             _4e_previous : function(el, evaluator) {
                 var previous = normalElDom(el), retval;
                 do {
@@ -2721,7 +3402,9 @@ KISSY.Editor.add("dom", function(KE) {
             },
 
             /**
-             * @param {Function} evaluator Filtering the result node.
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param evaluator {function(KISSY.Node)}
              */
             _4e_last : function(el, evaluator) {
                 el = DOM._4e_wrap(el);
@@ -2732,7 +3415,11 @@ KISSY.Editor.add("dom", function(KE) {
 
                 return retval;
             },
-
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param evaluator {function(KISSY.Node)}
+             */
             _4e_next : function(el, evaluator) {
                 var next = normalElDom(el), retval;
                 do {
@@ -2741,6 +3428,10 @@ KISSY.Editor.add("dom", function(KE) {
                 } while (retval && evaluator && !evaluator(retval));
                 return retval;
             },
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_outerHtml : function(el) {
                 el = normalElDom(el);
                 if (el.outerHTML) {
@@ -2750,10 +3441,17 @@ KISSY.Editor.add("dom", function(KE) {
                 }
 
                 var tmpDiv = el.ownerDocument.createElement('div');
-                tmpDiv.appendChild(el.cloneNode(true));
+                tmpDiv.appendChild(el.cloneNode(TRUE));
                 return tmpDiv.innerHTML;
             },
 
+            /**
+             *
+             * @param element {(Node|KISSY.Node)}
+             * @param database {Object.<string,KISSY.Node>}
+             * @param name {string}
+             * @param value {string}
+             */
             _4e_setMarker : function(element, database, name, value) {
                 element = DOM._4e_wrap(element);
                 var id = element._4e_getData('list_marker_id') ||
@@ -2765,6 +3463,13 @@ KISSY.Editor.add("dom", function(KE) {
 
                 return element._4e_setData(name, value);
             },
+
+            /**
+             *
+             * @param element {(Node|KISSY.Node)}
+             * @param database {Object.<string,KISSY.Node>}
+             * @param removeFromDatabase {boolean}
+             */
             _4e_clearMarkers : function(element, database, removeFromDatabase) {
 
                 element = normalEl(element);
@@ -2779,6 +3484,12 @@ KISSY.Editor.add("dom", function(KE) {
                 }
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param key {string}
+             * @param value {string}
+             */
             _4e_setData : function(el, key, value) {
                 var expandoNumber = DOM._4e_getUniqueId(el),
                     dataSlot = customData[ expandoNumber ] || ( customData[ expandoNumber ] = {} );
@@ -2786,7 +3497,11 @@ KISSY.Editor.add("dom", function(KE) {
                 return el;
             },
 
-
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param key {string}
+             */
             _4e_getData :function(el, key) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando'),
@@ -2794,7 +3509,11 @@ KISSY.Editor.add("dom", function(KE) {
                 return dataSlot && dataSlot[ key ];
             },
 
-
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param key {string}
+             */
             _4e_removeData : function(el, key) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando'),
@@ -2806,9 +3525,13 @@ KISSY.Editor.add("dom", function(KE) {
                 if (S.isEmptyObject(dataSlot))
                     DOM._4e_clearData(el);
 
-                return retval || null;
+                return retval || NULL;
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_clearData : function(el) {
                 el = normalElDom(el);
                 var expandoNumber = el.getAttribute('_ke_expando');
@@ -2816,6 +3539,11 @@ KISSY.Editor.add("dom", function(KE) {
                 //ie inner html 会把属性带上，删掉！
                 expandoNumber && el.removeAttribute("_ke_expando");
             },
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_getUniqueId : function(el) {
                 el = normalElDom(el);
                 var id = el.getAttribute('_ke_expando');
@@ -2825,8 +3553,16 @@ KISSY.Editor.add("dom", function(KE) {
                 return id;
             },
 
+
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             * @param dest  {(Node|KISSY.Node)}
+             * @param skipAttributes {Object.<string,number>}
+             */
             _4e_copyAttributes : function(el, dest, skipAttributes) {
                 el = normalElDom(el);
+                dest = normalEl(dest);
                 var attributes = el.attributes;
                 skipAttributes = skipAttributes || {};
 
@@ -2847,7 +3583,7 @@ KISSY.Editor.add("dom", function(KE) {
                     else if (attribute.specified ||
                         ( UA.ie && attribute.nodeValue && attrName == 'value' )) {
                         attrValue = DOM.attr(el, attrName);
-                        if (attrValue === null)
+                        if (attrValue === NULL)
                             attrValue = attribute.nodeValue;
                         dest.attr(attrName, attrValue);
                     }
@@ -2858,20 +3594,24 @@ KISSY.Editor.add("dom", function(KE) {
                     dest[0].style.cssText = el.style.cssText;
             },
 
+            /**
+             *
+             * @param el {(Node|KISSY.Node)}
+             */
             _4e_isEditable : function(el) {
 
                 // Get the element DTD (defaults to span for unknown elements).
                 var name = DOM._4e_name(el),
                     xhtml_dtd = KE.XHTML_DTD,
                     dtd = !xhtml_dtd.$nonEditable[ name ]
-                        && ( xhtml_dtd[ name ] || xhtml_dtd.span );
+                        && ( xhtml_dtd[ name ] || xhtml_dtd["span"] );
 
                 // In the DTD # == text node.
                 return ( dtd && dtd['#'] );
             },
             /**
              * 修正scrollIntoView在可视区域内不需要滚动
-             * @param elem
+             * @param elem {(Node|KISSY.Node)}
              */
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
@@ -2890,6 +3630,14 @@ KISSY.Editor.add("dom", function(KE) {
                     elem.scrollIntoView(doc);
                 }
             },
+
+            /**
+             *
+             * @param elem {(Node|KISSY.Node)}
+             * @param tag {string}
+             * @param namespace {string=}
+             * @return {Array.<KISSY.Node>}
+             */
             _4e_getElementsByTagName:function(elem, tag, namespace) {
                 elem = normalElDom(elem);
                 if (!UA.ie && namespace) {
@@ -2902,13 +3650,20 @@ KISSY.Editor.add("dom", function(KE) {
             }
         };
 
-
+    /**
+     *
+     * @param styleName {string}
+     */
     function normalizeStyle(styleName) {
         return styleName.replace(/-(\w)/g, function(m, g1) {
             return g1.toUpperCase();
         })
     }
 
+    /**
+     *
+     * @param editorDom {Object}
+     */
     S.DOM._4e_inject = function(editorDom) {
         S.mix(DOM, editorDom);
         for (var dm in editorDom) {
@@ -2917,28 +3672,112 @@ KISSY.Editor.add("dom", function(KE) {
                     Node.prototype[dm] = function() {
                         var args = [].slice.call(arguments, 0);
                         args.unshift(this);
-                        return editorDom[dm].apply(null, args);
+                        return editorDom[dm].apply(NULL, args);
                     };
                 })(dm);
         }
     };
-    S.DOM._4e_inject(editorDom);
+
+
+    Utils.extern(editorDom, {
+        "_4e_wrap":editorDom._4e_wrap,
+        "_4e_unwrap":editorDom._4e_unwrap,
+        "_4e_equals":editorDom._4e_equals,
+        "_4e_isBlockBoundary":editorDom._4e_isBlockBoundary,
+        "_4e_getWin":editorDom._4e_getWin,
+        "_4e_index":editorDom._4e_index,
+        "_4e_first":editorDom._4e_first,
+        "_4e_move":editorDom._4e_move,
+        "_4e_name":editorDom._4e_name,
+        "_4e_isIdentical":editorDom._4e_isIdentical,
+        "_4e_isEmptyInlineRemoveable":editorDom._4e_isEmptyInlineRemoveable,
+        "_4e_moveChildren":editorDom._4e_moveChildren,
+        "_4e_mergeSiblings":editorDom._4e_mergeSiblings,
+        "_4e_unselectable":editorDom._4e_unselectable,
+        "_4e_getOffset":editorDom._4e_getOffset,
+        "_4e_getFrameDocument":editorDom._4e_getFrameDocument,
+        "_4e_splitText":editorDom._4e_splitText,
+        "_4e_parents":editorDom._4e_parents,
+        "_4e_clone":editorDom._4e_clone,
+        "_4e_nextSourceNode":editorDom._4e_nextSourceNode,
+        "_4e_previousSourceNode":editorDom._4e_previousSourceNode,
+        "_4e_contains":editorDom._4e_contains,
+        "_4e_commonAncestor":editorDom._4e_commonAncestor,
+        "_4e_ascendant":editorDom._4e_ascendant,
+        "_4e_hasAttribute":editorDom._4e_hasAttribute,
+        "_4e_hasAttributes":editorDom._4e_hasAttributes,
+        "_4e_position":editorDom._4e_position,
+        "_4e_address":editorDom._4e_address,
+        "_4e_breakParent":editorDom._4e_breakParent,
+        "_4e_style":editorDom._4e_style,
+        "_4e_remove":editorDom._4e_remove,
+        "_4e_trim":editorDom._4e_trim,
+        "_4e_ltrim":editorDom._4e_ltrim,
+        "_4e_rtrim":editorDom._4e_rtrim,
+        "_4e_appendBogus":editorDom._4e_appendBogus,
+        "_4e_last":editorDom._4e_last,
+        "_4e_previous":editorDom._4e_previous,
+        "_4e_next":editorDom._4e_next,
+        "_4e_outerHtml":editorDom._4e_outerHtml,
+        "_4e_setMarker":editorDom._4e_setMarker,
+        "_4e_clearMarkers":editorDom._4e_clearMarkers,
+        "_4e_setData":editorDom._4e_setData,
+        "_4e_getData":editorDom._4e_getData,
+        "_4e_removeData":editorDom._4e_removeData,
+        "_4e_clearData":editorDom._4e_clearData,
+        "_4e_removeData":editorDom._4e_removeData,
+        "_4e_getUniqueId":editorDom._4e_getUniqueId,
+        "_4e_copyAttributes":editorDom._4e_copyAttributes,
+        "_4e_isEditable":editorDom._4e_isEditable,
+        "_4e_scrollIntoView":editorDom._4e_scrollIntoView,
+        "_4e_getElementsByTagName":editorDom._4e_getElementsByTagName
+    });
+
+    DOM._4e_inject(editorDom);
 });
 /**
  * modified from ckeditor ,elementpath represents element's tree path from body
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("elementpath", function(KE) {
     var S = KISSY,
         DOM = S.DOM,
         dtd = KE.XHTML_DTD,
         KEN = KE.NODE,
-        UA = S.UA;
+        UA = S.UA,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
     // Elements that may be considered the "Block boundary" in an element path.
-    var pathBlockElements = { address:1,blockquote:1,dl:1,h1:1,h2:1,h3:1,h4:1,h5:1,h6:1,p:1,pre:1,li:1,dt:1,dd:1 };
+    var pathBlockElements = {
+        "address":1,
+        "blockquote":1,
+        "dl":1,
+        "h1":1,
+        "h2":1,
+        "h3":1,
+        "h4":1,
+        "h5":1,
+        "h6":1,
+        "p":1,
+        "pre":1,
+        "li":1,
+        "dt":1,
+        "dd":1
+    };
 
     // Elements that may be considered the "Block limit" in an element path.
-    var pathBlockLimitElements = { body:1,div:1,table:1,tbody:1,tr:1,td:1,th:1,caption:1,form:1 };
+    var pathBlockLimitElements = {
+        "body":1,
+        "div":1,
+        "table":1,
+        "tbody":1,
+        "tr":1,
+        "td":1,
+        "th":1,
+        "caption":1,
+        "form":1
+    };
 
     // Check if an element contains any block element.
     var checkHasBlock = function(element) {
@@ -2948,16 +3787,21 @@ KISSY.Editor.add("elementpath", function(KE) {
         for (var i = 0, count = childNodes.length; i < count; i++) {
             var child = childNodes[i];
 
-            if (child.nodeType == KEN.NODE_ELEMENT && dtd.$block[ child.nodeName.toLowerCase() ])
-                return true;
+            if (child.nodeType == KEN.NODE_ELEMENT
+                && dtd.$block[ child.nodeName.toLowerCase() ])
+                return TRUE;
         }
 
-        return false;
+        return FALSE;
     };
 
+    /**
+     * @constructor
+     * @param lastNode {KISSY.Node}
+     */
     function ElementPath(lastNode) {
-        var block = null;
-        var blockLimit = null;
+        var block = NULL;
+        var blockLimit = NULL;
         var elements = [];
         var e = lastNode;
 
@@ -2967,8 +3811,6 @@ KISSY.Editor.add("elementpath", function(KE) {
                     this.lastElement = e;
 
                 var elementName = e._4e_name();
-                if (UA.ie && e[0].scopeName != 'HTML')
-                    elementName = e[0].scopeName.toLowerCase() + ':' + elementName;
 
                 if (!blockLimit) {
                     if (!block && pathBlockElements[ elementName ])
@@ -2991,17 +3833,17 @@ KISSY.Editor.add("elementpath", function(KE) {
             e = e.parent();
         }
 
-        this.block = block;
-        this.blockLimit = blockLimit;
-        this.elements = elements;
+        this["block"] = this.block = block;
+        this["blockLimit"] = this.blockLimit = blockLimit;
+        this["elements"] = this.elements = elements;
     }
 
     ElementPath.prototype = {
         /**
          * Compares this element path with another one.
-         * @param otherPath The elementPath object to be
+         * @param otherPath {ElementPath} The elementPath object to be
          * compared with this one.
-         * @returns {Boolean} "true" if the paths are equal, containing the same
+         * @return {boolean} "TRUE" if the paths are equal, containing the same
          * number of elements and the same elements in the same order.
          */
         compare : function(otherPath) {
@@ -3009,14 +3851,14 @@ KISSY.Editor.add("elementpath", function(KE) {
             var otherElements = otherPath && otherPath.elements;
 
             if (!otherElements || thisElements.length != otherElements.length)
-                return false;
+                return FALSE;
 
             for (var i = 0; i < thisElements.length; i++) {
                 if (!DOM._4e_equals(thisElements[ i ], otherElements[ i ]))
-                    return false;
+                    return FALSE;
             }
 
-            return true;
+            return TRUE;
         },
 
         contains : function(tagNames) {
@@ -3025,30 +3867,44 @@ KISSY.Editor.add("elementpath", function(KE) {
                 if (elements[ i ]._4e_name() in tagNames)
                     return elements[ i ];
             }
-            return null;
+            return NULL;
         }
     };
 
-    KE.ElementPath = ElementPath;
+    KE["ElementPath"] = KE.ElementPath = ElementPath;
+    var ElementPathP = ElementPath.prototype;
+    KE.Utils.extern(ElementPathP, {
+        "compare":ElementPathP.compare,
+        "contains":ElementPathP.contains
+    });
 
 });
 /**
  * modified from ckeditor for kissy editor ,walker implementation
- * @refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
- * @modifier: yiminghe@gmail.com(chengyu)
+ * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("walker", function(KE) {
 
-    var S = KISSY,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         KEN = KE.NODE,
         DOM = S.DOM,
         Node = S.Node;
-    // This function is to be called under a "walker" instance scope.
+
+    /**
+     * @this {Walker}
+     * @param  {boolean=} rtl
+     * @param  {boolean=} breakOnFalse
+     * @return {(KISSY.Node|boolean)}
+     */
     function iterate(rtl, breakOnFalse) {
         var self = this;
-        // Return null if we have reached the end.
+        // Return NULL if we have reached the end.
         if (this._.end)
-            return null;
+            return NULL;
 
         var node,
             range = self.range,
@@ -3065,10 +3921,10 @@ KISSY.Editor.add("walker", function(KE) {
             // may happen at this point.
             range.trim();
 
-            // A collapsed range must return null at first call.
+            // A collapsed range must return NULL at first call.
             if (range.collapsed) {
                 self.end();
-                return null;
+                return NULL;
             }
         }
 
@@ -3127,8 +3983,8 @@ KISSY.Editor.add("walker", function(KE) {
         // otherwise simply use the boundary guard.
         if (userGuard) {
             guard = function(node, movingOut) {
-                if (stopGuard(node, movingOut) === false)
-                    return false;
+                if (stopGuard(node, movingOut) === FALSE)
+                    return FALSE;
 
                 return userGuard(node, movingOut);
             };
@@ -3137,7 +3993,7 @@ KISSY.Editor.add("walker", function(KE) {
             guard = stopGuard;
 
         if (self.current)
-            node = this.current[ getSourceNodeFn ](false, type, guard);
+            node = this.current[ getSourceNodeFn ](FALSE, type, guard);
         else {
             // Get the first node to be returned.
 
@@ -3146,46 +4002,51 @@ KISSY.Editor.add("walker", function(KE) {
 
                 if (range.endOffset > 0) {
                     node = new Node(node[0].childNodes[range.endOffset - 1]);
-                    if (guard(node) === false)
-                        node = null;
+                    if (guard(node) === FALSE)
+                        node = NULL;
                 }
                 else
-                    node = ( guard(node, true) === false ) ?
-                        null : node._4e_previousSourceNode(true, type, guard);
+                    node = ( guard(node, TRUE) === FALSE ) ?
+                        NULL : node._4e_previousSourceNode(TRUE, type, guard);
             }
             else {
                 node = range.startContainer;
                 node = new Node(node[0].childNodes[range.startOffset]);
 
                 if (node && node[0]) {
-                    if (guard(node) === false)
-                        node = null;
+                    if (guard(node) === FALSE)
+                        node = NULL;
                 }
                 else
-                    node = ( guard(range.startContainer, true) === false ) ?
-                        null : range.startContainer._4e_nextSourceNode(true, type, guard);
+                    node = ( guard(range.startContainer, TRUE) === FALSE ) ?
+                        NULL : range.startContainer._4e_nextSourceNode(TRUE, type, guard);
             }
         }
 
         while (node && node[0] && !self._.end) {
             self.current = node;
 
-            if (!this.evaluator || self.evaluator(node) !== false) {
+            if (!this.evaluator || self.evaluator(node) !== FALSE) {
                 if (!breakOnFalse)
                     return node;
             }
             else if (breakOnFalse && self.evaluator)
-                return false;
+                return FALSE;
 
-            node = node[ getSourceNodeFn ](false, type, guard);
+            node = node[ getSourceNodeFn ](FALSE, type, guard);
         }
 
         self.end();
-        return self.current = null;
+        return self.current = NULL;
     }
 
+    /**
+     * @this {Walker}
+     * @param  {boolean=} rtl
+     * @return {(KISSY.Node|boolean)}
+     */
     function iterateToLast(rtl) {
-        var node, last = null;
+        var node, last = NULL;
 
         while (( node = iterate.call(this, rtl) ))
             last = node;
@@ -3193,6 +4054,9 @@ KISSY.Editor.add("walker", function(KE) {
         return last;
     }
 
+    /**
+     * @constructor
+     */
     function Walker(range) {
         this.range = range;
 
@@ -3200,24 +4064,24 @@ KISSY.Editor.add("walker", function(KE) {
          * A function executed for every matched node, to check whether
          * it's to be considered into the walk or not. If not provided, all
          * matched nodes are considered good.
-         * If the function returns "false" the node is ignored.
+         * If the function returns "FALSE" the node is ignored.
          * @name CKEDITOR.dom.walker.prototype.evaluator
          * @property
          * @type Function
          */
-        // this.evaluator = null;
+        // this.evaluator = NULL;
 
         /**
          * A function executed for every node the walk pass by to check
          * whether the walk is to be finished. It's called when both
          * entering and exiting nodes, as well as for the matched nodes.
-         * If this function returns "false", the walking ends and no more
+         * If this function returns "FALSE", the walking ends and no more
          * nodes are evaluated.
          * @name CKEDITOR.dom.walker.prototype.guard
          * @property
          * @type Function
          */
-        // this.guard = null;
+        // this.guard = NULL;
 
         /** @private */
         this._ = {};
@@ -3235,7 +4099,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the next node (at right).
-         * @returns {Node} The next node or null if no more
+         * @returns {(KISSY.Node|boolean)} The next node or NULL if no more
          *        nodes are available.
          */
         next : function() {
@@ -3244,36 +4108,36 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the previous node (at left).
-         * @returns {Node} The previous node or null if no more
+         * @returns {(KISSY.Node|boolean)} The previous node or NULL if no more
          *        nodes are available.
          */
         previous : function() {
-            return iterate.call(this, true);
+            return iterate.call(this, TRUE);
         },
 
         /**
          * Check all nodes at right, executing the evaluation fuction.
-         * @returns {Boolean} "false" if the evaluator function returned
-         *        "false" for any of the matched nodes. Otherwise "true".
+         * @returns {boolean} "FALSE" if the evaluator function returned
+         *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
         checkForward : function() {
-            return iterate.call(this, false, true) !== false;
+            return iterate.call(this, FALSE, TRUE) !== FALSE;
         },
 
         /**
          * Check all nodes at left, executing the evaluation fuction.
          * 是不是 (不能后退了)
-         * @returns {Boolean} "false" if the evaluator function returned
-         *        "false" for any of the matched nodes. Otherwise "true".
+         * @returns {boolean} "FALSE" if the evaluator function returned
+         *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
         checkBackward : function() {
-            return iterate.call(this, true, true) !== false;
+            return iterate.call(this, TRUE, TRUE) !== FALSE;
         },
 
         /**
          * Executes a full walk forward (to the right), until no more nodes
          * are available, returning the last valid node.
-         * @returns {Node} The last node at the right or null
+         * @returns {(KISSY.Node|boolean)} The last node at the right or NULL
          *        if no valid nodes are available.
          */
         lastForward : function() {
@@ -3283,11 +4147,11 @@ KISSY.Editor.add("walker", function(KE) {
         /**
          * Executes a full walk backwards (to the left), until no more nodes
          * are available, returning the last valid node.
-         * @returns {Node} The last node at the left or null
+         * @returns {(KISSY.Node|boolean)} The last node at the left or NULL
          *        if no valid nodes are available.
          */
         lastBackward : function() {
-            return iterateToLast.call(this, true);
+            return iterateToLast.call(this, TRUE);
         },
 
         reset : function() {
@@ -3318,10 +4182,10 @@ KISSY.Editor.add("walker", function(KE) {
     /**
      * Whether the to-be-evaluated node is a bookmark node OR bookmark node
      * inner contents.
-     * @param {Boolean} contentOnly Whether only test againt the text content of
+     * @param {boolean} contentOnly Whether only test againt the text content of
      * bookmark node instead of the element itself(default).
-     * @param {Boolean} isReject Whether should return 'false' for the bookmark
-     * node instead of 'true'(default).
+     * @param {boolean} isReject Whether should return 'FALSE' for the bookmark
+     * node instead of 'TRUE'(default).
      */
     Walker.bookmark = function(contentOnly, isReject) {
         function isBookmarkNode(node) {
@@ -3346,7 +4210,7 @@ KISSY.Editor.add("walker", function(KE) {
 
     /**
      * Whether the node is a text node containing only whitespaces characters.
-     * @param isReject
+     * @param {boolean=} isReject
      */
     Walker.whitespaces = function(isReject) {
         return function(node) {
@@ -3376,12 +4240,38 @@ KISSY.Editor.add("walker", function(KE) {
 
 
     KE.Walker = Walker;
+    KE["Walker"] = Walker;
+    var WalkP = Walker.prototype;
+    KE.Utils.extern(WalkP, {
+        "end":WalkP.end,
+        "next":WalkP.next,
+        "previous":WalkP.previous,
+        "checkForward":WalkP.checkForward,
+        "checkBackward":WalkP.checkBackward,
+        "lastForward":WalkP.lastForward,
+        "lastBackward":WalkP.lastBackward,
+        "reset":WalkP.reset
+    });
+
+
+    KE.Utils.extern(Walker, {
+        "blockBoundary":Walker.blockBoundary,
+        "listItemBoundary":Walker.listItemBoundary,
+        "bookmark":Walker.bookmark,
+        "whitespaces":Walker.whitespaces,
+        "invisible":Walker.invisible
+    });
 });
 /**
  * modified from ckeditor,range implementation across browsers for kissy editor
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("range", function(KE) {
+
+    /**
+     * Enum for range
+     * @enum {number}
+     */
     KE.RANGE = {
         POSITION_AFTER_START:1,// <element>^contents</element>		"^text"
         POSITION_BEFORE_END:2,// <element>contents^</element>		"text^"
@@ -3396,8 +4286,13 @@ KISSY.Editor.add("range", function(KE) {
         SHRINK_ELEMENT:1,
         SHRINK_TEXT:2
     };
+    KE["RANGE"]=KE.RANGE;
 
-    var S = KISSY,KEN = KE.NODE,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
+        KEN = KE.NODE,
         KER = KE.RANGE,
         KEP = KE.POSITION,
         Walker = KE.Walker,
@@ -3407,15 +4302,19 @@ KISSY.Editor.add("range", function(KE) {
         dtd = KE.XHTML_DTD,
         ElementPath = KE.ElementPath,
         Node = S.Node,
-        EMPTY = {area:1,base:1,br:1,col:1,hr:1,img:1,input:1,link:1,meta:1,param:1};
+        EMPTY = {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1};
 
+    /**
+     * @constructor
+     * @param document {Document}
+     */
     function KERange(document) {
         var self = this;
-        self.startContainer = null;
-        self.startOffset = null;
-        self.endContainer = null;
-        self.endOffset = null;
-        self.collapsed = true;
+        self.startContainer = NULL;
+        self.startOffset = NULL;
+        self.endContainer = NULL;
+        self.endOffset = NULL;
+        self.collapsed = TRUE;
         self.document = document;
     }
 
@@ -3620,7 +4519,7 @@ KISSY.Editor.add("range", function(KE) {
                         endNode = new Node(
                             endNode[0].appendChild(doc.createTextNode(""))
                             );
-                        removeEndNode = true;
+                        removeEndNode = TRUE;
                     }
                     else
                         endNode = new Node(endNode[0].childNodes[endOffset]);
@@ -3652,7 +4551,7 @@ KISSY.Editor.add("range", function(KE) {
                     else
                         startNode.append(t);
                     startNode = t;
-                    removeStartNode = true;
+                    removeStartNode = TRUE;
                 }
                 else if (startOffset >= startNode[0].childNodes.length) {
                     // Let's create a temporary node and mark it for removal.
@@ -3660,7 +4559,7 @@ KISSY.Editor.add("range", function(KE) {
                     t = new Node(doc.createTextNode(""));
                     startNode.append(t);
                     startNode = t;
-                    removeStartNode = true;
+                    removeStartNode = TRUE;
                 } else
                     startNode = new Node(
                         startNode[0].childNodes[startOffset].previousSibling
@@ -3717,7 +4616,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // If cloning, just clone it.
                     if (action == 2)    // 2 = Clone
-                        clone.appendChild(currentNode.cloneNode(true));
+                        clone.appendChild(currentNode.cloneNode(TRUE));
                     else {
                         // Both Delete and Extract will remove the node.
                         currentNode.parentNode.removeChild(currentNode);
@@ -3729,7 +4628,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     currentNode = currentSibling;
                 }
-                //ckeditor这里错了，当前节点的路径所在父节点不能clone(true)，要在后面深入子节点处理
+                //ckeditor这里错了，当前节点的路径所在父节点不能clone(TRUE)，要在后面深入子节点处理
                 if (levelClone)
                     clone = levelClone;
             }
@@ -3769,7 +4668,7 @@ KISSY.Editor.add("range", function(KE) {
 
                         // If cloning, just clone it.
                         if (action == 2) {    // 2 = Clone
-                            clone.insertBefore(currentNode.cloneNode(true),
+                            clone.insertBefore(currentNode.cloneNode(TRUE),
                                 clone.firstChild);
                         } else {
                             // Both Delete and Extract will remove the node.
@@ -3835,7 +4734,7 @@ KISSY.Editor.add("range", function(KE) {
                 }
 
                 // Collapse it to the start.
-                self.collapse(true);
+                self.collapse(TRUE);
             }
 
             // Cleanup any marked node.
@@ -3856,7 +4755,7 @@ KISSY.Editor.add("range", function(KE) {
                 self.startContainer = self.endContainer;
                 self.startOffset = self.endOffset;
             }
-            self.collapsed = true;
+            self.collapsed = TRUE;
         },
 
         clone : function() {
@@ -3877,11 +4776,11 @@ KISSY.Editor.add("range", function(KE) {
             walkerRange.optimize();
             if (walkerRange.startContainer[0].nodeType != KEN.NODE_ELEMENT
                 || walkerRange.endContainer[0].nodeType != KEN.NODE_ELEMENT)
-                return null;
+                return NULL;
             //var current = walkerRange.startContainer[0].childNodes[walkerRange.startOffset];
             var walker = new KE.Walker(walkerRange),
-                isNotBookmarks = bookmark(true, undefined),
-                isNotWhitespaces = whitespaces(true),node,pre;
+                isNotBookmarks = bookmark(TRUE, undefined),
+                isNotWhitespaces = whitespaces(TRUE),node,pre;
             walkerRange.evaluator = function(node) {
                 return isNotWhitespaces(node) && isNotBookmarks(node);
             };
@@ -3894,7 +4793,7 @@ KISSY.Editor.add("range", function(KE) {
             walker.reset();
             pre = walker.previous();
             //前后相等，则脱一层皮 :)
-            return node && node._4e_equals(pre) ? node : null;
+            return node && node._4e_equals(pre) ? node : NULL;
         },
         shrink : function(mode, selectContents) {
             // Unable to shrink a collapsed range.
@@ -3951,16 +4850,16 @@ KISSY.Editor.add("range", function(KE) {
                     node = node[0] || node;
                     // Stop when we're shrink in element mode while encountering a text node.
                     if (mode == KER.SHRINK_ELEMENT && node.nodeType == KEN.NODE_TEXT)
-                        return false;
+                        return FALSE;
 
                     // Stop when we've already walked "through" an element.
                     if (movingOut && node == currentElement)
-                        return false;
+                        return FALSE;
 
                     if (!movingOut && node.nodeType == KEN.NODE_ELEMENT)
                         currentElement = node;
 
-                    return true;
+                    return TRUE;
                 };
 
                 if (moveStart) {
@@ -4050,11 +4949,11 @@ KISSY.Editor.add("range", function(KE) {
 
             return {
                 start        : startContainer._4e_address(normalized),
-                end            : self.collapsed ? null : endContainer._4e_address(normalized),
+                end            : self.collapsed ? NULL : endContainer._4e_address(normalized),
                 startOffset    : startOffset,
                 endOffset    : endOffset,
                 normalized    : normalized,
-                is2            : true        // It's a createBookmark2 bookmark.
+                is2            : TRUE        // It's a createBookmark2 bookmark.
             };
         },
         createBookmark : function(serializable) {
@@ -4063,7 +4962,7 @@ KISSY.Editor.add("range", function(KE) {
                 baseId,
                 clone,
                 self = this;
-            startNode = new Node("<span>", null, self.document);
+            startNode = new Node("<span>", NULL, self.document);
             startNode.attr('_ke_bookmark', 1);
             startNode.css('display', 'none');
 
@@ -4090,7 +4989,7 @@ KISSY.Editor.add("range", function(KE) {
             }
 
             clone = self.clone();
-            clone.collapse(true);
+            clone.collapse(TRUE);
             clone.insertNode(startNode);
 
             // Update the range position.
@@ -4110,7 +5009,7 @@ KISSY.Editor.add("range", function(KE) {
         moveToPosition : function(node, position) {
             var self = this;
             self.setStartAt(node, position);
-            self.collapse(true);
+            self.collapse(TRUE);
         },
         trim : function(ignoreStart, ignoreEnd) {
             var self = this,startContainer = self.startContainer,
@@ -4148,7 +5047,7 @@ KISSY.Editor.add("range", function(KE) {
                 self.setStart(startContainer, startOffset);
 
                 if (collapsed) {
-                    self.collapse(true);
+                    self.collapse(TRUE);
                     return;
                 }
             }
@@ -4185,12 +5084,12 @@ KISSY.Editor.add("range", function(KE) {
         insertNode : function(node) {
             var self = this;
             self.optimizeBookmark();
-            self.trim(false, true);
+            self.trim(FALSE, TRUE);
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset];
             self.optimizeBookmark();
-            self.trim(false, true);
+            self.trim(FALSE, TRUE);
 
 
             if (nextNode) {
@@ -4223,7 +5122,7 @@ KISSY.Editor.add("range", function(KE) {
                 if (endContainer)
                     self.setEnd(endContainer, endOffset);
                 else
-                    self.collapse(true);
+                    self.collapse(TRUE);
             } else {
                 // Created with createBookmark().
                 var serializable = bookmark.serializable,
@@ -4243,7 +5142,7 @@ KISSY.Editor.add("range", function(KE) {
                     endNode._4e_remove();
                 }
                 else
-                    self.collapse(true);
+                    self.collapse(TRUE);
             }
         },
         getCommonAncestor : function(includeSelf, ignoreTextNode) {
@@ -4284,7 +5183,7 @@ KISSY.Editor.add("range", function(KE) {
 
                         // Indicates that the node can be added only if whitespace
                         // is available before it.
-                        needsWhiteSpace = false, isWhiteSpace, siblingText,
+                        needsWhiteSpace = FALSE, isWhiteSpace, siblingText,
 
                         // Process the start boundary.
 
@@ -4294,7 +5193,7 @@ KISSY.Editor.add("range", function(KE) {
                     if (container[0].nodeType == KEN.NODE_TEXT) {
                         if (offset) {
                             // Check if there is any non-space text before the
-                            // offset. Otherwise, container is null.
+                            // offset. Otherwise, container is NULL.
                             container = !S.trim(container[0].nodeValue.substring(0, offset)).length && container;
 
                             // If we found only whitespace in the node, it
@@ -4326,7 +5225,7 @@ KISSY.Editor.add("range", function(KE) {
                             // If we reached the common ancestor, mark the flag
                             // for it.
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
-                                commonReached = true;
+                                commonReached = TRUE;
 
                             if (!body._4e_contains(enlargeable))
                                 break;
@@ -4334,7 +5233,7 @@ KISSY.Editor.add("range", function(KE) {
                             // If we don't need space or this element breaks
                             // the line, then enlarge it.
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
-                                needsWhiteSpace = false;
+                                needsWhiteSpace = FALSE;
 
                                 // If the common ancestor has been reached,
                                 // we'll not enlarge it immediately, but just
@@ -4355,13 +5254,13 @@ KISSY.Editor.add("range", function(KE) {
                         while (sibling) {
                             // This flag indicates that this node has
                             // whitespaces at the end.
-                            isWhiteSpace = false;
+                            isWhiteSpace = FALSE;
 
                             if (sibling.nodeType == KEN.NODE_TEXT) {
                                 siblingText = sibling.nodeValue;
 
                                 if (/[^\s\ufeff]/.test(siblingText))
-                                    sibling = null;
+                                    sibling = NULL;
 
                                 isWhiteSpace = /[\s\ufeff]$/.test(siblingText);
                             }
@@ -4379,12 +5278,12 @@ KISSY.Editor.add("range", function(KE) {
                                         siblingText = DOM.text(sibling);
 
                                         if ((/[^\s\ufeff]/).test(siblingText))    // Spaces + Zero Width No-Break Space (U+FEFF)
-                                            sibling = null;
+                                            sibling = NULL;
                                         else {
                                             var allChildren = sibling.all || sibling.getElementsByTagName('*');
                                             for (var i = 0, child; child = allChildren[ i++ ];) {
                                                 if (!dtd.$removeEmpty[ child.nodeName.toLowerCase() ]) {
-                                                    sibling = null;
+                                                    sibling = NULL;
                                                     break;
                                                 }
                                             }
@@ -4394,7 +5293,7 @@ KISSY.Editor.add("range", function(KE) {
                                             isWhiteSpace = !!siblingText.length;
                                     }
                                     else
-                                        sibling = null;
+                                        sibling = NULL;
                                 }
                             }
 
@@ -4409,7 +5308,7 @@ KISSY.Editor.add("range", function(KE) {
                                         self.setStartBefore(enlargeable);
                                 }
                                 else
-                                    needsWhiteSpace = true;
+                                    needsWhiteSpace = TRUE;
                             }
 
                             if (sibling) {
@@ -4419,16 +5318,16 @@ KISSY.Editor.add("range", function(KE) {
                                     // Set the sibling as enlargeable, so it's
                                     // parent will be get later outside this while.
                                     enlargeable = new Node(sibling);
-                                    sibling = null;
+                                    sibling = NULL;
                                     break;
                                 }
 
                                 sibling = next;
                             }
                             else {
-                                // If sibling has been set to null, then we
+                                // If sibling has been set to NULL, then we
                                 // need to stop enlarging.
-                                enlargeable = null;
+                                enlargeable = NULL;
                             }
                         }
 
@@ -4446,12 +5345,12 @@ KISSY.Editor.add("range", function(KE) {
                     offset = self.endOffset;
 
                     // Reset the common variables.
-                    enlargeable = sibling = null;
-                    commonReached = needsWhiteSpace = false;
+                    enlargeable = sibling = NULL;
+                    commonReached = needsWhiteSpace = FALSE;
 
                     if (container[0].nodeType == KEN.NODE_TEXT) {
                         // Check if there is any non-space text after the
-                        // offset. Otherwise, container is null.
+                        // offset. Otherwise, container is NULL.
                         container = !S.trim(container[0].nodeValue.substring(offset)).length && container;
 
                         // If we found only whitespace in the node, it
@@ -4477,13 +5376,13 @@ KISSY.Editor.add("range", function(KE) {
                     while (enlargeable || sibling) {
                         if (enlargeable && !sibling) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
-                                commonReached = true;
+                                commonReached = TRUE;
 
                             if (!body._4e_contains(enlargeable))
                                 break;
 
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
-                                needsWhiteSpace = false;
+                                needsWhiteSpace = FALSE;
 
                                 if (commonReached)
                                     endTop = enlargeable;
@@ -4495,13 +5394,13 @@ KISSY.Editor.add("range", function(KE) {
                         }
 
                         while (sibling) {
-                            isWhiteSpace = false;
+                            isWhiteSpace = FALSE;
 
                             if (sibling.nodeType == KEN.NODE_TEXT) {
                                 siblingText = sibling.nodeValue;
 
                                 if (/[^\s\ufeff]/.test(siblingText))
-                                    sibling = null;
+                                    sibling = NULL;
 
                                 isWhiteSpace = /^[\s\ufeff]/.test(siblingText);
                             }
@@ -4519,12 +5418,12 @@ KISSY.Editor.add("range", function(KE) {
                                         siblingText = DOM.text(sibling);
 
                                         if ((/[^\s\ufeff]/).test(siblingText))
-                                            sibling = null;
+                                            sibling = NULL;
                                         else {
                                             allChildren = sibling.all || sibling.getElementsByTagName('*');
                                             for (i = 0; child = allChildren[ i++ ];) {
                                                 if (!dtd.$removeEmpty[ child.nodeName.toLowerCase() ]) {
-                                                    sibling = null;
+                                                    sibling = NULL;
                                                     break;
                                                 }
                                             }
@@ -4534,7 +5433,7 @@ KISSY.Editor.add("range", function(KE) {
                                             isWhiteSpace = !!siblingText.length;
                                     }
                                     else
-                                        sibling = null;
+                                        sibling = NULL;
                                 }
                             }
 
@@ -4552,16 +5451,16 @@ KISSY.Editor.add("range", function(KE) {
 
                                 if (!enlargeable && !next) {
                                     enlargeable = new Node(sibling);
-                                    sibling = null;
+                                    sibling = NULL;
                                     break;
                                 }
 
                                 sibling = next;
                             }
                             else {
-                                // If sibling has been set to null, then we
+                                // If sibling has been set to NULL, then we
                                 // need to stop enlarging.
-                                enlargeable = null;
+                                enlargeable = NULL;
                             }
                         }
 
@@ -4592,7 +5491,7 @@ KISSY.Editor.add("range", function(KE) {
                         tailBr, //
                         defaultGuard = Walker.blockBoundary(
                             ( unit == KER.ENLARGE_LIST_ITEM_CONTENTS ) ?
-                            { br : 1 } : null),
+                            { br : 1 } : NULL),
                         // Record the encountered 'blockBoundary' for later use.
                         boundaryGuard = function(node) {
                             var retval = defaultGuard(node);
@@ -4634,7 +5533,7 @@ KISSY.Editor.add("range", function(KE) {
                     // tailBrGuard only used for on range end.
                     walker.guard = ( unit == KER.ENLARGE_LIST_ITEM_CONTENTS ) ?
                         tailBrGuard : boundaryGuard;
-                    blockBoundary = null;
+                    blockBoundary = NULL;
                     // End the range right before the block boundary node.
 
                     enlargeable = walker.lastForward();
@@ -4665,7 +5564,7 @@ KISSY.Editor.add("range", function(KE) {
             if (startOffset && startContainer[0].nodeType == KEN.NODE_TEXT) {
                 var textBefore = S.trim(startContainer[0].nodeValue.substring(0, startOffset));
                 if (textBefore.length)
-                    return false;
+                    return FALSE;
             }
 
             // Antecipate the trim() call here, so the walker will not make
@@ -4679,11 +5578,11 @@ KISSY.Editor.add("range", function(KE) {
 
             // Creates a range starting at the block start until the range start.
             var walkerRange = self.clone();
-            walkerRange.collapse(true);
+            walkerRange.collapse(TRUE);
             walkerRange.setStartAt(path.block || path.blockLimit, KER.POSITION_AFTER_START);
 
             var walker = new Walker(walkerRange);
-            walker.evaluator = getCheckStartEndBlockEvalFunction(true);
+            walker.evaluator = getCheckStartEndBlockEvalFunction(TRUE);
 
             return walker.checkBackward();
         },
@@ -4697,7 +5596,7 @@ KISSY.Editor.add("range", function(KE) {
             if (endContainer[0].nodeType == KEN.NODE_TEXT) {
                 var textAfter = S.trim(endContainer[0].nodeValue.substring(endOffset));
                 if (textAfter.length)
-                    return false;
+                    return FALSE;
             }
 
             // Antecipate the trim() call here, so the walker will not make
@@ -4711,11 +5610,11 @@ KISSY.Editor.add("range", function(KE) {
 
             // Creates a range starting at the block start until the range start.
             var walkerRange = self.clone();
-            walkerRange.collapse(false);
+            walkerRange.collapse(FALSE);
             walkerRange.setEndAt(path.block || path.blockLimit, KER.POSITION_BEFORE_END);
 
             var walker = new Walker(walkerRange);
-            walker.evaluator = getCheckStartEndBlockEvalFunction(false);
+            walker.evaluator = getCheckStartEndBlockEvalFunction(FALSE);
 
             return walker.checkForward();
         },
@@ -4783,7 +5682,7 @@ KISSY.Editor.add("range", function(KE) {
             if (endNode[0].nodeType == KEN.NODE_ELEMENT) {
                 childCount = endNode[0].childNodes.length;
                 if (childCount > endOffset)
-                    endNode = new Node(endNode[0].childNodes[endOffset])._4e_previousSourceNode(true);
+                    endNode = new Node(endNode[0].childNodes[endOffset])._4e_previousSourceNode(TRUE);
                 else if (childCount < 1)
                     endNode = endNode._4e_previousSourceNode();
                 else        // endOffset > childCount but childCount is not 0
@@ -4829,20 +5728,20 @@ KISSY.Editor.add("range", function(KE) {
                 endBlockLimit = endPath.blockLimit,
                 startBlock = startPath.block,
                 endBlock = endPath.block,
-                elementPath = null;
+                elementPath = NULL;
             // Do nothing if the boundaries are in different block limits.
             if (!startBlockLimit._4e_equals(endBlockLimit))
-                return null;
+                return NULL;
 
             // Get or fix current blocks.
             if (blockTag != 'br') {
                 if (!startBlock) {
-                    startBlock = self.fixBlock(true, blockTag);
+                    startBlock = self.fixBlock(TRUE, blockTag);
                     endBlock = new ElementPath(self.endContainer).block;
                 }
 
                 if (!endBlock)
-                    endBlock = self.fixBlock(false, blockTag);
+                    endBlock = self.fixBlock(FALSE, blockTag);
             }
 
             // Get the range position.
@@ -4857,12 +5756,12 @@ KISSY.Editor.add("range", function(KE) {
                 if (isEndOfBlock) {
                     elementPath = new ElementPath(self.startContainer);
                     self.moveToPosition(endBlock, KER.POSITION_AFTER_END);
-                    endBlock = null;
+                    endBlock = NULL;
                 }
                 else if (isStartOfBlock) {
                     elementPath = new ElementPath(self.startContainer);
                     self.moveToPosition(startBlock, KER.POSITION_BEFORE_START);
-                    startBlock = null;
+                    startBlock = NULL;
                 }
                 else {
                     endBlock = self.splitElement(startBlock);
@@ -4886,7 +5785,7 @@ KISSY.Editor.add("range", function(KE) {
         splitElement : function(toSplit) {
             var self = this;
             if (!self.collapsed)
-                return null;
+                return NULL;
 
             // Extract the contents of the block from the selection point to the end
             // of its contents.
@@ -4894,7 +5793,7 @@ KISSY.Editor.add("range", function(KE) {
             var documentFragment = self.extractContents(),
 
                 // Duplicate the element after it.
-                clone = toSplit._4e_clone(false);
+                clone = toSplit._4e_clone(FALSE);
 
             // Place the extracted contents into the duplicated element.
             clone[0].appendChild(documentFragment);
@@ -4907,7 +5806,7 @@ KISSY.Editor.add("range", function(KE) {
 
             // Empty elements are rejected.
             if (xhtml_dtd.$empty[ el._4e_name() ])
-                return false;
+                return FALSE;
 
             while (el && el[0].nodeType == KEN.NODE_ELEMENT) {
                 isEditable = el._4e_isEditable();
@@ -4922,7 +5821,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.moveToPosition(el, isMoveToEnd ?
                         KER.POSITION_AFTER_END :
                         KER.POSITION_BEFORE_START);
-                    return true;
+                    return TRUE;
                 }
 
                 // Non-editable non-inline elements are to be bypassed, getting the next one.
@@ -4936,7 +5835,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.moveToPosition(el, isMoveToEnd ?
                         KER.POSITION_AFTER_END :
                         KER.POSITION_BEFORE_START);
-                    return true;
+                    return TRUE;
                 }
             }
 
@@ -4950,7 +5849,11 @@ KISSY.Editor.add("range", function(KE) {
                 node[0].childNodes.length);
         }
     });
-    var inlineChildReqElements = { abbr:1,acronym:1,b:1,bdo:1,big:1,cite:1,code:1,del:1,dfn:1,em:1,font:1,i:1,ins:1,label:1,kbd:1,q:1,samp:1,small:1,span:1,strike:1,strong:1,sub:1,sup:1,tt:1,u:1,'var':1 };
+    var inlineChildReqElements = { "abbr":1,"acronym":1,"b":1,"bdo":1,
+        "big":1,"cite":1,"code":1,"del":1,"dfn":1,
+        "em":1,"font":1,"i":1,"ins":1,"label":1,
+        "kbd":1,"q":1,"samp":1,"small":1,"span":1,
+        "strike":1,"strong":1,"sub":1,"sup":1,"tt":1,"u":1,'var':1 };
 
     // Evaluator for CKEDITOR.dom.element::checkBoundaryOfElement, reject any
     // text node and non-empty elements unless it's being bookmark text.
@@ -4976,16 +5879,16 @@ KISSY.Editor.add("range", function(KE) {
     }
 
     function getCheckStartEndBlockEvalFunction(isStart) {
-        var hadBr = false, bookmarkEvaluator = Walker.bookmark(true);
+        var hadBr = FALSE, bookmarkEvaluator = Walker.bookmark(TRUE);
         return function(node) {
             // First ignore bookmark nodes.
             if (bookmarkEvaluator(node))
-                return true;
+                return TRUE;
 
             if (node[0].nodeType == KEN.NODE_TEXT) {
                 // If there's any visible text, then we're not at the start.
                 if (S.trim(node[0].nodeValue).length)
-                    return false;
+                    return FALSE;
             }
             else if (node[0].nodeType == KEN.NODE_ELEMENT) {
                 // If there are non-empty inline elements (e.g. <img />), then we're not
@@ -4994,12 +5897,12 @@ KISSY.Editor.add("range", function(KE) {
                     // If we're working at the end-of-block, forgive the first <br /> in non-IE
                     // browsers.
                     if (!isStart && !UA.ie && node._4e_name() == 'br' && !hadBr)
-                        hadBr = true;
+                        hadBr = TRUE;
                     else
-                        return false;
+                        return FALSE;
                 }
             }
-            return true;
+            return TRUE;
         };
     }
 
@@ -5031,31 +5934,87 @@ KISSY.Editor.add("range", function(KE) {
 
 
     KE.Range = KERange;
+    KE["Range"] = KERange;
+    var RangeP = KERange.prototype;
+    KE.Utils.extern(RangeP, {
+        "updateCollapsed":RangeP.updateCollapsed,
+        "optimize":RangeP.optimize,
+        "setStartAfter":RangeP.setStartAfter,
+        "setEndAfter":RangeP.setEndAfter,
+        "setStartBefore":RangeP.setStartBefore,
+        "setEndBefore":RangeP.setEndBefore,
+        "optimizeBookmark":RangeP.optimizeBookmark,
+
+        "setStart":RangeP.setStart,
+        "setEnd":RangeP.setEnd,
+        "setStartAt":RangeP.setStartAt,
+        "setEndAt":RangeP.setEndAt,
+        "execContentsAction":RangeP.execContentsAction,
+        "collapse":RangeP.collapse,
+        "clone":RangeP.clone,
+        "getEnclosedNode":RangeP.getEnclosedNode,
+        "shrink":RangeP.shrink,
+        "getTouchedStartNode":RangeP.getTouchedStartNode,
+        "createBookmark2":RangeP.createBookmark2,
+        "createBookmark":RangeP.createBookmark,
+
+
+
+        "moveToPosition":RangeP.moveToPosition,
+        "trim":RangeP.trim,
+        "insertNode":RangeP.insertNode,
+        "moveToBookmark":RangeP.moveToBookmark,
+        "getCommonAncestor":RangeP.getCommonAncestor,
+        "enlarge":RangeP.enlarge,
+        "checkStartOfBlock":RangeP.checkStartOfBlock,
+        "checkEndOfBlock":RangeP.checkEndOfBlock,
+        "deleteContents":RangeP.deleteContents,
+        "extractContents":RangeP.extractContents,
+
+
+        "checkBoundaryOfElement":RangeP.checkBoundaryOfElement,
+        "getBoundaryNodes":RangeP.getBoundaryNodes,
+        "fixBlock":RangeP.fixBlock,
+        "splitBlock":RangeP.splitBlock,
+        "splitElement":RangeP.splitElement,
+        "moveToElementEditablePosition":RangeP.moveToElementEditablePosition,
+        "selectNodeContents":RangeP.selectNodeContents
+    });
 });
 /**
  * modified from ckeditor ,dom iterator implementation using walker and nextSourceNode
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("domiterator", function(KE) {
-    var S = KISSY,
+    var
+
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         UA = S.UA,
         Walker = KE.Walker,
-        KERange = KE.Range,KER = KE.RANGE,
+        KERange = KE.Range,
+        KER = KE.RANGE,
         KEN = KE.NODE,
         ElementPath = KE.ElementPath,
         Node = S.Node,
         DOM = S.DOM;
 
+    /**
+     * @constructor
+     * @param range {KISSY.Editor.Range}
+     */
     function Iterator(range) {
         if (arguments.length < 1)
             return;
         var self = this;
         self.range = range;
-        self.forceBrBreak = false;
+        self.forceBrBreak = FALSE;
 
         // Whether include <br>s into the enlarged range.(#3730).
-        self.enlargeBr = true;
-        self.enforceRealBlocks = false;
+        self.enlargeBr = TRUE;
+        self.enforceRealBlocks = FALSE;
 
         self._ || ( self._ = {} );
     }
@@ -5076,6 +6035,9 @@ KISSY.Editor.add("domiterator", function(KE) {
         //会返回两次 li,li,而不是一次 ul ，
         // 可能只是返回包含文字的段落概念？
 
+        /**
+         * @this {Iterator}
+         */
         getNextParagraph : function(blockTag) {
             // The block element to be returned.
             var block,self = this;
@@ -5096,13 +6058,13 @@ KISSY.Editor.add("domiterator", function(KE) {
                 //2010-09-30 shrink
                 //3.4.2 新增，
                 // Shrink the range to exclude harmful "noises" (#4087, #4450, #5435).
-                range.shrink(KER.SHRINK_ELEMENT, true);
+                range.shrink(KER.SHRINK_ELEMENT, TRUE);
 
                 range.enlarge(self.forceBrBreak || !self.enlargeBr ?
                     KER.ENLARGE_LIST_ITEM_CONTENTS : KER.ENLARGE_BLOCK_CONTENTS);
 
                 var walker = new Walker(range),
-                    ignoreBookmarkTextEvaluator = Walker.bookmark(true, true);
+                    ignoreBookmarkTextEvaluator = Walker.bookmark(TRUE, TRUE);
                 // Avoid anchor inside bookmark inner text.
                 walker.evaluator = ignoreBookmarkTextEvaluator;
                 self._.nextNode = walker.next();
@@ -5110,7 +6072,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                 walker = new Walker(range);
                 walker.evaluator = ignoreBookmarkTextEvaluator;
                 var lastNode = walker.previous();
-                self._.lastNode = lastNode._4e_nextSourceNode(true);
+                self._.lastNode = lastNode._4e_nextSourceNode(TRUE);
 
                 // We may have an empty text node at the end of block due to [3770].
                 // If that node is the lastNode, it would cause our logic to leak to the
@@ -5124,7 +6086,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     if (testRange.checkEndOfBlock()) {
                         var path = new ElementPath(testRange.endContainer);
                         var lastBlock = path.block || path.blockLimit;
-                        self._.lastNode = lastBlock._4e_nextSourceNode(true);
+                        self._.lastNode = lastBlock._4e_nextSourceNode(TRUE);
                     }
                 }
 
@@ -5135,22 +6097,22 @@ KISSY.Editor.add("domiterator", function(KE) {
                 }
 
                 // Let's reuse self variable.
-                range = null;
+                range = NULL;
             }
 
             var currentNode = self._.nextNode;
             lastNode = self._.lastNode;
 
-            self._.nextNode = null;
+            self._.nextNode = NULL;
             while (currentNode) {
                 // closeRange indicates that a paragraph boundary has been found,
                 // so the range can be closed.
-                var closeRange = false;
+                var closeRange = FALSE;
 
                 // includeNode indicates that the current node is good to be part
                 // of the range. By default, any non-element node is ok for it.
                 var includeNode = ( currentNode[0].nodeType != KEN.NODE_ELEMENT ),
-                    continueFromSibling = false;
+                    continueFromSibling = FALSE;
 
                 // If it is an element node, let's check if it can be part of the
                 // range.
@@ -5161,7 +6123,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                         // <br> boundaries must be part of the range. It will
                         // happen only if ForceBrBreak.
                         if (nodeName == 'br')
-                            includeNode = true;
+                            includeNode = TRUE;
                         else if (!range && !currentNode[0].childNodes.length && nodeName != 'hr') {
                             // If we have found an empty block, and haven't started
                             // the range yet, it means we must return self block.
@@ -5181,7 +6143,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                                 self._.nextNode = currentNode;
                         }
 
-                        closeRange = true;
+                        closeRange = TRUE;
                     } else {
                         // If we have child nodes, let's check them.
                         if (currentNode[0].firstChild) {
@@ -5194,14 +6156,14 @@ KISSY.Editor.add("domiterator", function(KE) {
                             currentNode = new Node(currentNode[0].firstChild);
                             continue;
                         }
-                        includeNode = true;
+                        includeNode = TRUE;
                     }
                 }
                 else if (currentNode[0].nodeType == KEN.NODE_TEXT) {
                     // Ignore normal whitespaces (i.e. not including &nbsp; or
                     // other unicode whitespaces) before/after a block node.
                     if (beginWhitespaceRegex.test(currentNode[0].nodeValue))
-                        includeNode = false;
+                        includeNode = FALSE;
                 }
 
                 // The current node is good to be part of the range and we are
@@ -5221,15 +6183,15 @@ KISSY.Editor.add("domiterator", function(KE) {
                         var parentNode = currentNode.parent();
 
                         if (parentNode._4e_isBlockBoundary(self.forceBrBreak && { br : 1 })) {
-                            closeRange = true;
+                            closeRange = TRUE;
                             isLast = isLast || parentNode._4e_equals(lastNode);
                             break;
                         }
 
                         currentNode = parentNode;
-                        includeNode = true;
+                        includeNode = TRUE;
                         isLast = currentNode._4e_equals(lastNode);
-                        continueFromSibling = true;
+                        continueFromSibling = TRUE;
                     }
                 }
 
@@ -5237,7 +6199,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                 if (includeNode)
                     range.setEndAt(currentNode, KER.POSITION_AFTER_END);
 
-                currentNode = currentNode._4e_nextSourceNode(continueFromSibling, null, lastNode);
+                currentNode = currentNode._4e_nextSourceNode(continueFromSibling, NULL, lastNode);
                 isLast = !currentNode;
 
                 // We have found a block boundary. Let's close the range and move out of the
@@ -5248,26 +6210,27 @@ KISSY.Editor.add("domiterator", function(KE) {
                 //3.4.2 中被去掉了！不要了，改作一开始就shrink，参见开头 2010-09-30 shrink 注释 
                 ////qc #3879 ，选择td内所有问题，这里被出发了
                 //禁止，只有td内全部为空时才会略过
-                if (false) {
-                    if (( closeRange || isLast ) && range) {
-                        var boundaryNodes = range.getBoundaryNodes(),
-                            startPath = new ElementPath(range.startContainer);
+                /*
+                 if (FALSE) {
+                 if (( closeRange || isLast ) && range) {
+                 var boundaryNodes = range.getBoundaryNodes(),
+                 startPath = new ElementPath(range.startContainer);
 
-                        // Drop the range if it only contains bookmark nodes, and is
-                        // not because of the original collapsed range. (#4087,#4450)
-                        if (boundaryNodes.startNode.parent()._4e_equals(startPath.blockLimit)
-                            && isBookmark(boundaryNodes.startNode)
-                            && isBookmark(boundaryNodes.endNode)
-                            ) {
-                            range = null;
-                            self._.nextNode = null;
-                        }
-                        else
-                            break;
-                    }
-                    if (isLast)
-                        break;
-                }
+                 // Drop the range if it only contains bookmark nodes, and is
+                 // not because of the original collapsed range. (#4087,#4450)
+                 if (boundaryNodes.startNode.parent()._4e_equals(startPath.blockLimit)
+                 && isBookmark(boundaryNodes.startNode)
+                 && isBookmark(boundaryNodes.endNode)
+                 ) {
+                 range = NULL;
+                 self._.nextNode = NULL;
+                 }
+                 else
+                 break;
+                 }
+                 if (isLast)
+                 break;
+                 }*/
 
 
             }
@@ -5277,11 +6240,11 @@ KISSY.Editor.add("domiterator", function(KE) {
                 // If no range has been found, self is the end.
                 if (!range) {
                     self._.docEndMarker && self._.docEndMarker._4e_remove();
-                    self._.nextNode = null;
-                    return null;
+                    self._.nextNode = NULL;
+                    return NULL;
                 }
 
-                startPath = new ElementPath(range.startContainer);
+                var startPath = new ElementPath(range.startContainer);
                 var startBlockLimit = startPath.blockLimit,
                     checkLimits = { div : 1, th : 1, td : 1 };
                 block = startPath.block;
@@ -5300,7 +6263,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     block._4e_trim();
                     // Insert the fixed block into the DOM.
                     range.insertNode(block);
-                    removePreviousBr = removeLastBr = true;
+                    removePreviousBr = removeLastBr = TRUE;
                 }
                 else if (block._4e_name() != 'li') {
                     // If the range doesn't includes the entire contents of the
@@ -5308,7 +6271,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     // block.
                     if (!range.checkStartOfBlock() || !range.checkEndOfBlock()) {
                         // The resulting block will be a clone of the current one.
-                        block = block._4e_clone(false);
+                        block = block._4e_clone(FALSE);
 
                         // Extract the range contents, moving it to the new block.
                         block[0].appendChild(range.extractContents());
@@ -5331,8 +6294,8 @@ KISSY.Editor.add("domiterator", function(KE) {
                     // the current range, which could be an <li> child (nested
                     // lists) or the next sibling <li>.
 
-                    self._.nextNode = ( block._4e_equals(lastNode) ? null :
-                        range.getBoundaryNodes().endNode._4e_nextSourceNode(true, null, lastNode) );
+                    self._.nextNode = ( block._4e_equals(lastNode) ? NULL :
+                        range.getBoundaryNodes().endNode._4e_nextSourceNode(TRUE, NULL, lastNode) );
                 }
             }
 
@@ -5348,7 +6311,7 @@ KISSY.Editor.add("domiterator", function(KE) {
 
             if (removeLastBr) {
                 // Ignore bookmark nodes.(#3783)
-                var bookmarkGuard = Walker.bookmark(false, true);
+                var bookmarkGuard = Walker.bookmark(FALSE, TRUE);
 
                 var lastChild = new Node(block[0].lastChild);
                 if (lastChild[0] && lastChild[0].nodeType == KEN.NODE_ELEMENT && lastChild._4e_name() == 'br') {
@@ -5364,8 +6327,8 @@ KISSY.Editor.add("domiterator", function(KE) {
             // above block can be removed or changed, so we can rely on it for the
             // next interation.
             if (!self._.nextNode) {
-                self._.nextNode = ( isLast || block._4e_equals(lastNode) ) ? null :
-                    block._4e_nextSourceNode(true, null, lastNode);
+                self._.nextNode = ( isLast || block._4e_equals(lastNode) ) ? NULL :
+                    block._4e_nextSourceNode(TRUE, NULL, lastNode);
             }
 
             return block;
@@ -5377,12 +6340,25 @@ KISSY.Editor.add("domiterator", function(KE) {
     };
 });
 /**
- * modified from ckeditor core plugin : selection
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * modified from ckeditor core plugin - selection
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("selection", function(KE) {
-    KE.SELECTION = {};
-    var S = KISSY,
+    /**
+     * selection type enum
+     * @enum {number}
+     */
+    KE.SELECTION = {
+        SELECTION_NONE:1,
+        SELECTION_TEXT:2,
+        SELECTION_ELEMENT:3
+
+    };
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         UA = S.UA,
         DOM = S.DOM,
         Event = S.Event,
@@ -5395,56 +6371,35 @@ KISSY.Editor.add("selection", function(KE) {
         Walker = KE.Walker,
         //ElementPath = KE.ElementPath,
         KERange = KE.Range;
-    /**
-     * No selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_NONE )
-     *     alert( 'Nothing is selected' );
-     */
-    KES.SELECTION_NONE = 1;
 
     /**
-     * Text or collapsed selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_TEXT )
-     *     alert( 'Text is selected' );
+     * @constructor
+     * @param document {Document}
      */
-    KES.SELECTION_TEXT = 2;
-
-    /**
-     * Element selection.
-     * @constant
-     * @example
-     * if ( editor.getSelection().getType() == CKEDITOR.SELECTION_ELEMENT )
-     *     alert( 'An element is selected' );
-     */
-    KES.SELECTION_ELEMENT = 3;
     function KESelection(document) {
         var self = this;
-        self.document = document;
+        self["document"] = self.document = document;
         self._ = {
             cache : {}
         };
 
         /**
          * IE BUG: The selection's document may be a different document than the
-         * editor document. Return null if that's the case.
+         * editor document. Return NULL if that's the case.
          */
         if (UA.ie) {
             var range = self.getNative().createRange();
             if (!range
                 || ( range.item && range.item(0).ownerDocument != document )
                 || ( range.parentElement && range.parentElement().ownerDocument != document )) {
-                self.isInvalid = true;
+                self.isInvalid = TRUE;
             }
         }
     }
 
     var styleObjectElements = {
-        img:1,hr:1,li:1,table:1,tr:1,td:1,th:1,embed:1,object:1,ol:1,ul:1,
-        a:1, input:1, form:1, select:1, textarea:1, button:1, fieldset:1, thead:1, tfoot:1
+        "img":1,"hr":1,"li":1,"table":1,"tr":1,"td":1,"th":1,"embed":1,"object":1,"ol":1,"ul":1,
+        "a":1, "input":1, "form":1, "select":1, "textarea":1, "button":1, "fieldset":1, "thead":1, "tfoot":1
     };
 
     S.augment(KESelection, {
@@ -5452,7 +6407,6 @@ KISSY.Editor.add("selection", function(KE) {
 
         /**
          * Gets the native selection object from the browser.
-         * @function
          * @returns {Object} The native selection object.
          * @example
          * var selection = editor.getSelection().<b>getNative()</b>;
@@ -5479,8 +6433,7 @@ KISSY.Editor.add("selection", function(KE) {
          *        <li> SELECTION_ELEMENT (3): A element
          *            selection.</li>
          * </ul>
-         * @function
-         * @returns {Number} One of the following constant values:
+         * @returns {number} One of the following constant values:
          *         SELECTION_NONE,  SELECTION_TEXT or
          *         SELECTION_ELEMENT.
          * @example
@@ -5553,6 +6506,11 @@ KISSY.Editor.add("selection", function(KE) {
                 ( function() {
                     // Finds the container and offset for a specific boundary
                     // of an IE range.
+                    /**
+                     *
+                     * @param {KISSY.Editor.Range} range
+                     * @param {boolean=} start
+                     */
                     var getBoundaryInformation = function(range, start) {
                         // Creates a collapsed range at the requested boundary.
                         range = range.duplicate();
@@ -5586,14 +6544,14 @@ KISSY.Editor.add("selection", function(KE) {
                                 else if (!comparisonEnd)
                                     return { container : parent, offset : i + 1 };
 
-                                testRange = null;
+                                testRange = NULL;
                             }
                         }
 
                         if (!testRange) {
                             testRange = range.duplicate();
                             testRange.moveToElementText(parent);
-                            testRange.collapse(false);
+                            testRange.collapse(FALSE);
                         }
 
                         testRange.setEndPoint('StartToStart', range);
@@ -5648,7 +6606,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                         if (type == KES.SELECTION_TEXT) {
                             range = new KERange(self.document);
-                            var boundaryInfo = getBoundaryInformation(nativeRange, true);
+                            var boundaryInfo = getBoundaryInformation(nativeRange, TRUE);
                             range.setStart(new Node(boundaryInfo.container), boundaryInfo.offset);
                             boundaryInfo = getBoundaryInformation(nativeRange);
                             range.setEnd(new Node(boundaryInfo.container), boundaryInfo.offset);
@@ -5705,11 +6663,11 @@ KISSY.Editor.add("selection", function(KE) {
 
         /**
          * Gets the DOM element in which the selection starts.
-         * @returns {Node} The element at the beginning of the
+         * @returns {KISSY.Node} The element at the beginning of the
          *        selection.
          * @example
          * var element = editor.getSelection().<b>getStartElement()</b>;
-         * alert( element.getName() );
+         * alert( element._4e_name() );
          */
         getStartElement : function() {
             var self = this,cache = self._.cache;
@@ -5734,7 +6692,7 @@ KISSY.Editor.add("selection", function(KE) {
                             // Decrease the range content to exclude particial
                             // selected node on the start which doesn't have
                             // visual impact. ( #3231 )
-                            while (true) {
+                            while (TRUE) {
                                 var startContainer = range.startContainer,
                                     startOffset = range.startOffset;
                                 // Limit the fix only to non-block elements.(#3950)
@@ -5766,7 +6724,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                     if (UA.ie) {
                         range = sel.createRange();
-                        range.collapse(true);
+                        range.collapse(TRUE);
                         node = range.parentElement();
                     }
                     else {
@@ -5776,17 +6734,17 @@ KISSY.Editor.add("selection", function(KE) {
                     }
             }
 
-            return cache.startElement = ( node ? DOM._4e_wrap(node) : null );
+            return cache.startElement = ( node ? DOM._4e_wrap(node) : NULL );
         },
 
         /**
          * Gets the current selected element.
-         * @returns {Node} The selected element. Null if no
+         * @returns {KISSY.Node} The selected element. Null if no
          *        selection is available or the selection type is not
          *       SELECTION_ELEMENT.
          * @example
          * var element = editor.getSelection().<b>getSelectedElement()</b>;
-         * alert( element.getName() );
+         * alert( element._4e_name() );
          */
         getSelectedElement : function() {
             var self = this,
@@ -5925,7 +6883,7 @@ KISSY.Editor.add("selection", function(KE) {
                 doc = self.document,
                 bookmark;
             for (var i = 0; i < length; i++) {
-                retval.push(bookmark = ranges[ i ].createBookmark(serializable, true));
+                retval.push(bookmark = ranges[ i ].createBookmark(serializable, TRUE));
                 serializable = bookmark.serializable;
 
                 var bookmarkStart = serializable ? S.one("#" + bookmark.startNode, doc) : bookmark.startNode,
@@ -5983,10 +6941,9 @@ KISSY.Editor.add("selection", function(KE) {
     });
 
 
-    KE.Selection = KESelection;
-    var nonCells = { table:1,tbody:1,tr:1 }, notWhitespaces = Walker.whitespaces(true),
+    var nonCells = { "table":1,"tbody":1,"tr":1 }, notWhitespaces = Walker.whitespaces(TRUE),
         fillerTextRegex = /\ufeff|\u00a0/;
-    KERange.prototype.select = UA.ie ?
+    KERange.prototype["select"] = KERange.prototype.select = UA.ie ?
         // V2
         function(forceExpand) {
 
@@ -6007,7 +6964,7 @@ KISSY.Editor.add("selection", function(KE) {
                 self.startContainer._4e_name() in nonCells
                 || self.endContainer[0].nodeType == KEN.NODE_ELEMENT &&
                 self.endContainer._4e_name() in nonCells) {
-                self.shrink(KER.SHRINK_ELEMENT, true);
+                self.shrink(KER.SHRINK_ELEMENT, TRUE);
             }
 
             var bookmark = self.createBookmark(),
@@ -6118,7 +7075,7 @@ KISSY.Editor.add("selection", function(KE) {
             // otherwise). The new start can't be after the end (W3C says it can).
             // So, let's create a new range and collapse it to the desired point.
             if (e.toString().indexOf('NS_ERROR_ILLEGAL_VALUE') >= 0) {
-                self.collapse(true);
+                self.collapse(TRUE);
                 nativeRange.setEnd(self.endContainer[0], self.endOffset);
             }
             else
@@ -6133,7 +7090,7 @@ KISSY.Editor.add("selection", function(KE) {
 
     function getSelection(doc) {
         var sel = new KESelection(doc);
-        return ( !sel || sel.isInvalid ) ? null : sel;
+        return ( !sel || sel.isInvalid ) ? NULL : sel;
     }
 
     KESelection.getSelection = getSelection;
@@ -6227,14 +7184,14 @@ KISSY.Editor.add("selection", function(KE) {
                     catch (e) {
                     }
 
-                    savedRange = null;
+                    savedRange = NULL;
                 }
             });
 
             body.on('focus', function() {
                 //S.log("body focus");
                 // Enable selections to be saved.
-                saveEnabled = true;
+                saveEnabled = TRUE;
                 saveSelection();
             });
 
@@ -6245,7 +7202,7 @@ KISSY.Editor.add("selection", function(KE) {
                     return;
                 //console.log("body beforedeactivate");
                 // Disable selections from being saved.
-                saveEnabled = false;
+                saveEnabled = FALSE;
                 restoreEnabled = 1;
             });
 
@@ -6284,28 +7241,20 @@ KISSY.Editor.add("selection", function(KE) {
             });
             body.on('mouseup', function() {
                 //console.log("body mouseup");
-                saveEnabled = true;
+                saveEnabled = TRUE;
                 setTimeout(function() {
-                    saveSelection(true);
+                    saveSelection(TRUE);
                 }, 0);
             });
-
-            body.on('keydown', disableSave);
-            body.on('keyup', function() {
-                saveEnabled = true;
-                saveSelection();
-            });
-
-            // IE is the only to provide the "selectionchange"
-            // event.
-            // 注意：ie右键短暂点击并不能改变选择范围
-            Event.on(doc, 'selectionchange', saveSelection);
-
             function disableSave() {
-                saveEnabled = false;
+                saveEnabled = FALSE;
                 //console.log("disableSave");
             }
 
+            /**
+             *
+             * @param {boolean=} testIt
+             */
             function saveSelection(testIt) {
                 //console.log("saveSelection");
                 if (saveEnabled) {
@@ -6331,7 +7280,7 @@ KISSY.Editor.add("selection", function(KE) {
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
                                 //console.log("retry");
-                                saveSelection(true);
+                                saveSelection(TRUE);
                             }, 50);
                             return;
                         }
@@ -6341,7 +7290,7 @@ KISSY.Editor.add("selection", function(KE) {
                     var parentTag;
                     if (nativeSel && type == KES.SELECTION_TEXT
                         && ( parentTag = DOM._4e_name(nativeSel.createRange().parentElement()))
-                        && parentTag in { input: 1, textarea : 1 }) {
+                        && parentTag in { "input": 1, "textarea": 1 }) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
@@ -6349,6 +7298,17 @@ KISSY.Editor.add("selection", function(KE) {
                     editor._monitor();
                 }
             }
+
+            body.on('keydown', disableSave);
+            body.on('keyup', function() {
+                saveEnabled = TRUE;
+                saveSelection();
+            });
+
+            // IE is the only to provide the "selectionchange"
+            // event.
+            // 注意：ie右键短暂点击并不能改变选择范围
+            Event.on(doc, 'selectionchange', saveSelection);
 
 
         } else {
@@ -6360,7 +7320,7 @@ KISSY.Editor.add("selection", function(KE) {
         }
 
         // List of elements in which has no way to move editing focus outside.
-        var nonExitableElementNames = { table:1,pre:1 };
+        var nonExitableElementNames = { "table":1,"pre":1 };
 
         // Matching an empty paragraph at the end of document.
         var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
@@ -6370,8 +7330,8 @@ KISSY.Editor.add("selection", function(KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(true);//,
-        //isNotBookmark = KE.Walker.bookmark(false, true);
+        var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
+        //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p
@@ -6385,7 +7345,7 @@ KISSY.Editor.add("selection", function(KE) {
             if (range.collapse
                 && !path.block
                 && blockLimit._4e_name() == "body") {
-                var fixedBlock = range.fixBlock(true, "p");
+                var fixedBlock = range.fixBlock(TRUE, "p");
                 //firefox选择区域变化时自动添加空行，不要出现裸的text
                 if (isBlankParagraph(fixedBlock)) {
                     var element = fixedBlock._4e_next(isNotWhitespace);
@@ -6401,7 +7361,7 @@ KISSY.Editor.add("selection", function(KE) {
                             !nonExitableElementNames[element._4e_name()]) {
                             range.moveToElementEditablePosition(element,
                                 //空行的话还是要移到开头的
-                                isBlankParagraph(element) ? false : true);
+                                isBlankParagraph(element) ? FALSE : TRUE);
                             fixedBlock._4e_remove();
                         }
                     }
@@ -6416,6 +7376,29 @@ KISSY.Editor.add("selection", function(KE) {
         });
     }
 
+    KE.Selection = KESelection;
+    KE["Selection"] = KESelection;
+    var SelectionP = KESelection.prototype;
+    KE.Utils.extern(SelectionP, {
+        "getNative":SelectionP.getNative,
+        "getType":SelectionP.getType,
+        "getRanges":SelectionP.getRanges,
+        "getStartElement":SelectionP.getStartElement,
+        "getSelectedElement":SelectionP.getSelectedElement,
+        "reset":SelectionP.reset,
+        "selectElement":SelectionP.selectElement,
+        "selectRanges":SelectionP.selectRanges,
+        "createBookmarks2":SelectionP.createBookmarks2,
+        "createBookmarks":SelectionP.createBookmarks,
+        "selectBookmarks":SelectionP.selectBookmarks,
+
+        "getCommonAncestor":SelectionP.getCommonAncestor,
+        "scrollIntoView":SelectionP.scrollIntoView,
+        "selectBookmarks":SelectionP.selectBookmarks,
+        "removeAllRanges":SelectionP.removeAllRanges
+    });
+
+
     KE.on("instanceCreated", function(ev) {
         var editor = ev.editor;
         monitorAndFix(editor);
@@ -6423,13 +7406,24 @@ KISSY.Editor.add("selection", function(KE) {
 });
 /**
  * modified from ckeditor for kissy editor,use style to gen element and wrap range's elements
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("styles", function(KE) {
 
-    var S = KISSY,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         DOM = S.DOM,
-        KEST = KE.STYLE = {},
+        /**
+         * enum for style type
+         * @enum {number}
+         */
+        KEST = {
+            STYLE_BLOCK:1,
+            STYLE_INLINE:2,
+            STYLE_OBJECT:3
+        },
         KER = KE.RANGE,
         KESelection = KE.Selection,
         KEN = KE.NODE,
@@ -6439,19 +7433,41 @@ KISSY.Editor.add("styles", function(KE) {
         Node = S.Node,
         UA = S.UA,
         ElementPath = KE.ElementPath,
-        blockElements = { address:1,div:1,h1:1,h2:1,h3:1,h4:1,h5:1,h6:1,p:1,pre:1 },
+        blockElements = {
+            "address":1,
+            "div":1,
+            "h1":1,
+            "h2":1,
+            "h3":1,
+            "h4":1,
+            "h5":1,
+            "h6":1,
+            "p":1,
+            "pre":1
+        },
         objectElements = {
             //why? a should be same to inline? 但是不能互相嵌套
             //a:1,
-            embed:1,hr:1,img:1,li:1,object:1,ol:1,table:1,td:1,tr:1,th:1,ul:1,dl:1,dt:1,dd:1,form:1},
+            "embed":1,
+            "hr":1,
+            "img":1,
+            "li":1,
+            "object":1,
+            "ol":1,
+            "table":1,
+            "td":1,
+            "tr":1,
+            "th":1,
+            "ul":1,
+            "dl":1,
+            "dt":1,
+            "dd":1,
+            "form":1
+        },
         semicolonFixRegex = /\s*(?:;\s*|$)/,
         varRegex = /#\((.+?)\)/g;
 
-    KEST.STYLE_BLOCK = 1;
-    KEST.STYLE_INLINE = 2;
-    KEST.STYLE_OBJECT = 3;
-
-
+    KE.STYLE = KEST;
     function replaceVariables(list, variablesValues) {
         for (var item in list) {
             list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
@@ -6460,33 +7476,45 @@ KISSY.Editor.add("styles", function(KE) {
         }
     }
 
+    /**
+     * @constructor
+     * @param styleDefinition {Object}
+     * @param variablesValues {Object}
+     */
     function KEStyle(styleDefinition, variablesValues) {
         if (variablesValues) {
             styleDefinition = S.clone(styleDefinition);
-            replaceVariables(styleDefinition.attributes, variablesValues);
-            replaceVariables(styleDefinition.styles, variablesValues);
+            replaceVariables(styleDefinition["attributes"], variablesValues);
+            replaceVariables(styleDefinition["styles"], variablesValues);
         }
 
-        var element = this.element = ( styleDefinition.element || '*' ).toLowerCase();
+        var element = this["element"] = this.element = ( styleDefinition["element"] || '*' ).toLowerCase();
 
-        this.type = ( element == '#' || blockElements[ element ] ) ?
+        this["type"] = this.type = ( element == '#' || blockElements[ element ] ) ?
             KEST.STYLE_BLOCK
             : objectElements[ element ] ?
             KEST.STYLE_OBJECT : KEST.STYLE_INLINE;
 
         this._ = {
-            definition : styleDefinition
+            "definition" : styleDefinition
         };
     }
 
+    /**
+     * @this {KEStyle}
+     * @param {Document} document
+     * @param {boolean=} remove
+     */
     function applyStyle(document, remove) {
         // Get all ranges from the selection.
 
-        var func = remove ? this.removeFromRange : this.applyToRange,self = this;
+        var self = this,
+            func = remove ? self.removeFromRange : self.applyToRange;
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        var selection = new KESelection(document),ranges = selection.getRanges();
+        var selection = new KESelection(document),
+            ranges = selection.getRanges();
         for (var i = 0; i < ranges.length; i++)
             //格式化后，range进入格式标签内
             func.call(self, ranges[ i ]);
@@ -6497,11 +7525,11 @@ KISSY.Editor.add("styles", function(KE) {
 
     KEStyle.prototype = {
         apply : function(document) {
-            applyStyle.call(this, document, false);
+            applyStyle.call(this, document, FALSE);
         },
 
         remove : function(document) {
-            applyStyle.call(this, document, true);
+            applyStyle.call(this, document, TRUE);
         },
 
         applyToRange : function(range) {
@@ -6512,10 +7540,10 @@ KISSY.Editor.add("styles", function(KE) {
                     : self.type == KEST.STYLE_BLOCK ?
                     applyBlockStyle
                     : self.type == KEST.STYLE_OBJECT ?
-                    null
+                    NULL
                     //yiminghe note:no need!
                     //applyObjectStyle
-                    : null ).call(self, range);
+                    : NULL ).call(self, range);
         },
 
         removeFromRange : function(range) {
@@ -6523,7 +7551,7 @@ KISSY.Editor.add("styles", function(KE) {
             return ( self.removeFromRange =
                 self.type == KEST.STYLE_INLINE ?
                     removeInlineStyle
-                    : null ).call(self, range);
+                    : NULL ).call(self, range);
         },
 
         applyToObject : function(element) {
@@ -6533,7 +7561,7 @@ KISSY.Editor.add("styles", function(KE) {
         // current style definition.
         checkElementRemovable : function(element, fullMatch) {
             if (!element)
-                return false;
+                return FALSE;
 
             var def = this._.definition,
                 attribs;
@@ -6542,38 +7570,40 @@ KISSY.Editor.add("styles", function(KE) {
             if (element._4e_name() == this.element) {
                 // If no attributes are defined in the element.
                 if (!fullMatch && !element._4e_hasAttributes())
-                    return true;
+                    return TRUE;
 
                 attribs = getAttributesForComparison(def);
 
-                if (attribs._length) {
+                if (attribs["_length"]) {
                     for (var attName in attribs) {
                         if (attName == '_length')
                             continue;
 
                         var elementAttr = element.attr(attName) || '';
                         if (attName == 'style' ?
-                            compareCssText(attribs[ attName ], normalizeCssText(elementAttr, false))
+                            compareCssText(attribs[ attName ],
+                                normalizeCssText(elementAttr, FALSE))
                             : attribs[ attName ] == elementAttr) {
                             if (!fullMatch)
-                                return true;
+                                return TRUE;
                         }
                         else if (fullMatch)
-                            return false;
+                            return FALSE;
                     }
                     if (fullMatch)
-                        return true;
+                        return TRUE;
                 }
                 else
-                    return true;
+                    return TRUE;
             }
 
             // Check if the element can be somehow overriden.
             var override = getOverrides(this)[ element._4e_name() ];
+
             if (override) {
                 // If no attributes have been defined, remove the element.
                 if (!( attribs = override.attributes ))
-                    return true;
+                    return TRUE;
 
                 for (var i = 0; i < attribs.length; i++) {
                     attName = attribs[i][0];
@@ -6581,29 +7611,31 @@ KISSY.Editor.add("styles", function(KE) {
                     if (actualAttrValue) {
                         var attValue = attribs[i][1];
                         // Remove the attribute if:
-                        //    - The override definition value is null;
+                        //    - The override definition value is NULL;
                         //    - The override definition value is a string that
                         //      matches the attribute value exactly.
                         //    - The override definition value is a regex that
                         //      has matches in the attribute value.
-                        if (attValue === null ||
-                            ( typeof attValue == 'string' && actualAttrValue == attValue ) ||
+                        if (attValue === NULL ||
+                            ( typeof attValue == 'string'
+                                && actualAttrValue == attValue ) ||
                             attValue.test && attValue.test(actualAttrValue))
-                            return true;
+                            return TRUE;
                     }
                 }
             }
-            return false;
+            return FALSE;
         },
 
         /**
-         * Get the style state inside an element path. Returns "true" if the
+         * Get the style state inside an element path. Returns "TRUE" if the
          * element is active in the path.
          */
         checkActive : function(elementPath) {
             switch (this.type) {
                 case KEST.STYLE_BLOCK :
-                    return this.checkElementRemovable(elementPath.block || elementPath.blockLimit, true);
+                    return this.checkElementRemovable(elementPath.block
+                        || elementPath.blockLimit, TRUE);
 
                 case KEST.STYLE_OBJECT :
                 case KEST.STYLE_INLINE :
@@ -6622,11 +7654,11 @@ KISSY.Editor.add("styles", function(KE) {
                             && !( element._4e_name() in objectElements ))
                             continue;
 
-                        if (this.checkElementRemovable(element, true))
-                            return true;
+                        if (this.checkElementRemovable(element, TRUE))
+                            return TRUE;
                     }
             }
-            return false;
+            return FALSE;
         }
 
     };
@@ -6637,10 +7669,11 @@ KISSY.Editor.add("styles", function(KE) {
         if (stylesDef)
             return stylesDef;
 
-        stylesDef = styleDefinition.styles;
+        stylesDef = styleDefinition["styles"];
 
         // Builds the StyleText.
-        var stylesText = ( styleDefinition.attributes && styleDefinition.attributes[ 'style' ] ) || '',
+        var stylesText = ( styleDefinition["attributes"]
+            && styleDefinition["attributes"][ 'style' ] ) || '',
             specialStylesText = '';
 
         if (stylesText.length)
@@ -6671,7 +7704,7 @@ KISSY.Editor.add("styles", function(KE) {
     function getElement(style, targetDocument) {
         var el,
             //def = style._.definition,
-            elementName = style.element;
+            elementName = style["element"];
 
         // The "*" element name will always be a span for this function.
         if (elementName == '*')
@@ -6684,7 +7717,9 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     function setupElement(el, style) {
-        var def = style._.definition,attributes = def.attributes,styles = KEStyle.getStyleText(def);
+        var def = style._["definition"],
+            attributes = def["attributes"],
+            styles = KEStyle.getStyleText(def);
 
         // Assign all defined attributes.
         if (attributes) {
@@ -6704,12 +7739,13 @@ KISSY.Editor.add("styles", function(KE) {
     function applyBlockStyle(range) {
         // Serializible bookmarks is needed here since
         // elements may be merged.
-        var bookmark = range.createBookmark(true),iterator = range.createIterator();
-        iterator.enforceRealBlocks = true;
+        var bookmark = range.createBookmark(TRUE),
+            iterator = range.createIterator();
+        iterator.enforceRealBlocks = TRUE;
 
         // make recognize <br /> tag as a separator in ENTER_BR mode (#5121)
         //if (this._.enterMode)
-        iterator.enlargeBr = true;//( this._.enterMode != CKEDITOR.ENTER_BR );
+        iterator.enlargeBr = TRUE;//( this._.enterMode != CKEDITOR.ENTER_BR );
 
         var block, doc = range.document;
         // Only one =
@@ -6784,9 +7820,10 @@ KISSY.Editor.add("styles", function(KE) {
                 });
 
         var pres = [];
-        splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi, function(match, preContent) {
-            pres.push(preContent);
-        });
+        splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
+            function(match, preContent) {
+                pres.push(preContent);
+            });
         return pres;
     }
 
@@ -6794,8 +7831,10 @@ KISSY.Editor.add("styles", function(KE) {
     // for <pre> blocks to make sure content format is well preserved, and merging/splitting adjacent
     // when necessary.(#3188)
     function replaceBlock(block, newBlock) {
-        var newBlockIsPre = newBlock._4e_name == ('pre'),blockIsPre = block._4e_name == ('pre'),
-            isToPre = newBlockIsPre && !blockIsPre, isFromPre = !newBlockIsPre && blockIsPre;
+        var newBlockIsPre = newBlock._4e_name == ('pre'),
+            blockIsPre = block._4e_name == ('pre'),
+            isToPre = newBlockIsPre && !blockIsPre,
+            isFromPre = !newBlockIsPre && blockIsPre;
 
         if (isToPre)
             newBlock = toPre(block, newBlock);
@@ -6817,8 +7856,8 @@ KISSY.Editor.add("styles", function(KE) {
      */
     function mergePre(preBlock) {
         var previousBlock;
-        if (!( ( previousBlock = preBlock._4e_previousSourceNode(true, KEN.NODE_ELEMENT) )
-            && previousBlock._4e_name() == ('pre') ))
+        if (!( ( previousBlock = preBlock._4e_previousSourceNode(TRUE, KEN.NODE_ELEMENT) )
+            && previousBlock._4e_name() == 'pre' ))
             return;
 
         // Merge the previous <pre> block contents into the current <pre>
@@ -6878,6 +7917,10 @@ KISSY.Editor.add("styles", function(KE) {
         return docFrag;
     }
 
+    /**
+     * @this {KEStyle}
+     * @param range {KISSY.Editor.Range}
+     */
     function applyInlineStyle(range) {
         var document = range.document;
 
@@ -6891,11 +7934,12 @@ KISSY.Editor.add("styles", function(KE) {
             return;
         }
 
-        var elementName = this.element, def = this._.definition,
+        var elementName = this["element"],
+            def = this._["definition"],
             isUnknownElement,
-
             // Get the DTD definition for the element. Defaults to "span".
-            dtd = KE.XHTML_DTD[ elementName ] || ( isUnknownElement = true,KE.XHTML_DTD.span ),
+            dtd = KE.XHTML_DTD[ elementName ]
+                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] ),
 
             // Bookmark the range so we can re-select it after processing.
             bookmark = range.createBookmark();
@@ -6908,38 +7952,46 @@ KISSY.Editor.add("styles", function(KE) {
         // processing.
         var boundaryNodes = range.createBookmark(),
             firstNode = boundaryNodes.startNode,
-            lastNode = boundaryNodes.endNode,currentNode = firstNode,
+            lastNode = boundaryNodes.endNode,
+            currentNode = firstNode,
             styleRange;
 
         while (currentNode && currentNode[0]) {
-            var applyStyle = false;
+            var applyStyle = FALSE;
 
             if (DOM._4e_equals(currentNode, lastNode)) {
-                currentNode = null;
-                applyStyle = true;
+                currentNode = NULL;
+                applyStyle = TRUE;
             }
             else {
                 var nodeType = currentNode[0].nodeType,
-                    nodeName = nodeType == KEN.NODE_ELEMENT ? currentNode._4e_name() : null;
+                    nodeName = nodeType == KEN.NODE_ELEMENT ?
+                        currentNode._4e_name() : NULL;
 
                 if (nodeName && currentNode.attr('_ke_bookmark')) {
-                    currentNode = currentNode._4e_nextSourceNode(true);
+                    currentNode = currentNode._4e_nextSourceNode(TRUE);
                     continue;
                 }
 
                 // Check if the current node can be a child of the style element.
                 if (!nodeName || ( dtd[ nodeName ]
                     && ( currentNode._4e_position(lastNode) |
-                    ( KEP.POSITION_PRECEDING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED) )
-                    == ( KEP.POSITION_PRECEDING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
-                    && ( !def.childRule || def.childRule(currentNode) ) )) {
+                    ( KEP.POSITION_PRECEDING |
+                        KEP.POSITION_IDENTICAL |
+                        KEP.POSITION_IS_CONTAINED) )
+                    == ( KEP.POSITION_PRECEDING +
+                    KEP.POSITION_IDENTICAL +
+                    KEP.POSITION_IS_CONTAINED )
+                    && ( !def["childRule"] || def["childRule"](currentNode) ) )) {
                     var currentParent = currentNode.parent();
 
                     // Check if the style element can be a child of the current
                     // node parent or if the element is not defined in the DTD.
                     if (currentParent && currentParent[0]
-                        && ( ( KE.XHTML_DTD[currentParent._4e_name()] || KE.XHTML_DTD.span )[ elementName ] || isUnknownElement )
-                        && ( !def.parentRule || def.parentRule(currentParent) )) {
+                        && ( ( KE.XHTML_DTD[currentParent._4e_name()] ||
+                        KE.XHTML_DTD["span"] )[ elementName ] ||
+                        isUnknownElement )
+                        && ( !def["parentRule"] || def["parentRule"](currentParent) )) {
                         // This node will be part of our range, so if it has not
                         // been started, place its start right before the node.
                         // In the case of an element node, it will be included
@@ -6948,9 +8000,13 @@ KISSY.Editor.add("styles", function(KE) {
                             ( !nodeName
                                 || !KE.XHTML_DTD.$removeEmpty[ nodeName ]
                                 || ( currentNode._4e_position(lastNode) |
-                                ( KEP.POSITION_PRECEDING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED ))
+                                ( KEP.POSITION_PRECEDING |
+                                    KEP.POSITION_IDENTICAL |
+                                    KEP.POSITION_IS_CONTAINED ))
                                 ==
-                                ( KEP.POSITION_PRECEDING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
+                                ( KEP.POSITION_PRECEDING +
+                                    KEP.POSITION_IDENTICAL +
+                                    KEP.POSITION_IS_CONTAINED )
                                 )) {
                             styleRange = new KERange(document);
                             styleRange.setStartBefore(currentNode);
@@ -6958,7 +8014,9 @@ KISSY.Editor.add("styles", function(KE) {
 
                         // Non element nodes, or empty elements can be added
                         // completely to the range.
-                        if (nodeType == KEN.NODE_TEXT || ( nodeType == KEN.NODE_ELEMENT && !currentNode[0].childNodes.length )) {
+                        if (nodeType == KEN.NODE_TEXT ||
+                            ( nodeType == KEN.NODE_ELEMENT &&
+                                !currentNode[0].childNodes.length )) {
                             var includedNode = currentNode,
                                 parentNode;
 
@@ -6967,9 +8025,17 @@ KISSY.Editor.add("styles", function(KE) {
                             // check if the parent itself can be added completelly
                             // to the range.
                             while (!includedNode[0].nextSibling
-                                && ( parentNode = includedNode.parent(),dtd[ parentNode._4e_name() ] )
-                                && ( parentNode._4e_position(firstNode) | KEP.POSITION_FOLLOWING | KEP.POSITION_IDENTICAL | KEP.POSITION_IS_CONTAINED) == ( KEP.POSITION_FOLLOWING + KEP.POSITION_IDENTICAL + KEP.POSITION_IS_CONTAINED )
-                                && ( !def.childRule || def.childRule(parentNode) )) {
+                                && ( parentNode = includedNode.parent(),
+                                dtd[ parentNode._4e_name() ] )
+                                && ( parentNode._4e_position(firstNode) |
+                                KEP.POSITION_FOLLOWING |
+                                KEP.POSITION_IDENTICAL |
+                                KEP.POSITION_IS_CONTAINED) ==
+                                ( KEP.POSITION_FOLLOWING +
+                                    KEP.POSITION_IDENTICAL +
+                                    KEP.POSITION_IS_CONTAINED )
+                                && ( !def["childRule"] ||
+                                def["childRule"](parentNode) )) {
                                 includedNode = parentNode;
                             }
 
@@ -6979,15 +8045,15 @@ KISSY.Editor.add("styles", function(KE) {
                             // parent, it means that the parent can't be included
                             // in this style DTD, so apply the style immediately.
                             if (!includedNode[0].nextSibling)
-                                applyStyle = true;
+                                applyStyle = TRUE;
 
                         }
                     }
                     else
-                        applyStyle = true;
+                        applyStyle = TRUE;
                 }
                 else
-                    applyStyle = true;
+                    applyStyle = TRUE;
 
                 // Get the next node to be processed.
                 currentNode = currentNode._4e_nextSourceNode();
@@ -7005,22 +8071,23 @@ KISSY.Editor.add("styles", function(KE) {
                 // from the element to be applied.
                 while (styleNode && parent && styleNode[0] && parent[0]) {
                     if (parent._4e_name() == elementName) {
-                        for (var attName in def.attributes) {
+                        for (var attName in def["attributes"]) {
                             if (styleNode.attr(attName) == parent.attr(attName))
                                 styleNode[0].removeAttribute(attName);
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
                         //下一次格式xxx为70px
-                        //var exit = false;
-                        for (var styleName in def.styles) {
-                            if (styleNode._4e_style(styleName) == parent._4e_style(styleName)) {
+                        //var exit = FALSE;
+                        for (var styleName in def["styles"]) {
+                            if (styleNode._4e_style(styleName) ==
+                                parent._4e_style(styleName)) {
                                 styleNode._4e_style(styleName, "");
                             }
                         }
 
                         if (!styleNode._4e_hasAttributes()) {
-                            styleNode = null;
+                            styleNode = NULL;
                             break;
                         }
                     }
@@ -7055,7 +8122,7 @@ KISSY.Editor.add("styles", function(KE) {
 
                 // Style applied, let's release the range, so it gets
                 // re-initialization in the next loop.
-                styleRange = null;
+                styleRange = NULL;
             }
         }
 
@@ -7066,6 +8133,10 @@ KISSY.Editor.add("styles", function(KE) {
         range.shrink(KER.SHRINK_TEXT);
     }
 
+    /**
+     * @this {KEStyle}
+     * @param range {KISSY.Editor.Range}
+     */
     function removeInlineStyle(range) {
         /*
          * Make sure our range has included all "collpased" parent inline nodes so
@@ -7092,12 +8163,14 @@ KISSY.Editor.add("styles", function(KE) {
                  *  outside the styles instead of removing the whole tag,
                  *  also make sure other inner styles were well preserverd.(#3309)
                  */
-                if (element == startPath.block || element == startPath.blockLimit)
+                if (element == startPath.block ||
+                    element == startPath.blockLimit)
                     break;
 
                 if (this.checkElementRemovable(element)) {
                     var endOfElement = range.checkBoundaryOfElement(element, KER.END),
-                        startOfElement = !endOfElement && range.checkBoundaryOfElement(element, KER.START);
+                        startOfElement = !endOfElement &&
+                            range.checkBoundaryOfElement(element, KER.START);
                     if (startOfElement || endOfElement) {
                         boundaryElement = element;
                         boundaryElement.match = startOfElement ? 'start' : 'end';
@@ -7115,7 +8188,8 @@ KISSY.Editor.add("styles", function(KE) {
                         if (element._4e_name() == this.element)
                             removeFromElement(this, element);
                         else
-                            removeOverrides(element, getOverrides(this)[ element._4e_name() ]);
+                            removeOverrides(element,
+                                getOverrides(this)[ element._4e_name() ]);
                     }
                 }
             }
@@ -7155,12 +8229,13 @@ KISSY.Editor.add("styles", function(KE) {
             function breakNodes() {
                 var startPath = new ElementPath(startNode.parent()),
                     endPath = new ElementPath(endNode.parent()),
-                    breakStart = null,
-                    breakEnd = null;
+                    breakStart = NULL,
+                    breakEnd = NULL;
                 for (var i = 0; i < startPath.elements.length; i++) {
                     var element = startPath.elements[ i ];
 
-                    if (element == startPath.block || element == startPath.blockLimit)
+                    if (element == startPath.block ||
+                        element == startPath.blockLimit)
                         break;
 
                     if (me.checkElementRemovable(element))
@@ -7169,7 +8244,8 @@ KISSY.Editor.add("styles", function(KE) {
                 for (i = 0; i < endPath.elements.length; i++) {
                     element = endPath.elements[ i ];
 
-                    if (element == endPath.block || element == endPath.blockLimit)
+                    if (element == endPath.block ||
+                        element == endPath.blockLimit)
                         break;
 
                     if (me.checkElementRemovable(element))
@@ -7192,12 +8268,15 @@ KISSY.Editor.add("styles", function(KE) {
                  * the current node from DOM tree.
                  */
                 var nextNode = currentNode._4e_nextSourceNode();
-                if (currentNode[0] && currentNode[0].nodeType == KEN.NODE_ELEMENT && this.checkElementRemovable(currentNode)) {
+                if (currentNode[0] &&
+                    currentNode[0].nodeType == KEN.NODE_ELEMENT &&
+                    this.checkElementRemovable(currentNode)) {
                     // Remove style from element or overriding element.
-                    if (currentNode._4e_name() == this.element)
+                    if (currentNode._4e_name() == this["element"])
                         removeFromElement(this, currentNode);
                     else
-                        removeOverrides(currentNode, getOverrides(this)[ currentNode._4e_name() ]);
+                        removeOverrides(currentNode,
+                            getOverrides(this)[ currentNode._4e_name() ]);
 
                     /*
                      * removeFromElement() may have merged the next node with something before
@@ -7205,7 +8284,8 @@ KISSY.Editor.add("styles", function(KE) {
                      * contain startNode and we'll have to call breakNodes() again and also
                      * reassign the nextNode to something after startNode.
                      */
-                    if (nextNode[0].nodeType == KEN.NODE_ELEMENT && nextNode._4e_contains(startNode)) {
+                    if (nextNode[0].nodeType == KEN.NODE_ELEMENT &&
+                        nextNode._4e_contains(startNode)) {
                         breakNodes();
                         nextNode = new Node(startNode[0].nextSibling);
                     }
@@ -7220,9 +8300,10 @@ KISSY.Editor.add("styles", function(KE) {
     function parseStyleText(styleText) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
-            .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function(match, name, value) {
-            retval[ name ] = value;
-        });
+            .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
+            function(match, name, value) {
+                retval[ name ] = value;
+            });
         return retval;
     }
 
@@ -7236,15 +8317,20 @@ KISSY.Editor.add("styles", function(KE) {
                 ( target[ name ] == source[ name ]
                     || source[ name ] == 'inherit'
                     || target[ name ] == 'inherit' ) )) {
-                return false;
+                return FALSE;
             }
         }
-        return true;
+        return TRUE;
     }
 
+    /**
+     *
+     * @param {string} unparsedCssText
+     * @param {boolean=} nativeNormalize
+     */
     function normalizeCssText(unparsedCssText, nativeNormalize) {
         var styleText;
-        if (nativeNormalize !== false) {
+        if (nativeNormalize !== FALSE) {
             // Injects the style in a temporary span object, so the browser parses it,
             // retrieving its final format.
             var temp = document.createElement('span');
@@ -7258,7 +8344,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Shrinking white-spaces around colon and semi-colon (#4147).
         // Compensate tail semi-colon.
         return styleText.replace(/\s*([;:])\s*/, '$1')
-            .replace(/([^\s;])$/, '$1;')
+            .replace(/([^\s;])$/, "$1;")
             .replace(/,\s+/g, ',')// Trimming spaces after comma (e.g. font-family name)(#4107).
             .toLowerCase();
     }
@@ -7274,7 +8360,7 @@ KISSY.Editor.add("styles", function(KE) {
         var length = 0,
 
             // Loop through all defined attributes.
-            styleAttribs = styleDefinition.attributes;
+            styleAttribs = styleDefinition["attributes"];
         if (styleAttribs) {
             for (var styleAtt in styleAttribs) {
                 length++;
@@ -7291,7 +8377,8 @@ KISSY.Editor.add("styles", function(KE) {
         }
 
         // Appends the "length" information to the object.
-        attribs._length = length;
+        //防止被compiler优化
+        attribs["_length"] = length;
 
         // Return it, saving it to the next request.
         return ( styleDefinition._AC = attribs );
@@ -7309,7 +8396,7 @@ KISSY.Editor.add("styles", function(KE) {
             return style._.overrides;
 
         var overrides = ( style._.overrides = {} ),
-            definition = style._.definition.overrides;
+            definition = style._.definition["overrides"];
 
         if (definition) {
             // The override description can be a string, object or array.
@@ -7329,20 +8416,24 @@ KISSY.Editor.add("styles", function(KE) {
                     elementName = override.toLowerCase();
                 // Or an object.
                 else {
-                    elementName = override.element ? override.element.toLowerCase() : style.element;
-                    attrs = override.attributes;
+                    elementName = override["element"] ?
+                        override["element"].toLowerCase() :
+                        style.element;
+                    attrs = override["attributes"];
                 }
 
                 // We can have more than one override definition for the same
                 // element name, so we attempt to simply append information to
                 // it if it already exists.
-                overrideEl = overrides[ elementName ] || ( overrides[ elementName ] = {} );
+                overrideEl = overrides[ elementName ] ||
+                    ( overrides[ elementName ] = {} );
 
                 if (attrs) {
                     // The returning attributes list is an array, because we
                     // could have different override definitions for the same
                     // attribute name.
-                    var overrideAttrs = ( overrideEl.attributes = overrideEl.attributes || new Array() );
+                    var overrideAttrs = ( overrideEl["attributes"] =
+                        overrideEl["attributes"] || new Array() );
                     for (var attName in attrs) {
                         // Each item in the attributes array is also an array,
                         // where [0] is the attribute name and [1] is the
@@ -7360,16 +8451,19 @@ KISSY.Editor.add("styles", function(KE) {
     // Removes a style from an element itself, don't care about its subtree.
     function removeFromElement(style, element) {
         var def = style._.definition,
-            attributes = S.mix(S.mix({}, def.attributes), getOverrides(style)[ element._4e_name()]),
-            styles = def.styles,
+            attributes = S.mix(S.mix({}, def["attributes"]),
+                getOverrides(style)[ element._4e_name()]),
+            styles = def["styles"],
             // If the style is only about the element itself, we have to remove the element.
-            removeEmpty = S.isEmptyObject(attributes) && S.isEmptyObject(styles);
+            removeEmpty = S.isEmptyObject(attributes) &&
+                S.isEmptyObject(styles);
 
         // Remove definition attributes/style from the elemnt.
         for (var attName in attributes) {
             // The 'class' element value must match (#1318).
-            if (( attName == 'class' || style._.definition.fullMatch )
-                && element.attr(attName) != normalizeProperty(attName, attributes[ attName ]))
+            if (( attName == 'class' || style._.definition["fullMatch"] )
+                && element.attr(attName) != normalizeProperty(attName,
+                attributes[ attName ]))
                 continue;
             removeEmpty = removeEmpty || !!element._4e_hasAttribute(attName);
             element.removeAttr(attName);
@@ -7377,8 +8471,8 @@ KISSY.Editor.add("styles", function(KE) {
 
         for (var styleName in styles) {
             // Full match style insist on having fully equivalence. (#5018)
-            if (style._.definition.fullMatch
-                && element._4e_style(styleName) != normalizeProperty(styleName, styles[ styleName ], true))
+            if (style._.definition["fullMatch"]
+                && element._4e_style(styleName) != normalizeProperty(styleName, styles[ styleName ], TRUE))
                 continue;
 
             removeEmpty = removeEmpty || !!element._4e_style(styleName);
@@ -7388,8 +8482,14 @@ KISSY.Editor.add("styles", function(KE) {
         removeEmpty && removeNoAttribsElement(element);
     }
 
+    /**
+     *
+     * @param {string} name
+     * @param {string} value
+     * @param {boolean=} isStyle
+     */
     function normalizeProperty(name, value, isStyle) {
-        var temp = new Node('<span></span>');
+        var temp = new Node('<span>');
         temp [ isStyle ? '_4e_style' : 'attr' ](name, value);
         return temp[ isStyle ? '_4e_style' : 'attr' ](name);
     }
@@ -7401,7 +8501,7 @@ KISSY.Editor.add("styles", function(KE) {
             //attribs = def.attributes,
             //styles = def.styles,
             overrides = getOverrides(style),
-            innerElements = element.all(style.element);
+            innerElements = element.all(style["element"]);
 
         for (var i = innerElements.length; --i >= 0;)
             removeFromElement(style, new Node(innerElements[i]));
@@ -7409,7 +8509,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Now remove any other element with different name that is
         // defined to be overriden.
         for (var overrideElement in overrides) {
-            if (overrideElement != style.element) {
+            if (overrideElement != style["element"]) {
                 innerElements = element.all(overrideElement);
                 for (i = innerElements.length - 1; i >= 0; i--) {
                     var innerElement = new Node(innerElements[i]);
@@ -7427,7 +8527,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param {Object} overrides
      */
     function removeOverrides(element, overrides) {
-        var attributes = overrides && overrides.attributes;
+        var attributes = overrides && overrides["attributes"];
 
         if (attributes) {
             for (var i = 0; i < attributes.length; i++) {
@@ -7437,12 +8537,12 @@ KISSY.Editor.add("styles", function(KE) {
                     var attValue = attributes[i][1];
 
                     // Remove the attribute if:
-                    //    - The override definition value is null ;
+                    //    - The override definition value is NULL ;
                     //    - The override definition valie is a string that
                     //      matches the attribute value exactly.
                     //    - The override definition value is a regex that
                     //      has matches in the attribute value.
-                    if (attValue === null ||
+                    if (attValue === NULL ||
                         ( attValue.test && attValue.test(actualAttrValue) ) ||
                         ( typeof attValue == 'string' && actualAttrValue == attValue ))
                         element[0].removeAttribute(attName);
@@ -7460,13 +8560,15 @@ KISSY.Editor.add("styles", function(KE) {
         if (!element._4e_hasAttributes()) {
             // Removing elements may open points where merging is possible,
             // so let's cache the first and last nodes for later checking.
-            var firstChild = element[0].firstChild,lastChild = element[0].lastChild;
+            var firstChild = element[0].firstChild,
+                lastChild = element[0].lastChild;
 
-            element._4e_remove(true);
+            element._4e_remove(TRUE);
 
             if (firstChild) {
                 // Check the cached nodes for merging.
-                firstChild.nodeType == KEN.NODE_ELEMENT && DOM._4e_mergeSiblings(firstChild);
+                firstChild.nodeType == KEN.NODE_ELEMENT &&
+                DOM._4e_mergeSiblings(firstChild);
 
                 if (lastChild && !firstChild === lastChild
                     && lastChild.nodeType == KEN.NODE_ELEMENT)
@@ -7476,36 +8578,56 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     KE.Style = KEStyle;
-});
-/**
+    KE["Style"] = KEStyle;
+
+    var StyleP = KEStyle.prototype;
+    KE.Utils.extern(StyleP, {
+        "apply":StyleP.apply,
+        "remove":StyleP.remove,
+        "applyToRange":StyleP.applyToRange,
+        "removeFromRange":StyleP.removeFromRange,
+        "applyToObject":StyleP.applyToObject,
+        "checkElementRemovable":StyleP.checkElementRemovable,
+        "checkActive":StyleP.checkActive
+    });
+});/**
  * modified from ckeditor,htmlparser for malform html string
- * @modifier: yiminghe@gmail.com
+ * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("htmlparser", function(
     // editor
     ) {
 
-    var S = KISSY,KE = S.Editor;
+    var S = KISSY
+        ,
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        emptyFunc = function() {
+        },
+        KE = S.Editor;
     //if (KE.HtmlParser) return;
     var attribsRegex = /([\w\-:.]+)(?:(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s>]+)))|(?=\s|$))/g,
         emptyAttribs = {
-            checked:1,
-            compact:1,
-            declare:1,
-            defer:1,
-            disabled:1,
-            ismap:1,
-            multiple:1,
-            nohref:1,
-            noresize:1,
-            noshade:1,
-            nowrap:1,
-            readonly:1,
-            selected:1
+            "checked":1,
+            "compact":1,
+            "declare":1,
+            "defer":1,
+            "disabled":1,
+            "ismap":1,
+            "multiple":1,
+            "nohref":1,
+            "noresize":1,
+            "noshade":1,
+            "nowrap":1,
+            "readonly":1,
+            "selected":1
         },
         XHTML_DTD = KE.XHTML_DTD;
 
-
+    /**
+     * @constructor
+     */
     function HtmlParser() {
         this._ = {
             htmlPartsRegex :new RegExp('<(?:(?:\\/([^>]+)>)|(?:!--([\\S|\\s]*?)-->)|(?:([^\\s>]+)\\s*((?:(?:[^"\'>]+)|(?:"[^"]*")|(?:\'[^\']*\'))*)\\/?>))', 'g')
@@ -7517,67 +8639,57 @@ KISSY.Editor.add("htmlparser", function(
         /**
          * Function to be fired when a tag opener is found. This function
          * should be overriden when using this class.
-         *  {String} tagName The tag name. The name is guarantted to be
+         *  {string} tagName The tag name. The name is guarantted to be
          *        lowercased.
          *  {Object} attributes An object containing all tag attributes. Each
          *        property in this object represent and attribute name and its
          *        value is the attribute value.
-         * {Boolean} selfClosing true if the tag closes itself, false if the
+         * {boolean} selfClosing TRUE if the tag closes itself, FALSE if the
          *         tag doesn't.
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onTagOpen = function( tagName, attributes, selfClosing )
          *     {
          *         alert( tagName );  // e.g. "b"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onTagOpen    : function() {
-        },
+        onTagOpen    : emptyFunc,
 
         /**
          * Function to be fired when a tag closer is found. This function
          * should be overriden when using this class.
 
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onTagClose = function( tagName )
          *     {
          *         alert( tagName );  // e.g. "b"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onTagClose    : function(
-            //tagName
-            ) {
-        },
+        onTagClose    : emptyFunc,
 
         /**
          * Function to be fired when text is found. This function
          * should be overriden when using this class.
 
          * @example
-         * var parser = new CKEDITOR.htmlParser();
+         * var parser = new HtmlParser();
          * parser.onText = function( text )
          *     {
          *         alert( text );  // e.g. "Hello"
          *     });
          * parser.parse( "&lt;!-- Example --&gt;&lt;b&gt;Hello&lt;/b&gt;" );
          */
-        onText        : function(
-            //text
-            ) {
-        },
+        onText        : emptyFunc,
 
         /**
          * Function to be fired when CDATA section is found. This function
          * should be overriden when using this class.
 
          */
-        onCDATA        : function(
-            //cdata
-            ) {
-        },
+        onCDATA        : emptyFunc,
 
         /**
          * Function to be fired when a commend is found. This function
@@ -7585,16 +8697,13 @@ KISSY.Editor.add("htmlparser", function(
 
 
          */
-        onComment : function(
-            //comment
-            ) {
-        },
+        onComment :emptyFunc,
 
         /**
          * Parses text, looking for HTML tokens, like tag openers or closers,
          * or comments. This function fires the onTagOpen, onTagClose, onText
          * and onComment function during its execution.
-         * @param {String} html The HTML to be parsed.
+         * @param {string} html The HTML to be parsed.
 
          */
         parse : function(html) {
@@ -7634,7 +8743,7 @@ KISSY.Editor.add("htmlparser", function(
                     if (cdata && XHTML_DTD.$cdata[ tagName ]) {
                         // Send the CDATA data.
                         this.onCDATA(cdata.join(''));
-                        cdata = null;
+                        cdata = NULL;
                     }
 
                     if (!cdata) {
@@ -7695,14 +8804,21 @@ KISSY.Editor.add("htmlparser", function(
     });
 
     KE.HtmlParser = HtmlParser;
+    KE["HtmlParser"] = HtmlParser;
 });
 /**
  * modified from ckeditor,html generator for kissy editor
- * @modifier: yiminghe@gmail.com
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("htmlparser-basicwriter", function() {
-    var S = KISSY,KE = S.Editor,Utils = KE.Utils;
-    //if (KE.HtmlParser.BasicWriter)return;
+    var S = KISSY,KE = S.Editor,Utils = KE.Utils,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     */
     function BasicWriter() {
         this._ = {
             output : []
@@ -7712,30 +8828,28 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
     S.augment(BasicWriter, {
         /**
          * Writes the tag opening part for a opener tag.
-         * @param {String} tagName The element name for this tag.
-         * param {Object} attributes The attributes defined for this tag. The
+         * @param {string} tagName The element name for this tag.
+         * param {Object=} attributes The attributes defined for this tag. The
          *        attributes could be used to inspect the tag.
          * @example
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName
-            //, attributes
-            ) {
+        openTag : function(tagName, attributes) {
             this._.output.push('<', tagName);
         },
 
         /**
          * Writes the tag closing part for a opener tag.
-         * @param {String} tagName The element name for this tag.
-         * @param {Boolean} isSelfClose Indicates that this is a self-closing tag,
+         * @param {string} tagName The element name for this tag.
+         * @param {boolean=} isSelfClose Indicates that this is a self-closing tag,
          *        like "br" or "img".
          * @example
          * // Writes "&gt;".
-         * writer.openTagClose( 'p', false );
+         * writer.openTagClose( 'p', FALSE );
          * @example
          * // Writes " /&gt;".
-         * writer.openTagClose( 'br', true );
+         * writer.openTagClose( 'br', TRUE );
          */
         openTagClose : function(tagName, isSelfClose) {
             if (isSelfClose)
@@ -7747,8 +8861,8 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
         /**
          * Writes an attribute. This function should be called after opening the
          * tag with {@link #openTagClose}.
-         * @param {String} attName The attribute name.
-         * @param {String} attValue The attribute value.
+         * @param {string} attName The attribute name.
+         * @param {string} attValue The attribute value.
          * @example
          * // Writes ' class="MyClass"'.
          * writer.attribute( 'class', 'MyClass' );
@@ -7763,7 +8877,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes a closer tag.
-         * @param {String} tagName The element name for this tag.
+         * @param {string} tagName The element name for this tag.
          * @example
          * // Writes "&lt;/p&gt;".
          * writer.closeTag( 'p' );
@@ -7774,7 +8888,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes text.
-         * @param {String} text The text value
+         * @param {string} text The text value
          * @example
          * // Writes "Hello Word".
          * writer.text( 'Hello Word' );
@@ -7785,7 +8899,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
         /**
          * Writes a comment.
-         * @param {String} comment The comment text.
+         * @param {string} comment The comment text.
          * @example
          * // Writes "&lt;!-- My comment --&gt;".
          * writer.comment( ' My comment ' );
@@ -7810,14 +8924,14 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
          */
         reset : function() {
             this._.output = [];
-            this._.indent = false;
+            this._.indent = FALSE;
         },
 
         /**
          * Empties the current output buffer.
-         * @param {Boolean} reset Indicates that the { reset} function is to
+         * @param {boolean} reset Indicates that the { reset} function is to
          *        be automatically called after retrieving the HTML.
-         * @returns {String} The HTML written to the writer so far.
+         * @returns {string} The HTML written to the writer so far.
          * @example
          * var html = writer.getHtml();
          */
@@ -7832,14 +8946,32 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
     });
 
     KE.HtmlParser.BasicWriter = BasicWriter;
+    KE.HtmlParser["BasicWriter"] = BasicWriter;
+    var BasicWriterP = BasicWriter.prototype;
+    KE.Utils.extern(BasicWriterP, {
+        "openTag":BasicWriterP.openTag,
+        "openTagClose":BasicWriterP.openTagClose,
+        "attribute":BasicWriterP.attribute,
+        "closeTag":BasicWriterP.closeTag,
+        "text":BasicWriterP.text,
+        "comment":BasicWriterP.comment,
+        "write":BasicWriterP.write,
+        "reset":BasicWriterP.reset,
+        "getHtml":BasicWriterP.getHtml
+    });
 });
 KISSY.Editor.add("htmlparser-htmlwriter", function(
-    //editor
     ) {
     var S = KISSY,
         KE = S.Editor,
-        Utils = KE.Utils;
-    //if (KE.HtmlParser.HtmlWriter) return;
+        Utils = KE.Utils,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     */
     function HtmlWriter() {
         // Call the base contructor.
 
@@ -7847,7 +8979,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         /**
          * The characters to be used for each identation step.
-         * @type String
+         * @type {string}
          * @default "\t" (tab)
          * @example
          * // Use two spaces for indentation.
@@ -7858,7 +8990,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         /**
          * The characters to be used to close "self-closing" elements, like "br" or
          * "img".
-         * @type String
+         * @type {string}
          * @default " /&gt;"
          * @example
          * // Use HTML4 notation for self-closing elements.
@@ -7868,7 +9000,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
         /**
          * The characters to be used for line breaks.
-         * @type String
+         * @type {string}
          * @default "\n" (LF)
          * @example
          * // Use CRLF for line breaks.
@@ -7876,11 +9008,11 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          */
         this.lineBreakChars = '\n';
 
-        this.forceSimpleAmpersand = false;
+        this.forceSimpleAmpersand = FALSE;
 
-        this.sortAttributes = true;
+        this.sortAttributes = TRUE;
 
-        this._.indent = false;
+        this._.indent = FALSE;
         this._.indentation = '';
         this._.rules = {};
 
@@ -7891,35 +9023,35 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
             dtd.$block, dtd.$listItem,
             dtd.$tableContent)) {
             this.setRules(e, {
-                indent : true,
-                breakBeforeOpen : true,
-                breakAfterOpen : true,
+                indent : TRUE,
+                breakBeforeOpen : TRUE,
+                breakAfterOpen : TRUE,
                 breakBeforeClose : !dtd[ e ][ '#' ],
-                breakAfterClose : true
+                breakAfterClose : TRUE
             });
         }
 
         this.setRules('br',
         {
-            breakAfterOpen : true
+            breakAfterOpen : TRUE
         });
 
         this.setRules('title',
         {
-            indent : false,
-            breakAfterOpen : false
+            indent : FALSE,
+            breakAfterOpen : FALSE
         });
 
         this.setRules('style',
         {
-            indent : false,
-            breakBeforeClose : true
+            indent : FALSE,
+            breakBeforeClose : TRUE
         });
 
         // Disable indentation on <pre>.
         this.setRules('pre',
         {
-            indent: false
+            indent: FALSE
         });
     }
 
@@ -7927,15 +9059,13 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         /**
          * Writes the tag opening part for a opener tag.
          * @param {String} tagName The element name for this tag.
-         *  {Object} attributes The attributes defined for this tag. The
+         * @param {Object} attributes The attributes defined for this tag. The
          *        attributes could be used to inspect the tag.
          * @example
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName
-            //, attributes
-            ) {
+        openTag : function(tagName, attributes) {
             var rules = this._.rules[ tagName ];
 
             if (this._.indent)
@@ -7956,10 +9086,10 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          *        like "br" or "img".
          * @example
          * // Writes "&gt;".
-         * writer.openTagClose( 'p', false );
+         * writer.openTagClose( 'p', FALSE );
          * @example
          * // Writes " /&gt;".
-         * writer.openTagClose( 'br', true );
+         * writer.openTagClose( 'br', TRUE );
          */
         openTagClose : function(tagName, isSelfClose) {
             var rules = this._.rules[ tagName ];
@@ -8062,7 +9192,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         lineBreak : function() {
             if (this._.output.length > 0)
                 this._.output.push(this.lineBreakChars);
-            this._.indent = true;
+            this._.indent = TRUE;
         },
 
         /**
@@ -8075,7 +9205,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          */
         indentation : function() {
             this._.output.push(this._.indentation);
-            this._.indent = false;
+            this._.indent = FALSE;
         },
 
         /**
@@ -8088,21 +9218,21 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
          *    <li><b>breakAfterClose</b>: break line after the closer tag for this element.</li>
          * </ul>
          *
-         * All rules default to "false". Each call to the function overrides
+         * All rules default to "FALSE". Each call to the function overrides
          * already present rules, leaving the undefined untouched.
          *
          * By default, all elements available in the { XHTML_DTD.$block),
          * { XHTML_DTD.$listItem} and { XHTML_DTD.$tableContent}
-         * lists have all the above rules set to "true". Additionaly, the "br"
-         * element has the "breakAfterOpen" set to "true".
+         * lists have all the above rules set to "TRUE". Additionaly, the "br"
+         * element has the "breakAfterOpen" set to "TRUE".
          * @param {String} tagName The element name to which set the rules.
          * @param {Object} rules An object containing the element rules.
          * @example
          * // Break line before and after "img" tags.
          * writer.setRules( 'img',
          *     {
-         *         breakBeforeOpen : true
-         *         breakAfterOpen : true
+         *         breakBeforeOpen : TRUE
+         *         breakAfterOpen : TRUE
          *     });
          * @example
          * // Reset the rules for the "h1" tag.
@@ -8119,12 +9249,28 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
     });
 
     KE.HtmlParser.HtmlWriter = HtmlWriter;
+    KE.HtmlParser["HtmlWriter"] = HtmlWriter;
+    var HtmlWriterP = HtmlWriter.prototype;
+    KE.Utils.extern(HtmlWriterP, {
+        "openTag":HtmlWriterP.openTag,
+        "openTagClose":HtmlWriterP.openTagClose,
+        "attribute":HtmlWriterP.attribute,
+        "closeTag":HtmlWriterP.closeTag,
+        "text":HtmlWriterP.text,
+        "comment":HtmlWriterP.comment,
+        "lineBreak":HtmlWriterP.lineBreak,
+        "indentation":HtmlWriterP.indentation,
+        "setRules":HtmlWriterP.setRules
+    });
 });
 KISSY.Editor.add("htmlparser-fragment", function(
-    //editor
     ) {
-    var KE = KISSY.Editor;
-    //if (KE.HtmlParser.Fragment) return;
+    var
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        KE = KISSY.Editor;
+
     /**
      * A lightweight representation of an HTML DOM structure.
      * @constructor
@@ -8141,23 +9287,23 @@ KISSY.Editor.add("htmlparser-fragment", function(
         this.children = [];
 
         /**
-         * Get the fragment parent. Should always be null.
+         * Get the fragment parent. Should always be NULL.
          * @type Object
-         * @default null
+         * @default NULL
          * @example
          */
-        this.parent = null;
+        this.parent = NULL;
 
         /** @private */
         this._ = {
-            isBlockLike : true,
-            hasInlineStarted : false
+            isBlockLike : TRUE,
+            hasInlineStarted : FALSE
         };
     }
 
     // Elements which the end tag is marked as optional in the HTML 4.01 DTD
     // (expect empty elements).
-    var optionalClose = {colgroup:1,dd:1,dt:1,li:1,option:1,p:1,td:1,tfoot:1,th:1,thead:1,tr:1};
+    var optionalClose = {"colgroup":1,"dd":1,"dt":1,"li":1,"option":1,"p":1,"td":1,"tfoot":1,"th":1,"thead":1,"tr":1};
 
     // Block-level elements whose internal structure should be respected during
     // parser fixing.
@@ -8165,15 +9311,15 @@ KISSY.Editor.add("htmlparser-fragment", function(
         Utils = KE.Utils,
         KEN = KE.NODE,
         XHTML_DTD = KE.XHTML_DTD,
-        nonBreakingBlocks = Utils.mix({table:1,ul:1,ol:1,dl:1},
-            XHTML_DTD.table, XHTML_DTD.ul, XHTML_DTD.ol, XHTML_DTD.dl),
+        nonBreakingBlocks = Utils.mix({"table":1,"ul":1,"ol":1,"dl":1},
+            XHTML_DTD["table"], XHTML_DTD["ul"], XHTML_DTD["ol"], XHTML_DTD["dl"]),
         listBlocks = XHTML_DTD.$list,
         listItems = XHTML_DTD.$listItem;
 
     /**
      * Creates a  Fragment from an HTML string.
      * @param {String} fragmentHtml The HTML to be parsed, filling the fragment.
-     * @param {Number} [fixForBody=false] Wrap body with specified element if needed.
+     * @param {boolean|string|undefined} [fixForBody=FALSE] Wrap body with specified element if needed.
      * @returns Fragment The fragment created.
      * @example
      * var fragment = Fragment.fromHtml( '<b>Sample</b> Text' );
@@ -8187,7 +9333,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
      * "<ul><ul><li>xxx</ul><li>1<li>2<ul>");
      */
     Fragment.FromHtml = function(fragmentHtml, fixForBody) {
-        
+
         var parser = new KE.HtmlParser(),
             //html = [],
             fragment = new Fragment(),
@@ -8195,9 +9341,13 @@ KISSY.Editor.add("htmlparser-fragment", function(
             pendingBRs = [],
             currentNode = fragment,
             // Indicate we're inside a <pre> element, spaces should be touched differently.
-            inPre = false,
+            inPre = FALSE,
             returnPoint;
 
+        /**
+         *
+         * @param {boolean|undefined|string=} newTagName
+         */
         function checkPending(newTagName) {
             var pendingBRsSent;
 
@@ -8236,11 +9386,17 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 currentNode.add(pendingBRs.shift());
         }
 
+        /**
+         *
+         * @param  element
+         * @param  {*=} target
+         * @param {boolean=} enforceCurrent
+         */
         function addElement(element, target, enforceCurrent) {
             target = target || currentNode || fragment;
 
             // If the target is the fragment and this element can't go inside
-            // body (if fixForBody).
+            // body
             if (fixForBody && !target.type) {
                 var elementName, realElementName;
                 if (element.attributes
@@ -8293,17 +9449,17 @@ KISSY.Editor.add("htmlparser-fragment", function(
 
         /**
          * 遇到标签开始建立节点和父亲关联 ==  node.parent=parent
-         * @param tagName
-         * @param attributes
-         * @param selfClosing
+         * @param {string|boolean|undefined} tagName
+         * @param {Object} attributes
+         * @param {boolean=} selfClosing
          */
         parser.onTagOpen = function(tagName, attributes, selfClosing) {
             var element = new KE.HtmlParser.Element(tagName, attributes);
 
-            // "isEmpty" will be always "false" for unknown elements, so we
+            // "isEmpty" will be always "FALSE" for unknown elements, so we
             // must force it if the parser has identified it as a selfClosing tag.
             if (element.isUnknown && selfClosing)
-                element.isEmpty = true;
+                element.isEmpty = TRUE;
 
             // This is a tag to be removed if empty, so do not add it immediately.
             if (XHTML_DTD.$removeEmpty[ tagName ]) {
@@ -8311,7 +9467,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 return;
             }
             else if (tagName == 'pre')
-                inPre = true;
+                inPre = TRUE;
             else if (tagName == 'br' && inPre) {
                 currentNode.add(new KE.HtmlParser.Text('\n'));
                 return;
@@ -8326,13 +9482,13 @@ KISSY.Editor.add("htmlparser-fragment", function(
 
             var currentDtd = currentName
                 && ( XHTML_DTD[ currentName ]
-                || ( currentNode._.isBlockLike ? XHTML_DTD.div : XHTML_DTD.span ) );
+                || ( currentNode._.isBlockLike ? XHTML_DTD["div"] : XHTML_DTD["span"] ) );
 
             // If the element cannot be child of the current element.
             if (currentDtd   // Fragment could receive any elements.
                 && !element.isUnknown && !currentNode.isUnknown && !currentDtd[ tagName ]) {
 
-                var reApply = false,
+                var reApply = FALSE,
                     addPoint;   // New position to start adding nodes.
 
                 // Fixing malformed nested lists by moving it into a previous list item. (#3828)
@@ -8363,7 +9519,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                     }
                     else {
                         //拆分，闭合掉
-                        addElement(currentNode, currentNode.parent, true);
+                        addElement(currentNode, currentNode.parent, TRUE);
                         //li,p等现在就闭合，以后都不用再管了
                         if (!optionalClose[ currentName ]) {
                             // The current element is an inline element, which
@@ -8373,7 +9529,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                         }
                     }
 
-                    reApply = true;
+                    reApply = TRUE;
                 }
 
                 if (addPoint)
@@ -8446,7 +9602,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 currentNode = candidate;
 
                 if (currentNode.name == 'pre')
-                    inPre = false;
+                    inPre = FALSE;
 
                 if (candidate._.isBlockLike)
                     sendPendingBRs();
@@ -8462,7 +9618,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
             }
 
             if (tagName == 'body')
-                fixForBody = false;
+                fixForBody = FALSE;
         };
 
         parser.onText = function(text) {
@@ -8539,7 +9695,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
          */
         add : function(node) {
             var len = this.children.length,
-                previous = len > 0 && this.children[ len - 1 ] || null;
+                previous = len > 0 && this.children[ len - 1 ] || NULL;
 
             if (previous) {
                 // If the block to be appended is following text, trim spaces at
@@ -8578,16 +9734,16 @@ KISSY.Editor.add("htmlparser-fragment", function(
             var isChildrenFiltered;
             this.filterChildren = function() {
                 var writer = new KE.HtmlParser.BasicWriter();
-                this.writeChildrenHtml.call(this, writer, filter, true);
+                this.writeChildrenHtml.call(this, writer, filter, TRUE);
                 var html = writer.getHtml();
                 this.children = new Fragment.FromHtml(html).children;
                 isChildrenFiltered = 1;
             };
-
+            this["filterChildren"] = this.filterChildren;
             // Filtering the root fragment before anything else.
             !this.name && filter && filter.onFragment(this);
 
-            this.writeChildrenHtml(writer, isChildrenFiltered ? null : filter);
+            this.writeChildrenHtml(writer, isChildrenFiltered ? NULL : filter);
         },
 
         writeChildrenHtml : function(writer, filter) {
@@ -8597,20 +9753,30 @@ KISSY.Editor.add("htmlparser-fragment", function(
     });
 
     KE.HtmlParser.Fragment = Fragment;
-
+    KE.HtmlParser["Fragment"] = Fragment;
+    Fragment["FromHtml"] = Fragment.FromHtml;
+    var FragmentP = Fragment.prototype;
+    KE.Utils.extern(FragmentP, {
+        "add":FragmentP.add,
+        "writeHtml":FragmentP.writeHtml,
+        "writeChildrenHtml":FragmentP.writeChildrenHtml
+    });
 });
 KISSY.Editor.add("htmlparser-element", function() {
-    var KE = KISSY.Editor;
-    //if (KE.HtmlParser.Element)return;
+    var KE = KISSY.Editor,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
     /**
      * A lightweight representation of an HTML element.
-     * @param {String} name The element name.
+     * @constructor
+     * @param {!String} name The element name.
      * @param {Object} attributes And object holding all attributes defined for
      *        this element.
-     * @constructor
      * @example
      */
-    function Element(name, attributes) {
+    function MElement(name, attributes) {
         /**
          * The element name.
          * @type String
@@ -8658,7 +9824,7 @@ KISSY.Editor.add("htmlparser-element", function() {
             b = b[0];
             return a < b ? -1 : a > b ? 1 : 0;
         };
-    S.augment(Element, {
+    S.augment(MElement, {
         /**
          * The node type. This is a constant value set to { KEN.NODE_ELEMENT}.
          * @type Number
@@ -8676,11 +9842,11 @@ KISSY.Editor.add("htmlparser-element", function() {
 
         /**
          * Clone this element.
-         * @returns {Element} The element clone.
+         * @returns {MElement} The element clone.
          * @example
          */
         clone : function() {
-            return new Element(this.name, this.attributes);
+            return new MElement(this.name, this.attributes);
         },
 
         /**
@@ -8710,9 +9876,9 @@ KISSY.Editor.add("htmlparser-element", function() {
                     isChildrenFiltered = 1;
                 }
             };
-
+            element["filterChildren"] = element.filterChildren;
             if (filter) {
-                while (true) {
+                while (TRUE) {
                     if (!( writeName = filter.onElementName(writeName) ))
                         return;
 
@@ -8738,7 +9904,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                     // This indicate that the element has been dropped by
                     // filter but not the children.
                     if (!writeName) {
-                        this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                        this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? NULL : filter);
                         return;
                     }
                 }
@@ -8762,7 +9928,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                     if (i == 1)
                         attribsArray.push([ a, value ]);
                     else if (filter) {
-                        while (true) {
+                        while (TRUE) {
                             if (!( newAttrName = filter.onAttributeName(a) )) {
                                 delete attributes[ a ];
                                 break;
@@ -8776,7 +9942,7 @@ KISSY.Editor.add("htmlparser-element", function() {
                                 break;
                         }
                         if (newAttrName) {
-                            if (( value = filter.onAttribute(element, newAttrName, value) ) === false)
+                            if (( value = filter.onAttribute(element, newAttrName, value) ) === FALSE)
                                 delete attributes[ newAttrName ];
                             else
                                 attributes [ newAttrName ] = value;
@@ -8799,7 +9965,7 @@ KISSY.Editor.add("htmlparser-element", function() {
             writer.openTagClose(writeName, element.isEmpty);
 
             if (!element.isEmpty) {
-                this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? null : filter);
+                this.writeChildrenHtml.call(element, writer, isChildrenFiltered ? NULL : filter);
                 // Close the element.
                 writer.closeTag(writeName);
             }
@@ -8810,14 +9976,32 @@ KISSY.Editor.add("htmlparser-element", function() {
             KE.HtmlParser.Fragment.prototype.writeChildrenHtml.apply(this, arguments);
         }
     });
+    /**
+     * @constructor
+     */
+    KE.HtmlParser.Element = MElement;
 
-    KE.HtmlParser.Element = Element;
+    KE.HtmlParser["Element"] = MElement;
+    var MElementP = MElement.prototype;
+    KE.Utils.extern(MElementP, {
+        "type":MElementP.type,
+        "add":MElementP.add,
+        "clone":MElementP.clone,
+        "writeHtml":MElementP.writeHtml,
+        "writeChildrenHtml":MElementP.writeChildrenHtml
+    });
 });
 KISSY.Editor.add("htmlparser-filter", function(
-    //editor
     ) {
-    var S = KISSY,KE = S.Editor,KEN = KE.NODE;
-    //if (KE.HtmlParser.Filter)return;
+    var S = KISSY,KE = S.Editor,KEN = KE.NODE,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
+    /**
+     * @constructor
+     * @param rules {Object}
+     */
     function Filter(rules) {
         this._ = {
             elementNames : [],
@@ -8892,8 +10076,8 @@ KISSY.Editor.add("htmlparser-filter", function(
                 if (filter) {
                     ret = filter.filter(element, this);
 
-                    if (ret === false)
-                        return null;
+                    if (ret === FALSE)
+                        return NULL;
 
                     if (ret && ret != element)
                         return this.onNode(ret);
@@ -8912,7 +10096,7 @@ KISSY.Editor.add("htmlparser-filter", function(
 
             return type == KEN.NODE_ELEMENT ? this.onElement(node) :
                 type == KEN.NODE_TEXT ? new KE.HtmlParser.Text(this.onText(node.value)) :
-                    null;
+                    NULL;
         },
 
         onAttribute : function(element, name, value) {
@@ -8921,8 +10105,8 @@ KISSY.Editor.add("htmlparser-filter", function(
             if (filter) {
                 var ret = filter.filter(value, element, this);
 
-                if (ret === false)
-                    return false;
+                if (ret === FALSE)
+                    return FALSE;
 
                 if (typeof ret != 'undefined')
                     return ret;
@@ -9023,7 +10207,7 @@ KISSY.Editor.add("htmlparser-filter", function(
             var item = this[ i ],
                 ret = item.apply(window, arguments);
 
-            if (ret === false)
+            if (ret === FALSE)
                 return ret;
 
             // We're filtering node (element/fragment).
@@ -9049,21 +10233,34 @@ KISSY.Editor.add("htmlparser-filter", function(
     }
 
     KE.HtmlParser.Filter = Filter;
+    var FilterP = Filter.prototype;
+    KE.Utils.extern(FilterP, {
+        "addRules":FilterP.addRules,
+        "onElementName":FilterP.onElementName,
+        "onAttributeName":FilterP.onAttributeName,
+        "onText":FilterP.onText,
+        "onComment":FilterP.onComment,
+        "onFragment":FilterP.onFragment,
+        "onElement":FilterP.onElement,
+        "onNode":FilterP.onNode,
+        "onAttribute":FilterP.onAttribute
+    });
+    KE.HtmlParser["Filter"] = Filter;
 });
-KISSY.Editor.add("htmlparser-text", function(
-    //editor
-    ) {
+KISSY.Editor.add("htmlparser-text", function() {
     var S = KISSY,
         KE = S.Editor,
-        KEN = KE.NODE;
-    //if (KE.HtmlParser.Text) return;
+        KEN = KE.NODE,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
     /**
      * A lightweight representation of HTML text.
      * @constructor
      * @example
      */
-
-    function Text(value) {
+    function MText(value) {
         /**
          * The text value.
          * @type String
@@ -9073,11 +10270,11 @@ KISSY.Editor.add("htmlparser-text", function(
 
         /** @private */
         this._ = {
-            isBlockLike : false
+            isBlockLike : FALSE
         };
     }
 
-    S.augment(Text, {
+    S.augment(MText, {
         /**
          * The node type. This is a constant value set to { KEN.NODE_TEXT}.
          * @type Number
@@ -9100,13 +10297,17 @@ KISSY.Editor.add("htmlparser-text", function(
         }
     });
 
-    KE.HtmlParser.Text = Text;
+    KE.HtmlParser.Text = MText;
+    KE.HtmlParser["Text"] = MText;
 });
 KISSY.Editor.add("htmlparser-comment", function() {
     var KE = KISSY.Editor,KEN = KE.NODE;
-    //if (KE.HtmlParser.Comment) return;
 
-    function Comment(value) {
+    /**
+     * @constructor
+     * @param value
+     */
+    function MComment(value) {
         /**
          * The comment text.
          * @type String
@@ -9121,10 +10322,10 @@ KISSY.Editor.add("htmlparser-comment", function() {
         };
     }
 
-    KE.HtmlParser.Comment = Comment;
-
-    Comment.prototype = {
-        constructor:Comment,
+    KE.HtmlParser.Comment = MComment;
+    KE.HtmlParser["Comment"] = MComment;
+    MComment.prototype = {
+        constructor:MComment,
         /**
          * The node type. This is a constant value set to  NODE_COMMENT.
          * @type Number

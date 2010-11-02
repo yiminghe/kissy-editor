@@ -1,8 +1,11 @@
 KISSY.Editor.add("htmlparser-comment", function() {
     var KE = KISSY.Editor,KEN = KE.NODE;
-    //if (KE.HtmlParser.Comment) return;
 
-    function Comment(value) {
+    /**
+     * @constructor
+     * @param value
+     */
+    function MComment(value) {
         /**
          * The comment text.
          * @type String
@@ -17,10 +20,10 @@ KISSY.Editor.add("htmlparser-comment", function() {
         };
     }
 
-    KE.HtmlParser.Comment = Comment;
-
-    Comment.prototype = {
-        constructor:Comment,
+    KE.HtmlParser.Comment = MComment;
+    KE.HtmlParser["Comment"] = MComment;
+    MComment.prototype = {
+        constructor:MComment,
         /**
          * The node type. This is a constant value set to  NODE_COMMENT.
          * @type Number

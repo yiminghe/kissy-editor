@@ -1,20 +1,29 @@
 /**
  * modified from ckeditor for kissy editor ,walker implementation
- * @refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
- * @modifier: yiminghe@gmail.com(chengyu)
+ * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("walker", function(KE) {
 
-    var S = KISSY,
+    var TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         KEN = KE.NODE,
         DOM = S.DOM,
         Node = S.Node;
-    // This function is to be called under a "walker" instance scope.
+
+    /**
+     * @this {Walker}
+     * @param  {boolean=} rtl
+     * @param  {boolean=} breakOnFalse
+     * @return {(KISSY.Node|boolean)}
+     */
     function iterate(rtl, breakOnFalse) {
         var self = this;
-        // Return null if we have reached the end.
+        // Return NULL if we have reached the end.
         if (this._.end)
-            return null;
+            return NULL;
 
         var node,
             range = self.range,
@@ -31,10 +40,10 @@ KISSY.Editor.add("walker", function(KE) {
             // may happen at this point.
             range.trim();
 
-            // A collapsed range must return null at first call.
+            // A collapsed range must return NULL at first call.
             if (range.collapsed) {
                 self.end();
-                return null;
+                return NULL;
             }
         }
 
@@ -93,8 +102,8 @@ KISSY.Editor.add("walker", function(KE) {
         // otherwise simply use the boundary guard.
         if (userGuard) {
             guard = function(node, movingOut) {
-                if (stopGuard(node, movingOut) === false)
-                    return false;
+                if (stopGuard(node, movingOut) === FALSE)
+                    return FALSE;
 
                 return userGuard(node, movingOut);
             };
@@ -103,7 +112,7 @@ KISSY.Editor.add("walker", function(KE) {
             guard = stopGuard;
 
         if (self.current)
-            node = this.current[ getSourceNodeFn ](false, type, guard);
+            node = this.current[ getSourceNodeFn ](FALSE, type, guard);
         else {
             // Get the first node to be returned.
 
@@ -112,46 +121,51 @@ KISSY.Editor.add("walker", function(KE) {
 
                 if (range.endOffset > 0) {
                     node = new Node(node[0].childNodes[range.endOffset - 1]);
-                    if (guard(node) === false)
-                        node = null;
+                    if (guard(node) === FALSE)
+                        node = NULL;
                 }
                 else
-                    node = ( guard(node, true) === false ) ?
-                        null : node._4e_previousSourceNode(true, type, guard);
+                    node = ( guard(node, TRUE) === FALSE ) ?
+                        NULL : node._4e_previousSourceNode(TRUE, type, guard);
             }
             else {
                 node = range.startContainer;
                 node = new Node(node[0].childNodes[range.startOffset]);
 
                 if (node && node[0]) {
-                    if (guard(node) === false)
-                        node = null;
+                    if (guard(node) === FALSE)
+                        node = NULL;
                 }
                 else
-                    node = ( guard(range.startContainer, true) === false ) ?
-                        null : range.startContainer._4e_nextSourceNode(true, type, guard);
+                    node = ( guard(range.startContainer, TRUE) === FALSE ) ?
+                        NULL : range.startContainer._4e_nextSourceNode(TRUE, type, guard);
             }
         }
 
         while (node && node[0] && !self._.end) {
             self.current = node;
 
-            if (!this.evaluator || self.evaluator(node) !== false) {
+            if (!this.evaluator || self.evaluator(node) !== FALSE) {
                 if (!breakOnFalse)
                     return node;
             }
             else if (breakOnFalse && self.evaluator)
-                return false;
+                return FALSE;
 
-            node = node[ getSourceNodeFn ](false, type, guard);
+            node = node[ getSourceNodeFn ](FALSE, type, guard);
         }
 
         self.end();
-        return self.current = null;
+        return self.current = NULL;
     }
 
+    /**
+     * @this {Walker}
+     * @param  {boolean=} rtl
+     * @return {(KISSY.Node|boolean)}
+     */
     function iterateToLast(rtl) {
-        var node, last = null;
+        var node, last = NULL;
 
         while (( node = iterate.call(this, rtl) ))
             last = node;
@@ -159,6 +173,9 @@ KISSY.Editor.add("walker", function(KE) {
         return last;
     }
 
+    /**
+     * @constructor
+     */
     function Walker(range) {
         this.range = range;
 
@@ -166,24 +183,24 @@ KISSY.Editor.add("walker", function(KE) {
          * A function executed for every matched node, to check whether
          * it's to be considered into the walk or not. If not provided, all
          * matched nodes are considered good.
-         * If the function returns "false" the node is ignored.
+         * If the function returns "FALSE" the node is ignored.
          * @name CKEDITOR.dom.walker.prototype.evaluator
          * @property
          * @type Function
          */
-        // this.evaluator = null;
+        // this.evaluator = NULL;
 
         /**
          * A function executed for every node the walk pass by to check
          * whether the walk is to be finished. It's called when both
          * entering and exiting nodes, as well as for the matched nodes.
-         * If this function returns "false", the walking ends and no more
+         * If this function returns "FALSE", the walking ends and no more
          * nodes are evaluated.
          * @name CKEDITOR.dom.walker.prototype.guard
          * @property
          * @type Function
          */
-        // this.guard = null;
+        // this.guard = NULL;
 
         /** @private */
         this._ = {};
@@ -201,7 +218,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the next node (at right).
-         * @returns {Node} The next node or null if no more
+         * @returns {(KISSY.Node|boolean)} The next node or NULL if no more
          *        nodes are available.
          */
         next : function() {
@@ -210,36 +227,36 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the previous node (at left).
-         * @returns {Node} The previous node or null if no more
+         * @returns {(KISSY.Node|boolean)} The previous node or NULL if no more
          *        nodes are available.
          */
         previous : function() {
-            return iterate.call(this, true);
+            return iterate.call(this, TRUE);
         },
 
         /**
          * Check all nodes at right, executing the evaluation fuction.
-         * @returns {Boolean} "false" if the evaluator function returned
-         *        "false" for any of the matched nodes. Otherwise "true".
+         * @returns {boolean} "FALSE" if the evaluator function returned
+         *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
         checkForward : function() {
-            return iterate.call(this, false, true) !== false;
+            return iterate.call(this, FALSE, TRUE) !== FALSE;
         },
 
         /**
          * Check all nodes at left, executing the evaluation fuction.
          * 是不是 (不能后退了)
-         * @returns {Boolean} "false" if the evaluator function returned
-         *        "false" for any of the matched nodes. Otherwise "true".
+         * @returns {boolean} "FALSE" if the evaluator function returned
+         *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
         checkBackward : function() {
-            return iterate.call(this, true, true) !== false;
+            return iterate.call(this, TRUE, TRUE) !== FALSE;
         },
 
         /**
          * Executes a full walk forward (to the right), until no more nodes
          * are available, returning the last valid node.
-         * @returns {Node} The last node at the right or null
+         * @returns {(KISSY.Node|boolean)} The last node at the right or NULL
          *        if no valid nodes are available.
          */
         lastForward : function() {
@@ -249,11 +266,11 @@ KISSY.Editor.add("walker", function(KE) {
         /**
          * Executes a full walk backwards (to the left), until no more nodes
          * are available, returning the last valid node.
-         * @returns {Node} The last node at the left or null
+         * @returns {(KISSY.Node|boolean)} The last node at the left or NULL
          *        if no valid nodes are available.
          */
         lastBackward : function() {
-            return iterateToLast.call(this, true);
+            return iterateToLast.call(this, TRUE);
         },
 
         reset : function() {
@@ -284,10 +301,10 @@ KISSY.Editor.add("walker", function(KE) {
     /**
      * Whether the to-be-evaluated node is a bookmark node OR bookmark node
      * inner contents.
-     * @param {Boolean} contentOnly Whether only test againt the text content of
+     * @param {boolean} contentOnly Whether only test againt the text content of
      * bookmark node instead of the element itself(default).
-     * @param {Boolean} isReject Whether should return 'false' for the bookmark
-     * node instead of 'true'(default).
+     * @param {boolean} isReject Whether should return 'FALSE' for the bookmark
+     * node instead of 'TRUE'(default).
      */
     Walker.bookmark = function(contentOnly, isReject) {
         function isBookmarkNode(node) {
@@ -312,7 +329,7 @@ KISSY.Editor.add("walker", function(KE) {
 
     /**
      * Whether the node is a text node containing only whitespaces characters.
-     * @param isReject
+     * @param {boolean=} isReject
      */
     Walker.whitespaces = function(isReject) {
         return function(node) {
@@ -342,4 +359,25 @@ KISSY.Editor.add("walker", function(KE) {
 
 
     KE.Walker = Walker;
+    KE["Walker"] = Walker;
+    var WalkP = Walker.prototype;
+    KE.Utils.extern(WalkP, {
+        "end":WalkP.end,
+        "next":WalkP.next,
+        "previous":WalkP.previous,
+        "checkForward":WalkP.checkForward,
+        "checkBackward":WalkP.checkBackward,
+        "lastForward":WalkP.lastForward,
+        "lastBackward":WalkP.lastBackward,
+        "reset":WalkP.reset
+    });
+
+
+    KE.Utils.extern(Walker, {
+        "blockBoundary":Walker.blockBoundary,
+        "listItemBoundary":Walker.listItemBoundary,
+        "bookmark":Walker.bookmark,
+        "whitespaces":Walker.whitespaces,
+        "invisible":Walker.invisible
+    });
 });

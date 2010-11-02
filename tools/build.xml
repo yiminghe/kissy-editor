@@ -218,6 +218,43 @@ build file for kissy editor
             <mapper type="regexp" from="^(.*)\.(css|js)$" to="\1-min.\2"/>
         </apply>
 
+        <!--
+        编辑器核心进行高级编译
+        -->
+        <apply executable="java"
+               verbose="true"
+               dest="${build.dir}"
+               failonerror="true"
+               parallel="false"
+                >
+            <fileset dir="${build.dir}"
+                     includes="**/editor-core-pkg.js"
+                    />
+            <arg line="-jar"/>
+            <arg path="${ks-tools.dir}/closure-compiler/compiler.jar"/>
+            <arg line="--charset ${charset}"/>
+
+            <arg value="--compilation_level"/>
+            <arg value="ADVANCED_OPTIMIZATIONS"/>
+<!--
+            <arg value="- -formatting"/>
+            <arg value="PRETTY_PRINT"/>
+-->
+            <arg value="--externs"/>
+            <arg value="kissy.js"/>
+
+            <arg value="--create_source_map"/>
+            <arg value="editor-core-map"/>
+
+            <arg value="--warning_level"/>
+            <arg value="VERBOSE"/>
+            <arg value="--js"/>
+            <srcfile/>
+            <arg value="--js_output_file"/>
+            <targetfile/>
+            <mapper type="regexp" from="^(.*)\.(css|js)$" to="\1-advanced-min.\2"/>
+        </apply>
+
         <apply executable="java"
                verbose="true"
                dest="${build.dir}"

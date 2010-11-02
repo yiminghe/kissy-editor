@@ -3,8 +3,8 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("clipboard", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
         UA = S.UA,
         KERange = KE.Range,

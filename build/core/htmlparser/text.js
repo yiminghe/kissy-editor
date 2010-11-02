@@ -1,17 +1,17 @@
-KISSY.Editor.add("htmlparser-text", function(
-    //editor
-    ) {
+KISSY.Editor.add("htmlparser-text", function() {
     var S = KISSY,
         KE = S.Editor,
-        KEN = KE.NODE;
-    //if (KE.HtmlParser.Text) return;
+        KEN = KE.NODE,
+        TRUE = true,
+        FALSE = false,
+        NULL = null;
+
     /**
      * A lightweight representation of HTML text.
      * @constructor
      * @example
      */
-
-    function Text(value) {
+    function MText(value) {
         /**
          * The text value.
          * @type String
@@ -21,11 +21,11 @@ KISSY.Editor.add("htmlparser-text", function(
 
         /** @private */
         this._ = {
-            isBlockLike : false
+            isBlockLike : FALSE
         };
     }
 
-    S.augment(Text, {
+    S.augment(MText, {
         /**
          * The node type. This is a constant value set to { KEN.NODE_TEXT}.
          * @type Number
@@ -48,5 +48,6 @@ KISSY.Editor.add("htmlparser-text", function(
         }
     });
 
-    KE.HtmlParser.Text = Text;
+    KE.HtmlParser.Text = MText;
+    KE.HtmlParser["Text"] = MText;
 });

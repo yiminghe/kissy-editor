@@ -1,27 +1,37 @@
 /**
  * modified from ckeditor ,dom iterator implementation using walker and nextSourceNode
- * @modifier: <yiminghe@gmail.com(chengyu)>
+ * @author: <yiminghe@gmail.com>
  */
 KISSY.Editor.add("domiterator", function(KE) {
-    var S = KISSY,
+    var
+
+        TRUE = true,
+        FALSE = false,
+        NULL = null,
+        S = KISSY,
         UA = S.UA,
         Walker = KE.Walker,
-        KERange = KE.Range,KER = KE.RANGE,
+        KERange = KE.Range,
+        KER = KE.RANGE,
         KEN = KE.NODE,
         ElementPath = KE.ElementPath,
         Node = S.Node,
         DOM = S.DOM;
 
+    /**
+     * @constructor
+     * @param range {KISSY.Editor.Range}
+     */
     function Iterator(range) {
         if (arguments.length < 1)
             return;
         var self = this;
         self.range = range;
-        self.forceBrBreak = false;
+        self.forceBrBreak = FALSE;
 
         // Whether include <br>s into the enlarged range.(#3730).
-        self.enlargeBr = true;
-        self.enforceRealBlocks = false;
+        self.enlargeBr = TRUE;
+        self.enforceRealBlocks = FALSE;
 
         self._ || ( self._ = {} );
     }
@@ -42,6 +52,9 @@ KISSY.Editor.add("domiterator", function(KE) {
         //会返回两次 li,li,而不是一次 ul ，
         // 可能只是返回包含文字的段落概念？
 
+        /**
+         * @this {Iterator}
+         */
         getNextParagraph : function(blockTag) {
             // The block element to be returned.
             var block,self = this;
@@ -62,13 +75,13 @@ KISSY.Editor.add("domiterator", function(KE) {
                 //2010-09-30 shrink
                 //3.4.2 新增，
                 // Shrink the range to exclude harmful "noises" (#4087, #4450, #5435).
-                range.shrink(KER.SHRINK_ELEMENT, true);
+                range.shrink(KER.SHRINK_ELEMENT, TRUE);
 
                 range.enlarge(self.forceBrBreak || !self.enlargeBr ?
                     KER.ENLARGE_LIST_ITEM_CONTENTS : KER.ENLARGE_BLOCK_CONTENTS);
 
                 var walker = new Walker(range),
-                    ignoreBookmarkTextEvaluator = Walker.bookmark(true, true);
+                    ignoreBookmarkTextEvaluator = Walker.bookmark(TRUE, TRUE);
                 // Avoid anchor inside bookmark inner text.
                 walker.evaluator = ignoreBookmarkTextEvaluator;
                 self._.nextNode = walker.next();
@@ -76,7 +89,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                 walker = new Walker(range);
                 walker.evaluator = ignoreBookmarkTextEvaluator;
                 var lastNode = walker.previous();
-                self._.lastNode = lastNode._4e_nextSourceNode(true);
+                self._.lastNode = lastNode._4e_nextSourceNode(TRUE);
 
                 // We may have an empty text node at the end of block due to [3770].
                 // If that node is the lastNode, it would cause our logic to leak to the
@@ -90,7 +103,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     if (testRange.checkEndOfBlock()) {
                         var path = new ElementPath(testRange.endContainer);
                         var lastBlock = path.block || path.blockLimit;
-                        self._.lastNode = lastBlock._4e_nextSourceNode(true);
+                        self._.lastNode = lastBlock._4e_nextSourceNode(TRUE);
                     }
                 }
 
@@ -101,22 +114,22 @@ KISSY.Editor.add("domiterator", function(KE) {
                 }
 
                 // Let's reuse self variable.
-                range = null;
+                range = NULL;
             }
 
             var currentNode = self._.nextNode;
             lastNode = self._.lastNode;
 
-            self._.nextNode = null;
+            self._.nextNode = NULL;
             while (currentNode) {
                 // closeRange indicates that a paragraph boundary has been found,
                 // so the range can be closed.
-                var closeRange = false;
+                var closeRange = FALSE;
 
                 // includeNode indicates that the current node is good to be part
                 // of the range. By default, any non-element node is ok for it.
                 var includeNode = ( currentNode[0].nodeType != KEN.NODE_ELEMENT ),
-                    continueFromSibling = false;
+                    continueFromSibling = FALSE;
 
                 // If it is an element node, let's check if it can be part of the
                 // range.
@@ -127,7 +140,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                         // <br> boundaries must be part of the range. It will
                         // happen only if ForceBrBreak.
                         if (nodeName == 'br')
-                            includeNode = true;
+                            includeNode = TRUE;
                         else if (!range && !currentNode[0].childNodes.length && nodeName != 'hr') {
                             // If we have found an empty block, and haven't started
                             // the range yet, it means we must return self block.
@@ -147,7 +160,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                                 self._.nextNode = currentNode;
                         }
 
-                        closeRange = true;
+                        closeRange = TRUE;
                     } else {
                         // If we have child nodes, let's check them.
                         if (currentNode[0].firstChild) {
@@ -160,14 +173,14 @@ KISSY.Editor.add("domiterator", function(KE) {
                             currentNode = new Node(currentNode[0].firstChild);
                             continue;
                         }
-                        includeNode = true;
+                        includeNode = TRUE;
                     }
                 }
                 else if (currentNode[0].nodeType == KEN.NODE_TEXT) {
                     // Ignore normal whitespaces (i.e. not including &nbsp; or
                     // other unicode whitespaces) before/after a block node.
                     if (beginWhitespaceRegex.test(currentNode[0].nodeValue))
-                        includeNode = false;
+                        includeNode = FALSE;
                 }
 
                 // The current node is good to be part of the range and we are
@@ -187,15 +200,15 @@ KISSY.Editor.add("domiterator", function(KE) {
                         var parentNode = currentNode.parent();
 
                         if (parentNode._4e_isBlockBoundary(self.forceBrBreak && { br : 1 })) {
-                            closeRange = true;
+                            closeRange = TRUE;
                             isLast = isLast || parentNode._4e_equals(lastNode);
                             break;
                         }
 
                         currentNode = parentNode;
-                        includeNode = true;
+                        includeNode = TRUE;
                         isLast = currentNode._4e_equals(lastNode);
-                        continueFromSibling = true;
+                        continueFromSibling = TRUE;
                     }
                 }
 
@@ -203,7 +216,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                 if (includeNode)
                     range.setEndAt(currentNode, KER.POSITION_AFTER_END);
 
-                currentNode = currentNode._4e_nextSourceNode(continueFromSibling, null, lastNode);
+                currentNode = currentNode._4e_nextSourceNode(continueFromSibling, NULL, lastNode);
                 isLast = !currentNode;
 
                 // We have found a block boundary. Let's close the range and move out of the
@@ -214,26 +227,27 @@ KISSY.Editor.add("domiterator", function(KE) {
                 //3.4.2 中被去掉了！不要了，改作一开始就shrink，参见开头 2010-09-30 shrink 注释 
                 ////qc #3879 ，选择td内所有问题，这里被出发了
                 //禁止，只有td内全部为空时才会略过
-                if (false) {
-                    if (( closeRange || isLast ) && range) {
-                        var boundaryNodes = range.getBoundaryNodes(),
-                            startPath = new ElementPath(range.startContainer);
+                /*
+                 if (FALSE) {
+                 if (( closeRange || isLast ) && range) {
+                 var boundaryNodes = range.getBoundaryNodes(),
+                 startPath = new ElementPath(range.startContainer);
 
-                        // Drop the range if it only contains bookmark nodes, and is
-                        // not because of the original collapsed range. (#4087,#4450)
-                        if (boundaryNodes.startNode.parent()._4e_equals(startPath.blockLimit)
-                            && isBookmark(boundaryNodes.startNode)
-                            && isBookmark(boundaryNodes.endNode)
-                            ) {
-                            range = null;
-                            self._.nextNode = null;
-                        }
-                        else
-                            break;
-                    }
-                    if (isLast)
-                        break;
-                }
+                 // Drop the range if it only contains bookmark nodes, and is
+                 // not because of the original collapsed range. (#4087,#4450)
+                 if (boundaryNodes.startNode.parent()._4e_equals(startPath.blockLimit)
+                 && isBookmark(boundaryNodes.startNode)
+                 && isBookmark(boundaryNodes.endNode)
+                 ) {
+                 range = NULL;
+                 self._.nextNode = NULL;
+                 }
+                 else
+                 break;
+                 }
+                 if (isLast)
+                 break;
+                 }*/
 
 
             }
@@ -243,11 +257,11 @@ KISSY.Editor.add("domiterator", function(KE) {
                 // If no range has been found, self is the end.
                 if (!range) {
                     self._.docEndMarker && self._.docEndMarker._4e_remove();
-                    self._.nextNode = null;
-                    return null;
+                    self._.nextNode = NULL;
+                    return NULL;
                 }
 
-                startPath = new ElementPath(range.startContainer);
+                var startPath = new ElementPath(range.startContainer);
                 var startBlockLimit = startPath.blockLimit,
                     checkLimits = { div : 1, th : 1, td : 1 };
                 block = startPath.block;
@@ -266,7 +280,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     block._4e_trim();
                     // Insert the fixed block into the DOM.
                     range.insertNode(block);
-                    removePreviousBr = removeLastBr = true;
+                    removePreviousBr = removeLastBr = TRUE;
                 }
                 else if (block._4e_name() != 'li') {
                     // If the range doesn't includes the entire contents of the
@@ -274,7 +288,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                     // block.
                     if (!range.checkStartOfBlock() || !range.checkEndOfBlock()) {
                         // The resulting block will be a clone of the current one.
-                        block = block._4e_clone(false);
+                        block = block._4e_clone(FALSE);
 
                         // Extract the range contents, moving it to the new block.
                         block[0].appendChild(range.extractContents());
@@ -297,8 +311,8 @@ KISSY.Editor.add("domiterator", function(KE) {
                     // the current range, which could be an <li> child (nested
                     // lists) or the next sibling <li>.
 
-                    self._.nextNode = ( block._4e_equals(lastNode) ? null :
-                        range.getBoundaryNodes().endNode._4e_nextSourceNode(true, null, lastNode) );
+                    self._.nextNode = ( block._4e_equals(lastNode) ? NULL :
+                        range.getBoundaryNodes().endNode._4e_nextSourceNode(TRUE, NULL, lastNode) );
                 }
             }
 
@@ -314,7 +328,7 @@ KISSY.Editor.add("domiterator", function(KE) {
 
             if (removeLastBr) {
                 // Ignore bookmark nodes.(#3783)
-                var bookmarkGuard = Walker.bookmark(false, true);
+                var bookmarkGuard = Walker.bookmark(FALSE, TRUE);
 
                 var lastChild = new Node(block[0].lastChild);
                 if (lastChild[0] && lastChild[0].nodeType == KEN.NODE_ELEMENT && lastChild._4e_name() == 'br') {
@@ -330,8 +344,8 @@ KISSY.Editor.add("domiterator", function(KE) {
             // above block can be removed or changed, so we can rely on it for the
             // next interation.
             if (!self._.nextNode) {
-                self._.nextNode = ( isLast || block._4e_equals(lastNode) ) ? null :
-                    block._4e_nextSourceNode(true, null, lastNode);
+                self._.nextNode = ( isLast || block._4e_equals(lastNode) ) ? NULL :
+                    block._4e_nextSourceNode(TRUE, NULL, lastNode);
             }
 
             return block;

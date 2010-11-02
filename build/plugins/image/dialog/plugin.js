@@ -1,12 +1,11 @@
 KISSY.Editor.add("image/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor,
-        //DOM = S.DOM,
+        DOM = S.DOM,
         UA = S.UA,
         JSON = S.JSON,
         Node = S.Node,
-        //Event = S.Event,
-        //TYPE_IMG = 'image',        
+        Event = S.Event,
         Overlay = KE.SimpleOverlay,
         TIP = "http://",
         DTIP = "自动",
@@ -208,6 +207,30 @@ KISSY.Editor.add("image/dialog", function(editor) {
             ev.halt();
         });
 
+        var loadingCancel = new Node("<a class='ke-button' style='position:absolute;" +
+            "z-index:" +
+
+            KE.baseZIndex(KE.zIndexManager.LOADING_CANCEL) + ";" +
+            "left:-9999px;" +
+            "top:-9999px;" +
+            "'>取消上传</a>").appendTo(document.body);
+
+        /**
+         * 取消当前iframe的上传
+         */
+        var uploadIframe = null;
+        loadingCancel.on("click", function() {
+            d.unloading();
+            if (uploadIframe) {
+                Event.remove(uploadIframe, "load");
+                DOM.remove(uploadIframe);
+            }
+            loadingCancel.css({
+                left:-9999,
+                top:-9999
+            });
+            uploadIframe = null;
+        });
         ok.on("click", function() {
             if (tab.activate() == "local" && cfg) {
 
@@ -225,9 +248,15 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     imgLocalUrl.val(warning);
                     return;
                 }
-                KE.Utils.doFormUpload({
+
+                uploadIframe = KE.Utils.doFormUpload({
                     form:uploadForm,
                     callback:function(r) {
+                        uploadIframe = null;
+                        loadingCancel.css({
+                            left:-9999,
+                            top:-9999
+                        });
                         var data = S.trim(r.responseText)
                             .replace(/\r|\n/g, "");
                         d.unloading();
@@ -245,8 +274,15 @@ KISSY.Editor.add("image/dialog", function(editor) {
                         insert();
                     }
                 }, cfg.serverParams, cfg.serverUrl);
-                d.loading();
 
+                var loadingMask = d.loading(),loadingMaskEl = loadingMask.el,
+                    offset = loadingMaskEl.offset(),
+                    width = loadingMaskEl[0].offsetWidth,
+                    height = loadingMaskEl[0].offsetHeight;
+                loadingCancel.css({
+                    left:(offset.left + width / 2.5),
+                    top:(offset.top + height / 1.5)
+                });
             } else {
                 if (! verifyInputs(content.all("input")))
                     return;
