@@ -600,9 +600,9 @@ KISSY.Editor.add("selection", function(KE) {
         removeAllRanges:function() {
             var sel = this.getNative();
             if (UA.ie) {
-                sel.clear();
+                sel && sel.clear();
             } else {
-                sel.removeAllRanges();
+                sel && sel.removeAllRanges();
             }
         }
     });
