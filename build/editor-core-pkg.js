@@ -7410,8 +7410,6 @@ KISSY.Editor.add("selection", function(KE) {
         "selectRanges":SelectionP.selectRanges,
         "createBookmarks2":SelectionP.createBookmarks2,
         "createBookmarks":SelectionP.createBookmarks,
-        "selectBookmarks":SelectionP.selectBookmarks,
-
         "getCommonAncestor":SelectionP.getCommonAncestor,
         "scrollIntoView":SelectionP.scrollIntoView,
         "selectBookmarks":SelectionP.selectBookmarks,
