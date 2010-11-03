@@ -283,8 +283,8 @@ link
 }
 
 .ke-triplebutton-on {
-    border: 1px solid rgb(206, 213, 224);
-    background-color: rgb(252, 252, 252);
+    border-color: #729BD1;
+    background-color: #DDE1EB;
 }
 
 .ke-triplebutton-disabled {
@@ -309,20 +309,27 @@ hover
 }
 
 .ke-triplebutton-off:hover {
-    border: 1px solid rgb(206, 213, 224);
-    background-color: rgb(252, 252, 252);
+    border-color: rgb(206, 213, 224);
 }
 
+
+
 .ke-triplebutton-on:hover {
+    border-color:#a1badf;
 }
 
 
 /**
 active
 **/
+.ke-triplebutton-active {
+    border-color:#a1badf !important;
+    background-color: #DDE1EB;
+}
 .ke-triplebutton:active {
     color: black;
 }
+
 
 .ke-button {
     display: inline-block;
@@ -367,45 +374,7 @@ active
 .ie6 .ke-button:hover{
     /*background-image: url("ke-button-bg-active.png");没用了，行内css expression已经设了*/
     border-color: rgb(232, 204, 160);
-}/**
-color plugin style for kissy editor
-@author:yiminghe@gmail.com
-**/
-a.ke-color-a, a.ke-color-remove {
-    display: block;
-    text-align: center;
-    color:black;
-    text-decoration: none;
-    padding: 2px;
-    border: 1px solid white;
-}
-
-a.ke-color-remove {
-    padding: 3px 0;
-    margin: 5px;
-}
-a.ke-color-remove:hover{
-    color:black;
-    text-decoration:none;
-}
-a.ke-color-a:hover, a.ke-color-remove:hover, a.ke-color-selected {
-    background-color: #dff1ff;
-    border: 1px solid #316ac5;
-}
-
-a.ke-color-a span {
-    display: block;
-    height: 10px;
-    width: 10px;
-    font-size: 0;
-    line-height: 0;
-}
-
-.ke-color-wrap {
-    height: 136px;
-    width: 130px;
-}
-.ke-draft {
+}.ke-draft {
     position: absolute;
     right: 15px;
     height: 22px;
@@ -903,6 +872,7 @@ select style for kissy editor
 .ke-select:hover {
     color: black;
     text-decoration: none;
+    border-color: #729BD1;
 }
 
 .ke-select:active {

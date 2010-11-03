@@ -12,6 +12,7 @@ KISSY.Editor.add("button", function(editor) {
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
         OFF_CLASS = "ke-triplebutton-off",
+        ACTIVE_CLASS = "ke-triplebutton-active",
         DISABLED_CLASS = "ke-triplebutton-disabled",
         BUTTON_HTML = "<a class='" +
             [BUTTON_CLASS,OFF_CLASS].join(" ")
@@ -76,14 +77,34 @@ KISSY.Editor.add("button", function(editor) {
             }
             //加入容器
             else if (container) {
-                container.append(self.el);
+                container.append(el);
             }
             el.on("click", self._action, self);
             self.on("afterStateChange", self._stateChange, self);
+
+
+            if (!self.get("cls")) {
+                //添加鼠标点击视觉效果
+                el.on("mousedown", function() {
+                    if (self.get("state") == OFF) {
+                        el.addClass(ACTIVE_CLASS);
+                    }
+                });
+                el.on("mouseup mouseleave", function() {
+                    if (self.get("state") == OFF &&
+                        el.hasClass(ACTIVE_CLASS)) {
+                        //click 后出发
+                        setTimeout(function() {
+                            el.removeClass(ACTIVE_CLASS);
+                        }, 300);
+                    }
+                });
+            }
         },
         _attachCls:function() {
-            var cls = this.get("cls");
-            if (cls) this.el.addClass(cls);
+            var self = this;
+            var cls = self.get("cls");
+            if (cls) self.el.addClass(cls);
         },
 
         _stateChange:function(ev) {

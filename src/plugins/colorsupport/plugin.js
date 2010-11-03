@@ -13,6 +13,54 @@ KISSY.Editor.add("colorsupport", function(editor) {
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
+
+    DOM.addStyleSheet(".ke-color-panel a {" +
+        "display: block;" +
+        "color:black;" +
+        "text-decoration: none;" +
+        "}" +
+        "" +
+        ".ke-color-panel a:hover {" +
+        "color:black;" +
+        "text-decoration: none;" +
+        "}" +
+        ".ke-color-panel a:active {" +
+        "color:black;" +
+        "}" +
+
+        ".ke-color-palette {" +
+        "    margin: 5px 8px 8px;" +
+        "}" +
+
+        ".ke-color-palette table {" +
+        "    border: 1px solid #666666;" +
+        "    border-collapse: collapse;" +
+        "}" +
+
+        ".ke-color-palette td {" +
+        "    border-right: 1px solid #666666;" +
+        "    height: 18px;" +
+        "    width: 18px;" +
+        "}" +
+
+        "a.ke-color-a {" +
+        "    height: 18px;" +
+        "    width: 18px;" +
+        "}" +
+
+        "a.ke-color-a:hover {" +
+        "    border: 1px solid #ffffff;" +
+        "    height: 16px;" +
+        "    width: 16px;" +
+        "}" +
+        "a.ke-color-remove {" +
+        "  padding:3px 8px;" +
+        "  margin:2px 0 3px 0;" +
+        "}" +
+        "a.ke-color-remove:hover {" +
+        "    background-color: #D6E9F8;" +
+        "}", "ke-color-plugin");
+
     function padding2(str) {
         return ("0" + str).slice(str.length - 1, str.length + 1);
     }
@@ -43,37 +91,46 @@ KISSY.Editor.add("colorsupport", function(editor) {
         return "#" + str.toLowerCase();
     }
 
-    var colorButton_colors =
-        ('000,800000,8B4513,2F4F4F,008080,000080,4B0082,696969,' +
-            'B22222,A52A2A,DAA520,006400,40E0D0,0000CD,800080,808080,' +
-            'F00,FF8C00,FFD700,008000,0FF,00F,EE82EE,A9A9A9,' +
-            'FFA07A,FFA500,FFFF00,00FF00,AFEEEE,ADD8E6,DDA0DD,D3D3D3,' +
-            'FFF0F5,FAEBD7,FFFFE0,F0FFF0,F0FFFF,F0F8FF,E6E6FA,FFF').split(/,/),
+    var COLORS = [
+        ["000", "444", "666", "999", "CCC", "EEE", "F3F3F3", "FFF"],
+        ["F00", "F90", "FF0", "0F0", "0FF", "00F", "90F", "F0F"],
+        [
+            "F4CCCC", "FCE5CD", "FFF2CC", "D9EAD3", "D0E0E3", "CFE2F3", "D9D2E9", "EAD1DC",
+            "EA9999", "F9CB9C", "FFE599", "B6D7A8", "A2C4C9", "9FC5E8", "B4A7D6", "D5A6BD",
+            "E06666", "F6B26B", "FFD966", "93C47D", "76A5AF", "6FA8DC", "8E7CC3", "C27BAD",
+            "CC0000", "E69138", "F1C232", "6AA84F", "45818E", "3D85C6", "674EA7", "A64D79",
+            "990000", "B45F06", "BF9000", "38761D", "134F5C", "0B5394", "351C75", "741B47",
+            "660000", "783F04", "7F6000", "274E13", "0C343D", "073763", "20124D", "4C1130"
+        ]
+    ],
         VALID_COLORS = [],
-        html = "<div>" +
+        html = "<div class='ke-color-panel'>" +
             "<a class='ke-color-remove' " +
             "href=\"javascript:void('清除');\">" +
-            "<span>清除</span>" +
-            "</a>" +
-            "<table>";
-    for (var i = 0; i < 5; i++) {
-        html += "<tr>";
-        for (var j = 0; j < 8; j++) {
-            var currentColor = normalColor(colorButton_colors[8 * i + j]);
-            html += "<td>";
-            html += "<a href='javascript:void(0);' " +
-                "class='ke-color-a'" +
-                "><span style='background-color:"
-                + currentColor
-                + "'></span></a>";
-            html += "</td>";
-            VALID_COLORS.push(currentColor);
+            "清除" +
+            "</a>";
+    for (var i = 0; i < 3; i++) {
+        html += "<div class='ke-color-palette'><table>";
+        var c = COLORS[i],l = c.length / 8;
+        for (var k = 0; k < l; k++) {
+            html += "<tr>";
+            for (var j = 0; j < 8; j++) {
+                var currentColor = normalColor(c[8 * k + j]);
+                html += "<td>";
+                html += "<a href='javascript:void(0);' " +
+                    "class='ke-color-a' " +
+                    "style='background-color:"
+                    + currentColor
+                    + "'" +
+                    "></a>";
+                html += "</td>";
+                VALID_COLORS.push(currentColor);
+            }
+            html += "</tr>";
         }
-        html += "</tr>";
+        html += "</table></div>";
     }
-
-    html += "</table></div>";
-
+    html += "</div>";
 
     function ColorSupport(cfg) {
         var self = this;
@@ -128,14 +185,13 @@ KISSY.Editor.add("colorsupport", function(editor) {
             var self = this,
                 editor = self.get("editor"),
                 t = ev.target;
-            if (DOM._4e_name(t) == "span" || DOM._4e_name(t) == "a") {
+            if (DOM._4e_name(t) == "a") {
                 t = new Node(t);
-                if (t._4e_name() == "a")
-                    t = t.one("span");
                 var styles = self.get("styles");
                 editor.fire("save");
                 if (t._4e_style("background-color")) {
-                    styles[normalColor(t._4e_style("background-color"))].apply(editor.document);
+                    styles[normalColor(t._4e_style("background-color"))]
+                        .apply(editor.document);
                 }
                 else {
                     styles["inherit"].remove(editor.document);
@@ -147,11 +203,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
         _prepare:function() {
             var self = this,
                 doc = document,
+                el = self.el,
                 editor = self.get("editor"),
                 colorPanel = new Node(html);
             self.colorWin = new Overlay({
                 el:colorPanel,
-                width:"130px",
+                width:"170px",
                 zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                 mask:false,
                 focusMgr:false
@@ -162,6 +219,10 @@ KISSY.Editor.add("colorsupport", function(editor) {
             self.colorPanel = colorPanel;
             Event.on(doc, "click", self._hidePanel, self);
             Event.on(editor.document, "click", self._hidePanel, self);
+
+            var colorWin = self.colorWin;
+            colorWin.on("show", el.bon, el);
+            colorWin.on("hide", el.boff, el);
         },
         _real:function() {
             var self = this,

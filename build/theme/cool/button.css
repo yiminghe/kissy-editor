@@ -28,8 +28,8 @@ link
 }
 
 .ke-triplebutton-on {
-    border: 1px solid rgb(206, 213, 224);
-    background-color: rgb(252, 252, 252);
+    border-color: #729BD1;
+    background-color: #DDE1EB;
 }
 
 .ke-triplebutton-disabled {
@@ -54,20 +54,27 @@ hover
 }
 
 .ke-triplebutton-off:hover {
-    border: 1px solid rgb(206, 213, 224);
-    background-color: rgb(252, 252, 252);
+    border-color: rgb(206, 213, 224);
 }
 
+
+
 .ke-triplebutton-on:hover {
+    border-color:#a1badf;
 }
 
 
 /**
 active
 **/
+.ke-triplebutton-active {
+    border-color:#a1badf !important;
+    background-color: #DDE1EB;
+}
 .ke-triplebutton:active {
     color: black;
 }
+
 
 .ke-button {
     display: inline-block;

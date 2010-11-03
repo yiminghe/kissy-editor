@@ -33,8 +33,7 @@ KISSY.Editor.add("font", function(editor) {
         S.mix(FONT_SIZES, {
             items:wrapFont(["8px","10px","12px",
                 "14px","18px","24px",
-                "36px","48px","60px","72px","84px","96px",
-                "108px"]),
+                "36px","48px","60px","72px","84px","96px"]),
             width:"55px"
         }, false);
 
