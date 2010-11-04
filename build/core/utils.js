@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-02 17:12:38");
+                re += "t=" + encodeURIComponent("2010-11-04 13:14:58");
                 return  re;
             },
             /**
@@ -328,6 +328,11 @@ KISSY.Editor.add("utils", function(KE) {
                 } else if (UA.webkit) {
                     inp.val("");
                 }
+            },
+
+            valInput:function(inp, val) {
+                inp.val(val);
+                inp.removeClass("ke-input-tip");
             },
 
             /**

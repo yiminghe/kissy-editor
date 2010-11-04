@@ -330,6 +330,11 @@ KISSY.Editor.add("utils", function(KE) {
                 }
             },
 
+            valInput:function(inp, val) {
+                inp.val(val);
+                inp.removeClass("ke-input-tip");
+            },
+
             /**
              *
              * @param inp {Node}

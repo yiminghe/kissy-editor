@@ -36,7 +36,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         " data-warning='网址格式为：http://' " +
         "class='ke-img-url ke-input' " +
         "style='width:390px;' " +
-        "value='" + TIP + "'/>" +
+        "/>" +
         "</label>" +
         "</div>" +
         "<div style='position:relative;'>" +
@@ -73,8 +73,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         " data-warning='宽度请输入正整数' " +
         "class='ke-img-width ke-input' " +
         "style='vertical-align:middle;width:60px' " +
-        "value='" +
-        DTIP + "'/> 像素 </label>" +
+        "/> 像素 </label>" +
         "</td>" +
         "<td>" +
         "<label>" +
@@ -84,10 +83,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         " data-warning='高度请输入正整数' " +
         "class='ke-img-height ke-input' " +
         "style='vertical-align:middle;width:60px' " +
-        "value='" + DTIP + "'/> 像素 </label>" +
-        "" +
-        "" +
-        " " +
+        "/> 像素 </label>" +
         "<label>" +
         "<input " +
         "type='checkbox' " +
@@ -179,13 +175,16 @@ KISSY.Editor.add("image/dialog", function(editor) {
         imgRatio = content.one(".ke-img-ratio");
         imgAlign = KE.Select.decorate(content.one(".ke-img-align"));
         imgMargin = content.one(".ke-img-margin");
-
-
+        var placeholder = KE.Utils.placeholder;
+        placeholder(imgUrl, TIP);
+        placeholder(imgHeight, DTIP);
+        placeholder(imgWidth, DTIP);
         imgHeight.on("keyup", function() {
             var v = parseInt(imgHeight.val());
             if (!v ||
                 !imgRatio[0].checked ||
-                imgRatio[0].disabled) {
+                imgRatio[0].disabled ||
+                !imgRatioValue) {
                 return;
             }
             imgWidth.val(Math.floor(v * imgRatioValue));
@@ -196,6 +195,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             var v = parseInt(imgWidth.val());
             if (!v ||
                 !imgRatio[0].checked ||
+                imgRatio[0].disabled ||
                 !imgRatioValue) {
                 return;
             }
@@ -378,14 +378,16 @@ KISSY.Editor.add("image/dialog", function(editor) {
     }
 
     function update(_selectedEl) {
-        var active = "remote";
+        var active = "remote",
+            resetInput = KE.Utils.resetInput,
+            valInput = KE.Utils.valInput;
         selectedEl = _selectedEl;
         if (selectedEl) {
-            imgUrl.val(selectedEl.attr("src"));
+            valInput(imgUrl, selectedEl.attr("src"));
             var w = selectedEl.width(),
                 h = selectedEl.height();
-            imgHeight.val(h);
-            imgWidth.val(w);
+            valInput(imgHeight, h);
+            valInput(imgWidth, w);
             imgAlign.val(selectedEl.css("float") || "none");
             var margin = parseInt(selectedEl._4e_style("margin"))
                 || 0;
@@ -395,12 +397,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
         } else {
             if (tab.getTab("local"))
                 active = "local";
-            imgUrl.val(TIP);
-            imgHeight.val(DTIP);
-            imgWidth.val(DTIP);
+            resetInput(imgUrl);
+            resetInput(imgHeight);
+            resetInput(imgWidth);
             imgAlign.val("none");
             imgMargin.val(MARGIN_DEFAULT);
             imgRatio[0].disabled = true;
+            imgRatioValue = null;
         }
         uploadForm[0].reset();
         imgLocalUrl.val(warning);

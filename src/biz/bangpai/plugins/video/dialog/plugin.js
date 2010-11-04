@@ -32,8 +32,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 "class='ke-video-width ke-input' " +
                 "style='width:60px;margin-left:2px;" +
                 MIDDLE + "' " +
-                "value='"
-                + DTIP + "'/> 像素" +
+                "/> 像素" +
                 "</label>" +
                 "</td>" +
                 "<td>" +
@@ -43,8 +42,8 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
                 " data-warning='高度请输入正整数' " +
                 "class='ke-video-height ke-input' style='width:60px;" +
-                MIDDLE + "' value='"
-                + DTIP + "'/> 像素" +
+                MIDDLE +
+                "'/> 像素" +
                 "</label>" +
                 "</td></tr>" +
                 "<tr>" +
@@ -111,6 +110,8 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                         d.hide();
                     });
                     KE.Utils.placeholder(self.dUrl, self._urlTip);
+                    KE.Utils.placeholder(self.dWidth, DTIP);
+                    KE.Utils.placeholder(self.dHeight, DTIP);
                 },
 
                 _getDInfo:function() {
@@ -185,21 +186,17 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
-                        self.dUrl.val(self._getFlashUrl(r));
+                        KE.Utils.valInput(self.dUrl, self._getFlashUrl(r));
                         self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
-                        if (f.css("width")) {
-                            self.dWidth.val(parseInt(f.css("width")));
-                        }
-                        if (f.css("height")) {
-                            self.dHeight.val(parseInt(f.css("height")));
-                        }
+                        KE.Utils.valInput(self.dWidth, parseInt(f.css("width")));
+                        KE.Utils.valInput(self.dHeight, parseInt(f.css("height")));
                     } else {
                         KE.Utils.resetInput(self.dUrl);
                         self.dAlign.val("none");
                         self.dMargin.val(MARGIN_DEFAULT);
-                        self.dWidth.val(DTIP);
-                        self.dHeight.val(DTIP);
+                        KE.Utils.resetInput(self.dWidth);
+                        KE.Utils.resetInput(self.dHeight);
                     }
                 }
             });
