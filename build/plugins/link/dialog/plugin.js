@@ -103,6 +103,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         return;
                     }
                     d.hide();
+                 
                     link = self._getSelectedLink();
                     //是修改行为
                     if (link) {
@@ -120,10 +121,10 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     } else {
                         attr.target = "_self";
                     }
-
-                    range = editor.getSelection().getRanges()[0];
-                    //没有选择区域时直接插入链接地址
-                    if (range.collapsed) {
+                    var sel = editor.getSelection();
+                    range = sel && sel.getRanges()[0];
+                    //编辑器没有焦点或没有选择区域时直接插入链接地址
+                    if (!range || range.collapsed) {
                         a = new Node("<a " +
                             "href='" + url + "' " +
                             _ke_saved_href + "='" + url + "' " +

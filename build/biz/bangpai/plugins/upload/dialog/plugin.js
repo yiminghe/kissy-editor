@@ -118,14 +118,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         list = listTableWrap.one("tbody"),
                         upHolder = new Node("<p " +
                             "style='" +
-                            "margin:15px 15px 30px 0;" +
-                            "text-align:right;" +
+                            "margin:15px 15px 30px 6px;" +                         
                             "'>" +
                             "<a class='ke-bangpaiupload-delall'" +
                             " style='" +
                             "margin-right:20px;" +
                             "cursor:pointer;" +
-                            "margin-left:55px;" +
+                            "margin-left:50px;" +
                             "'>清空列表</a>" +
                             "<a class='ke-button ke-bangpaiupload-ok'>确定上传</a>" +
                             "<a class='ke-button ke-bangpaiupload-insertall'" +

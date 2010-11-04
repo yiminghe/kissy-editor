@@ -379,11 +379,12 @@ KISSY.Editor.add("overlay", function() {
                 //聚焦到当前窗口
                 if (!UA.webkit) {
                     //webkit 滚动到页面顶部
+                    //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
                     self._getFocusEl()[0].focus();
                 }
                 {
                     /*
-                     * IE BUG: If the initial focus went into a non-text element (e.g. button),
+                     * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
                      * then IE would still leave the caret inside the editing area.
                      */
                     if (UA.ie && editor) {
@@ -410,7 +411,7 @@ KISSY.Editor.add("overlay", function() {
             else {
                 editor && editor.focus();
             }
-        }        ,
+        },
         _prepareShow:function() {
             if (UA.ie == 6) {
                 /**

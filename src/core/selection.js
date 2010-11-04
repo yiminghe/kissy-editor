@@ -775,7 +775,7 @@ KISSY.Editor.add("selection", function(KE) {
 
         if (UA.ie) {
             //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
-
+            //ie中事件都是同步，focus();xx(); 会立即触发事件处理函数，然后再运行xx();
 
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
@@ -842,6 +842,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // it must be ignored to allow edit its contents #4682
                 if (DOM._4e_name(evt.target) != 'body')
                     return;
+
                 //console.log("body focusin :" + restoreEnabled);
                 // If we have saved a range, restore it at this
                 // point.

@@ -7126,7 +7126,7 @@ KISSY.Editor.add("selection", function(KE) {
 
         if (UA.ie) {
             //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
-
+            //ie中事件都是同步，focus();xx(); 会立即触发事件处理函数，然后再运行xx();
 
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
@@ -7193,6 +7193,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // it must be ignored to allow edit its contents #4682
                 if (DOM._4e_name(evt.target) != 'body')
                     return;
+
                 //console.log("body focusin :" + restoreEnabled);
                 // If we have saved a range, restore it at this
                 // point.
@@ -11923,7 +11924,7 @@ KISSY.Editor.add("draft", function(editor) {
                         //代码模式也要支持草稿功能
                         //统一获得最终代码
                         data = S.trim(editor.getData(true));
-                    S.log(data);
+                    //S.log(data);
                     //如果当前内容为空，不保存版本
                     if (!data ||
                         /^<p>((&nbsp;)|\s)*<\/p>$/.test(data)) return;
@@ -16757,11 +16758,12 @@ KISSY.Editor.add("overlay", function() {
                 //聚焦到当前窗口
                 if (!UA.webkit) {
                     //webkit 滚动到页面顶部
+                    //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
                     self._getFocusEl()[0].focus();
                 }
                 {
                     /*
-                     * IE BUG: If the initial focus went into a non-text element (e.g. button),
+                     * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
                      * then IE would still leave the caret inside the editing area.
                      */
                     if (UA.ie && editor) {
@@ -16788,7 +16790,7 @@ KISSY.Editor.add("overlay", function() {
             else {
                 editor && editor.focus();
             }
-        }        ,
+        },
         _prepareShow:function() {
             if (UA.ie == 6) {
                 /**
