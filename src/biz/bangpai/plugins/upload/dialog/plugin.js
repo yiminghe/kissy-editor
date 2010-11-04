@@ -124,7 +124,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             " style='" +
                             "margin-right:20px;" +
                             "cursor:pointer;" +
-                            "margin-left:50px;" +
+                            "margin-left:40px;" +
                             "'>清空列表</a>" +
                             "<a class='ke-button ke-bangpaiupload-ok'>确定上传</a>" +
                             "<a class='ke-button ke-bangpaiupload-insertall'" +
