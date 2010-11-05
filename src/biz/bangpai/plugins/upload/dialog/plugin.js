@@ -318,7 +318,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                             url + "' />")
                                     }
                                     var offset = DOM.offset(t);
-                                    offset.top += t.offsetHeight;
+                                    offset.left += t.offsetWidth;
                                     previewWin.show(offset);
                                 }
                             } else {
