@@ -82,14 +82,15 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
             }
 
             //refer:http://www.cnblogs.com/cloudgamer/archive/2009/03/11/color.html
+            //http://yiminghe.javaeye.com/blog/511589
             //获取颜色梯度方法
             var ColorGrads = (function() {
                 //获取颜色梯度数据
                 function GetStep(start, end, step) {
                     var colors = [];
                     start = GetColor(start);
-                    end = GetColor(end),
-                        stepR = (end[0] - start[0]) / step,
+                    end = GetColor(end);
+                    var stepR = (end[0] - start[0]) / step,
                         stepG = (end[1] - start[1]) / step,
                         stepB = (end[2] - start[2]) / step;
                     //生成颜色集合
