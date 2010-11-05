@@ -2,7 +2,7 @@
  * @preserve Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-02 17:12:38
+ * @buildtime: 2010-11-05 10:01:17
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -139,7 +139,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-02 17:12:38");
+        re += "t=" + encodeURIComponent("2010-11-05 10:01:17");
         return  re;
     }
 
@@ -182,6 +182,9 @@ KISSY.add("editor", function(S, undefined) {
             {
                 "name": "colorsupport",
                 "requires":["overlay"]
+            },
+            {
+                "name": "colorsupport/dialog"
             },
             {
                 "name": "forecolor",
@@ -391,7 +394,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-04 14:11:33");
+                re += "t=" + encodeURIComponent("2010-11-05 10:01:17");
                 return  re;
             },
             /**
@@ -886,6 +889,12 @@ KISSY.Editor.add("utils", function(KE) {
                 for (var i in cfg) {
                     obj[i] = cfg[i];
                 }
+            },
+            map:function(arr, callback) {
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = callback(arr[i]);
+                }
+                return arr;
             }
         };
     KE.Utils = Utils;
@@ -920,7 +929,8 @@ KISSY.Editor.add("utils", function(KE) {
         "equalsIgnoreCase": Utils.equalsIgnoreCase,
         "normParams": Utils.normParams,
         "throttle": Utils.throttle,
-        "doFormUpload": Utils.doFormUpload
+        "doFormUpload": Utils.doFormUpload,
+        "map": Utils.map
     });
 });
 /**

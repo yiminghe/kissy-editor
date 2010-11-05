@@ -184,6 +184,9 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["overlay"]
             },
             {
+                "name": "colorsupport/dialog"
+            },
+            {
                 "name": "forecolor",
                 "requires":["colorsupport"]
             },

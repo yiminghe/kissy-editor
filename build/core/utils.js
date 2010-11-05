@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-04 14:11:33");
+                re += "t=" + encodeURIComponent("2010-11-05 10:01:17");
                 return  re;
             },
             /**
@@ -527,6 +527,12 @@ KISSY.Editor.add("utils", function(KE) {
                 for (var i in cfg) {
                     obj[i] = cfg[i];
                 }
+            },
+            map:function(arr, callback) {
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = callback(arr[i]);
+                }
+                return arr;
             }
         };
     KE.Utils = Utils;
@@ -561,6 +567,7 @@ KISSY.Editor.add("utils", function(KE) {
         "equalsIgnoreCase": Utils.equalsIgnoreCase,
         "normParams": Utils.normParams,
         "throttle": Utils.throttle,
-        "doFormUpload": Utils.doFormUpload
+        "doFormUpload": Utils.doFormUpload,
+        "map": Utils.map
     });
 });

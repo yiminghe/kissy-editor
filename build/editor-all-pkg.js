@@ -2,7 +2,7 @@
  * @preserve Constructor for kissy editor and module dependency definition
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-02 17:12:38
+ * @buildtime: 2010-11-05 10:01:17
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -139,7 +139,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-02 17:12:38");
+        re += "t=" + encodeURIComponent("2010-11-05 10:01:17");
         return  re;
     }
 
@@ -182,6 +182,9 @@ KISSY.add("editor", function(S, undefined) {
             {
                 "name": "colorsupport",
                 "requires":["overlay"]
+            },
+            {
+                "name": "colorsupport/dialog"
             },
             {
                 "name": "forecolor",
@@ -391,7 +394,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-04 14:11:33");
+                re += "t=" + encodeURIComponent("2010-11-05 10:01:17");
                 return  re;
             },
             /**
@@ -886,6 +889,12 @@ KISSY.Editor.add("utils", function(KE) {
                 for (var i in cfg) {
                     obj[i] = cfg[i];
                 }
+            },
+            map:function(arr, callback) {
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = callback(arr[i]);
+                }
+                return arr;
             }
         };
     KE.Utils = Utils;
@@ -920,7 +929,8 @@ KISSY.Editor.add("utils", function(KE) {
         "equalsIgnoreCase": Utils.equalsIgnoreCase,
         "normParams": Utils.normParams,
         "throttle": Utils.throttle,
-        "doFormUpload": Utils.doFormUpload
+        "doFormUpload": Utils.doFormUpload,
+        "map": Utils.map
     });
 });
 /**
@@ -10387,29 +10397,16 @@ KISSY.Editor.add("bgcolor", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         ColorSupport = KE.ColorSupport,
-        VALID_COLORS = ColorSupport.VALID_COLORS,
-        BACK_STYLES = {},
         colorButton_backStyle = {
             element        : 'span',
             styles        : { 'background-color' : '#(color)' }
         };
-    // Value 'inherit'  is treated as a wildcard,
-    // which will match any value.
-    //清除已设格式
-    BACK_STYLES["inherit"] = new KE.Style(colorButton_backStyle, {
-        color:"inherit"
-    });
-    for (var i = 0; i < VALID_COLORS.length; i++) {
-        var currentColor = VALID_COLORS[i];
-        BACK_STYLES[currentColor] = new KE.Style(colorButton_backStyle, {
-            color:currentColor
-        });
-    }
+
 
     editor.addPlugin(function() {
         new ColorSupport({
             editor:editor,
-            styles:BACK_STYLES,
+            styles:colorButton_backStyle,
             title:"背景颜色",
             contentCls:"ke-toolbar-bgcolor",
             text:"bgcolor"
@@ -10983,7 +10980,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
-
     DOM.addStyleSheet(".ke-color-panel a {" +
         "display: block;" +
         "color:black;" +
@@ -11073,7 +11069,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
             "660000", "783F04", "7F6000", "274E13", "0C343D", "073763", "20124D", "4C1130"
         ]
     ],
-        VALID_COLORS = [],
         html = "<div class='ke-color-panel'>" +
             "<a class='ke-color-remove' " +
             "href=\"javascript:void('清除');\">" +
@@ -11094,21 +11089,22 @@ KISSY.Editor.add("colorsupport", function(editor) {
                     + "'" +
                     "></a>";
                 html += "</td>";
-                VALID_COLORS.push(currentColor);
             }
             html += "</tr>";
         }
         html += "</table></div>";
     }
-    html += "</div>";
+    html += "" +
+        "<div>" +
+        "<a class='ke-button ke-color-others'>其他颜色</a>" +
+        "</div>" +
+        "</div>";
 
     function ColorSupport(cfg) {
         var self = this;
         ColorSupport.superclass.constructor.call(self, cfg);
         self._init();
     }
-
-    ColorSupport.VALID_COLORS = VALID_COLORS;
 
     ColorSupport.ATTRS = {
         editor:{},
@@ -11125,7 +11121,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
                     container:toolBarDiv,
                     title:self.get("title"),
                     contentCls:self.get("contentCls")
-                    //text:this.get("text")
                 });
 
             el.on("offClick", self._showColors, self);
@@ -11153,22 +11148,31 @@ KISSY.Editor.add("colorsupport", function(editor) {
         _selectColor:function(ev) {
             ev.halt();
             var self = this,
-                editor = self.get("editor"),
                 t = ev.target;
-            if (DOM._4e_name(t) == "a") {
+            if (DOM._4e_name(t) == "a" && !DOM.hasClass(t, "ke-button")) {
                 t = new Node(t);
-                var styles = self.get("styles");
-                editor.fire("save");
-                if (t._4e_style("background-color")) {
-                    styles[normalColor(t._4e_style("background-color"))]
-                        .apply(editor.document);
-                }
-                else {
-                    styles["inherit"].remove(editor.document);
-                }
-                editor.fire("save");
+                self._applyColor(normalColor(t._4e_style("background-color")));
                 self.colorWin.hide();
             }
+        },
+        _applyColor:function(c) {
+            var self = this,
+                editor = self.get("editor"),
+                doc = editor.document,
+                styles = self.get("styles");
+            editor.fire("save");
+            if (c)
+                new KE.Style(styles, {
+                    color:c
+                }).apply(doc);
+            else
+            // Value 'inherit'  is treated as a wildcard,
+            // which will match any value.
+            //清除已设格式
+                new KE.Style(styles, {
+                    color:"inherit"
+                }).remove(doc);
+            editor.fire("save");
         },
         _prepare:function() {
             var self = this,
@@ -11193,6 +11197,14 @@ KISSY.Editor.add("colorsupport", function(editor) {
             var colorWin = self.colorWin;
             colorWin.on("show", el.bon, el);
             colorWin.on("hide", el.boff, el);
+            var others = colorPanel.one(".ke-color-others");
+            others.on("click", function(ev) {
+                ev.halt();
+                colorWin.hide();
+                editor.useDialog("colorsupport/dialog", function(dialog) {
+                    dialog.show(self);
+                });
+            });
         },
         _real:function() {
             var self = this,
@@ -13530,34 +13542,18 @@ KISSY.Editor.add("font", function(editor) {
 KISSY.Editor.add("forecolor", function(editor) {
     var S = KISSY,
         KE = S.Editor,
-        ColorSupport = KE.ColorSupport,
-        VALID_COLORS = ColorSupport.VALID_COLORS,
-        FORE_STYLES = {},
-        colorButton_foreStyle = {
-            element        : 'span',
-            styles        : { 'color' : '#(color)' },
-            overrides    : [
-                { element : 'font', attributes : { 'color' : null } }
-            ]
-        };
-    // Value 'inherit'  is treated as a wildcard,
-    // which will match any value.
-    //清除已设格式
-
-    FORE_STYLES["inherit"] = new KE.Style(colorButton_foreStyle, {
-        color:"inherit"
-    });
-    for (var i = 0; i < VALID_COLORS.length; i++) {
-        var currentColor = VALID_COLORS[i];
-        FORE_STYLES[currentColor] = new KE.Style(colorButton_foreStyle, {
-            color:currentColor
-        });
-    }
-
+        ColorSupport = KE.ColorSupport;
+    var COLOR_STYLES = {
+        element        : 'span',
+        styles        : { 'color' : '#(color)' },
+        overrides    : [
+            { element : 'font', attributes : { 'color' : null } }
+        ]
+    };
     editor.addPlugin(function() {
         new ColorSupport({
             editor:editor,
-            styles:FORE_STYLES,
+            styles:COLOR_STYLES,
             title:"文本颜色",
             contentCls:"ke-toolbar-color",
             text:"color"

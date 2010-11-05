@@ -527,6 +527,12 @@ KISSY.Editor.add("utils", function(KE) {
                 for (var i in cfg) {
                     obj[i] = cfg[i];
                 }
+            },
+            map:function(arr, callback) {
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = callback(arr[i]);
+                }
+                return arr;
             }
         };
     KE.Utils = Utils;
@@ -561,6 +567,7 @@ KISSY.Editor.add("utils", function(KE) {
         "equalsIgnoreCase": Utils.equalsIgnoreCase,
         "normParams": Utils.normParams,
         "throttle": Utils.throttle,
-        "doFormUpload": Utils.doFormUpload
+        "doFormUpload": Utils.doFormUpload,
+        "map": Utils.map
     });
 });
