@@ -3,7 +3,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor;
 
-
+    S.log("colorsupport/dialog attach");
     if (!KE.ColorSupport.ColorPicker) {
         (function() {
             var map = KE.Utils.map,
@@ -271,6 +271,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
                     }).join(""));
                 },
                 show:function(cmd) {
+
                     this.cmd = cmd;
                     this.win.show();
                 },
@@ -287,6 +288,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
     var colorPicker = new KE.ColorSupport.ColorPicker();
 
     editor.addDialog("colorsupport/dialog", {
+        //动态更新cmd，可能有前景色与背景色两种
         show:function(cmd) {
             colorPicker.show(cmd);
         },

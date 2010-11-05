@@ -45,7 +45,14 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     "line-height:26px;" +
                     "text-align:center;" +
                     "border-bottom:1px solid #c1c8d1;" +
-                    "}", "ke-BangPaiUpload"
+                    "}" +
+                    "" +
+                    "" +
+                    ".ke-upload-complete .ke-upload-filename {" +
+                    "text-decoration:underline;" +
+                    "cursor:pointer;" +
+                    "}" +
+                    "", "ke-BangPaiUpload"
                 );
 
             function BangPaiUploadDialog(editor) {
@@ -118,7 +125,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         list = listTableWrap.one("tbody"),
                         upHolder = new Node("<p " +
                             "style='" +
-                            "margin:15px 15px 30px 6px;" +                         
+                            "margin:15px 15px 30px 6px;" +
                             "'>" +
                             "<a class='ke-bangpaiupload-delall'" +
                             " style='" +
@@ -253,7 +260,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         var target = new Node(ev.target),tr;
                         ev.halt();
                         if (target.hasClass("ke-upload-insert")) {
-                            tr = target.parent("tr"),url = tr.attr("url");
+                            tr = target.parent("tr");
+                            var url = tr.attr("url");
                             editor.insertElement(new Node("<img src='" +
                                 url + "'/>", null, editor.document));
                         }
@@ -275,9 +283,49 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     uploader.on("contentReady", self._ready, self);
                     uploader.on("uploadError", self._uploadError, self);
 
-
                     //从本地恢复已上传记录
                     self._restore();
+
+
+                    //上传后：缩略图预览
+
+                    var previewWidth = bangpaiCfg.previewWidth;
+                    var previewSuffix = bangpaiCfg.previewSuffix;
+                    if (previewWidth) {
+                        var preview = new Node("<div>").appendTo(listWrap);
+                        var previewWin = new Overlay({
+                            mask:false,
+                            width:previewWidth,
+                            el:preview
+                        });
+                        var currentFid = 0;
+                        listWrap.on("mouseover", function(ev) {
+                            var t = ev.target;
+                            if (DOM.hasClass(t, "ke-upload-filename")) {
+                                var tr = DOM._4e_ascendant(t, "tr");
+                                if (tr.hasClass("ke-upload-complete")) {
+                                    var url = tr.attr("url"),fid = tr.attr("fid");
+                                    if (!url) return;
+                                    if (fid == currentFid) {
+                                    } else {
+                                        currentFid = fid;
+                                        if (previewSuffix) {
+                                            url = url.replace(/(?=(\.\w+$))/, previewSuffix);
+                                        }
+                                        preview.html("<img " +
+                                            "style='display:block;' " +
+                                            "src='" +
+                                            url + "' />")
+                                    }
+                                    var offset = DOM.offset(t);
+                                    offset.top += t.offsetHeight;
+                                    previewWin.show(offset);
+                                }
+                            } else {
+                                previewWin.hide();
+                            }
+                        });
+                    }
                 },
                 _removeTrFile:function(tr) {
                     var self = this,
@@ -340,8 +388,10 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         }
                     }
                 },
-                _onUploadStart:function() {
-                    //console.log("_onUploadStart", ev);
+                _onUploadStart:function(ev) {
+                    var id = ev.id || (ev.file && ev.file.id);
+                    var tr = this._getFileTr(id);
+                    tr[0].className = "ke-upload-uploading";
                 },
                 _onComplete:function() {
                     //console.log("_onComplete", ev);
@@ -364,7 +414,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     var tr = self._getFileTr(id);
                     if (tr) {
                         tr.one(".ke-upload-insert").show();
-                        tr.attr("url", data.imgUrl);
+                        self._tagComplete(tr, data.imgUrl);
                     }
                     //self.denable();
                     self._syncStatus();
@@ -428,12 +478,16 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         d.complete = 1;
                         d.fid = "restore_" + i;
                         var r = self._createFileTr(tbl, d);
-                        r.attr("url", d.url);
+                        self._tagComplete(r, d.url);
                     }
                     if (d) {
                         self._listWrap.show();
                         self._syncStatus();
                     }
+                },
+                _tagComplete:function(tr, url) {
+                    tr.attr("url", url);
+                    tr[0].className = "ke-upload-complete";
                 },
                 _save:function() {
                     var self = this,

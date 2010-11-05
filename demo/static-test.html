@@ -5,7 +5,7 @@
 <title>KISSY Editor Test</title>
 <link href="http://assets.taobaocdn.com/tbsp/reset-grids.css?t=20090602.css" rel="stylesheet"/>
 <link href="../build/theme/cool/editor-pkg.css" rel="stylesheet" id="theme"/>
-<script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy.js"></script>
+<script src="http://localhost/kissy_git/kissy/build/kissy.js"></script>
 </head>
 <body>
 
@@ -191,7 +191,6 @@
 </div>
 
 
-
 <script src="../src/editor.js"></script>
 <script src="../src/core/utils.js"></script>
 <script src="../src/core/focusmanager.js"></script>
@@ -322,7 +321,7 @@ xiami 音乐
 
             KE.Config.base = base + "src/";
 
-            KE("#editor", {
+            window.editor2 = KE("#editor", {
                 attachForm:true,
                 baseZIndex:10000,
                 //自定义样式
@@ -366,6 +365,8 @@ xiami 音乐
                                 return S.one("#ke_img_up_watermark_2")[0].checked;
                             }
                         },
+                        //previewSuffix:"_60x60",
+                        previewWidth:"80px",
                         sizeLimit:1000//k,
                         ,numberLimit:15,
                         extraHtml:"<p style='margin-top:10px;'>" +
@@ -399,7 +400,7 @@ xiami 音乐
             }).use("elementpaths,sourcearea,preview," +
                     "bangpai-sourcearea,templates,separator," +
                     "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                    "list,indent,justify,separator,link,image,flash,music,"
+                    "list,indent,justify,separator,link,image,flash,"
                 //+ "bangpai-music,bangpai-video,draft,resize,bangpai-upload"
                     + "bangpai-video,music,bangpai-music,smiley," +
                     "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
