@@ -194,14 +194,11 @@ S.ready(function() {
                         //错误：{error:""}
                         //中文 \uxxxx 转义
                         serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{
-                            watermark:function() {
-                                return S.one("#ke_img_up_watermark_1")[0].checked;
-                            }
+                        serverParams:{                           
                         },
                         fileInput:"Filedata",
                         sizeLimit:1000,//k
-                        extraHtml:"<p style='margin-top:5px;'><input type='checkbox' id='ke_img_up_watermark_1'> 图片加水印，防止别人盗用</p>"
+                        extraHtml:"<p style='margin-top:5px;'><input type='checkbox' name='watermark'> 图片加水印，防止别人盗用</p>"
                     }
                 },
                 "font-size":{
@@ -263,6 +260,8 @@ S.ready(function() {
                             return S.one("#ke_img_up_watermark_2")[0].checked;
                         }
                     },
+                    previewSuffix:"_80x80",
+                    previewWidth:"80px",
                     sizeLimit:1000//k,
                     ,numberLimit:15,
                     extraHtml:"<p style='margin-top:10px;'>" +
@@ -297,7 +296,7 @@ S.ready(function() {
                 }
             }
         }).use("htmldataprocessor,enterkey,clipboard," +
-                "bangpai-sourcearea,preview," +
+                "bangpai-sourcearea,sourcearea,preview," +
                 "separator," +
                 "undo,separator,removeformat,font,forecolor,separator," +
                 "list,indent,justify,separator,link,image,bangpai-video,bangpai-music,smiley," +
@@ -361,6 +360,8 @@ S.ready(function() {
                             return S.one("#ke_img_up_watermark_2")[0].checked;
                         }
                     },
+                    previewSuffix:"_80x80",
+                    previewWidth:"80px",
                     sizeLimit:1000//k,
                     ,numberLimit:15,
                     extraHtml:"<p style='margin-top:10px;'>" +
@@ -393,7 +394,7 @@ S.ready(function() {
                 }
             }
         }).use(
-                "preview," +
+                "sourcearea,preview," +
                         "separator," +
                         "undo,separator,removeformat,font,forecolor,separator," +
                         "list,indent,justify,separator,link,bangpai-video,bangpai-music,smiley," +

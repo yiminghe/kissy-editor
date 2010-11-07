@@ -51,14 +51,29 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     ".ke-upload-complete .ke-upload-filename {" +
                     "text-decoration:underline;" +
                     "cursor:pointer;" +
-                    "}" +
-                    "", "ke-BangPaiUpload"
-                );
+                    "}", "ke-BangPaiUpload");
 
             function BangPaiUploadDialog(editor) {
                 this.editor = editor;
                 KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
             }
+
+
+            //定义通用的函数交换两个结点的位置
+            function swapNode(node1, node2) {
+                //获取父结点
+                var _parent = node1.parentNode;
+                //获取两个结点的相对位置
+                var _t1 = node1.nextSibling;
+                var _t2 = node2.nextSibling;
+                //将node2插入到原来node1的位置
+                if (_t1)_parent.insertBefore(node2, _t1);
+                else _parent.appendChild(node2);
+                //将node1插入到原来node2的位置
+                if (_t2)_parent.insertBefore(node1, _t2);
+                else _parent.appendChild(node1);
+            }
+
 
             S.augment(BangPaiUploadDialog, {
                 _prepareShow:function() {
@@ -273,6 +288,28 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             tr = target.parent("tr");
                             self._removeTrFile(tr);
                         }
+
+                        /**
+                         * 支持排序
+                         */
+                        if (target.hasClass("ke-upload-moveup")) {
+                            tr = target.parent("tr");
+                            var pre = tr.prev();
+                            if (pre) {
+                                swapNode(tr[0], pre[0]);
+                                self._syncStatus();
+                            }
+
+                        } else if (target.hasClass("ke-upload-movedown")) {
+                            tr = target.parent("tr");
+                            var next = tr.next();
+                            if (next) {
+                                swapNode(tr[0], next[0]);
+                                self._syncStatus();
+                            }
+                        }
+
+
                     });
 
                     uploader.on("fileSelect", self._onSelect, self);
@@ -563,9 +600,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     cell = row.insertCell(-1);
                     DOM.attr(cell, "class", 'ke-upload-progress');
                     cell = row.insertCell(-1);
-                    DOM.html(cell, "<a href='#' " +
-                        "class='ke-upload-insert' " +
-                        (f.complete ? "" : "style='display:none'") +
+                    DOM.html(cell, "" +
+                        "<a class='ke-button ke-upload-moveup' style='padding:0 5px;vertical-align:middle;line-height:1.5;' title='上移'>↑</a>&nbsp;" +
+                        "<a class='ke-button ke-upload-movedown' style='padding:0 5px;vertical-align:middle;line-height:1.5;' title='下移'>↓</a> &nbsp;&nbsp; " +
+                        "<a href='#' class='ke-upload-insert' style='" +
+                        (f.complete ? "" : "display:none;") +
+                        "' " +
+
                         ">" +
                         "[插入]</a> &nbsp; " +
                         "<a href='#' class='ke-upload-delete'>" +
