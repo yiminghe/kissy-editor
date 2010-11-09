@@ -347,7 +347,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                     } else {
                                         currentFid = fid;
                                         if (previewSuffix) {
-                                            url = url.replace(/(?=(\.\w+$))/, previewSuffix);
+                                            url = url.replace(/(\.\w+$)/, previewSuffix);
                                         }
                                         preview.html("<img " +
                                             "style='display:block;' " +
