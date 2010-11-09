@@ -111,6 +111,18 @@ KISSY.Editor.add("draft", function(editor) {
                         self.save(false);
                     });
 
+                    /*
+                     监控form提交，每次提交前保存一次，防止出错
+                     */
+                    (function() {
+                        var textarea = editor.textarea,
+                            form = textarea[0].form;
+                        form && Event.on(form, "submit", function() {
+                            self.save(false);
+                        });
+                    })();
+
+
                     setInterval(function() {
                         self.save(true);
                     }, self.draftInterval * 60 * 1000);
