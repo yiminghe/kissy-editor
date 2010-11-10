@@ -294,6 +294,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                          */
                         if (target.hasClass("ke-upload-moveup")) {
                             tr = target.parent("tr");
+                            tr.css("backgroundColor", "#FFFF00");
+                            tr.animate({
+                                backgroundColor:"#FBFBFB"
+                            }, 1, null, function() {
+                                tr.css("backgroundColor", "");
+                            });
+
                             var pre = tr.prev();
                             if (pre) {
                                 swapNode(tr[0], pre[0]);
@@ -302,6 +309,12 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                         } else if (target.hasClass("ke-upload-movedown")) {
                             tr = target.parent("tr");
+                            tr.css("backgroundColor", "#FFFF00");
+                            tr.animate({
+                                backgroundColor:"#FBFBFB"
+                            }, 1, null, function() {
+                                tr.css("backgroundColor", "");
+                            });
                             var next = tr.next();
                             if (next) {
                                 swapNode(tr[0], next[0]);
@@ -335,6 +348,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             width:previewWidth,
                             el:preview
                         });
+                        previewWin.el.css("border", "none");
                         var currentFid = 0;
                         listWrap.on("mouseover", function(ev) {
                             var t = ev.target;
@@ -601,8 +615,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     DOM.attr(cell, "class", 'ke-upload-progress');
                     cell = row.insertCell(-1);
                     DOM.html(cell, "" +
-                        "<a class='ke-button ke-upload-moveup' style='padding:0 5px;vertical-align:middle;line-height:1.5;' title='上移'>↑</a>&nbsp;" +
-                        "<a class='ke-button ke-upload-movedown' style='padding:0 5px;vertical-align:middle;line-height:1.5;' title='下移'>↓</a> &nbsp;&nbsp; " +
+                        "<a class='ke-upload-moveup' href='#'>[上移]</a> &nbsp; " +
+                        "<a class='ke-upload-movedown' href='#'>[下移]</a> &nbsp; " +
                         "<a href='#' class='ke-upload-insert' style='" +
                         (f.complete ? "" : "display:none;") +
                         "' " +
