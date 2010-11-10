@@ -1,8 +1,9 @@
 /**
  * @preserve Constructor for kissy editor and module dependency definition
+ *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-05 14:02:14
+ * @buildtime: 2010-11-10 10:12:36
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -139,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-05 14:02:14");
+        re += "t=" + encodeURIComponent("2010-11-10 10:12:36");
         return  re;
     }
 

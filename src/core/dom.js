@@ -2,6 +2,10 @@
  * dom utils for kissy editor,mainly from ckeditor
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("dom", function(KE) {
 
     var TRUE = true,

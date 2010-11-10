@@ -1,8 +1,9 @@
 /**
  * @preserve Constructor for kissy editor and module dependency definition
+ *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-05 14:02:14
+ * @buildtime: 2010-11-10 10:12:36
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -139,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-05 14:02:14");
+        re += "t=" + encodeURIComponent("2010-11-10 10:12:36");
         return  re;
     }
 
@@ -2126,6 +2127,10 @@ KISSY.Editor.add("zindex", function() {
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("dtd", function(KE) {
     /**
      * Holds and object representation of the HTML DTD to be used by the editor in
@@ -2402,6 +2407,10 @@ KISSY.Editor.add("dtd", function(KE) {
  * dom utils for kissy editor,mainly from ckeditor
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("dom", function(KE) {
 
     var TRUE = true,
@@ -3762,6 +3771,10 @@ KISSY.Editor.add("dom", function(KE) {
  * modified from ckeditor ,elementpath represents element's tree path from body
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("elementpath", function(KE) {
     var S = KISSY,
         DOM = S.DOM,
@@ -3907,6 +3920,10 @@ KISSY.Editor.add("elementpath", function(KE) {
  * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("walker", function(KE) {
 
     var TRUE = true,
@@ -4289,6 +4306,10 @@ KISSY.Editor.add("walker", function(KE) {
  * modified from ckeditor,range implementation across browsers for kissy editor
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("range", function(KE) {
 
     /**
@@ -6010,6 +6031,10 @@ KISSY.Editor.add("range", function(KE) {
  * modified from ckeditor ,dom iterator implementation using walker and nextSourceNode
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("domiterator", function(KE) {
     var
 
@@ -6368,6 +6393,10 @@ KISSY.Editor.add("domiterator", function(KE) {
  * modified from ckeditor core plugin - selection
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("selection", function(KE) {
     /**
      * selection type enum
@@ -7442,6 +7471,10 @@ KISSY.Editor.add("selection", function(KE) {
  * modified from ckeditor for kissy editor,use style to gen element and wrap range's elements
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("styles", function(KE) {
 
     var TRUE = true,
@@ -8627,6 +8660,10 @@ KISSY.Editor.add("styles", function(KE) {
  * modified from ckeditor,htmlparser for malform html string
  * @author: yiminghe@gmail.com
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser", function(
     // editor
     ) {
@@ -8843,6 +8880,10 @@ KISSY.Editor.add("htmlparser", function(
  * modified from ckeditor,html generator for kissy editor
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-basicwriter", function() {
     var S = KISSY,KE = S.Editor,Utils = KE.Utils,
         TRUE = true,
@@ -8993,6 +9034,10 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
         "getHtml":BasicWriterP.getHtml
     });
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-htmlwriter", function(
     ) {
     var S = KISSY,
@@ -9296,6 +9341,10 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         "setRules":HtmlWriterP.setRules
     });
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-fragment", function(
     ) {
     var
@@ -9795,6 +9844,10 @@ KISSY.Editor.add("htmlparser-fragment", function(
         "writeChildrenHtml":FragmentP.writeChildrenHtml
     });
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-element", function() {
     var KE = KISSY.Editor,
         TRUE = true,
@@ -10024,6 +10077,10 @@ KISSY.Editor.add("htmlparser-element", function() {
         "writeChildrenHtml":MElementP.writeChildrenHtml
     });
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-filter", function(
     ) {
     var S = KISSY,KE = S.Editor,KEN = KE.NODE,
@@ -10280,6 +10337,10 @@ KISSY.Editor.add("htmlparser-filter", function(
     });
     KE.HtmlParser["Filter"] = Filter;
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-text", function() {
     var S = KISSY,
         KE = S.Editor,
@@ -10333,6 +10394,10 @@ KISSY.Editor.add("htmlparser-text", function() {
     KE.HtmlParser.Text = MText;
     KE.HtmlParser["Text"] = MText;
 });
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-comment", function() {
     var KE = KISSY.Editor,KEN = KE.NODE;
 

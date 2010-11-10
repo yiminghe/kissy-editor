@@ -2,6 +2,10 @@
  * indent formatting,modified from ckeditor
  * @modifier: yiminghe@gmail.com
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("indent", function(editor) {
     var KE = KISSY.Editor,
         listNodeNames = {ol:1,ul:1},

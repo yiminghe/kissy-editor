@@ -3,6 +3,10 @@
  * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("walker", function(KE) {
 
     var TRUE = true,

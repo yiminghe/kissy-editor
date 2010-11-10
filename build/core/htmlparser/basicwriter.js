@@ -2,6 +2,10 @@
  * modified from ckeditor,html generator for kissy editor
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmlparser-basicwriter", function() {
     var S = KISSY,KE = S.Editor,Utils = KE.Utils,
         TRUE = true,

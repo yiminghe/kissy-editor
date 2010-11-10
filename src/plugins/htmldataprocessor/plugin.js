@@ -2,6 +2,10 @@
  * modified from ckeditor,process malform html and ms-word copy for kissyeditor
  * @modifier: yiminghe@gmail.com
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("htmldataprocessor", function(editor) {
     var undefined = undefined,
         S = KISSY,

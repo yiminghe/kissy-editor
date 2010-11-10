@@ -2,6 +2,10 @@
  * modified from ckeditor ,elementpath represents element's tree path from body
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("elementpath", function(KE) {
     var S = KISSY,
         DOM = S.DOM,

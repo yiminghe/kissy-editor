@@ -1,5 +1,6 @@
 /**
  * @preserve Constructor for kissy editor and module dependency definition
+ *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
  * @buildtime: @TIMESTAMP@

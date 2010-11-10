@@ -2,6 +2,10 @@
  * modified from ckeditor ,dom iterator implementation using walker and nextSourceNode
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("domiterator", function(KE) {
     var
 

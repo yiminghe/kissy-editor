@@ -2,6 +2,10 @@
  * modified from ckeditor for kissy editor,use style to gen element and wrap range's elements
  * @author: <yiminghe@gmail.com>
  */
+/*
+Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 KISSY.Editor.add("styles", function(KE) {
 
     var TRUE = true,
