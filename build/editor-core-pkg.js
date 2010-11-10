@@ -1173,7 +1173,11 @@ KISSY.Editor.add("definition", function(KE) {
     KE["SOURCE_MODE"] = KE.SOURCE_MODE;
     KE["WYSIWYG_MODE"] = KE.WYSIWYG_MODE;
 
-    S.augment(KE, {
+    S.augment(KE,
+        /**
+         * @lends {KISSY.Editor.prototype}
+         */
+    {
         /**
          * @this {KISSY.Editor}
          * @param textarea {KISSY.Node}
@@ -1341,7 +1345,6 @@ KISSY.Editor.add("definition", function(KE) {
                 html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
                 html = self.document.body.innerHTML;
-
             } else {
                 //代码模式下不需过滤
                 html = self.textarea.val();
@@ -1354,6 +1357,11 @@ KISSY.Editor.add("definition", function(KE) {
                     html = self["htmlDataProcessor"]["toServer"](html, "p");
                 }
             }
+            html = S.trim(html);
+            /*
+             如果内容为空，对 parser 自动加的空行滤掉
+             */
+            if (/^<p>((&nbsp;)|\s)*<\/p>$/.test(html)) html = "";
             return html;
         } ,
 

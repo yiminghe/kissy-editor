@@ -244,11 +244,10 @@ KISSY.Editor.add("draft", function(editor) {
                         //可视区域内代码！= 最终代码
                         //代码模式也要支持草稿功能
                         //统一获得最终代码
-                        data = S.trim(editor.getData(true));
-                    //S.log(data);
+                        data = editor.getData(true);
+
                     //如果当前内容为空，不保存版本
-                    if (!data ||
-                        /^<p>((&nbsp;)|\s)*<\/p>$/.test(data)) return;
+                    if (!data) return;
 
                     if (drafts[drafts.length - 1] &&
                         data == drafts[drafts.length - 1].content) {

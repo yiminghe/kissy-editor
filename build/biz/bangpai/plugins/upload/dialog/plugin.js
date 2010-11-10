@@ -294,7 +294,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                          */
                         if (target.hasClass("ke-upload-moveup")) {
                             tr = target.parent("tr");
-                            tr.css("backgroundColor", "#FFFF00");
+                            tr.css("backgroundColor", "#eef4f9");
                             tr.animate({
                                 backgroundColor:"#FBFBFB"
                             }, 1, null, function() {
@@ -309,7 +309,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                         } else if (target.hasClass("ke-upload-movedown")) {
                             tr = target.parent("tr");
-                            tr.css("backgroundColor", "#FFFF00");
+                            tr.css("backgroundColor", "#eef4f9");
                             tr.animate({
                                 backgroundColor:"#FBFBFB"
                             }, 1, null, function() {
