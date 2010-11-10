@@ -65,6 +65,7 @@ KISSY.Editor.add("dd", function() {
             //S.log("move");
             //防止ie选择到字
             ev.preventDefault();
+            this._clearSelection();
             if (!activeDrag) return;
             activeDrag._move(ev);
         },
@@ -146,14 +147,17 @@ KISSY.Editor.add("dd", function() {
                 display: "",
                 height: DOM.docHeight()
             });
+            self._clearSelection();
+        },
 
+        _clearSelection:function() {
             //清除由于浏览器导致的选择文字
             if (window.getSelection) {
                 window.getSelection().removeAllRanges();
             }
             //防止 ie 莫名选择文字
             else if (document.selection) {
-                document.selection.clear();
+                document.selection.empty();
             }
         },
 
@@ -215,7 +219,7 @@ KISSY.Editor.add("dd", function() {
                     if (!ori || ori === "auto")
                         hl.css("cursor", "move");
                     //ie 不能被选择了
-                    hl._4e_unselectable();
+                    //hl._4e_unselectable();
                 }
             }
             node.on("mousedown", self._handleMouseDown, self);
