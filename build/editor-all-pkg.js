@@ -13786,9 +13786,9 @@ KISSY.Editor.add("format", function(editor) {
  * @modifier: yiminghe@gmail.com
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("htmldataprocessor", function(editor) {
     var undefined = undefined,
         S = KISSY,
@@ -13918,9 +13918,14 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     (function() {
         var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
             filterStyle = stylesFilter([
-                //word 自有类名去除
+                //word 自有属性名去除
                 [/mso/i],
-
+                //ie 自有属性名
+                [/^-ms/i],
+                //firefox 自有属性名
+                [/^-moz/i],
+                //webkit 自有属性名
+                [/^-webkit/i],
                 //qc 3711，只能出现我们规定的字体
                 /*
                  [ /font-size/i,'',function(v) {
