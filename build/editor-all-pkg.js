@@ -18855,7 +18855,8 @@ KISSY.Editor.add("undo", function(editor) {
                     var self = this,
                         editor = self.editor,
                         doc = editor.document;
-                    Event.on(doc, "keydown", function(ev) {
+                    //也要监控源码下的按键，便于实时统计
+                    Event.on([doc,editor.textarea], "keydown", function(ev) {
                         var keycode = ev.keyCode;
                         if (keycode in navigationKeyCodes
                             || keycode in modifierKeyCodes
@@ -18882,10 +18883,8 @@ KISSY.Editor.add("undo", function(editor) {
                         editor = self.editor;
                     //外部通过editor触发save|restore,管理器捕获事件处理
                     editor.on("save", function(ev) {
-
                         //代码模式下不和可视模式下混在一起
                         if (editor.getMode() != KE.WYSIWYG_MODE) return;
-
                         if (ev.buffer) {
                             //键盘操作需要缓存
                             self.bufferRunner();
@@ -18894,7 +18893,12 @@ KISSY.Editor.add("undo", function(editor) {
                             self.save();
                         }
                     });
-                    editor.on("restore", self.restore, self);
+                    editor.on("restore", function(ev) {
+                        //代码模式下不和可视模式下混在一起
+                        if (editor.getMode() != KE.WYSIWYG_MODE) return;
+                        self.restore(ev);
+                    });
+
                     self._keyMonitor();
                     //先save一下,why??
                     //0913:初始状态保存，放在use回调中
@@ -18939,8 +18943,6 @@ KISSY.Editor.add("undo", function(editor) {
                         history = self.history,
                         editor = self.editor,
                         snapshot = history[self.index + d];
-                    //代码模式下不和可视模式下混在一起
-                    if (editor.getMode() != KE.WYSIWYG_MODE) return;
                     if (snapshot) {
                         editor._setRawData(snapshot.contents);
                         if (snapshot.bookmarks)
