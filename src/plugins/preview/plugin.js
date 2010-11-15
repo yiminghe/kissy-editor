@@ -41,8 +41,7 @@ KISSY.Editor.add("preview", function(editor) {
                         iLeft = Math.round(screen.width * 0.1);
                     } catch (e) {
                     }
-                    var sHTML = editor._prepareIFrameHtml(null,
-                        editor.cfg.customStyle)
+                    var sHTML = editor._prepareIFrameHtml()
                         .replace(/<body[^>]+>.+<\/body>/,
                         "<body>\n"
                             + editor.getData(true)

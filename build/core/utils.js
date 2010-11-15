@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-15 16:02:26");
+                re += "t=" + encodeURIComponent("2010-11-15 17:16:08");
                 return  re;
             },
             /**

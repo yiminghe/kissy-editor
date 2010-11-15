@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-15 16:02:26");
+                re += "t=" + encodeURIComponent("2010-11-15 17:16:08");
                 return  re;
             },
             /**
@@ -1115,11 +1115,18 @@ KISSY.Editor.add("definition", function(KE) {
      * @param id {string}
      * @param customStyle {string}
      */
-    function prepareIFrameHtml(id, customStyle) {
+    function prepareIFrameHtml(id, customStyle, customLink) {
+        var links = "";
+        if (customLink) {
+            for (var i = 0; i < customLink.length; i++) {
+                links += '<link href="' +
+                    customLink[i]
+                    + '" rel="stylesheet"/>';
+            }
+        }
         return HTML5_DTD
             + "<html>"
             + "<head>"
-            //+ "<meta http-equiv='X-UA-Compatible' content='IE=8' />"
             + "<title>${title}</title>"
             + "<link href='"
             + KE["Config"]["base"]
@@ -1129,6 +1136,7 @@ KISSY.Editor.add("definition", function(KE) {
             + "<style>"
             + (customStyle || "")
             + "</style>"
+            + links
             + "</head>"
             + "<body class='ke-editor'>"
             //firefox 必须里面有东西，否则编辑前不能删除!
@@ -1432,7 +1440,10 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @this {KISSY.Editor}
          */
-        _prepareIFrameHtml:prepareIFrameHtml,
+        _prepareIFrameHtml:function(id) {
+            var cfg = this.cfg;
+            return prepareIFrameHtml(id, cfg.customStyle, cfg.customLink);
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -1483,6 +1494,34 @@ KISSY.Editor.add("definition", function(KE) {
                 elem.appendChild(doc.createTextNode(cssText));
             }
         },
+        addCustomLink:function(link) {
+            var self = this,
+                cfg = self.cfg,
+                doc = self.document;
+            cfg.customLink = cfg.customLink || [];
+            cfg.customLink.push(link);
+            var elem = doc.createElement("link");
+            elem.rel = "stylesheet";
+            doc.getElementsByTagName("head")[0].appendChild(elem);
+            elem.href = link;
+        },
+        removeCustomLink:function(link) {
+            var self = this,
+                cfg = self.cfg,
+                doc = self.document;
+            var links = S.makeArray(doc.getElementsByTagName("link"));
+            for (var i = 0; i < links.length; i++) {
+                if (links[i].href == link) {
+                    DOM._4e_remove(links[i]);
+                }
+            }
+            cfg.customLink = cfg.customLink || [];
+            var cls = cfg.customLink;
+            var ind = S.indexOf(link, cls);
+            if (ind != -1) {
+                cls.splice(ind, 1);
+            }
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -1492,8 +1531,8 @@ KISSY.Editor.add("definition", function(KE) {
                 KES = KE.SELECTION,
                 textarea = self.textarea[0],
                 cfg = self.cfg,
-                data = prepareIFrameHtml(self._UUID,
-                    cfg.customStyle),
+
+                data = self._prepareIFrameHtml(self._UUID),
                 win = iframe[0].contentWindow,doc;
 
             try {
