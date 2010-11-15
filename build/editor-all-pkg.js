@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-05 14:02:14");
+                re += "t=" + encodeURIComponent("2010-11-15 16:02:26");
                 return  re;
             },
             /**
@@ -790,9 +790,16 @@ KISSY.Editor.add("utils", function(KE) {
                 frame.id = id;
                 frame.name = id;
                 frame.className = 'ke-hidden';
+
+                var srcScript = 'document.open();' +
+                    // The document domain must be set any time we
+                    // call document.open().
+                    ( Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
+                    'document.close();';
                 if (UA.ie) {
-                    frame.src = "javascript:FALSE";
+                    frame.src = UA.ie ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '';
                 }
+                S.log("doFormUpload : " + frame.src);
                 document.body.appendChild(frame);
 
                 if (UA.ie) {
@@ -845,6 +852,7 @@ KISSY.Editor.add("utils", function(KE) {
                         } else {
                             doc = (frame.contentDocument || window.frames[id].document);
                         }
+
                         if (doc && doc.body) {
                             r.responseText = doc.body.innerHTML;
                         }
@@ -853,9 +861,12 @@ KISSY.Editor.add("utils", function(KE) {
                         } else {
                             r.responseXML = doc;
                         }
+
                     }
                     catch(e) {
                         // ignore
+                        //2010-11-15 由于外边设置了document.domain导致读不到数据抛异常
+                        S.log(e);
                     }
 
                     Event.remove(frame, 'load', cb);
@@ -864,6 +875,7 @@ KISSY.Editor.add("utils", function(KE) {
                     setTimeout(function() {
                         DOM._4e_remove(frame);
                     }, 100);
+
                 }
 
                 Event.on(frame, 'load', cb);
