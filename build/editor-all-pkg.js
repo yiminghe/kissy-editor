@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-16 12:27:37");
+                re += "t=" + encodeURIComponent("2010-11-16 12:37:26");
                 return  re;
             },
             /**
@@ -11659,6 +11659,7 @@ KISSY.Editor.add("dd", function() {
             //0.5 for debug
             self._shim.css("opacity", 0);
             self._activeShim = self._showShim;
+            self._showShim();
         },
 
         _showShim: function() {

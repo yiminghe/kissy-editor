@@ -131,6 +131,7 @@ KISSY.Editor.add("dd", function() {
             //0.5 for debug
             self._shim.css("opacity", 0);
             self._activeShim = self._showShim;
+            self._showShim();
         },
 
         _showShim: function() {
