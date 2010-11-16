@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-16 12:23:55");
+                re += "t=" + encodeURIComponent("2010-11-16 12:27:37");
                 return  re;
             },
             /**
@@ -345,13 +345,13 @@ KISSY.Editor.add("utils", function(KE) {
                 if (UA.webkit) {
                     return;
                 }
-                inp.on("focusout", function() {
+                inp.on("blur", function() {
                     if (!S.trim(inp.val())) {
                         inp.addClass("ke-input-tip");
                         inp.val(tip);
                     }
                 });
-                inp.on("focusin", function() {
+                inp.on("focus", function() {
                     inp.removeClass("ke-input-tip");
                     if (S.trim(inp.val()) == tip) {
                         inp.val("");
