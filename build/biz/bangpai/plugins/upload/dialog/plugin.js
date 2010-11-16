@@ -117,7 +117,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "<table class='ke-upload-list'>" +
                             "<thead>" +
                             "<tr>" +
-                            "<th>" +
+                            "<th style='width:30px;'>" +
                             "序号" +
                             "</th>" +
                             "<th>" +
@@ -126,7 +126,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             "<th>" +
                             "大小" +
                             "</th>" +
-                            "<th style='width:35%'>" +
+                            "<th style='width:30%'>" +
                             "上传进度" +
                             "</th>" +
                             "<th>" +
