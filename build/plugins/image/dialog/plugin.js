@@ -69,7 +69,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "<label>" +
         "宽度： " +
         "<input " +
-        " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+        " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
         " data-warning='宽度请输入正整数' " +
         "class='ke-img-width ke-input' " +
         "style='vertical-align:middle;width:60px' " +
@@ -79,7 +79,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "<label>" +
         "高度： " +
         "<input " +
-        " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+        " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
         " data-warning='高度请输入正整数' " +
         "class='ke-img-height ke-input' " +
         "style='vertical-align:middle;width:60px' " +

@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-15 17:16:08");
+                re += "t=" + encodeURIComponent("2010-11-16 12:03:44");
                 return  re;
             },
             /**
@@ -686,16 +686,16 @@ KISSY.Editor.add("utils", function(KE) {
             resetInput:function(inp) {
                 var placeholder = inp.attr("placeholder");
                 if (placeholder && !UA.webkit) {
-                    inp.val(placeholder);
                     inp.addClass("ke-input-tip");
+                    inp.val(placeholder);
                 } else if (UA.webkit) {
                     inp.val("");
                 }
             },
 
             valInput:function(inp, val) {
-                inp.val(val);
                 inp.removeClass("ke-input-tip");
+                inp.val(val);
             },
 
             /**
@@ -708,17 +708,17 @@ KISSY.Editor.add("utils", function(KE) {
                 if (UA.webkit) {
                     return;
                 }
-                inp.on("blur", function() {
+                inp.on("focusout", function() {
                     if (!S.trim(inp.val())) {
-                        inp.val(tip);
                         inp.addClass("ke-input-tip");
+                        inp.val(tip);
                     }
                 });
-                inp.on("focus", function() {
+                inp.on("focusin", function() {
+                    inp.removeClass("ke-input-tip");
                     if (S.trim(inp.val()) == tip) {
                         inp.val("");
                     }
-                    inp.removeClass("ke-input-tip");
                 });
             },
 
@@ -11548,17 +11548,14 @@ KISSY.Editor.add("dd", function() {
 
     Manager.ATTRS = {
         /**
-         * mousedown 后 buffer 触发时间,100毫秒
+         * mousedown 后 buffer 触发时间  timeThred
          */
-        timeThred:{value:200},
+        bufferTime: { value: 200 },
+
         /**
-         * 当前激活的拖对象，在同一时间只有一个值，所以不是数组
+         * 当前激活的拖动对象，在同一时间只有一个值，所以不是数组
          */
-        activeDrag:{},
-        /**
-         * 所有注册对象
-         */
-        drags:{value:{}}
+        activeDrag: { }
     };
 
     /*
@@ -11568,91 +11565,85 @@ KISSY.Editor.add("dd", function() {
      3.为了跨越iframe而统一在底下的遮罩层
      */
     S.extend(Manager, S.Base, {
-        _init:function() {
+        _init: function() {
             var self = this;
-            KE.Utils.lazyRun(self, "_activePg", "_showPg");
-            self._showPgMove = KE.Utils.throttle(self._move, self, 30);
+            self._showShimMove = KE.Utils.throttle(self._move, self, 30);
         },
-        /*
-         注册所有可拖动对象
-         */
-        /*
-         reg:function(node) {
-         var drags = this.get("drags");
-         if (!node[0].id) {
-         node[0].id = S.guid("drag-");
-         }
-         drags[node[0].id] = node;
-         },*/
+
         /*
          全局鼠标移动事件通知当前拖动对象正在移动
-         注意：chrome8 :click 时 mousedown-mousemove-mouseup-click 也会触发 mousemove
+         注意：chrome8: click 时 mousedown-mousemove-mouseup-click 也会触发 mousemove
          */
-        _move:function(ev) {
-            var activeDrag = this.get("activeDrag");
-            //S.log("move");
-            //防止ie选择到字
+        _move: function(ev) {
+            var activeDrag = this.get('activeDrag');
+            S.log("move");
+            if (!activeDrag) return;
+            //防止 ie 选择到字
             ev.preventDefault();
             this._clearSelection();
-            if (!activeDrag) return;
             activeDrag._move(ev);
         },
+
         /**
          * 当前拖动对象通知全局：我要开始啦
          * 全局设置当前拖动对象，
-         * 还要根据配置进行buffer处理
+         * 还要根据配置进行 buffer 处理
          * @param drag
          */
-        _start:function(drag) {
+        _start: function(drag) {
             var self = this,
-                timeThred = self.get("timeThred") || 0;
+                bufferTime = self.get("bufferTime") || 0;
 
             //事件先要注册好，防止点击，导致 mouseup 时还没注册事件
             self._registerEvent();
 
             //是否中央管理，强制限制拖放延迟
-            if (timeThred) {
-                self._timeThredTimer = setTimeout(function() {
+            if (bufferTime) {
+                self._bufferTimer = setTimeout(function() {
                     self._bufferStart(drag);
-                }, timeThred);
+                }, bufferTime);
             } else {
                 self._bufferStart(drag);
             }
         },
-        _bufferStart:function(drag) {
-            //S.log("_bufferStart");
+
+        _bufferStart: function(drag) {
             var self = this;
-            self.set("activeDrag", drag);
+            self.set('activeDrag', drag);
+
             //真正开始移动了才激活垫片
-            self._activePg();
+            self._activeShim();
             drag._start();
         },
+
         /**
          * 全局通知当前拖动对象：你结束拖动了！
          * @param ev
          */
-        _end:function(ev) {
+        _end: function(ev) {
             var self = this,
                 activeDrag = self.get("activeDrag");
-            //self._unregisterEvent();
-            if (self._timeThredTimer) {
-                clearTimeout(self._timeThredTimer);
-                self._timeThredTimer = null;
+            self._unregisterEvent();
+            if (self._bufferTimer) {
+                clearTimeout(self._bufferTimer);
+                self._bufferTimer = null;
             }
-            self._pg && self._pg.css({
+            self._shim && self._shim.css({
                 display:"none"
             });
+
             if (!activeDrag) return;
             activeDrag._end(ev);
             self.set("activeDrag", null);
         },
+
         /**
          * 垫片只需创建一次
          */
-        _activePg:function() {
+        _activeShim: function() {
             var self = this,doc = document;
             //创造垫片，防止进入iframe，外面document监听不到 mousedown/up/move
-            self._pg = new Node("<div " +
+            self._shim = new Node("<div " +
                 "style='" +
                 //red for debug
                 "background-color:red;" +
@@ -11666,18 +11657,18 @@ KISSY.Editor.add("dd", function() {
                 + ";" +
                 "'></div>").appendTo(doc.body);
             //0.5 for debug
-            self._pg.css("opacity", 0);
+            self._shim.css("opacity", 0);
+            self._activeShim = self._showShim;
         },
 
-        _showPg:function() {
+        _showShim: function() {
             var self = this;
-            self._pg.css({
+            self._shim.css({
                 display: "",
                 height: DOM.docHeight()
             });
             self._clearSelection();
         },
-
         _clearSelection:function() {
             //清除由于浏览器导致的选择文字
             if (window.getSelection) {
@@ -11692,24 +11683,22 @@ KISSY.Editor.add("dd", function() {
         /**
          * 开始时注册全局监听事件
          */
-        _registerEvent:function() {
+        _registerEvent: function() {
             var self = this,doc = document;
-            //S.log("_registerEvent");
+            S.log("_registerEvent");
             Event.on(doc, "mouseup", self._end, self);
-            Event.on(doc, "mousemove", self._showPgMove);
+            Event.on(doc, "mousemove", self._showShimMove, self);
         },
 
         /**
          * 结束时需要取消掉，防止平时无谓的监听
          */
-        _unregisterEvent:function() {
+        _unregisterEvent: function() {
             var self = this,doc = document;
-            //S.log("_unregisterEvent");
-            Event.remove(doc, "mousemove", self._showPgMove);
+            S.log("_unregisterEvent");
+            Event.remove(doc, "mousemove", self._showShimMove, self);
             Event.remove(doc, "mouseup", self._end, self);
         }
-
-
     });
 
     KE.DD.DDM = new Manager();

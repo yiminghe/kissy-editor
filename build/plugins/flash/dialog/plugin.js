@@ -206,9 +206,10 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                         editor = self.editor,
                         dinfo = self._getDInfo(),
                         url = dinfo && S.trim(dinfo.url),
-                        attrs = dinfo && dinfo.attrs,
-                        re = KE.Utils.verifyInputs(self.d.el.all("input"));
-                    if (!re || !dinfo) return;
+                        attrs = dinfo && dinfo.attrs;
+                    if (!dinfo) return;
+                    var re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    if (!re) return;
                     var nodeInfo = flashUtils.createSWF(url, {
                         attrs:attrs
                     }, editor.document),

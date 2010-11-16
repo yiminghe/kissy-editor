@@ -27,7 +27,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 "<label>宽度： " +
                 " " +
                 "<input " +
-                " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
                 " data-warning='宽度请输入正整数' " +
                 "class='ke-video-width ke-input' " +
                 "style='width:60px;margin-left:2px;" +
@@ -39,7 +39,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 "<label> 高度： " +
                 "" +
                 " <input " +
-                " data-verify='^(" + DTIP + "|((?!0$)\\d+))$' " +
+                " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
                 " data-warning='高度请输入正整数' " +
                 "class='ke-video-height ke-input' style='width:60px;" +
                 MIDDLE +

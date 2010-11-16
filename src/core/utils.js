@@ -323,16 +323,16 @@ KISSY.Editor.add("utils", function(KE) {
             resetInput:function(inp) {
                 var placeholder = inp.attr("placeholder");
                 if (placeholder && !UA.webkit) {
-                    inp.val(placeholder);
                     inp.addClass("ke-input-tip");
+                    inp.val(placeholder);
                 } else if (UA.webkit) {
                     inp.val("");
                 }
             },
 
             valInput:function(inp, val) {
-                inp.val(val);
                 inp.removeClass("ke-input-tip");
+                inp.val(val);
             },
 
             /**
@@ -345,17 +345,17 @@ KISSY.Editor.add("utils", function(KE) {
                 if (UA.webkit) {
                     return;
                 }
-                inp.on("blur", function() {
+                inp.on("focusout", function() {
                     if (!S.trim(inp.val())) {
-                        inp.val(tip);
                         inp.addClass("ke-input-tip");
+                        inp.val(tip);
                     }
                 });
-                inp.on("focus", function() {
+                inp.on("focusin", function() {
+                    inp.removeClass("ke-input-tip");
                     if (S.trim(inp.val()) == tip) {
                         inp.val("");
                     }
-                    inp.removeClass("ke-input-tip");
                 });
             },
 
