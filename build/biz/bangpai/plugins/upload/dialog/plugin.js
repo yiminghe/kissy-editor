@@ -50,6 +50,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     "" +
                     ".ke-upload-complete .ke-upload-filename {" +
                     "text-decoration:underline;" +
+
                     "cursor:pointer;" +
                     "}", "ke-BangPaiUpload");
 
@@ -351,11 +352,12 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         previewWin.el.css("border", "none");
                         var currentFid = 0;
                         listWrap.on("mouseover", function(ev) {
-                            var t = ev.target;
-                            if (DOM.hasClass(t, "ke-upload-filename")) {
-                                var tr = DOM._4e_ascendant(t, "tr");
+                            var t = ev.target,td = DOM.parent(t, ".ke-upload-filename");
+                            if (td) {
+                                var tr = DOM._4e_ascendant(td, "tr");
                                 if (tr.hasClass("ke-upload-complete")) {
-                                    var url = tr.attr("url"),fid = tr.attr("fid");
+                                    var url = tr.attr("url"),
+                                        fid = tr.attr("fid");
                                     if (!url) return;
                                     if (fid == currentFid) {
                                     } else {
@@ -368,8 +370,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                             "src='" +
                                             url + "' />")
                                     }
-                                    var offset = DOM.offset(t);
-                                    offset.left += t.offsetWidth;
+                                    var offset = DOM.offset(td);
+                                    offset.left += td.offsetWidth;
                                     previewWin.show(offset);
                                 }
                             } else {
@@ -550,7 +552,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             url = tr.attr("url");
                         if (url) {
                             var size = tr.one(".ke-upload-filesize").html(),
-                                name = tr.one(".ke-upload-filename").html();
+                                name = tr.one(".ke-upload-filename").text();
                             data.push({
                                 name:name,
                                 size:size,
@@ -606,7 +608,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     if (f.name.length > 18) {
                         f.name = f.name.substring(0, 18) + "...";
                     }
-                    DOM.html(cell, f.name);
+                    DOM.html(cell, "<div style='width:160px;overflow:hidden;'><div style='width:9999px;text-align:left;'>" + f.name + "</div></div>");
                     DOM.attr(cell, "class", 'ke-upload-filename');
                     cell = row.insertCell(-1);
                     DOM.html(cell, f.size);
