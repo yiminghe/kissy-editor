@@ -82,7 +82,7 @@ KISSY.Editor.add("htmlparser-element", function() {
 
         /**
          * Clone this element.
-         * @returns {MElement} The element clone.
+         * @returns  The element clone.
          * @example
          */
         clone : function() {

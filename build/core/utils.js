@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-16 12:37:26");
+                re += "t=" + encodeURIComponent("2010-11-17 18:19:09");
                 return  re;
             },
             /**
@@ -57,7 +57,7 @@ KISSY.Editor.add("utils", function(KE) {
              * @param y {number}
              * @param srcDoc {Document}
              * @param destDoc {Document}
-             * @return {{left:number,top:number}} 在最终文档中的位置
+             * @return 在最终文档中的位置
              */
             getXY:function(x, y, srcDoc, destDoc) {
                 var currentWindow = srcDoc.defaultView || srcDoc.parentWindow;
@@ -161,7 +161,7 @@ KISSY.Editor.add("utils", function(KE) {
             }
             ,
             /**
-             * @param database {Object.<string,KISSY.Node>}
+             * @param database {Object}
              */
             clearAllMarkers:function(database) {
                 for (var i in database)
@@ -361,7 +361,7 @@ KISSY.Editor.add("utils", function(KE) {
 
             /**
              *
-             * @param node {(Node|KISSY.Node)}
+             * @param node {(Node)}
              */
             clean:function(node) {
                 node = node[0] || node;
@@ -399,8 +399,8 @@ KISSY.Editor.add("utils", function(KE) {
 
             /**
              *
-             * @param params {Object.<string,(function|string|number)>}
-             * @return {Object.<string,(string|number)>}
+             * @param params {Object}
+             * @return {Object}
              */
             normParams:function (params) {
                 params = S.clone(params);
@@ -545,9 +545,16 @@ KISSY.Editor.add("utils", function(KE) {
                     arr[i] = callback(arr[i]);
                 }
                 return arr;
-            }
+            },
+            //直接判断引擎，防止兼容性模式影响
+            ieEngine:(function() {
+                if (!UA.ie) return;
+                return document.documentMode || UA.ie;
+            })()
         };
+
     KE.Utils = Utils;
+
     /**
      * export for closure compiler
      */

@@ -89,6 +89,8 @@ KISSY.Node.prototype={
     addClass:function(){},
     removeClass:function(){},
     on:function(){},
+    data:function(){},
+    removeData:function(){},
     detach:function(){}
 };
 

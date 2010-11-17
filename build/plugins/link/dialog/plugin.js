@@ -103,7 +103,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         return;
                     }
                     d.hide();
-                 
+
                     link = self._getSelectedLink();
                     //是修改行为
                     if (link) {

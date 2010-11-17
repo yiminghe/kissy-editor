@@ -3,9 +3,9 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("range", function(KE) {
 
     /**
@@ -326,7 +326,11 @@ KISSY.Editor.add("range", function(KE) {
                     break;
             }
 
-            var clone = docFrag, levelStartNode, levelClone, currentNode, currentSibling;
+            var clone = docFrag,
+                levelStartNode,
+                levelClone,
+                currentNode,
+                currentSibling;
 
             // Remove all successive sibling nodes for every node in the
             // startParents tree.
@@ -338,9 +342,13 @@ KISSY.Editor.add("range", function(KE) {
                     clone
                         &&
                         !levelStartNode._4e_equals(startNode)
-                    )        // action = 0 = Delete
+                    ) {
+                    // action = 0 = Delete
                     levelClone = clone.appendChild(levelStartNode._4e_clone()[0]);
-
+                }
+                else {
+                    levelClone = null;
+                }
                 currentNode = levelStartNode[0].nextSibling;
 
                 while (currentNode) {
@@ -359,7 +367,7 @@ KISSY.Editor.add("range", function(KE) {
                         clone.appendChild(currentNode.cloneNode(TRUE));
                     else {
                         // Both Delete and Extract will remove the node.
-                        currentNode.parentNode.removeChild(currentNode);
+                        DOM._4e_remove(currentNode);
 
                         // When Extracting, move the removed node to the docFrag.
                         if (action == 1)    // 1 = Extract
@@ -382,11 +390,17 @@ KISSY.Editor.add("range", function(KE) {
 
                 // For Extract and Clone, we must clone this level.
                 if (
-                    action > 0
+                    clone
+                        &&
+                        action > 0
                         &&
                         !levelStartNode._4e_equals(endNode)
-                    )        // action = 0 = Delete
+                    ) {
+                    // action = 0 = Delete
                     levelClone = clone.appendChild(levelStartNode._4e_clone()[0]);
+                } else {
+                    levelClone = null;
+                }
 
                 // The processing of siblings may have already been done by the parent.
                 if (

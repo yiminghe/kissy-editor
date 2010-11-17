@@ -193,8 +193,6 @@ KISSY.Editor.add("list", function(editor) {
                         while (currentNode && currentNode[0]) {
                             if (currentNode[0].nodeType == KEN.NODE_ELEMENT) {
                                 currentNode._4e_clearMarkers(database, true);
-                                //add by yiminghe:no need _ke_expando copied!
-
                             }
                             currentNode = currentNode._4e_nextSourceNode();
                         }
@@ -226,7 +224,7 @@ KISSY.Editor.add("list", function(editor) {
                         var itemNode = groupObj.contents[i];
                         itemNode = itemNode._4e_ascendant('li', true);
                         if ((!itemNode || !itemNode[0]) ||
-                            itemNode._4e_getData('list_item_processed'))
+                            itemNode.data('list_item_processed'))
                             continue;
                         selectedListItems.push(itemNode);
                         itemNode._4e_setMarker(database, 'list_item_processed', true);
@@ -234,7 +232,7 @@ KISSY.Editor.add("list", function(editor) {
 
                     var fakeParent = new Node(groupObj.root[0].ownerDocument.createElement(this.type));
                     for (i = 0; i < selectedListItems.length; i++) {
-                        var listIndex = selectedListItems[i]._4e_getData('listarray_index');
+                        var listIndex = selectedListItems[i].data('listarray_index');
                         listArray[listIndex].parent = fakeParent;
                     }
                     var newList = list.arrayToList(listArray, database, null, "p");
@@ -323,7 +321,7 @@ KISSY.Editor.add("list", function(editor) {
                     for (var i = 0; i < groupObj.contents.length; i++) {
                         var itemNode = groupObj.contents[i];
                         itemNode = itemNode._4e_ascendant('li', true);
-                        if (!itemNode || itemNode._4e_getData('list_item_processed'))
+                        if (!itemNode || itemNode.data('list_item_processed'))
                             continue;
                         selectedListItems.push(itemNode);
                         itemNode._4e_setMarker(database, 'list_item_processed', true);
@@ -331,7 +329,7 @@ KISSY.Editor.add("list", function(editor) {
 
                     var lastListIndex = null;
                     for (i = 0; i < selectedListItems.length; i++) {
-                        var listIndex = selectedListItems[i]._4e_getData('listarray_index');
+                        var listIndex = selectedListItems[i].data('listarray_index');
                         listArray[listIndex].indent = -1;
                         lastListIndex = listIndex;
                     }
@@ -415,7 +413,7 @@ KISSY.Editor.add("list", function(editor) {
                         while (( block = iterator.getNextParagraph() )) {
 
                             // Avoid duplicate blocks get processed across ranges.
-                            if (block._4e_getData('list_block'))
+                            if (block.data('list_block'))
                                 continue;
                             else
                                 block._4e_setMarker(database, 'list_block', 1);
@@ -440,9 +438,9 @@ KISSY.Editor.add("list", function(editor) {
                                     // no longer be valid. Since paragraphs after the list
                                     // should belong to a different group of paragraphs before
                                     // the list. (Bug #1309)
-                                    blockLimit._4e_removeData('list_group_object');
+                                    blockLimit.removeData('list_group_object');
 
-                                    var groupObj = element._4e_getData('list_group_object');
+                                    var groupObj = element.data('list_group_object');
                                     if (groupObj)
                                         groupObj.contents.push(block);
                                     else {
@@ -460,8 +458,8 @@ KISSY.Editor.add("list", function(editor) {
 
                             // No list ancestor? Group by block limit.
                             var root = blockLimit || path.block;
-                            if (root._4e_getData('list_group_object'))
-                                root._4e_getData('list_group_object').contents.push(block);
+                            if (root.data('list_group_object'))
+                                root.data('list_group_object').contents.push(block);
                             else {
                                 groupObj = { root : root, contents : [ block ] };
                                 root._4e_setMarker(database, 'list_group_object', groupObj);

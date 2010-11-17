@@ -11,7 +11,7 @@ KISSY.Editor.add("elementpath", function(KE) {
         DOM = S.DOM,
         dtd = KE.XHTML_DTD,
         KEN = KE.NODE,
-        UA = S.UA,
+        //UA = S.UA,
         TRUE = true,
         FALSE = false,
         NULL = null;

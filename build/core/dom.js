@@ -3,9 +3,9 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("dom", function(KE) {
 
     var TRUE = true,
@@ -80,29 +80,28 @@ KISSY.Editor.add("dom", function(KE) {
      * table-column-group, table-column, table-cell, table-caption, or whose node
      * name is hr, br (when enterMode is br only) is a block boundary.
      */
-    var customData = {},
-        blockBoundaryDisplayMatch = {
-            "block": 1,
-            'list-item' : 1,
-            "table": 1,
-            'table-row-group' : 1,
-            'table-header-group' : 1,
-            'table-footer-group' : 1,
-            'table-row' : 1,
-            'table-column-group' : 1,
-            'table-column' : 1,
-            'table-cell' : 1,
-            'table-caption' : 1
-        },
+    var blockBoundaryDisplayMatch = {
+        "block": 1,
+        'list-item' : 1,
+        "table": 1,
+        'table-row-group' : 1,
+        'table-header-group' : 1,
+        'table-footer-group' : 1,
+        'table-row' : 1,
+        'table-column-group' : 1,
+        'table-column' : 1,
+        'table-cell' : 1,
+        'table-caption' : 1
+    },
         blockBoundaryNodeNameMatch = { "hr": 1 },
         /**
-         * @param el {(Node|KISSY.Node)}
+         * @param el {(Node)}
          */
         normalElDom = function(el) {
             return   el[0] || el;
         },
         /**
-         * @param el {(Node|KISSY.Node)}
+         * @param el {(Node)}
          */
         normalEl = function(el) {
             if (el && !el[0]) return new Node(el);
@@ -113,8 +112,8 @@ KISSY.Editor.add("dom", function(KE) {
             _4e_unwrap:normalElDom,
             /**
              *
-             * @param e1 {(Node|KISSY.Node)}
-             * @param e2 {(Node|KISSY.Node)}
+             * @param e1 {(Node)}
+             * @param e2 {(Node)}
              */
             _4e_equals:function(e1, e2) {
                 //全部为空
@@ -127,8 +126,8 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param customNodeNames {Object.<string,number>}
+             * @param el {(Node)}
+             * @param customNodeNames {Object}
              */
             _4e_isBlockBoundary:function(el, customNodeNames) {
                 el = normalEl(el);
@@ -151,7 +150,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_index:function(el) {
                 el = normalElDom(el);
@@ -163,7 +162,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param evaluator {function(KISSY.Node)}
              */
             _4e_first:function(el, evaluator) {
@@ -177,8 +176,8 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param thisElement {(Node|KISSY.Node)}
-             * @param target {(Node|KISSY.Node)}
+             * @param thisElement {(Node)}
+             * @param target {(Node)}
              * @param toStart {boolean}
              */
             _4e_move : function(thisElement, target, toStart) {
@@ -195,7 +194,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param thisElement {(Node|KISSY.Node)}
+             * @param thisElement {(Node)}
              */
             _4e_name:function(thisElement) {
                 thisElement = normalElDom(thisElement);
@@ -210,34 +209,40 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param thisElement {(Node|KISSY.Node)}
-             * @param otherElement {(Node|KISSY.Node)}
+             * @param thisElement {(Node)}
+             * @param otherElement {(Node)}
              */
             _4e_isIdentical : function(thisElement, otherElement) {
                 if (thisElement._4e_name() != otherElement._4e_name())
                     return FALSE;
 
-                var thisAttribs = thisElement[0].attributes,
-                    otherAttribs = otherElement[0].attributes,thisLength = thisAttribs.length,
-                    otherLength = otherAttribs.length;
+                var thisAttributes = thisElement[0].attributes,
+                    otherAttributes = otherElement[0].attributes,
+                    thisLength = thisAttributes.length,
+                    otherLength = otherAttributes.length;
 
-                if (!UA.ie && thisLength != otherLength)
+                if (thisLength != otherLength)
                     return FALSE;
 
                 for (var i = 0; i < thisLength; i++) {
-                    var attribute = thisAttribs[ i ];
-
-                    if (( !UA.ie || ( attribute.specified && attribute.nodeName != '_ke_expando' ) ) && attribute.nodeValue != otherElement.attr(attribute.nodeName))
+                    var attribute = thisAttributes[i],
+                        name = attribute.name;
+                    if (attribute.specified
+                        &&
+                        thisElement.attr(name) != otherElement.attr(name))
                         return FALSE;
                 }
 
                 // For IE, we have to for both elements, because it's difficult to
                 // know how the atttibutes collection is organized in its DOM.
-                if (UA.ie) {
+                // ie 使用版本 < 8
+                if (Utils.ieEngine < 8) {
                     for (i = 0; i < otherLength; i++) {
-                        attribute = otherAttribs[ i ];
-                        if (attribute.specified && attribute.nodeName != '_ke_expando'
-                            && attribute.nodeValue != thisElement.attr(attribute.nodeName))
+                        attribute = otherAttributes[ i ];
+                        name = attribute.name;
+                        if (attribute.specified
+                            &&
+                            thisElement.attr(name) != otherElement.attr(name))
                             return FALSE;
                     }
                 }
@@ -247,7 +252,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param thisElement {(Node|KISSY.Node)}
+             * @param thisElement {(Node)}
              */
             _4e_isEmptyInlineRemoveable : function(thisElement) {
                 var children = normalElDom(thisElement).childNodes;
@@ -268,8 +273,8 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param thisElement {(Node|KISSY.Node)}
-             * @param target {(Node|KISSY.Node)}
+             * @param thisElement {(Node)}
+             * @param target {(Node)}
              * @param toStart {boolean}
              */
             _4e_moveChildren : function(thisElement, target, toStart) {
@@ -292,14 +297,14 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param elem {(Node|KISSY.Node)}
+             * @param elem {(Node)}
              */
             _4e_mergeSiblings : ( function() {
 
                 /**
                  *
-                 * @param element {(Node|KISSY.Node)}
-                 * @param sibling {(Node|KISSY.Node)}
+                 * @param element {(Node)}
+                 * @param sibling {(Node)}
                  * @param  {boolean=} isNext
                  */
                 function mergeElements(element, sibling, isNext) {
@@ -339,7 +344,11 @@ KISSY.Editor.add("dom", function(KE) {
                     if (!thisElement[0]) return;
                     //note by yiminghe,why not just merge whatever
                     // Merge empty links and anchors also. (#5567)
-                    if (!( REMOVE_EMPTY[ thisElement._4e_name() ] || thisElement._4e_name() == "a" ))
+                    if (!
+                        ( REMOVE_EMPTY[ thisElement._4e_name() ]
+                            ||
+                            thisElement._4e_name() == "a" )
+                        )
                         return;
 
                     mergeElements(thisElement, new Node(thisElement[0].nextSibling), TRUE);
@@ -349,7 +358,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param elem {(Node|KISSY.Node)}
+             * @param elem {(Node)}
              */
             _4e_unselectable :
                 UA.gecko ?
@@ -389,7 +398,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param elem {(Node|KISSY.Node)}
+             * @param elem {(Node)}
              * @param refDocument {Document}
              */
             _4e_getOffset:function(elem, refDocument) {
@@ -424,7 +433,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_getFrameDocument : function(el) {
                 var $ = normalElDom(el),t;
@@ -461,7 +470,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param offset {number}
              */
             _4e_splitText : function(el, offset) {
@@ -500,7 +509,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param node {(Node|KISSY.Node)}
+             * @param node {(Node)}
              * @param closerFirst {boolean}
              */
             _4e_parents : function(node, closerFirst) {
@@ -515,7 +524,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param includeChildren {boolean}
              * @param cloneId {string}
              */
@@ -528,9 +537,7 @@ KISSY.Editor.add("dom", function(KE) {
                         if (node.nodeType != KEN.NODE_ELEMENT)
                             return;
 
-                        node.removeAttribute('id', FALSE);
-                        //复制时不要复制expando
-                        node.removeAttribute('_ke_expando', FALSE);
+                        node.removeAttribute('id');
 
                         var childs = node.childNodes;
                         for (var i = 0; i < childs.length; i++)
@@ -544,7 +551,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 深度优先遍历获取下一结点
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param startFromSibling {boolean}
              * @param nodeType {number}
              * @param guard {function(KISSY.Node)}
@@ -594,7 +601,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param startFromSibling {boolean}
              * @param nodeType {number}
              * @param guard {function(KISSY.Node)}
@@ -642,11 +649,20 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param node {(Node|KISSY.Node)}
+             * @param el {(Node)}
+             * @param node {(Node)}
              */
             _4e_contains :
-                UA.ie || UA.webkit ?
+                UA.gecko ?
+                    /*
+                     refer:http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+                     */
+                    function(el, node) {
+                        el = normalElDom(el);
+                        node = normalElDom(node);
+                        return !!( el.compareDocumentPosition(node) & 16 );
+                    }
+                    :
                     function(el, node) {
                         el = normalElDom(el);
                         node = normalElDom(node);
@@ -654,17 +670,12 @@ KISSY.Editor.add("dom", function(KE) {
                             el.contains(node.parentNode) :
                             el != node && el.contains(node);
                     }
-                    :
-                    function(el, node) {
-                        el = normalElDom(el);
-                        node = normalElDom(node);
-                        return !!( el.compareDocumentPosition(node) & 16 );
-                    },
+            ,
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param node {(Node|KISSY.Node)}
+             * @param el {(Node)}
+             * @param node {(Node)}
              */
             _4e_commonAncestor:function(el, node) {
                 if (el._4e_equals(node))
@@ -685,7 +696,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param name {string}
              * @param includeSelf {boolean}
              */
@@ -712,28 +723,35 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param name {string}
              */
-            _4e_hasAttribute : function(el, name) {
-                el = normalElDom(el);
-                var $attr = el.attributes.getNamedItem(name);
-                return !!( $attr && $attr.specified );
-            },
+            _4e_hasAttribute : Utils.ieEngine < 9 ?
+                function(el, name) {
+                    el = normalElDom(el);
+                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
+                    // IE5-7 doesn't return the value of a style attribute.
+                    var $attr = el.attributes[name];
+                    return !!( $attr && $attr.specified );
+                }
+                :
+                function(el, name) {
+                    el = normalElDom(el);
+                    //使用原生实现
+                    return el.hasAttribute(name);
+                },
             /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             * @param otherNode {(Node|KISSY.Node)}
+             * 统一的属性处理方式
+             * @param el {(Node)}
+             * @param otherNode {(Node)}
              */
-            _4e_hasAttributes: UA.ie ?
+            _4e_hasAttributes: Utils.ieEngine < 9 ?
                 function(el) {
                     el = normalElDom(el);
                     var attributes = el.attributes;
-
                     for (var i = 0; i < attributes.length; i++) {
                         var attribute = attributes[i];
-
-                        switch (attribute.nodeName) {
+                        switch (attribute.name) {
                             case 'class' :
                                 // IE has a strange bug. If calling removeAttribute('className'),
                                 // the attributes collection will still contain the "class"
@@ -744,18 +762,12 @@ KISSY.Editor.add("dom", function(KE) {
                                 if (el.getAttribute('class'))
                                     return TRUE;
                                 break;
-                            // Attributes to be ignored.
-                            case '_ke_expando' :
-                                continue;
-
                             /*jsl:fallthru*/
-
                             default :
                                 if (attribute.specified)
                                     return TRUE;
                         }
                     }
-
                     return FALSE;
                 }
                 :
@@ -763,14 +775,15 @@ KISSY.Editor.add("dom", function(KE) {
                     el = normalElDom(el);
                     //删除firefox自己添加的标志
                     UA.gecko && el.removeAttribute("_moz_dirty");
-                    var attributes = el.attributes;
-                    return ( attributes.length > 1 || ( attributes.length == 1 && attributes[0].nodeName != '_ke_expando' ) );
+                    //使用原生
+                    //ie8 莫名其妙多个shape？？specified为false
+                    return el.hasAttributes();
                 },
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param otherNode {(Node|KISSY.Node)}
+             * @param el {(Node)}
+             * @param otherNode {(Node)}
              */
             _4e_position : function(el, otherNode) {
                 var $ = normalElDom(el),$other = normalElDom(otherNode);
@@ -827,7 +840,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param normalized {boolean}
              */
             _4e_address:function(el, normalized) {
@@ -868,8 +881,8 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param parent {(Node|KISSY.Node)}
+             * @param el {(Node)}
+             * @param parent {(Node)}
              */
             _4e_breakParent : function(el, parent) {
                 var KERange = KE.Range,range = new KERange(el[0].ownerDocument);
@@ -891,7 +904,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param styleName {string}
              * @param val {string=}
              */
@@ -906,7 +919,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param preserveChildren {boolean}
              */
             _4e_remove : function(el, preserveChildren) {
@@ -924,7 +937,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_trim : function(el) {
                 DOM._4e_ltrim(el);
@@ -933,7 +946,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_ltrim : function(el) {
                 el = normalElDom(el);
@@ -959,7 +972,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_rtrim : function(el) {
                 el = normalElDom(el);
@@ -993,7 +1006,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_appendBogus : function(el) {
                 el = normalElDom(el);
@@ -1016,7 +1029,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param evaluator {function(KISSY.Node)}
              */
             _4e_previous : function(el, evaluator) {
@@ -1030,7 +1043,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param evaluator {function(KISSY.Node)}
              */
             _4e_last : function(el, evaluator) {
@@ -1044,7 +1057,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              * @param evaluator {function(KISSY.Node)}
              */
             _4e_next : function(el, evaluator) {
@@ -1057,7 +1070,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_outerHtml : function(el) {
                 el = normalElDom(el);
@@ -1074,118 +1087,46 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param element {(Node|KISSY.Node)}
-             * @param database {Object.<string,KISSY.Node>}
+             * @param element {(Node)}
+             * @param database {Object}
              * @param name {string}
              * @param value {string}
              */
             _4e_setMarker : function(element, database, name, value) {
                 element = DOM._4e_wrap(element);
-                var id = element._4e_getData('list_marker_id') ||
-                    ( element._4e_setData('list_marker_id', S.guid())._4e_getData('list_marker_id')),
-                    markerNames = element._4e_getData('list_marker_names') ||
-                        ( element._4e_setData('list_marker_names', {})._4e_getData('list_marker_names'));
+                var id = element.data('list_marker_id') ||
+                    ( element.data('list_marker_id', S.guid()).data('list_marker_id')),
+                    markerNames = element.data('list_marker_names') ||
+                        ( element.data('list_marker_names', {}).data('list_marker_names'));
                 database[id] = element;
                 markerNames[name] = 1;
-
-                return element._4e_setData(name, value);
+                return element.data(name, value);
             },
 
             /**
              *
-             * @param element {(Node|KISSY.Node)}
-             * @param database {Object.<string,KISSY.Node>}
+             * @param element {(Node)}
+             * @param database {Object}
              * @param removeFromDatabase {boolean}
              */
             _4e_clearMarkers : function(element, database, removeFromDatabase) {
-
                 element = normalEl(element);
-                var names = element._4e_getData('list_marker_names'),
-                    id = element._4e_getData('list_marker_id');
+                var names = element.data('list_marker_names'),
+                    id = element.data('list_marker_id');
                 for (var i in names)
-                    element._4e_removeData(i);
-                element._4e_removeData('list_marker_names');
+                    element.removeData(i);
+                element.removeData('list_marker_names');
                 if (removeFromDatabase) {
-                    element._4e_removeData('list_marker_id');
+                    element.removeData('list_marker_id');
                     delete database[id];
                 }
             },
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
-             * @param key {string}
-             * @param value {string}
-             */
-            _4e_setData : function(el, key, value) {
-                var expandoNumber = DOM._4e_getUniqueId(el),
-                    dataSlot = customData[ expandoNumber ] || ( customData[ expandoNumber ] = {} );
-                dataSlot[ key ] = value;
-                return el;
-            },
-
-            /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             * @param key {string}
-             */
-            _4e_getData :function(el, key) {
-                el = normalElDom(el);
-                var expandoNumber = el.getAttribute('_ke_expando'),
-                    dataSlot = expandoNumber && customData[ expandoNumber ];
-                return dataSlot && dataSlot[ key ];
-            },
-
-            /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             * @param key {string}
-             */
-            _4e_removeData : function(el, key) {
-                el = normalElDom(el);
-                var expandoNumber = el.getAttribute('_ke_expando'),
-                    dataSlot = expandoNumber && customData[ expandoNumber ],
-                    retval = dataSlot && dataSlot[ key ];
-
-                if (typeof retval != 'undefined' && dataSlot)
-                    delete dataSlot[ key ];
-                if (S.isEmptyObject(dataSlot))
-                    DOM._4e_clearData(el);
-
-                return retval || NULL;
-            },
-
-            /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             */
-            _4e_clearData : function(el) {
-                el = normalElDom(el);
-                var expandoNumber = el.getAttribute('_ke_expando');
-                expandoNumber && delete customData[ expandoNumber ];
-                //ie inner html 会把属性带上，删掉！
-                expandoNumber && el.removeAttribute("_ke_expando");
-            },
-
-            /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             */
-            _4e_getUniqueId : function(el) {
-                el = normalElDom(el);
-                var id = el.getAttribute('_ke_expando');
-                if (id) return id;
-                id = S.guid();
-                el.setAttribute('_ke_expando', id);
-                return id;
-            },
-
-
-            /**
-             *
-             * @param el {(Node|KISSY.Node)}
-             * @param dest  {(Node|KISSY.Node)}
-             * @param skipAttributes {Object.<string,number>}
+             * @param el {(Node)}
+             * @param dest  {(Node)}
+             * @param skipAttributes {Object}
              */
             _4e_copyAttributes : function(el, dest, skipAttributes) {
                 el = normalElDom(el);
@@ -1197,7 +1138,7 @@ KISSY.Editor.add("dom", function(KE) {
                     // Lowercase attribute name hard rule is broken for
                     // some attribute on IE, e.g. CHECKED.
                     var attribute = attributes[n],
-                        attrName = attribute.nodeName.toLowerCase(),
+                        attrName = attribute.name.toLowerCase(),
                         attrValue;
 
                     // We can set the type only once, so do it with the proper value, not copying it.
@@ -1208,7 +1149,7 @@ KISSY.Editor.add("dom", function(KE) {
                         dest.attr(attrName, attrValue);
                     // IE BUG: value attribute is never specified even if it exists.
                     else if (attribute.specified ||
-                        ( UA.ie && attribute.nodeValue && attrName == 'value' )) {
+                        ( UA.ie && attribute.value && attrName == 'value' )) {
                         attrValue = DOM.attr(el, attrName);
                         if (attrValue === NULL)
                             attrValue = attribute.nodeValue;
@@ -1223,7 +1164,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param el {(Node|KISSY.Node)}
+             * @param el {(Node)}
              */
             _4e_isEditable : function(el) {
 
@@ -1238,7 +1179,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 修正scrollIntoView在可视区域内不需要滚动
-             * @param elem {(Node|KISSY.Node)}
+             * @param elem {(Node)}
              */
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
@@ -1260,7 +1201,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param elem {(Node|KISSY.Node)}
+             * @param elem {(Node)}
              * @param tag {string}
              * @param namespace {string=}
              * @return {Array.<KISSY.Node>}
@@ -1348,11 +1289,6 @@ KISSY.Editor.add("dom", function(KE) {
         "_4e_outerHtml":editorDom._4e_outerHtml,
         "_4e_setMarker":editorDom._4e_setMarker,
         "_4e_clearMarkers":editorDom._4e_clearMarkers,
-        "_4e_setData":editorDom._4e_setData,
-        "_4e_getData":editorDom._4e_getData,
-        "_4e_removeData":editorDom._4e_removeData,
-        "_4e_clearData":editorDom._4e_clearData,
-        "_4e_removeData":editorDom._4e_removeData,
         "_4e_getUniqueId":editorDom._4e_getUniqueId,
         "_4e_copyAttributes":editorDom._4e_copyAttributes,
         "_4e_isEditable":editorDom._4e_isEditable,

@@ -156,7 +156,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
                     contentCls:self.get("contentCls")
                 });
 
-            el.on("offClick", self._showColors, self);
+            el.on("offClick onClick", self._showColors, self);
             self.el = el;
             KE.Utils.lazyRun(self, "_prepare", "_real");
             KE.Utils.sourceDisable(editor, self);

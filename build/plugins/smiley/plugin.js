@@ -54,7 +54,7 @@ KISSY.Editor.add("smiley", function(editor) {
                         title:"插入表情",
                         container:editor.toolBarDiv
                     });
-                    self.el.on("offClick", this._show, this);
+                    self.el.on("offClick onClick", this._show, this);
                     KE.Utils.lazyRun(this, "_prepare", "_real");
                     KE.Utils.sourceDisable(editor, self);
                 },
@@ -88,18 +88,23 @@ KISSY.Editor.add("smiley", function(editor) {
                     }
                 },
                 _prepare:function() {
-                    var self = this,editor = self.editor;
-                    this.smileyPanel = new Node(smiley_markup);
-                    this.smileyWin = new Overlay({
-                        el:this.smileyPanel,
+                    var self = this,
+                        el = self.el,
+                        editor = self.editor;
+                    self.smileyPanel = new Node(smiley_markup);
+                    self.smileyWin = new Overlay({
+                        el:self.smileyPanel,
                         width:"297px",
                         zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
                         focusMgr:false,
                         mask:false
                     });
-                    this.smileyPanel.on("click", this._selectSmiley, this);
-                    Event.on(document, "click", this._hidePanel, this);
-                    Event.on(editor.document, "click", this._hidePanel, this);
+                    var smileyWin = self.smileyWin;
+                    smileyWin.on("show", el.bon, el);
+                    smileyWin.on("hide", el.boff, el);
+                    self.smileyPanel.on("click", self._selectSmiley, self);
+                    Event.on(document, "click", self._hidePanel, self);
+                    Event.on(editor.document, "click", self._hidePanel, self);
                 },
                 _real:function() {
                     var xy = this.el.el.offset();

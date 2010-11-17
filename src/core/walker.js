@@ -21,7 +21,7 @@ KISSY.Editor.add("walker", function(KE) {
      * @this {Walker}
      * @param  {boolean=} rtl
      * @param  {boolean=} breakOnFalse
-     * @return {(KISSY.Node|boolean)}
+     * 
      */
     function iterate(rtl, breakOnFalse) {
         var self = this;
@@ -166,7 +166,7 @@ KISSY.Editor.add("walker", function(KE) {
     /**
      * @this {Walker}
      * @param  {boolean=} rtl
-     * @return {(KISSY.Node|boolean)}
+     * @return {(boolean)}
      */
     function iterateToLast(rtl) {
         var node, last = NULL;
@@ -222,7 +222,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the next node (at right).
-         * @returns {(KISSY.Node|boolean)} The next node or NULL if no more
+         * @returns {(boolean)} The next node or NULL if no more
          *        nodes are available.
          */
         next : function() {
@@ -231,7 +231,7 @@ KISSY.Editor.add("walker", function(KE) {
 
         /**
          * Retrieves the previous node (at left).
-         * @returns {(KISSY.Node|boolean)} The previous node or NULL if no more
+         * @returns {(boolean)} The previous node or NULL if no more
          *        nodes are available.
          */
         previous : function() {
@@ -260,7 +260,7 @@ KISSY.Editor.add("walker", function(KE) {
         /**
          * Executes a full walk forward (to the right), until no more nodes
          * are available, returning the last valid node.
-         * @returns {(KISSY.Node|boolean)} The last node at the right or NULL
+         * @returns {(boolean)} The last node at the right or NULL
          *        if no valid nodes are available.
          */
         lastForward : function() {
@@ -270,7 +270,7 @@ KISSY.Editor.add("walker", function(KE) {
         /**
          * Executes a full walk backwards (to the left), until no more nodes
          * are available, returning the last valid node.
-         * @returns {(KISSY.Node|boolean)} The last node at the left or NULL
+         * @returns {(boolean)} The last node at the left or NULL
          *        if no valid nodes are available.
          */
         lastBackward : function() {

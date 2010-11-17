@@ -159,7 +159,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     // included.
                     if (node[0].nodeType == KEN.NODE_ELEMENT &&
                         cellNodeRegex.test(node._4e_name())
-                        && !node._4e_getData('selected_cell')) {
+                        && !node.data('selected_cell')) {
                         node._4e_setMarker(database, 'selected_cell', true);
                         retval.push(node);
                     }
@@ -190,7 +190,7 @@ KISSY.Editor.add("table", function(editor, undefined) {
 
                             var parent = node.parent();
                             if (parent && cellNodeRegex.test(parent._4e_name()) &&
-                                !parent._4e_getData('selected_cell')) {
+                                !parent.data('selected_cell')) {
                                 parent._4e_setMarker(database, 'selected_cell', true);
                                 retval.push(parent);
                             }

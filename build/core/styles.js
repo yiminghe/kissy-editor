@@ -3,15 +3,16 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("styles", function(KE) {
 
     var TRUE = true,
         FALSE = false,
         NULL = null,
         S = KISSY,
+        Utils = KE.Utils,
         DOM = S.DOM,
         /**
          * enum for style type
@@ -99,7 +100,7 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     /**
-     * @this {KEStyle}
+     *
      * @param {Document} document
      * @param {boolean=} remove
      */
@@ -515,7 +516,7 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     /**
-     * @this {KEStyle}
+     *
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
@@ -731,7 +732,7 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     /**
-     * @this {KEStyle}
+     *
      * @param range {KISSY.Editor.Range}
      */
     function removeInlineStyle(range) {
@@ -1048,7 +1049,7 @@ KISSY.Editor.add("styles", function(KE) {
     // Removes a style from an element itself, don't care about its subtree.
     function removeFromElement(style, element) {
         var def = style._.definition,
-            attributes = S.mix(S.mix({}, def["attributes"]),
+            attributes = Utils.mix(def["attributes"],
                 getOverrides(style)[ element._4e_name()]),
             styles = def["styles"],
             // If the style is only about the element itself, we have to remove the element.
@@ -1076,7 +1077,9 @@ KISSY.Editor.add("styles", function(KE) {
             element._4e_style(styleName, "");
         }
 
-        removeEmpty && removeNoAttribsElement(element);
+        //removeEmpty &&
+        //始终检查
+        removeNoAttribsElement(element);
     }
 
     /**
@@ -1167,7 +1170,7 @@ KISSY.Editor.add("styles", function(KE) {
                 firstChild.nodeType == KEN.NODE_ELEMENT &&
                 DOM._4e_mergeSiblings(firstChild);
 
-                if (lastChild && !firstChild === lastChild
+                if (lastChild && firstChild != lastChild
                     && lastChild.nodeType == KEN.NODE_ELEMENT)
                     DOM._4e_mergeSiblings(lastChild);
             }

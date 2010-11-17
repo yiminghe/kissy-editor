@@ -79,9 +79,9 @@ KISSY.Editor.add("indent", function(editor) {
                 var listArray = KE.ListUtils.listToArray(listNode, database);
 
                 // Apply indenting or outdenting on the array.
-                var baseIndent = listArray[ lastItem._4e_getData('listarray_index') ].indent;
-                for (i = startItem._4e_getData('listarray_index');
-                     i <= lastItem._4e_getData('listarray_index'); i++) {
+                var baseIndent = listArray[ lastItem.data('listarray_index') ].indent;
+                for (i = startItem.data('listarray_index');
+                     i <= lastItem.data('listarray_index'); i++) {
                     listArray[ i ].indent += indentOffset;
                     // Make sure the newly created sublist get a brand-new element of the same type. (#5372)
                     var listRoot = listArray[ i ].parent;
@@ -89,7 +89,7 @@ KISSY.Editor.add("indent", function(editor) {
                         new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
                 }
 
-                for (i = lastItem._4e_getData('listarray_index') + 1;
+                for (i = lastItem.data('listarray_index') + 1;
                      i < listArray.length && listArray[i].indent > baseIndent; i++)
                     listArray[i].indent += indentOffset;
 

@@ -152,11 +152,7 @@ KISSY.Editor.add("definition", function(KE) {
     KE["SOURCE_MODE"] = KE.SOURCE_MODE;
     KE["WYSIWYG_MODE"] = KE.WYSIWYG_MODE;
 
-    S.augment(KE,
-        /**
-         * @lends {KISSY.Editor.prototype}
-         */
-    {
+    S.augment(KE, {
         /**
          * @this {KISSY.Editor}
          * @param textarea {KISSY.Node}

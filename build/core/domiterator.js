@@ -40,8 +40,7 @@ KISSY.Editor.add("domiterator", function(KE) {
         self._ || ( self._ = {} );
     }
 
-    var beginWhitespaceRegex = /^[\r\n\t ]*$/,///^[\r\n\t ]+$/,//+:*??不匹配空串
-        isBookmark = Walker.bookmark();
+    var beginWhitespaceRegex = /^[\r\n\t ]*$/;///^[\r\n\t ]+$/,//+:*??不匹配空串
 
     S.augment(Iterator, {
         //奇怪点：
@@ -55,10 +54,6 @@ KISSY.Editor.add("domiterator", function(KE) {
         // </ul>
         //会返回两次 li,li,而不是一次 ul ，
         // 可能只是返回包含文字的段落概念？
-
-        /**
-         * @this {Iterator}
-         */
         getNextParagraph : function(blockTag) {
             // The block element to be returned.
             var block,self = this;
