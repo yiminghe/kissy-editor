@@ -125,7 +125,7 @@ KISSY.Editor.add("list", function(editor) {
                             currentIndex = listData.nextIndex;
                         } else if (item.indent == -1 && !baseIndex &&
                             item.grandparent) {
-                            S.log(item.grandparent._4e_name());
+
                             if (listNodeNames[ item.grandparent._4e_name() ]) {
                                 currentListItem = item.element._4e_clone(false, true)[0];
                             } else {
