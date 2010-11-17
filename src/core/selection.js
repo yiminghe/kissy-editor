@@ -3,9 +3,9 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("selection", function(KE) {
     /**
      * selection type enum
@@ -1015,14 +1015,19 @@ KISSY.Editor.add("selection", function(KE) {
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
-            if (!range) return;
-            if (range.collapse
-                && !path.block
-                && blockLimit._4e_name() == "body") {
+           
+            if (
+                !range
+                    || !range.collapsed
+                    || path.block
+                ) return;
+
+            if (blockLimit._4e_name() == "body") {
                 var fixedBlock = range.fixBlock(TRUE, "p");
                 //firefox选择区域变化时自动添加空行，不要出现裸的text
                 if (isBlankParagraph(fixedBlock)) {
                     var element = fixedBlock._4e_next(isNotWhitespace);
+
                     if (element &&
                         element[0].nodeType == KEN.NODE_ELEMENT &&
                         !nonExitableElementNames[ element._4e_name() ]) {

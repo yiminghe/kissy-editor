@@ -70,7 +70,7 @@ KISSY.Editor.add("smiley", function(editor) {
                         t = ev.target,
                         smileyWin = self.smileyWin;
                     //当前按钮点击无效
-                    if (el._4e_equals(t) || el._4e_contains(t)) {
+                    if (el._4e_equals(t) || el.contains(t)) {
                         return;
                     }
                     smileyWin.hide();

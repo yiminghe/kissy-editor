@@ -218,7 +218,7 @@ KISSY.Editor.add("dd", function() {
             var handlers = this.get("handlers");
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                if (handlers[h]._4e_contains(t)
+                if (handlers[h].contains(t)
                     ||
                     //子区域内点击也可以启动
                     handlers[h]._4e_equals(t)) return true;

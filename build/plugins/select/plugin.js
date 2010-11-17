@@ -224,7 +224,7 @@ KISSY.Editor.add("select", function() {
                 focusA.removeClass(ke_select_active);
             });
             Event.on([document,self.get("doc")], "click", function(ev) {
-                if (el._4e_contains(ev.target)) return;
+                if (el.contains(ev.target)) return;
                 menu.hide();
             });
             menuNode.on("click", self._select, self);
@@ -258,7 +258,7 @@ KISSY.Editor.add("select", function() {
                 menuNode = menu.el,
                 t = new Node(ev.target),
                 a = t._4e_ascendant(function(n) {
-                    return menuNode._4e_contains(n) && n._4e_name() == "a";
+                    return menuNode.contains(n) && n._4e_name() == "a";
                 }, true);
 
             if (!a) return;

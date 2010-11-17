@@ -652,42 +652,17 @@ KISSY.Editor.add("dom", function(KE) {
              * @param el {(Node)}
              * @param node {(Node)}
              */
-            _4e_contains :
-                UA.gecko ?
-                    /*
-                     refer:http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
-                     */
-                    function(el, node) {
-                        el = normalElDom(el);
-                        node = normalElDom(node);
-                        return !!( el.compareDocumentPosition(node) & 16 );
-                    }
-                    :
-                    function(el, node) {
-                        el = normalElDom(el);
-                        node = normalElDom(node);
-                        return node.nodeType != KEN.NODE_ELEMENT ?
-                            el.contains(node.parentNode) :
-                            el != node && el.contains(node);
-                    }
-            ,
-
-            /**
-             *
-             * @param el {(Node)}
-             * @param node {(Node)}
-             */
             _4e_commonAncestor:function(el, node) {
                 if (el._4e_equals(node))
                     return el;
 
-                if (node[0].nodeType != KEN.NODE_TEXT && node._4e_contains(el))
+                if (node[0].nodeType != KEN.NODE_TEXT && node.contains(el))
                     return node;
 
                 var start = el[0].nodeType == KEN.NODE_TEXT ? el.parent() : el;
 
                 do   {
-                    if (start[0].nodeType != KEN.NODE_TEXT && start._4e_contains(node))
+                    if (start[0].nodeType != KEN.NODE_TEXT && start.contains(node))
                         return start;
                 } while (( start = start.parent() ));
 
@@ -1269,7 +1244,6 @@ KISSY.Editor.add("dom", function(KE) {
         "_4e_clone":editorDom._4e_clone,
         "_4e_nextSourceNode":editorDom._4e_nextSourceNode,
         "_4e_previousSourceNode":editorDom._4e_previousSourceNode,
-        "_4e_contains":editorDom._4e_contains,
         "_4e_commonAncestor":editorDom._4e_commonAncestor,
         "_4e_ascendant":editorDom._4e_ascendant,
         "_4e_hasAttribute":editorDom._4e_hasAttribute,

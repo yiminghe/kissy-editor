@@ -238,11 +238,11 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         ev.preventDefault();
                         var t = new Node(ev.target),
                             add = t._4e_ascendant(function(node) {
-                                return self._xiamia_list._4e_contains(node) &&
+                                return self._xiamia_list.contains(node) &&
                                     node.hasClass("ke-xiami-add");
                             }, true),
                             paging = t._4e_ascendant(function(node) {
-                                return self._xiamia_list._4e_contains(node) &&
+                                return self._xiamia_list.contains(node) &&
                                     node.hasClass("ke-xiami-page-item");
                             }, true);
                         if (add) {

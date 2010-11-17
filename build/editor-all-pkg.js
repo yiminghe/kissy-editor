@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-17 18:19:09");
+                re += "t=" + encodeURIComponent("2010-11-17 20:35:10");
                 return  re;
             },
             /**
@@ -3119,42 +3119,17 @@ KISSY.Editor.add("dom", function(KE) {
              * @param el {(Node)}
              * @param node {(Node)}
              */
-            _4e_contains :
-                UA.gecko ?
-                    /*
-                     refer:http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
-                     */
-                    function(el, node) {
-                        el = normalElDom(el);
-                        node = normalElDom(node);
-                        return !!( el.compareDocumentPosition(node) & 16 );
-                    }
-                    :
-                    function(el, node) {
-                        el = normalElDom(el);
-                        node = normalElDom(node);
-                        return node.nodeType != KEN.NODE_ELEMENT ?
-                            el.contains(node.parentNode) :
-                            el != node && el.contains(node);
-                    }
-            ,
-
-            /**
-             *
-             * @param el {(Node)}
-             * @param node {(Node)}
-             */
             _4e_commonAncestor:function(el, node) {
                 if (el._4e_equals(node))
                     return el;
 
-                if (node[0].nodeType != KEN.NODE_TEXT && node._4e_contains(el))
+                if (node[0].nodeType != KEN.NODE_TEXT && node.contains(el))
                     return node;
 
                 var start = el[0].nodeType == KEN.NODE_TEXT ? el.parent() : el;
 
                 do   {
-                    if (start[0].nodeType != KEN.NODE_TEXT && start._4e_contains(node))
+                    if (start[0].nodeType != KEN.NODE_TEXT && start.contains(node))
                         return start;
                 } while (( start = start.parent() ));
 
@@ -3736,7 +3711,6 @@ KISSY.Editor.add("dom", function(KE) {
         "_4e_clone":editorDom._4e_clone,
         "_4e_nextSourceNode":editorDom._4e_nextSourceNode,
         "_4e_previousSourceNode":editorDom._4e_previousSourceNode,
-        "_4e_contains":editorDom._4e_contains,
         "_4e_commonAncestor":editorDom._4e_commonAncestor,
         "_4e_ascendant":editorDom._4e_ascendant,
         "_4e_hasAttribute":editorDom._4e_hasAttribute,
@@ -5285,7 +5259,7 @@ KISSY.Editor.add("range", function(KE) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
                                 commonReached = TRUE;
 
-                            if (!body._4e_contains(enlargeable))
+                            if (!body.contains(enlargeable))
                                 break;
 
                             // If we don't need space or this element breaks
@@ -5436,7 +5410,7 @@ KISSY.Editor.add("range", function(KE) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
                                 commonReached = TRUE;
 
-                            if (!body._4e_contains(enlargeable))
+                            if (!body.contains(enlargeable))
                                 break;
 
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
@@ -5528,7 +5502,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // If the common ancestor can be enlarged by both boundaries, then include it also.
                     if (startTop && endTop) {
-                        commonAncestor = startTop._4e_contains(endTop) ? endTop : startTop;
+                        commonAncestor = startTop.contains(endTop) ? endTop : startTop;
                         self.setStartBefore(commonAncestor);
                         self.setEndAfter(commonAncestor);
                     }
@@ -5578,7 +5552,7 @@ KISSY.Editor.add("range", function(KE) {
                         blockBoundary,
                         blockBoundary._4e_name() != 'br' &&
                             ( !enlargeable && self.checkStartOfBlock()
-                                || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
+                                || enlargeable && blockBoundary.contains(enlargeable) ) ?
                             KER.POSITION_AFTER_START :
                             KER.POSITION_AFTER_END);
 
@@ -5604,7 +5578,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.setEndAt(
                         blockBoundary,
                         ( !enlargeable && self.checkEndOfBlock()
-                            || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
+                            || enlargeable && blockBoundary.contains(enlargeable) ) ?
                             KER.POSITION_BEFORE_END :
                             KER.POSITION_BEFORE_START);
                     // We must include the <br> at the end of range if there's
@@ -5761,22 +5735,17 @@ KISSY.Editor.add("range", function(KE) {
             return { startNode : startNode, endNode : endNode };
         },
         fixBlock : function(isStart, blockTag) {
-            var self = this,bookmark = self.createBookmark(),
+            var self = this,
+                bookmark = self.createBookmark(),
                 fixedBlock = new Node(self.document.createElement(blockTag));
-
             self.collapse(isStart);
-
             self.enlarge(KER.ENLARGE_BLOCK_CONTENTS);
             fixedBlock[0].appendChild(self.extractContents());
             fixedBlock._4e_trim();
-
             if (!UA.ie)
                 fixedBlock._4e_appendBogus();
-
             self.insertNode(fixedBlock);
-
             self.moveToBookmark(bookmark);
-
             return fixedBlock;
         },
         splitBlock : function(blockTag) {
@@ -6401,9 +6370,9 @@ KISSY.Editor.add("domiterator", function(KE) {
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("selection", function(KE) {
     /**
      * selection type enum
@@ -7413,14 +7382,19 @@ KISSY.Editor.add("selection", function(KE) {
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
-            if (!range) return;
-            if (range.collapse
-                && !path.block
-                && blockLimit._4e_name() == "body") {
+           
+            if (
+                !range
+                    || !range.collapsed
+                    || path.block
+                ) return;
+
+            if (blockLimit._4e_name() == "body") {
                 var fixedBlock = range.fixBlock(TRUE, "p");
                 //firefox选择区域变化时自动添加空行，不要出现裸的text
                 if (isBlankParagraph(fixedBlock)) {
                     var element = fixedBlock._4e_next(isNotWhitespace);
+
                     if (element &&
                         element[0].nodeType == KEN.NODE_ELEMENT &&
                         !nonExitableElementNames[ element._4e_name() ]) {
@@ -8359,7 +8333,7 @@ KISSY.Editor.add("styles", function(KE) {
                      * reassign the nextNode to something after startNode.
                      */
                     if (nextNode[0].nodeType == KEN.NODE_ELEMENT &&
-                        nextNode._4e_contains(startNode)) {
+                        nextNode.contains(startNode)) {
                         breakNodes();
                         nextNode = new Node(startNode[0].nextSibling);
                     }
@@ -11215,7 +11189,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 t = ev.target,
                 colorWin = self.colorWin;
             //当前按钮点击无效
-            if (el._4e_equals(t) || el._4e_contains(t)) {
+            if (el._4e_equals(t) || el.contains(t)) {
                 return;
             }
             colorWin.hide();
@@ -11697,7 +11671,7 @@ KISSY.Editor.add("dd", function() {
             var handlers = this.get("handlers");
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                if (handlers[h]._4e_contains(t)
+                if (handlers[h].contains(t)
                     ||
                     //子区域内点击也可以启动
                     handlers[h]._4e_equals(t)) return true;
@@ -11965,7 +11939,7 @@ KISSY.Editor.add("draft", function(editor) {
                     self._help.arrow = arrow;
                     Event.on([document,editor.document], "click", function(ev) {
                         var t = ev.target;
-                        if (t == helpBtn[0] || helpBtn._4e_contains(t))
+                        if (t == helpBtn[0] || helpBtn.contains(t))
                             return;
                         self._help.hide();
                     })
@@ -14996,7 +14970,7 @@ KISSY.Editor.add("indent", function(editor) {
                             firstListItem = firstListItem.next();
                         }
                         var rangeStart = range.startContainer,
-                            indentWholeList = firstListItem[0] == rangeStart[0] || firstListItem._4e_contains(rangeStart);
+                            indentWholeList = firstListItem[0] == rangeStart[0] || firstListItem.contains(rangeStart);
 
                         // Indent the entire list if  cursor is inside the first list item. (#3893)
                         if (!( indentWholeList && indentElement.call(this, editor, nearestListBlock) ))
@@ -15129,7 +15103,7 @@ KISSY.Editor.add("justify", function(editor) {
                 self._init();
             }
 
-            var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/i,
+            var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
                 default_align = "left";
             S.augment(Justify, {
                 _init:function() {
@@ -15191,13 +15165,18 @@ KISSY.Editor.add("justify", function(editor) {
                     // </li>
                     // </ul>
                     // </body>
+                    //gecko ctrl-a 为直接得到 container : body
+                    //其他浏览器 ctrl-a 得到 container : li
                     if (!block || block._4e_name() === "body") {
                         el.set("state", TripleButton.OFF);
                         return;
                     }
 
-                    var align = block.css("text-align").replace(alignRemoveRegex, "");
-                    if (align == self.v || (!align && self.v == default_align)) {
+                    var align = block.css("text-align").replace(alignRemoveRegex, "")
+                        ||
+                        //默认值，没有设置
+                        default_align;
+                    if (align == self.v) {
                         el.set("state", TripleButton.ON);
                     } else {
                         el.set("state", TripleButton.OFF);
@@ -15367,9 +15346,9 @@ KISSY.Editor.add("link", function(editor) {
  * @modifier: yiminghe@gmail.com
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("list", function(editor) {
     var KE = KISSY.Editor,
         listNodeNames = {"ol":1,"ul":1},
@@ -15489,10 +15468,10 @@ KISSY.Editor.add("list", function(editor) {
                             currentIndex = listData.nextIndex;
                         } else if (item.indent == -1 && !baseIndex &&
                             item.grandparent) {
-
-                            if (listNodeNames[ item.grandparent._4e_name() ])
+                            S.log(item.grandparent._4e_name());
+                            if (listNodeNames[ item.grandparent._4e_name() ]) {
                                 currentListItem = item.element._4e_clone(false, true)[0];
-                            else {
+                            } else {
                                 // Create completely new blocks here, attributes are dropped.
                                 //为什么要把属性去掉？？？#3857
                                 if (item.grandparent._4e_name() != 'td') {
@@ -15617,7 +15596,8 @@ KISSY.Editor.add("list", function(editor) {
                     // It is possible to have the contents returned by DomRangeIterator to be the same as the root.
                     // e.g. when we're running into table cells.
                     // In such a case, enclose the childNodes of contents[0] into a <div>.
-                    if (contents.length == 1 && contents[0][0] === groupObj.root[0]) {
+                    if (contents.length == 1
+                        && contents[0][0] === groupObj.root[0]) {
                         var divBlock = new Node(doc.createElement('div'));
                         contents[0][0].nodeType != KEN.NODE_TEXT &&
                         contents[0]._4e_moveChildren(divBlock);
@@ -15649,7 +15629,8 @@ KISSY.Editor.add("list", function(editor) {
                         return;
 
                     // Insert the list to the DOM tree.
-                    var insertAnchor = new Node(listContents[ listContents.length - 1 ][0].nextSibling),
+                    var insertAnchor = new Node(
+                        listContents[ listContents.length - 1 ][0].nextSibling),
                         listNode = new Node(doc.createElement(this.type));
 
                     listsCreated.push(listNode);
@@ -15705,7 +15686,8 @@ KISSY.Editor.add("list", function(editor) {
                         //if (listArray[i].indent > listArray[i - 1].indent + 1) {
                         //modified by yiminghe
                         if (listArray[i].indent > Math.max(listArray[i - 1].indent, 0)) {
-                            var indentOffset = listArray[i - 1].indent + 1 - listArray[i].indent;
+                            var indentOffset = listArray[i - 1].indent + 1 -
+                                listArray[i].indent;
                             var oldIndent = listArray[i].indent;
                             while (listArray[i]
                                 && listArray[i].indent >= oldIndent) {
@@ -15792,6 +15774,8 @@ KISSY.Editor.add("list", function(editor) {
                                 element;
 
                             // First, try to group by a list ancestor.
+                            //2010-11-17 :
+                            //注意从上往下，从body开始找到最早的list祖先，从那里开始重建!!!
                             for (var i = pathElementsCount - 1; i >= 0 &&
                                 ( element = pathElements[ i ] ); i--) {
                                 if (listNodeNames[ element._4e_name() ]
@@ -15839,12 +15823,20 @@ KISSY.Editor.add("list", function(editor) {
                     while (listGroups.length > 0) {
                         groupObj = listGroups.shift();
                         if (this.state == "off") {
+
                             if (listNodeNames[ groupObj.root._4e_name() ])
                                 this.changeListType(editor, groupObj, database, listsCreated);
-                            else
+                            else {
+                                //2010-11-17
+                                //先将之前原来元素的 expando 去除，
+                                //防止 ie li 复制原来标签属性带来的输出代码多余
+                                KE.Utils.clearAllMarkers(database);
                                 this.createList(editor, groupObj, listsCreated);
+                            }
                         }
-                        else if (this.state == "on" && listNodeNames[ groupObj.root._4e_name() ])
+                        else if (this.state == "on"
+                            &&
+                            listNodeNames[ groupObj.root._4e_name() ])
                             this.removeList(editor, groupObj, database);
                     }
 
@@ -17605,7 +17597,7 @@ KISSY.Editor.add("select", function() {
                 focusA.removeClass(ke_select_active);
             });
             Event.on([document,self.get("doc")], "click", function(ev) {
-                if (el._4e_contains(ev.target)) return;
+                if (el.contains(ev.target)) return;
                 menu.hide();
             });
             menuNode.on("click", self._select, self);
@@ -17639,7 +17631,7 @@ KISSY.Editor.add("select", function() {
                 menuNode = menu.el,
                 t = new Node(ev.target),
                 a = t._4e_ascendant(function(n) {
-                    return menuNode._4e_contains(n) && n._4e_name() == "a";
+                    return menuNode.contains(n) && n._4e_name() == "a";
                 }, true);
 
             if (!a) return;
@@ -17847,7 +17839,7 @@ KISSY.Editor.add("smiley", function(editor) {
                         t = ev.target,
                         smileyWin = self.smileyWin;
                     //当前按钮点击无效
-                    if (el._4e_equals(t) || el._4e_contains(t)) {
+                    if (el._4e_equals(t) || el.contains(t)) {
                         return;
                     }
                     smileyWin.hide();
@@ -18577,7 +18569,7 @@ KISSY.Editor.add("tabs", function() {
             tabs.on("click", function(ev) {
                 var li = new Node(ev.target);
                 if (li = li._4e_ascendant(function(n) {
-                    return n._4e_name() === LI && tabs._4e_contains(n);
+                    return n._4e_name() === LI && tabs.contains(n);
                 }, true)) {
                     lis.removeClass(SELECTED);
                     var rel = li.attr(REL);

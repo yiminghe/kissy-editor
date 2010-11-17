@@ -3,9 +3,9 @@
  * @modifier: yiminghe@gmail.com
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("list", function(editor) {
     var KE = KISSY.Editor,
         listNodeNames = {"ol":1,"ul":1},
@@ -125,10 +125,10 @@ KISSY.Editor.add("list", function(editor) {
                             currentIndex = listData.nextIndex;
                         } else if (item.indent == -1 && !baseIndex &&
                             item.grandparent) {
-
-                            if (listNodeNames[ item.grandparent._4e_name() ])
+                            S.log(item.grandparent._4e_name());
+                            if (listNodeNames[ item.grandparent._4e_name() ]) {
                                 currentListItem = item.element._4e_clone(false, true)[0];
-                            else {
+                            } else {
                                 // Create completely new blocks here, attributes are dropped.
                                 //为什么要把属性去掉？？？#3857
                                 if (item.grandparent._4e_name() != 'td') {
@@ -253,7 +253,8 @@ KISSY.Editor.add("list", function(editor) {
                     // It is possible to have the contents returned by DomRangeIterator to be the same as the root.
                     // e.g. when we're running into table cells.
                     // In such a case, enclose the childNodes of contents[0] into a <div>.
-                    if (contents.length == 1 && contents[0][0] === groupObj.root[0]) {
+                    if (contents.length == 1
+                        && contents[0][0] === groupObj.root[0]) {
                         var divBlock = new Node(doc.createElement('div'));
                         contents[0][0].nodeType != KEN.NODE_TEXT &&
                         contents[0]._4e_moveChildren(divBlock);
@@ -285,7 +286,8 @@ KISSY.Editor.add("list", function(editor) {
                         return;
 
                     // Insert the list to the DOM tree.
-                    var insertAnchor = new Node(listContents[ listContents.length - 1 ][0].nextSibling),
+                    var insertAnchor = new Node(
+                        listContents[ listContents.length - 1 ][0].nextSibling),
                         listNode = new Node(doc.createElement(this.type));
 
                     listsCreated.push(listNode);
@@ -341,7 +343,8 @@ KISSY.Editor.add("list", function(editor) {
                         //if (listArray[i].indent > listArray[i - 1].indent + 1) {
                         //modified by yiminghe
                         if (listArray[i].indent > Math.max(listArray[i - 1].indent, 0)) {
-                            var indentOffset = listArray[i - 1].indent + 1 - listArray[i].indent;
+                            var indentOffset = listArray[i - 1].indent + 1 -
+                                listArray[i].indent;
                             var oldIndent = listArray[i].indent;
                             while (listArray[i]
                                 && listArray[i].indent >= oldIndent) {
@@ -428,6 +431,8 @@ KISSY.Editor.add("list", function(editor) {
                                 element;
 
                             // First, try to group by a list ancestor.
+                            //2010-11-17 :
+                            //注意从上往下，从body开始找到最早的list祖先，从那里开始重建!!!
                             for (var i = pathElementsCount - 1; i >= 0 &&
                                 ( element = pathElements[ i ] ); i--) {
                                 if (listNodeNames[ element._4e_name() ]
@@ -475,12 +480,20 @@ KISSY.Editor.add("list", function(editor) {
                     while (listGroups.length > 0) {
                         groupObj = listGroups.shift();
                         if (this.state == "off") {
+
                             if (listNodeNames[ groupObj.root._4e_name() ])
                                 this.changeListType(editor, groupObj, database, listsCreated);
-                            else
+                            else {
+                                //2010-11-17
+                                //先将之前原来元素的 expando 去除，
+                                //防止 ie li 复制原来标签属性带来的输出代码多余
+                                KE.Utils.clearAllMarkers(database);
                                 this.createList(editor, groupObj, listsCreated);
+                            }
                         }
-                        else if (this.state == "on" && listNodeNames[ groupObj.root._4e_name() ])
+                        else if (this.state == "on"
+                            &&
+                            listNodeNames[ groupObj.root._4e_name() ])
                             this.removeList(editor, groupObj, database);
                     }
 

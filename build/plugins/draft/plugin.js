@@ -188,7 +188,7 @@ KISSY.Editor.add("draft", function(editor) {
                     self._help.arrow = arrow;
                     Event.on([document,editor.document], "click", function(ev) {
                         var t = ev.target;
-                        if (t == helpBtn[0] || helpBtn._4e_contains(t))
+                        if (t == helpBtn[0] || helpBtn.contains(t))
                             return;
                         self._help.hide();
                     })

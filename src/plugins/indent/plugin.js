@@ -217,7 +217,7 @@ KISSY.Editor.add("indent", function(editor) {
                             firstListItem = firstListItem.next();
                         }
                         var rangeStart = range.startContainer,
-                            indentWholeList = firstListItem[0] == rangeStart[0] || firstListItem._4e_contains(rangeStart);
+                            indentWholeList = firstListItem[0] == rangeStart[0] || firstListItem.contains(rangeStart);
 
                         // Indent the entire list if  cursor is inside the first list item. (#3893)
                         if (!( indentWholeList && indentElement.call(this, editor, nearestListBlock) ))

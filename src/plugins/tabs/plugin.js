@@ -29,7 +29,7 @@ KISSY.Editor.add("tabs", function() {
             tabs.on("click", function(ev) {
                 var li = new Node(ev.target);
                 if (li = li._4e_ascendant(function(n) {
-                    return n._4e_name() === LI && tabs._4e_contains(n);
+                    return n._4e_name() === LI && tabs.contains(n);
                 }, true)) {
                     lis.removeClass(SELECTED);
                     var rel = li.attr(REL);

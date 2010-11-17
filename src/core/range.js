@@ -983,7 +983,7 @@ KISSY.Editor.add("range", function(KE) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
                                 commonReached = TRUE;
 
-                            if (!body._4e_contains(enlargeable))
+                            if (!body.contains(enlargeable))
                                 break;
 
                             // If we don't need space or this element breaks
@@ -1134,7 +1134,7 @@ KISSY.Editor.add("range", function(KE) {
                             if (!commonReached && DOM._4e_equals(enlargeable, commonAncestor))
                                 commonReached = TRUE;
 
-                            if (!body._4e_contains(enlargeable))
+                            if (!body.contains(enlargeable))
                                 break;
 
                             if (!needsWhiteSpace || enlargeable.css('display') != 'inline') {
@@ -1226,7 +1226,7 @@ KISSY.Editor.add("range", function(KE) {
 
                     // If the common ancestor can be enlarged by both boundaries, then include it also.
                     if (startTop && endTop) {
-                        commonAncestor = startTop._4e_contains(endTop) ? endTop : startTop;
+                        commonAncestor = startTop.contains(endTop) ? endTop : startTop;
                         self.setStartBefore(commonAncestor);
                         self.setEndAfter(commonAncestor);
                     }
@@ -1276,7 +1276,7 @@ KISSY.Editor.add("range", function(KE) {
                         blockBoundary,
                         blockBoundary._4e_name() != 'br' &&
                             ( !enlargeable && self.checkStartOfBlock()
-                                || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
+                                || enlargeable && blockBoundary.contains(enlargeable) ) ?
                             KER.POSITION_AFTER_START :
                             KER.POSITION_AFTER_END);
 
@@ -1302,7 +1302,7 @@ KISSY.Editor.add("range", function(KE) {
                     self.setEndAt(
                         blockBoundary,
                         ( !enlargeable && self.checkEndOfBlock()
-                            || enlargeable && blockBoundary._4e_contains(enlargeable) ) ?
+                            || enlargeable && blockBoundary.contains(enlargeable) ) ?
                             KER.POSITION_BEFORE_END :
                             KER.POSITION_BEFORE_START);
                     // We must include the <br> at the end of range if there's
@@ -1459,22 +1459,17 @@ KISSY.Editor.add("range", function(KE) {
             return { startNode : startNode, endNode : endNode };
         },
         fixBlock : function(isStart, blockTag) {
-            var self = this,bookmark = self.createBookmark(),
+            var self = this,
+                bookmark = self.createBookmark(),
                 fixedBlock = new Node(self.document.createElement(blockTag));
-
             self.collapse(isStart);
-
             self.enlarge(KER.ENLARGE_BLOCK_CONTENTS);
             fixedBlock[0].appendChild(self.extractContents());
             fixedBlock._4e_trim();
-
             if (!UA.ie)
                 fixedBlock._4e_appendBogus();
-
             self.insertNode(fixedBlock);
-
             self.moveToBookmark(bookmark);
-
             return fixedBlock;
         },
         splitBlock : function(blockTag) {

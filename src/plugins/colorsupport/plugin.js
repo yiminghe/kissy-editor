@@ -173,7 +173,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 t = ev.target,
                 colorWin = self.colorWin;
             //当前按钮点击无效
-            if (el._4e_equals(t) || el._4e_contains(t)) {
+            if (el._4e_equals(t) || el.contains(t)) {
                 return;
             }
             colorWin.hide();

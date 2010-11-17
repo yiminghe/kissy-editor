@@ -249,7 +249,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
                         var t = ev.target;
                         if (DOM._4e_name(t) == "a") {
                             var c = Hex(DOM.css(t, "background-color"));
-                            if (left._4e_contains(t))self._detailColor(c);
+                            if (left.contains(t))self._detailColor(c);
                             indicatorValue.val(c);
                             indicator.css("background-color", c);
                         }

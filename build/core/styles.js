@@ -883,7 +883,7 @@ KISSY.Editor.add("styles", function(KE) {
                      * reassign the nextNode to something after startNode.
                      */
                     if (nextNode[0].nodeType == KEN.NODE_ELEMENT &&
-                        nextNode._4e_contains(startNode)) {
+                        nextNode.contains(startNode)) {
                         breakNodes();
                         nextNode = new Node(startNode[0].nextSibling);
                     }

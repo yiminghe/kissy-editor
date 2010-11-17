@@ -17,7 +17,7 @@ KISSY.Editor.add("justify", function(editor) {
                 self._init();
             }
 
-            var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/i,
+            var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
                 default_align = "left";
             S.augment(Justify, {
                 _init:function() {
@@ -79,13 +79,18 @@ KISSY.Editor.add("justify", function(editor) {
                     // </li>
                     // </ul>
                     // </body>
+                    //gecko ctrl-a 为直接得到 container : body
+                    //其他浏览器 ctrl-a 得到 container : li
                     if (!block || block._4e_name() === "body") {
                         el.set("state", TripleButton.OFF);
                         return;
                     }
 
-                    var align = block.css("text-align").replace(alignRemoveRegex, "");
-                    if (align == self.v || (!align && self.v == default_align)) {
+                    var align = block.css("text-align").replace(alignRemoveRegex, "")
+                        ||
+                        //默认值，没有设置
+                        default_align;
+                    if (align == self.v) {
                         el.set("state", TripleButton.ON);
                     } else {
                         el.set("state", TripleButton.OFF);
