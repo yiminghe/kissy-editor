@@ -3,9 +3,9 @@
  * @modifier: yiminghe@gmail.com
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("indent", function(editor) {
     var KE = KISSY.Editor,
         listNodeNames = {ol:1,ul:1},
@@ -28,12 +28,13 @@ KISSY.Editor.add("indent", function(editor) {
             }
 
             function isListItem(node) {
-                return node.type = CKEDITOR.NODE_ELEMENT && node.is('li');
+                return node[0].nodeType == KEN.NODE_ELEMENT && node._4e_name() == 'li';
             }
 
-            function indentList(editor, range, listNode) {
+            function indentList(range, listNode) {
                 // Our starting and ending points of the range might be inside some blocks under a list item...
                 // So before playing with the iterator, we need to expand the block to include the list items.
+
                 var startContainer = range.startContainer,
                     endContainer = range.endContainer;
                 while (startContainer &&
@@ -79,6 +80,7 @@ KISSY.Editor.add("indent", function(editor) {
                 var listArray = KE.ListUtils.listToArray(listNode, database);
 
                 // Apply indenting or outdenting on the array.
+                // listarray_index 为 item 在数组中的下标，方便计算
                 var baseIndent = listArray[ lastItem.data('listarray_index') ].indent;
                 for (i = startItem.data('listarray_index');
                      i <= lastItem.data('listarray_index'); i++) {
@@ -88,14 +90,26 @@ KISSY.Editor.add("indent", function(editor) {
                     listArray[ i ].parent =
                         new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
                 }
-
+                /*
+                 嵌到下层的li
+                 <li>鼠标所在开始</li>
+                 <li>ss鼠标所在结束ss
+                 <ul>
+                 <li></li>
+                 <li></li>
+                 </ul>
+                 </li>
+                 baseIndent 为鼠标所在结束的嵌套层次，
+                 如果下面的比结束li的indent大，那么证明是嵌在结束li里面的，也要缩进
+                 一直处理到大于或等于，跳出了当前嵌套
+                 */
                 for (i = lastItem.data('listarray_index') + 1;
                      i < listArray.length && listArray[i].indent > baseIndent; i++)
                     listArray[i].indent += indentOffset;
 
                 // Convert the array back to a DOM forest (yes we might have a few subtrees now).
                 // And replace the old list with the new forest.
-                var newList = KE.ListUtils.arrayToList(listArray, 
+                var newList = KE.ListUtils.arrayToList(listArray,
                     database, null,
                     "p",
                     0);
@@ -106,7 +120,7 @@ KISSY.Editor.add("indent", function(editor) {
                 if (this.type == 'outdent') {
                     var parentLiElement;
                     if (( parentLiElement = listNode.parent() ) &&
-                        parentLiElement._4e_name() == ('li')) {
+                        parentLiElement._4e_name() == 'li') {
                         var children = newList.listNode.childNodes
                             ,count = children.length,
                             child;
@@ -147,21 +161,20 @@ KISSY.Editor.add("indent", function(editor) {
                 }
 
                 // Clean up the markers.
-                for (i in database)
-                    database[i]._4e_clearMarkers(database, true);
+                KE.Utils.clearAllMarkers(database);
             }
 
-            function indentBlock(editor, range) {
+            function indentBlock(range) {
                 var iterator = range.createIterator();
                 //  enterMode = "p";
                 iterator.enforceRealBlocks = true;
                 iterator.enlargeBr = true;
                 var block;
                 while (( block = iterator.getNextParagraph() ))
-                    indentElement.call(this, editor, block);
+                    indentElement.call(this, block);
             }
 
-            function indentElement(editor, element) {
+            function indentElement(element) {
 
                 var currentOffset = parseInt(element._4e_style(this.indentCssProperty), 10);
                 if (isNaN(currentOffset))
@@ -175,13 +188,14 @@ KISSY.Editor.add("indent", function(editor) {
                 currentOffset = Math.ceil(currentOffset / this.indentOffset) * this.indentOffset;
                 element.css(this.indentCssProperty, currentOffset ? currentOffset + this.indentUnit : '');
                 if (element[0].style.cssText === '')
-                    element[0].removeAttribute('style');
+                    element.removeAttr('style');
 
                 return true;
             }
 
             S.augment(IndentCommand, {
                 exec:function(editor) {
+
                     var selection = editor.getSelection(),
                         range = selection && selection.getRanges()[0];
                     var startContainer = range.startContainer,
@@ -195,14 +209,19 @@ KISSY.Editor.add("indent", function(editor) {
 
                     // Avoid selection anchors under list root.
                     // <ul>[<li>...</li>]</ul> =>	<ul><li>[...]</li></ul>
-                    if (nearestListBlock && startContainer[0].nodeType == KEN.NODE_ELEMENT
+                    //注：firefox 永远不会出现
+                    //注2：哪种情况会出现？
+                    if (nearestListBlock
+                        && startContainer[0].nodeType == KEN.NODE_ELEMENT
                         && startContainer._4e_name() in listNodeNames) {
+                        //S.log("indent from ul/ol");
                         var walker = new Walker(range);
                         walker.evaluator = isListItem;
                         range.startContainer = walker.next();
                     }
 
-                    if (nearestListBlock && endContainer[0].nodeType == KEN.NODE_ELEMENT
+                    if (nearestListBlock
+                        && endContainer[0].nodeType == KEN.NODE_ELEMENT
                         && endContainer._4e_name() in listNodeNames) {
                         walker = new Walker(range);
                         walker.evaluator = isListItem;
@@ -213,18 +232,23 @@ KISSY.Editor.add("indent", function(editor) {
 
                     if (nearestListBlock) {
                         var firstListItem = nearestListBlock._4e_first();
-                        while (firstListItem && firstListItem[0] && firstListItem._4e_name() != "li") {
+                        while (firstListItem
+                            &&
+                            firstListItem._4e_name() != "li") {
                             firstListItem = firstListItem.next();
                         }
                         var rangeStart = range.startContainer,
-                            indentWholeList = firstListItem[0] == rangeStart[0] || firstListItem.contains(rangeStart);
+                            indentWholeList = firstListItem[0] == rangeStart[0]
+                                || firstListItem.contains(rangeStart);
 
                         // Indent the entire list if  cursor is inside the first list item. (#3893)
-                        if (!( indentWholeList && indentElement.call(this, editor, nearestListBlock) ))
-                            indentList.call(this, editor, range, nearestListBlock);
+                        if (!( indentWholeList
+                            &&
+                            indentElement.call(this, nearestListBlock) ))
+                            indentList.call(this, range, nearestListBlock);
                     }
                     else
-                        indentBlock.call(this, editor, range);
+                        indentBlock.call(this, range);
                     selection.selectBookmarks(bookmarks);
                 }
             });

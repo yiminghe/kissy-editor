@@ -4038,7 +4038,7 @@ KISSY.Editor.add("walker", function(KE) {
         while (node && node[0] && !self._.end) {
             self.current = node;
 
-            if (!this.evaluator || self.evaluator(node) !== FALSE) {
+            if (!self.evaluator || self.evaluator(node) !== FALSE) {
                 if (!breakOnFalse)
                     return node;
             }
