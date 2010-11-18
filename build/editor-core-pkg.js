@@ -8071,7 +8071,15 @@ KISSY.Editor.add("styles", function(KE) {
                             // if this is the last node in its parent, we must also
                             // check if the parent itself can be added completelly
                             // to the range.
-                            while (!includedNode[0].nextSibling
+                            //2010-11-18 fix ; http://dev.ckeditor.com/ticket/6687
+                            //<span><book/>123<book/></span> 直接越过末尾 <book/>
+                            var validNextSilbing = includedNode._4e_next(function(node) {
+                                //only get attributes on element nodes by kissy
+                                //when textnode attr() return undefined ,wonderful !!!
+                                return !node.attr("_ke_bookmark");
+                            });
+
+                            while (!validNextSilbing
                                 && ( parentNode = includedNode.parent(),
                                 dtd[ parentNode._4e_name() ] )
                                 && ( parentNode._4e_position(firstNode) |
