@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-10 13:03:14
+ * @buildtime: 2010-11-19 15:41:38
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-10 13:03:14");
+        re += "t=" + encodeURIComponent("2010-11-19 15:41:38");
         return  re;
     }
 
@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-19 15:17:59");
+                re += "t=" + encodeURIComponent("2010-11-19 15:41:38");
                 return  re;
             },
             /**
