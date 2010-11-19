@@ -122,10 +122,10 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     "class='ke-xiami-list'>" +
                     "</div>" +
                     "</div>",
-                footHtml = "<a " +
+                footHtml = "<div style='padding:5px 20px 20px;'><a " +
                     "class='ke-xiami-ok ke-button' " +
                     "style='margin-right:20px;'>确&nbsp;定</a>" +
-                    "<a class='ke-xiami-cancel ke-button'>取&nbsp;消</a>";
+                    "<a class='ke-xiami-cancel ke-button'>取&nbsp;消</a></div>";
 
             function BangPaiMusicDialog(editor) {
                 BangPaiMusicDialog.superclass.constructor.apply(this, arguments);
@@ -146,14 +146,16 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = self.d,
-                        action = d.el.one(".ke-xiami-form"),
-                        input = d.el.one(".ke-xiami-url");
-                    self.dAlign = KE.Select.decorate(d.el.one(".ke-xiami-align"));
+                        del = d.get("el"),
+                        dfoot = d.get("footer"),
+                        action = del.one(".ke-xiami-form"),
+                        input = del.one(".ke-xiami-url");
+                    self.dAlign = KE.Select.decorate(del.one(".ke-xiami-align"));
                     self._xiami_input = input;
                     KE.Utils.placeholder(input, TIP);
-                    self._xiamia_list = d.el.one(".ke-xiami-list");
+                    self._xiamia_list = del.one(".ke-xiami-list");
                     self._xiami_submit = new KE.TripleButton({
-                        el:d.el.one(".ke-xiami-submit"),
+                        el:del.one(".ke-xiami-submit"),
                         cls:'ke-button',
                         text:"搜&nbsp;索"
                     });
@@ -165,12 +167,12 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                             loadRecordsByPage(1);
                         }
                     });
-                    self.dMargin = d.el.one(".ke-xiami-margin");
-                    self._xiami_url_wrap = d.el.one(".ke-xiami-url-wrap");
-                    self._xiamia_title = d.el.one(".ke-xiami-title");
+                    self.dMargin = del.one(".ke-xiami-margin");
+                    self._xiami_url_wrap = del.one(".ke-xiami-url-wrap");
+                    self._xiamia_title = del.one(".ke-xiami-title");
 
-                    var _xiami_ok = d.foot.one(".ke-xiami-ok");
-                    d.foot.one(".ke-xiami-cancel").on("click", function() {
+                    var _xiami_ok = dfoot.one(".ke-xiami-ok");
+                    dfoot.one(".ke-xiami-cancel").on("click", function() {
                         d.hide();
                     });
                     _xiami_ok.on("click", function() {
@@ -354,14 +356,14 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(f._4e_style("margin")) || 0);
                         self._xiami_url_wrap.hide();
-                        self.d.foot.show();
+                        self.d.get("footer").show();
                         self._xiamia_title.show();
                     } else {
                         KE.Utils.resetInput(self._xiami_input);
                         self.dAlign.val("none");
                         self.dMargin.val(MARGIN_DEFAULT);
                         self._xiami_url_wrap.show();
-                        self.d.foot.hide();
+                        self.d.get("footer").hide();
                         self._xiamia_title.hide();
                         self._xiami_submit.enable();
                     }

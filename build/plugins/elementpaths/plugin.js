@@ -44,7 +44,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                         cfg = self.cfg,
                         editor = cfg.editor,
                         holder = self.holder,
-                        statusDom = holder[0] || holder;
+                        statusDom = holder;
                     var elementPath = ev.path,
                         elements = elementPath.elements,
                         element,i,
@@ -73,12 +73,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                                 }, 50);
                             });
                         })(element);
-                        if (statusDom.firstChild) {
-                            DOM.insertBefore(a[0], statusDom.firstChild);
-                        }
-                        else {
-                            statusDom.appendChild(a[0]);
-                        }
+                        statusDom.prepend(a);
                     }
 
                 }

@@ -285,11 +285,7 @@ KISSY.Editor.add("range", function(KE) {
                 if (!startOffset) {
                     // Let's create a temporary node and mark it for removal.
                     t = new Node(doc.createTextNode(""));
-                    var sf = startNode[0].firstChild;
-                    if (sf)
-                        DOM.insertBefore(t[0], sf);
-                    else
-                        startNode.append(t);
+                    startNode.prepend(t);
                     startNode = t;
                     removeStartNode = TRUE;
                 }
@@ -846,13 +842,8 @@ KISSY.Editor.add("range", function(KE) {
             self.trim(FALSE, TRUE);
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
-                nextNode = startContainer[0].childNodes[startOffset];
-
-            if (nextNode) {
-                DOM.insertBefore(node[0] || node, nextNode);
-            } else
-                startContainer[0].appendChild(node[0] || node);
-
+                nextNode = startContainer[0].childNodes[startOffset] || null;
+            startContainer[0].insertBefore(node[0] || node, nextNode);
             // Check if we need to update the end boundary.
             if (DOM._4e_equals(node.parent(), self.endContainer))
                 self.endOffset++;

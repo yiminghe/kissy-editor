@@ -7,7 +7,7 @@ KISSY.Editor.add("flash/dialog", function(editor) {
         //Node = S.Node,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
-        Overlay = KE.SimpleOverlay,
+        Dialog = KE.Dialog,
         flashUtils = KE.Utils.flash,
         TIP = "请输入如 http://www.xxx.com/xxx.swf"
         ;
@@ -67,10 +67,10 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                 "</table>" +
                 "</div>",
 
-                footHtml = "<a " +
+                footHtml = "<div style='padding:5px 20px 20px;'><a " +
                     "class='ke-flash-ok ke-button' " +
                     "style='margin-left:40px;margin-right:20px;'>确定</a> " +
-                    "<a class='ke-flash-cancel ke-button'>取消</a>";
+                    "<a class='ke-flash-cancel ke-button'>取消</a></div>";
 
 
             function FlashDialog(editor) {
@@ -97,13 +97,14 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                 //建立弹出窗口
                 _prepareShow:function() {
                     var self = this,
-                        d = new Overlay({
-                            title:self._title,
+                        d = new Dialog({
+                            headerContent:self._title,
+                            bodyContent:self._bodyHtml,
+                            footerContent:self._footHtml,
                             width:self._config_dwidth || "500px",
                             mask:true
                         });
-                    d.body.html(self._bodyHtml);
-                    d.foot.html(self._footHtml);
+                    d.renderer();
                     self.d = d;
                     self._initD();
                 },
@@ -138,7 +139,7 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                             self.dHeight.val(parseInt(f.css("height")));
                         }
                         self.dAlign.val(f.css("float"));
-                        self.dUrl.val(self._getFlashUrl(r));
+                        KE.Utils.valInput(self.dUrl, self._getFlashUrl(r));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {
                         KE.Utils.resetInput(self.dUrl);
@@ -163,7 +164,7 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = self.d,
-                        el = d.el;
+                        el = d.get("el");
                     self.dHeight = el.one(".ke-flash-height");
                     self.dWidth = el.one(".ke-flash-width");
                     self.dUrl = el.one(".ke-flash-url");
@@ -208,7 +209,7 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                         url = dinfo && S.trim(dinfo.url),
                         attrs = dinfo && dinfo.attrs;
                     if (!dinfo) return;
-                    var re = KE.Utils.verifyInputs(self.d.el.all("input"));
+                    var re = KE.Utils.verifyInputs(self.d.get("el").all("input"));
                     if (!re) return;
                     var nodeInfo = flashUtils.createSWF(url, {
                         attrs:attrs

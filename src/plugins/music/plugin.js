@@ -13,8 +13,7 @@ KISSY.Editor.add("music", function(editor) {
         TYPE_MUSIC = 'music',
         MUSIC_PLAYER = "niftyplayer.swf",
         dataProcessor = editor.htmlDataProcessor,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "请输入如 http://xxx.com/xx.mp3";
+        dataFilter = dataProcessor && dataProcessor.dataFilter;
 
 
     function music(src) {

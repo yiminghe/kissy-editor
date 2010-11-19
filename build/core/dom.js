@@ -380,8 +380,8 @@ KISSY.Editor.add("dom", function(KE) {
                                 i = 0;
 
                             el.unselectable = 'on';
-
-                            while (( e = el.all[ i++ ] )) {
+                            var els=el.getElementsByTagName("*");
+                            while (( e = els[ i++ ] )) {
                                 switch (e.tagName.toLowerCase()) {
                                     case 'iframe' :
                                     case 'textarea' :

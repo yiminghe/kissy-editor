@@ -242,7 +242,7 @@ KISSY.Editor.add("list", function(editor) {
                         if (child._4e_name() == this.type)
                             listsCreated.push(child);
                     }
-                    DOM.insertBefore(newList.listNode, groupObj.root[0]);
+                    DOM.insertBefore(newList.listNode, groupObj.root);
                     groupObj.root._4e_remove();
                 },
                 createList:function(editor, groupObj, listsCreated) {
@@ -310,9 +310,9 @@ KISSY.Editor.add("list", function(editor) {
                             listItem._4e_appendBogus();
                     }
                     if (insertAnchor[0])
-                        DOM.insertBefore(listNode[0], insertAnchor[0]);
+                        DOM.insertBefore(listNode, insertAnchor);
                     else
-                        commonParent[0].appendChild(listNode[0]);
+                        commonParent.append(listNode);
                 },
                 removeList:function(editor, groupObj, database) {
                     // This is very much like the change list type operation.
@@ -370,7 +370,7 @@ KISSY.Editor.add("list", function(editor) {
                             siblingNode._4e_isBlockBoundary({ br : 1 }) ))
 
                             DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
-                                boundaryNode[0]);
+                                boundaryNode);
                     }
 
                     compensateBrs(true);

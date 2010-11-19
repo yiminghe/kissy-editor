@@ -19,8 +19,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span>" +
             "</span>" +
             "</a></span>",
-        menu_markup = "<div onmousedown='return false;'>" +
-            "</div>";
+        menu_markup = "<div>" ;
 
     if (KE.Select) return;
     function Select(cfg) {
@@ -190,18 +189,20 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
-                menuNode = new Node(menu_markup);
+                menuNode;
             //要在适当位置插入 !!!
-            menuNode.appendTo(self.get("menuContainer"));
-
-            var menu = new KE.SimpleOverlay({
-                el:menuNode,
-                cls:"ke-menu",
+            var menu = new KE.Overlay({
+                render:self.get("menuContainer"),
+                content:menu_markup,
+                focus4e:false,
+                elCls:"ke-menu",
                 width:popUpWidth ? popUpWidth : el.width(),
                 zIndex:KE.baseZIndex(KE.zIndexManager.SELECT),
                 focusMgr:false
             }),
                 items = self.get("items");
+            menu.renderer();
+            menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
@@ -236,6 +237,7 @@ KISSY.Editor.add("select", function() {
             });
 
             self.on("afterItemsChange", self._itemsChange, self);
+            self.menuNode = menuNode;
         },
         _stateChange:function(ev) {
             var v = ev.newVal,el = this.el;
@@ -255,14 +257,15 @@ KISSY.Editor.add("select", function() {
             ev.halt();
             var self = this,
                 menu = self.menu,
-                menuNode = menu.el,
+                menuNode = self.menuNode,
                 t = new Node(ev.target),
                 a = t._4e_ascendant(function(n) {
                     return menuNode.contains(n) && n._4e_name() == "a";
                 }, true);
 
             if (!a) return;
-            var preVal = self.get("value"),newVal = a.attr("data-value");
+            var preVal = self.get("value"),
+                newVal = a.attr("data-value");
             //更新逻辑值
             self.set("value", newVal);
 
@@ -279,8 +282,8 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 xy = el.offset(),
                 orixy = S.clone(xy),
-                menuHeight = self.menu.el.height(),
-                menuWidth = self.menu.el.width(),
+                menuHeight = self.menu.get("el").height(),
+                menuWidth = self.menu.get("el").width(),
                 wt = DOM.scrollTop(),
                 wl = DOM.scrollLeft(),
                 wh = DOM.viewportHeight() ,
@@ -355,7 +358,8 @@ KISSY.Editor.add("select", function() {
                     xy.left = orixy.left;
                 }
             }
-            self.menu.show(xy);
+            self.menu.set("xy", [xy.left,xy.top]);
+            self.menu.show();
         },
         _click:function(ev) {
             ev.preventDefault();

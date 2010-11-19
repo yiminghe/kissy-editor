@@ -3,7 +3,7 @@ KISSY.Editor.add("resize", function(editor) {
     if (!KE.Resizer) {
         (function() {
             var markup = "<div class='ke-resizer'></div>",
-                Draggable = KE.Draggable;
+                Draggable = S.Draggable;
 
             function Resizer(editor) {
                 this.editor = editor;
@@ -27,17 +27,19 @@ KISSY.Editor.add("resize", function(editor) {
                         resizer.css("display", "");
                     });
                     var d = new Draggable({
-                        node:resizer
+                        node:resizer,
+                        handlers:[resizer]
                     }),height = 0,width = 0,
                         heightEl = editor.wrap,
                         widthEl = editor.editorWrap;
-                    d.on("start", function() {
+                    d.on("dragstart", function() {
                         height = heightEl.height();
                         width = widthEl.width();
                     });
-                    d.on("move", function(ev) {
+                    d.on("drag", function(ev) {
                         var diffX = ev.pageX - this.startMousePos.left,
                             diffY = ev.pageY - this.startMousePos.top;
+                       
                         if (S.inArray("y", cfg)) heightEl.height(height + diffY);
                         if (S.inArray("x", cfg)) widthEl.width(width + diffX);
                     });

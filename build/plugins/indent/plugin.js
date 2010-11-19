@@ -134,7 +134,7 @@ KISSY.Editor.add("indent", function(editor) {
                 }
 
                 if (newList) {
-                    DOM.insertBefore(newList.listNode, listNode[0]);
+                    DOM.insertBefore(newList.listNode, listNode);
                     listNode._4e_remove();
                 }
                 // Move the nested <li> to be appeared after the parent.

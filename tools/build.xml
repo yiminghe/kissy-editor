@@ -76,6 +76,35 @@ build file for kissy editor
     -->
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
+        <!--
+        引入kissy overlay 到 editor
+        -->
+        <concat destfile="${src.dir}/plugins/overlay/plugin.js"
+                encoding="${charset}"
+                outputencoding="${charset}"
+                >
+            <fileset dir="${src.dir}/plugins/overlay/support/ext/"
+                     includes="*.js"
+                    ></fileset>
+            <filelist dir="${src.dir}/plugins/overlay/support/overlay/"
+                      files="overlay.js,dialog.js"></filelist>
+            <filelist dir="${src.dir}/plugins/overlay/support/editor/"
+                      files="focus_4e-ext.js,overlay.js"
+                    ></filelist>
+        </concat>
+
+
+        <!--
+        引入kissy dd 到 editor
+        -->
+        <concat destfile="${src.dir}/plugins/dd/plugin.js"
+                encoding="${charset}"
+                outputencoding="${charset}"
+                >
+            <filelist dir="${src.dir}/plugins/dd/support/"
+                      files="ddm.js,draggable.js,editor/dd.js"
+                    ></filelist>
+        </concat>
 
         <copy todir="${build.dir}"
               encoding="${charset}"
@@ -236,7 +265,7 @@ build file for kissy editor
 
             <arg value="--compilation_level"/>
             <arg value="ADVANCED_OPTIMIZATIONS"/>
-<!--
+            <!--
             <arg value="- -formatting"/>
             <arg value="PRETTY_PRINT"/>
 -->

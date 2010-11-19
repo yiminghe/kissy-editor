@@ -118,7 +118,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
                         if (!frag) {
                             frag = document.createElement("textarea");
                             frag.style.display = "none";
-                            document.body.insertBefore(frag, document.body.childNodes[0]);
+                            DOM.prepend(frag, document.body);
                         }
                         try {
                             frag.style.color = color;
@@ -194,8 +194,10 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
                 "</div>" +
                 "</div>";
 
-            var footHtml = "<a class='ke-button ke-color-advanced-ok'>确定</a>&nbsp;&nbsp;&nbsp;" +
-                "<a class='ke-button  ke-color-advanced-cancel'>取消</a>";
+            var footHtml = "<div style='padding:5px 20px 20px;'>" +
+                "<a class='ke-button ke-color-advanced-ok'>确定</a>&nbsp;&nbsp;&nbsp;" +
+                "<a class='ke-button  ke-color-advanced-cancel'>取消</a>" +
+                "</div>";
 
             function ColorPicker() {
                 this._init();
@@ -204,16 +206,18 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
             S.augment(ColorPicker, {
                 _init:function() {
                     var self = this;
-                    self.win = new KE.SimpleOverlay({
+                    self.win = new KE.Dialog({
                         mask:true,
-                        title:"颜色拾取器",
+                        headerContent:"颜色拾取器",
+                        bodyContent:panelHtml,
+                        footerContent:footHtml,
                         width:"550px"
                     });
-                    var win = self.win,
-                        body = win.body,
-                        foot = win.foot;
-                    body.html(panelHtml);
-                    foot.html(footHtml);
+                    var win = self.win;
+                    win.renderer();
+                    var body = win.get("body"),
+                        foot = win.get("footer");
+
                     var indicator = body.one(".ke-color-advanced-indicator");
                     var indicatorValue = body.one(".ke-color-advanced-value");
                     var left = body.one(".ke-color-advanced-picker-left");
@@ -264,7 +268,7 @@ KISSY.Editor.add("colorsupport/dialog", function(editor) {
                 _detailColor:function(color) {
                     var self = this,
                         win = self.win,
-                        body = win.body,
+                        body = win.get("body"),
                         detailPanel = body.one(".ke-color-advanced-picker-right");
 
                     detailPanel.html(map(ColorGrads(["#ffffff",color,"#000000"], 40), function(x) {

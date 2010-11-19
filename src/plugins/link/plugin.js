@@ -50,11 +50,11 @@ KISSY.Editor.add("link", function(editor) {
             Link.link_Style = link_Style;
             Link._ke_saved_href = _ke_saved_href;
 
-                function checkLink(lastElement) {
-                    return lastElement._4e_ascendant(function(node) {
-                        return node._4e_name() === 'a' && (!!node.attr("href"));
-                    }, true);
-                }
+            function checkLink(lastElement) {
+                return lastElement._4e_ascendant(function(node) {
+                    return node._4e_name() === 'a' && (!!node.attr("href"));
+                }, true);
+            }
 
             Link.checkLink = checkLink;
 
@@ -62,15 +62,16 @@ KISSY.Editor.add("link", function(editor) {
                 pluginName:"link",
                 func:checkLink,
                 init:function() {
-                    var bubble = this,el = bubble.el;
+
+                    var bubble = this,
+                        el = bubble.get("contentEl");
                     el.html(tipHtml);
                     var tipurl = el.one(".ke-bubbleview-url"),
                         tipchange = el.one(".ke-bubbleview-change"),
                         tipremove = el.one(".ke-bubbleview-remove");
                     //ie focus not lose
-                    tipchange._4e_unselectable();
-                    tipurl._4e_unselectable();
-                    tipremove._4e_unselectable();
+                    KE.Utils.preventFocus(el);
+
                     tipchange.on("click", function(ev) {
                         bubble._plugin.show();
                         ev.halt();
@@ -82,7 +83,7 @@ KISSY.Editor.add("link", function(editor) {
                         ev.halt();
                     });
 
-                    bubble.on("afterVisibleChange", function() {
+                    bubble.on("show", function() {
                         var a = bubble._selectedEl;
                         if (!a)return;
                         var href = a.attr(_ke_saved_href) ||

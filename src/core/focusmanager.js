@@ -73,6 +73,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = TRUE;
         currentInstance = editor;
+        S.log(editor._UUID + " focus");
     }
 
     /**
@@ -82,6 +83,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = FALSE;
         currentInstance = NULL;
+        S.log(editor._UUID + " blur");
     }
 
     KE.focusManager = focusManager;

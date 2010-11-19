@@ -1,32 +1,26 @@
-/**
- overlay style for kissy editor
- @author:yiminghe@gmail.com
-**/
+.ks-dialog, .ks-overlay {
+    position: absolute;
+    /*防止移位带来的闪烁*/
+    left: -9999px;
+    top: -9999px;
+}
 
-.ke-dialog {
+.ks-dialog .ks-contentbox,.ks-popup .ks-contentbox{
     background-color: #FBFBFB;
-    position: absolute;
     border: 1px solid #ACB4BE;
-    color: #000000;
-    font-size: 12px;
-    /*
-    -moz-box-shadow: 2px 2px 0.5em #888888;
-    -webkit-box-shadow: 2px 2px 0.5em #888888;
-    box-shadow: 2px 2px 0.5em #888888;
-    */
 }
 
-.ke-dialog-iframe {
-    position: absolute;
-    border: none;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    height: expression(this.parentNode.offsetHeight);
+.ks-dialog .ks-stdmod-header {
+    background: url("overlay-hd.png") repeat-x scroll 0 0 #D6DBE2;
+    border-bottom: 1px solid #ACB4BE;
+    font-size: 14px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 18px;
 }
 
-.ke-hd-x {
+.ks-ext-close {
     height: 18px;
     width: 18px;
     border: 1px solid transparent;
@@ -39,9 +33,10 @@
     _border-color: tomato;
     _filter: chroma(color = tomato);
     overflow: hidden;
+    cursor: pointer;
 }
 
-.ke-hd-x .ke-close {
+.ks-ext-close .ks-ext-close-x {
     display: block;
     background: no-repeat;
     background-image: url("close.png");
@@ -51,75 +46,23 @@
     margin: 2.5px;
 }
 
-a.ke-hd-x:hover {
+.ks-ext-close:hover {
     border: 1px solid #CED5E0;
     background: white;
 }
 
-a.ke-hd-x:active {
-    background: white;
+.ks-ext-mask {
+    background-color: #000;
+    opacity: 0.3;
+    filter: alpha(opacity = 15);
 }
 
-.ke-hd {
-    background: #D6DBE2 repeat-x;
-    background-image: url("overlay-hd.png");
-    font-size: 14px;
-    font-weight: bold;
-    padding: 0 0 0 18px;
-    height: 30px;
-    line-height: 30px;
-    border-bottom: 1px solid #ACB4BE;
+.ks-ext-loading {
+    opacity: 0.3;
+    filter: alpha(opacity = 15);
+    background: #000 url("loading_mask.gif") center center no-repeat scroll;
 }
 
-.ke-bd, .ke-ft {
-    padding-bottom: 0;
-}
-
-.ke-ft {
-    padding: 20px;
-    padding-top: 5px;
-    padding-bottom: 20px;
-}
-
-.ke-bd td {
-    padding: 2px;
-}
-
-.clearfix:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
-}
-
-.clearfix {
-    zoom: 1;
-}
-
-.ke-focus {
-    width: 0;
-    height: 0;
-    font-size: 0;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    outline: none;
-}
-
-.ke-mask {
-    left: 0;
-    top: 0;
-    border: none;
-    background-color: #000000;
-}
-
-.ke-loading {
-    border: 1px solid #3A5774;
-    background: #000000 center center no-repeat fixed;
-    background-image: url('loading_mask.gif');
-}
-
-.ke-overflow-hidden {
-    overflow: hidden;
+.ke-global-loading .ks-ext-loading {
+    background-attachment: fixed;
 }

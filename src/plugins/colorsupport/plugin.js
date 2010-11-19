@@ -7,9 +7,8 @@ KISSY.Editor.add("colorsupport", function(editor) {
         S = KISSY,
         Node = S.Node,
         Event = S.Event,
-        Overlay = KE.SimpleOverlay,
+        Overlay = KE.Overlay,
         TripleButton = KE.TripleButton,
-        //KEStyle = KE.Style,
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
@@ -212,22 +211,24 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 doc = document,
                 el = self.el,
                 editor = self.get("editor"),
-                colorPanel = new Node(html);
+                colorPanel;
             self.colorWin = new Overlay({
-                el:colorPanel,
+                elCls:"ks-popup",
+                content:html,
+                focus4e:false,
                 width:"170px",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
-                mask:false,
-                focusMgr:false
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
             });
 
-            colorPanel._4e_unselectable();
+            var colorWin = self.colorWin;
+            colorWin.renderer();
+            colorPanel = colorWin.get("contentEl");
             colorPanel.on("click", self._selectColor, self);
+
             self.colorPanel = colorPanel;
             Event.on(doc, "click", self._hidePanel, self);
             Event.on(editor.document, "click", self._hidePanel, self);
 
-            var colorWin = self.colorWin;
             colorWin.on("show", el.bon, el);
             colorWin.on("hide", el.boff, el);
             var others = colorPanel.one(".ke-color-others");
@@ -248,7 +249,8 @@ KISSY.Editor.add("colorsupport", function(editor) {
             if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
                 xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
             }
-            self.colorWin.show(xy);
+            self.colorWin.set("xy",[xy.left,xy.top]);
+            self.colorWin.show();
         },
         _showColors:function(ev) {
             var self = this,

@@ -28,8 +28,8 @@
 
 </div>
 
-<script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy-min.js?t=201010281013"></script>
-<script src="../build/editor-all-pkg-min.js?t=201010281013"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy-min.js"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/editor/editor-all-pkg-min.js"></script>
 
 <script>
 
@@ -72,7 +72,32 @@
                                 "请选择恢复编辑历史</div></div>"
                     }
                 }
-            }).use("font,image,flash");
+            }).use("font,image,flash", function() {
+                var self = this,
+                        htmlDataProcessor = self.htmlDataProcessor,
+                        dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
+
+                if (dataFilter) {
+                    dataFilter.addRules({
+
+                        elements : {
+                            $:function(el) {
+                                var tagName = el.name || "";
+                                if (tagName != "img") {
+                                    delete el.name;
+                                } else {
+                                    if (el.attributes &&
+                                            el.attributes['class']
+                                            &&
+                                            el.attributes['class'].indexOf("ke_") != -1)
+                                        return false;
+                                }
+                            }
+                        }
+                    });
+                }
+
+            });
         });
     });
 </script>

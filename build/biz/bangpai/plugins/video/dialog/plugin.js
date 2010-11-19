@@ -69,10 +69,10 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 "</table>" +
                 "</div>",
 
-                footHtml = "<a " +
+                footHtml = "<div style='padding:5px 20px 20px;'><a " +
                     "class='ke-video-ok ke-button' " +
                     "style='margin-left:40px;margin-right:20px;'>确定</button> " +
-                    "<a class='ke-video-cancel ke-button'>取消</a>";
+                    "<a class='ke-video-cancel ke-button'>取消</a></div>";
 
             function BangPaiVideoDialog() {
                 BangPaiVideoDialog.superclass.constructor.apply(this, arguments);
@@ -97,7 +97,7 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = self.d,
-                        el = d.el;
+                        el = d.get("el");
                     self.dUrl = el.one(".ke-video-url");
                     self.dAlign = KE.Select.decorate(el.one(".ke-video-align"));
                     self.dMargin = el.one(".ke-video-margin");

@@ -8,7 +8,7 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div onmousedown='return false;'>";
+        HTML = "<div>";
     if (KE.ContextMenu) return;
 
     /**
@@ -93,7 +93,9 @@ KISSY.Editor.add("contextmenu", function() {
     };
 
     function applyRules(elem, rules) {
-        for (var i = 0; i < rules.length; i++) {
+        for (var i = 0;
+             i < rules.length;
+             i++) {
             var rule = rules[i];
             //增加函数判断
             if (S.isFunction(rule)) {
@@ -106,14 +108,17 @@ KISSY.Editor.add("contextmenu", function() {
 
     ContextMenu.hide = function() {
         var doc = this;
-        for (var i = 0; i < global_rules.length; i++) {
-            var instance = global_rules[i].instance,doc2 = global_rules[i].doc;
+        for (var i = 0;
+             i < global_rules.length;
+             i++) {
+            var instance = global_rules[i].instance,
+                doc2 = global_rules[i].doc;
             if (doc === doc2)
                 instance.hide();
         }
     };
 
-    var Overlay = KE.SimpleOverlay;
+    var Overlay = KE.Overlay;
     S.augment(ContextMenu, {
         /**
          * 根据配置构造右键菜单内容
@@ -122,16 +127,15 @@ KISSY.Editor.add("contextmenu", function() {
             var self = this,
                 cfg = self.cfg,
                 funcs = cfg.funcs;
-            self.elDom = new Node(HTML);
-            var el = self.elDom;
-
             //使它具备 overlay 的能力，其实这里并不是实体化
             self.el = new Overlay({
-                el:el,
+                content:HTML,
                 width:cfg.width,
-                cls:"ke-menu"
+                elCls:"ke-menu"
             });
-
+            self.el.renderer();
+            self.elDom = self.el.get("contentEl").one("div");
+            var el = self.elDom;
             for (var f in funcs) {
                 var a = new Node("<a href='#'>" + f + "</a>");
                 el[0].appendChild(a[0]);
@@ -159,7 +163,8 @@ KISSY.Editor.add("contextmenu", function() {
             KE.fire("contextmenu", {
                 contextmenu:self
             });
-            this.el.show(offset);
+            this.el.set("xy", [offset.left,offset.top]);
+            this.el.show();
         },
         _prepareShow:function() {
             this._init();

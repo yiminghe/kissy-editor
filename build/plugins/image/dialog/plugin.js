@@ -6,7 +6,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         JSON = S.JSON,
         Node = S.Node,
         Event = S.Event,
-        Overlay = KE.SimpleOverlay,
+        Dialog = KE.Dialog,
         TIP = "http://",
         DTIP = "自动",
         MARGIN_DEFAULT = 0;
@@ -123,9 +123,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "</table>" +
         "</div>" +
         "</div>",
-        footHtml = "<a class='ke-img-insert ke-button' " +
+        footHtml = "<div style='padding:5px 20px 20px;'><a class='ke-img-insert ke-button' " +
             "style='margin-right:30px;'>确定</a> " +
-            "<a  class='ke-img-cancel ke-button'>取消</a>",
+            "<a  class='ke-img-cancel ke-button'>取消</a></div>",
         //不要加g：http://yiminghe.javaeye.com/blog/581347
         surfix_reg = /(png|jpg|jpeg|gif)$/i,
         surfix_warning = "只允许后缀名为png,jpg,jpeg,gif的图片";
@@ -149,14 +149,15 @@ KISSY.Editor.add("image/dialog", function(editor) {
 
     function prepare() {
 
-        d = new Overlay({
-            title:"图片",//属性",
+        d = new Dialog({
+            width:500,
+            headerContent:"图片",//属性",
+            bodyContent:bodyHtml,
+            footerContent:footHtml,
             mask:true
         });
-
-        d.body.html(bodyHtml);
-        d.foot.html(footHtml);
-        var content = d.el,
+        d.renderer();
+        var content = d.get("el"),
             cancel = content.one(".ke-img-cancel"),
             ok = content.one(".ke-img-insert"),
             verifyInputs = KE.Utils.verifyInputs,
@@ -248,7 +249,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     imgLocalUrl.val(warning);
                     return;
                 }
-
+                d.loading();
                 uploadIframe = KE.Utils.doFormUpload({
                     form:uploadForm,
                     callback:function(r) {
@@ -275,7 +276,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     }
                 }, cfg.serverParams, cfg.serverUrl);
 
-                var loadingMask = d.loading(),loadingMaskEl = loadingMask.el,
+                var loadingMaskEl = d.get("el"),
                     offset = loadingMaskEl.offset(),
                     width = loadingMaskEl[0].offsetWidth,
                     height = loadingMaskEl[0].offsetHeight;

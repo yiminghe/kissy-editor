@@ -56,6 +56,8 @@ KISSY.Node.prototype={
     length:1,
     append:function(){},
     appendTo:function(){},
+    prepend:function(){},
+    prependTo:function(){},
     hasClass:function(){},
     replaceClass:function(){},
     toggleClass:function(){},
@@ -108,6 +110,8 @@ KISSY.UA={
 };
 
 KISSY.DOM={
+    append:function(){},
+    prepend:function(){},
     hasClass:function(){},
     replaceClass:function(){},
     toggleClass:function(){},

@@ -152,7 +152,7 @@ KISSY.Editor.add("draft", function(editor) {
                         cfg = editor.cfg.pluginConfig,
                         draftCfg = cfg.draft,
                         helpBtn = self.helpBtn,
-                        help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
+                        help = new Node(draftCfg.helpHtml || "");
                     var arrowCss = "height:0;" +
                         "position:absolute;" +
                         "font-size:0;" +
@@ -177,13 +177,12 @@ KISSY.Editor.add("draft", function(editor) {
                         border:"1px solid #ACB4BE",
                         "text-align":"left"
                     });
-                    self._help = new KE.SimpleOverlay({
-                        el:help,
-                        focusMgr:false,
-                        draggable:false,
+                    self._help = new S.Overlay({
+                        content:help,
                         width:help.width() + "px",
                         mask:false
                     });
+                    self._help.renderer();
                     self._help.el.css("border", "none");
                     self._help.arrow = arrow;
                     Event.on([document,editor.document], "click", function(ev) {

@@ -137,15 +137,14 @@ KISSY.Editor.add("image", function(editor) {
                     func:checkFlash,
                     init:function() {
                         var bubble = this,
-                            el = bubble.el;
+                            el = bubble.get("contentEl");
                         el.html(label + tipHtml);
                         var tipurl = el.one(".ke-bubbleview-url"),
                             tipchange = el.one(".ke-bubbleview-change"),
                             tipremove = el.one(".ke-bubbleview-remove");
                         //ie focus not lose
-                        tipchange._4e_unselectable();
-                        tipurl._4e_unselectable();
-                        tipremove._4e_unselectable();
+                        KE.Utils.preventFocus(el);
+
                         tipchange.on("click", function(ev) {
                             bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
@@ -164,12 +163,11 @@ KISSY.Editor.add("image", function(editor) {
                         /*
                          位置变化
                          */
-                        bubble.on("afterVisibleChange", function(ev) {
-                            var v = ev.newVal,
-                                a = bubble._selectedEl,
-                                flash = bubble._plugin;
-                            if (!v || !a)return;
-                            flash._updateTip(tipurl, a);
+                        bubble.on("show", function(ev) {
+                            var a = bubble._selectedEl,
+                                b = bubble._plugin;
+                            if (!a)return;
+                            b._updateTip(tipurl, a);
                         });
                     }
                 });

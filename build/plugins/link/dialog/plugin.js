@@ -10,7 +10,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 KEStyle = KE.Style,
                 Node = S.Node,
                 KERange = KE.Range,
-                Overlay = KE.SimpleOverlay,
+                Dialog = KE.Dialog,
                 _ke_saved_href = Link._ke_saved_href,
                 BubbleView = KE.BubbleView,
                 link_Style = Link.link_Style,
@@ -41,9 +41,11 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     "</p>" +
 
                     "</div>",
-                footHtml = "<a class='ke-link-ok ke-button' " +
+                footHtml = "" +
+                    "<div style='padding:5px 20px 20px;'><a class='ke-link-ok ke-button' " +
                     "style='margin-left:65px;margin-right:20px;'>确定</a> " +
-                    "<a class='ke-link-cancel ke-button'>取消</a>";
+                    "<a class='ke-link-cancel ke-button'>取消</a>" +
+                    "</div>";
 
 
             function LinkDialog(editor) {
@@ -56,18 +58,22 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
             S.augment(LinkDialog, {
                 _prepareShow:function() {
+
                     var self = this,
-                        d = new Overlay({
-                            title:"链接",//属性",
+                        d = new Dialog({
+                            width:500,
+                            headerContent:"链接",//属性",
+                            bodyContent:bodyHtml,
+                            footerContent:footHtml,
                             mask:true
                         });
+                    d.renderer();
                     self.dialog = d;
-                    d.body.html(bodyHtml);
-                    d.foot.html(footHtml);
-                    d.urlEl = d.body.one(".ke-link-url");
-                    d.targetEl = d.body.one(".ke-link-blank");
-                    var cancel = d.foot.one(".ke-link-cancel"),
-                        ok = d.foot.one(".ke-link-ok");
+                    var body = d.get("body"),foot = d.get("footer");
+                    d.urlEl = body.one(".ke-link-url");
+                    d.targetEl = body.one(".ke-link-blank");
+                    var cancel = foot.one(".ke-link-cancel"),
+                        ok = foot.one(".ke-link-ok");
                     ok.on("click", function() {
                         self._link();
                     }, self);
@@ -99,7 +105,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         a,
                         linkStyle;
 
-                    if (!KE.Utils.verifyInputs(d.el.all("input"))) {
+                    if (!KE.Utils.verifyInputs(d.get("el").all("input"))) {
                         return;
                     }
                     d.hide();
@@ -150,7 +156,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     d.link = this;
                     //是修改行为
                     if (link) {
-                        d.urlEl.val(link.attr(_ke_saved_href) || link.attr("href"));
+                        KE.Utils.valInput(d.urlEl, link.attr(_ke_saved_href) || link.attr("href"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     } else {
                         KE.Utils.resetInput(d.urlEl);

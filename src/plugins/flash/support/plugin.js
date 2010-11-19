@@ -193,15 +193,13 @@ KISSY.Editor.add("flash/support", function(editor) {
                     func:checkFlash,
                     init:function() {
                         var bubble = this,
-                            el = bubble.el;
+                            el = bubble.get("contentEl");
                         el.html(label + tipHtml);
                         var tipurl = el.one(".ke-bubbleview-url"),
                             tipchange = el.one(".ke-bubbleview-change"),
                             tipremove = el.one(".ke-bubbleview-remove");
                         //ie focus not lose
-                        tipchange._4e_unselectable();
-                        tipurl._4e_unselectable();
-                        tipremove._4e_unselectable();
+                        KE.Utils.preventFocus(el);
 
                         tipchange.on("click", function(ev) {
                             //回调show，传入选中元素
@@ -225,10 +223,10 @@ KISSY.Editor.add("flash/support", function(editor) {
                         /*
                          位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                          */
-                        bubble.on("beforeVisibleChange", function(ev) {
-                            var v = ev.newVal,a = bubble._selectedEl,
+                        bubble.on("show", function(ev) {
+                            var a = bubble._selectedEl,
                                 flash = bubble._plugin;
-                            if (!v || !a)return;
+                            if (!a)return;
                             flash._updateTip(tipurl, a);
                         });
                     }

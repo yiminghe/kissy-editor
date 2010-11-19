@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-17 20:35:10");
+                re += "t=" + encodeURIComponent("2010-11-19 15:17:59");
                 return  re;
             },
             /**
@@ -913,7 +913,20 @@ KISSY.Editor.add("utils", function(KE) {
             ieEngine:(function() {
                 if (!UA.ie) return;
                 return document.documentMode || UA.ie;
-            })()
+            })(),
+
+            /**
+             * 点击 el 或者 el 内的元素，不会使得焦点转移
+             * @param el
+             */
+            preventFocus:function(el) {
+                if (UA.ie) {
+                    //ie 点击按钮不丢失焦点
+                    el._4e_unselectable();
+                } else {
+                    el.attr("onmousedown", "return false;");
+                }
+            }
         };
 
     KE.Utils = Utils;
@@ -1028,6 +1041,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = TRUE;
         currentInstance = editor;
+        S.log(editor._UUID + " focus");
     }
 
     /**
@@ -1037,6 +1051,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = FALSE;
         currentInstance = NULL;
+        S.log(editor._UUID + " blur");
     }
 
     KE.focusManager = focusManager;
@@ -1054,6 +1069,7 @@ KISSY.Editor.add("definition", function(KE) {
     var
         TRUE = true,
         FALSE = false,
+        Utils = KE.Utils,
         NULL = null,
         DOC = document,
         /** @const */S = KISSY,
@@ -1090,7 +1106,7 @@ KISSY.Editor.add("definition", function(KE) {
          */
         NONE = "none",
         focusManager = KE.focusManager,
-        tryThese = KE.Utils.tryThese,
+        tryThese = Utils.tryThese,
         /**
          * @const
          */
@@ -1115,7 +1131,7 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @const
          */
-        CSS_FILE = KE.Utils.debugUrl("theme/editor-iframe.css");
+        CSS_FILE = Utils.debugUrl("theme/editor-iframe.css");
 
     /**
      *
@@ -1155,7 +1171,7 @@ KISSY.Editor.add("definition", function(KE) {
             // is fully editable even before the editing iframe is fully loaded (#4455).
             //确保iframe确实载入成功,过早的话 document.domain 会出现无法访问
             '<script id="ke_actscript" type="text/javascript">' +
-                ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
+                ( Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
                 'window.parent.KISSY.Editor._initIFrame("' + id + '");' +
                 '</script>' : ''
             )
@@ -1169,7 +1185,7 @@ KISSY.Editor.add("definition", function(KE) {
         srcScript = 'document.open();' +
             // The document domain must be set any time we
             // call document.open().
-            ( KE.Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
+            ( Utils.isCustomDomain() ? ( 'document.domain="' + DOC.domain + '";' ) : '' ) +
             'document.close();',
 
         editorHtml = "<div " +
@@ -1210,21 +1226,9 @@ KISSY.Editor.add("definition", function(KE) {
             else if (UA.gecko) DOM.addClass(DOC.body, "gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "webkit");
             var self = this,
-                editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/, textarea.attr("tabIndex")));
-            //!!编辑器内焦点不失去,firefox?
-            editorWrap.on("mousedown", function(ev) {
-                if (UA.webkit) {
-                    //chrome select 弹不出来
-                    var n = DOM._4e_name(ev.target);
-                    if (n == "select" || n == "option")return TRUE;
-                }
-                ev.halt();
-            });
+                editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
+                    textarea.attr("tabIndex")));
 
-            //由于上面的 mousedown 阻止，这里使得 textarea 上的事件不被阻止，可以被编辑 - firefox
-            textarea.on("mousedown", function(ev) {
-                ev.stopPropagation();
-            });
 
             self.editorWrap = editorWrap;
             self._UUID = INSTANCE_ID++;
@@ -1240,8 +1244,37 @@ KISSY.Editor.add("definition", function(KE) {
             self["textarea"] = self.textarea;
             self.statusDiv = editorWrap.one(ke_editor_status);
             self["statusDiv"] = self.statusDiv;
-            //ie 点击按钮不丢失焦点
-            self.toolBarDiv._4e_unselectable();
+
+
+            //标准浏览器编辑器内焦点不失去,firefox?
+            //标准浏览器实际上不需要！range在iframe内保存着呢，选择高亮变灰而已
+            //2011-11-19 启用封装 preventFocus
+            //点击工具栏内任何东西都不会使得焦点转移
+            Utils.preventFocus(self.toolBarDiv);
+
+            /*
+             if (UA.ie) {
+             //ie 点击按钮不丢失焦点
+             self.toolBarDiv._4e_unselectable();
+             } else {
+             self.toolBarDiv.on("mousedown", function(ev) {
+             if (UA.webkit) {
+             //chrome select 弹不出来
+             var n = DOM._4e_name(ev.target);
+             if (n == "select" || n == "option")return TRUE;
+             }
+             ev.halt();
+             });
+             }
+
+             //由于上面的 mousedown 阻止，这里使得 textarea 上的事件不被阻止，可以被编辑 - firefox
+             //2010-11-19 注册到工具栏就可以了
+             textarea.on("mousedown", function(ev) {
+             ev.stopPropagation();
+             });
+             */
+
+
             //可以直接调用插件功能
             self._commands = {};
             self._dialogs = {};
@@ -1283,7 +1316,8 @@ KISSY.Editor.add("definition", function(KE) {
                 textarea = self.textarea,
                 form = new Node(textarea[0].form);
             form.on("submit", self.sync, self);
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          * @param name {string}
@@ -1292,7 +1326,7 @@ KISSY.Editor.add("definition", function(KE) {
          */
         useDialog:function(name, callback, cfg) {
             var self = this,
-                Overlay = KE.SimpleOverlay;
+                Overlay = KE.Overlay;
             cfg = cfg || {};
             Overlay.loading();
             self.use(name, function() {
@@ -1300,7 +1334,8 @@ KISSY.Editor.add("definition", function(KE) {
                 callback(dialog);
                 Overlay.unloading();
             });
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -1308,21 +1343,24 @@ KISSY.Editor.add("definition", function(KE) {
          */
         addDialog:function(name, obj) {
             this._dialogs[name] = obj;
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param name {string}
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param func {function()}
          */
         addPlugin:function(func) {
             this.ready(func);
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -1330,14 +1368,16 @@ KISSY.Editor.add("definition", function(KE) {
          */
         addCommand:function(name, obj) {
             this._commands[name] = obj;
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param name {string}
          */
         hasCommand:function(name) {
             return this._commands[name];
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -1349,7 +1389,8 @@ KISSY.Editor.add("definition", function(KE) {
             args.shift();
             args.unshift(self);
             return cmd.exec.apply(cmd, args);
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          * @return {number}
@@ -1358,7 +1399,8 @@ KISSY.Editor.add("definition", function(KE) {
             return this.textarea.css("display") == "none" ?
                 KE.WYSIWYG_MODE :
                 KE.SOURCE_MODE;
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param format {boolean}
@@ -1386,7 +1428,8 @@ KISSY.Editor.add("definition", function(KE) {
              */
             if (/^<p>((&nbsp;)|\s)*<\/p>$/.test(html)) html = "";
             return html;
-        } ,
+        }
+        ,
 
         /**
          *@this {KISSY.Editor}
@@ -1403,13 +1446,15 @@ KISSY.Editor.add("definition", function(KE) {
                 //代码模式下不需过滤
                 self.textarea.val(data);
             }
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
         sync:function() {
             this.textarea.val(this.getData());
-        },
+        }
+        ,
 
         /**
          * ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
@@ -1420,7 +1465,8 @@ KISSY.Editor.add("definition", function(KE) {
             v = v || 0;
             var zIndex = this.cfg.baseZIndex || 0;
             return v + zIndex;
-        },
+        }
+        ,
 
         /**
          * 撤销重做时，不需要格式化代码，直接取自身
@@ -1429,7 +1475,8 @@ KISSY.Editor.add("definition", function(KE) {
 
         _getRawData:function() {
             return this.document.body.innerHTML;
-        },
+        }
+        ,
 
 
         /**
@@ -1439,20 +1486,23 @@ KISSY.Editor.add("definition", function(KE) {
          */
         _setRawData:function(data) {
             this.document.body.innerHTML = data;
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
         _prepareIFrameHtml:function(id) {
             var cfg = this.cfg;
             return prepareIFrameHtml(id, cfg.customStyle, cfg.customLink);
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
         getSelection:function() {
             return KE.Selection.getSelection(this.document);
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
@@ -1466,7 +1516,8 @@ KISSY.Editor.add("definition", function(KE) {
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
-        } ,
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
@@ -1475,7 +1526,8 @@ KISSY.Editor.add("definition", function(KE) {
                 win = DOM._4e_getWin(self.document);
             win.blur();
             self.document && self.document.body.blur();
-        },
+        }
+        ,
 
         /**
          *@this {KISSY.Editor}
@@ -1496,7 +1548,8 @@ KISSY.Editor.add("definition", function(KE) {
             } else { // W3C
                 elem.appendChild(doc.createTextNode(cssText));
             }
-        },
+        }
+        ,
         addCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -1507,7 +1560,8 @@ KISSY.Editor.add("definition", function(KE) {
             elem.rel = "stylesheet";
             doc.getElementsByTagName("head")[0].appendChild(elem);
             elem.href = link;
-        },
+        }
+        ,
         removeCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -1524,7 +1578,8 @@ KISSY.Editor.add("definition", function(KE) {
             if (ind != -1) {
                 cls.splice(ind, 1);
             }
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
@@ -1569,7 +1624,8 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.write(data);
                 doc.close();
             }
-        },
+        }
+        ,
         /**
          *@this {KISSY.Editor}
          * @param func {function()}
@@ -1580,7 +1636,8 @@ KISSY.Editor.add("definition", function(KE) {
             else {
                 self.on("dataReady", func);
             }
-        },
+        }
+        ,
         /**
          * @this {KISSY.Editor}
          */
@@ -1612,7 +1669,8 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             self.previousPath = NULL;
             self._monitor();
-        },
+        }
+        ,
 
         /**
          *@this {KISSY.Editor}
@@ -1722,7 +1780,8 @@ KISSY.Editor.add("definition", function(KE) {
                 self.fire("save");
             }, 10);
             return clone;
-        },
+        }
+        ,
 
         /**
          *@this {KISSY.Editor}
@@ -1774,7 +1833,8 @@ KISSY.Editor.add("definition", function(KE) {
                 self.fire("save");
             }, 10);
         }
-    });
+    })
+        ;
     /**
      * 初始化iframe内容以及浏览器间兼容性处理，
      * 必须等待iframe内的脚本向父窗口通知
@@ -2119,7 +2179,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 
     var KEP = KE.prototype;
-    KE.Utils.extern(KEP, {
+    Utils.extern(KEP, {
         "setData":KEP.setData,
         "getData":KEP.getData,
         "insertElement":KEP.insertElement,
@@ -2144,7 +2204,8 @@ KISSY.Editor.add("definition", function(KE) {
         "notifySelectionChange":KEP.notifySelectionChange
     });
 
-});/**
+})
+    ;/**
  * 集中管理各个z-index
  * @author:yiminghe@gmail.com
  */
@@ -2847,8 +2908,8 @@ KISSY.Editor.add("dom", function(KE) {
                                 i = 0;
 
                             el.unselectable = 'on';
-
-                            while (( e = el.all[ i++ ] )) {
+                            var els=el.getElementsByTagName("*");
+                            while (( e = els[ i++ ] )) {
                                 switch (e.tagName.toLowerCase()) {
                                     case 'iframe' :
                                     case 'textarea' :
@@ -4561,11 +4622,7 @@ KISSY.Editor.add("range", function(KE) {
                 if (!startOffset) {
                     // Let's create a temporary node and mark it for removal.
                     t = new Node(doc.createTextNode(""));
-                    var sf = startNode[0].firstChild;
-                    if (sf)
-                        DOM.insertBefore(t[0], sf);
-                    else
-                        startNode.append(t);
+                    startNode.prepend(t);
                     startNode = t;
                     removeStartNode = TRUE;
                 }
@@ -5122,13 +5179,8 @@ KISSY.Editor.add("range", function(KE) {
             self.trim(FALSE, TRUE);
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
-                nextNode = startContainer[0].childNodes[startOffset];
-
-            if (nextNode) {
-                DOM.insertBefore(node[0] || node, nextNode);
-            } else
-                startContainer[0].appendChild(node[0] || node);
-
+                nextNode = startContainer[0].childNodes[startOffset] || null;
+            startContainer[0].insertBefore(node[0] || node, nextNode);
             // Check if we need to update the end boundary.
             if (DOM._4e_equals(node.parent(), self.endContainer))
                 self.endOffset++;
@@ -7062,14 +7114,13 @@ KISSY.Editor.add("selection", function(KE) {
                 // element to avoid the selection moving inside of it.
                 dummySpan = self.document.createElement('span');
                 dummySpan.innerHTML = '&#65279;';	// Zero Width No-Break Space (U+FEFF). See #1359.
-                dummySpan = new Node(dummySpan);
-                DOM.insertBefore(dummySpan[0], startNode[0]);
+                dummySpan = new Node(dummySpan).insertBefore(startNode);
                 if (isStartMarkerAlone) {
                     // To expand empty blocks or line spaces after <br>, we need
                     // instead to have any char, which will be later deleted using the
                     // selection.
                     // \ufeff = Zero Width No-Break Space (U+FEFF). (#1359)
-                    DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode[0]);
+                    DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode);
                 }
             }
 
@@ -8268,7 +8319,7 @@ KISSY.Editor.add("styles", function(KE) {
                     clonedElement = newElement;
                 }
                 DOM[ boundaryElement.match == 'start' ?
-                    'insertBefore' : 'insertAfter' ](clonedElement[0], boundaryElement[0]);
+                    'insertBefore' : 'insertAfter' ](clonedElement, boundaryElement);
             }
         } else {
             /*
@@ -10479,15 +10530,33 @@ KISSY.Editor.add("bubbleview", function() {
         S = KISSY,
         Event = S.Event,
         DOM = S.DOM,
-        Node = S.Node,
-        markup = '<div class="ke-bubbleview-bubble" onmousedown="return false;"></div>';
+        Node = S.Node;
 
     if (KE.BubbleView) return;
-    function BubbleView(cfg) {
-        BubbleView.superclass.constructor.apply(this, arguments);
-        if (cfg.init)
-            cfg.init.call(this);
-    }
+
+    var BubbleView = S.Base.create(KE.Overlay, [], {
+        init:function() {
+            this.on("renderUI", this._renderUIBubbleView, this);
+        },
+        _renderUIBubbleView:function() {
+            var el = this.get("el");
+            el.addClass("ke-bubbleview-bubble");
+        },
+        show:function() {
+            var self = this,
+                a = self._selectedEl,
+                xy = a._4e_getOffset(document);
+            xy.top += a.height() + 5;
+            BubbleView.superclass.show.call(self);
+            self.set("xy", [xy.left,xy.top]);
+        }
+    }, {
+        ATTRS:{
+            focus4e:false,
+            "zIndex":{value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)}
+        }
+    });
+
 
     var holder = {};
 
@@ -10519,6 +10588,7 @@ KISSY.Editor.add("bubbleview", function() {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginInstance;
+                    bubble.hide();
                     bubble.show();
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;
@@ -10536,10 +10606,14 @@ KISSY.Editor.add("bubbleview", function() {
     };
     function getInstance(pluginName) {
         var h = holder[pluginName];
-        if (!h.bubble)
-            h.bubble = new BubbleView(h.cfg);
+        if (!h.bubble) {
+            h.bubble = new BubbleView();
+            h.bubble.renderer();
+            h.cfg.init && h.cfg.init.call(h.bubble);
+        }
         return h.bubble;
     }
+
 
     BubbleView.register = function(cfg) {
         var pluginName = cfg.pluginName;
@@ -10547,38 +10621,6 @@ KISSY.Editor.add("bubbleview", function() {
             cfg:cfg
         };
     };
-    BubbleView.ATTRS = {
-        //bubble 默认false
-        focusMgr:{
-            value:false
-        },
-        draggable:{
-            value:false
-        },
-        "zIndex":{value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)}
-    };
-    S.extend(BubbleView, KE.SimpleOverlay, {
-        /**
-         * 当前选中元素
-         */
-        //_selectedEl,
-        /**
-         * 当前关联插件实例
-         */
-        //_plugin
-        _createEl:function() {
-            var self = this,el = new Node(markup).appendTo(document.body);
-            self.el = el;
-            self.set("el", el);
-        },
-        show:function() {
-            var self = this,
-                a = self._selectedEl,
-                xy = a._4e_getOffset(document);
-            xy.top += a.height() + 5;
-            BubbleView.superclass.show.call(self, xy);
-        }
-    });
 
     KE.BubbleView = BubbleView;
 });/**
@@ -10751,9 +10793,12 @@ KISSY.Editor.add("clipboard", function(editor) {
             S.augment(Paste, {
                 _init:function() {
                     var self = this,editor = self.editor;
-                    if (UA.ie)
+                    if (UA.ie) {
                         Event.on(editor.document, "keydown", self._paste, self);
-                    else  Event.on(editor.document, "paste", self._paste, self);
+                    }
+                    else {
+                        Event.on(editor.document, "paste", self._paste, self);
+                    }
 
                     editor.addCommand("copy", new cutCopyCmd("copy"));
                     editor.addCommand("cut", new cutCopyCmd("cut"));
@@ -10975,14 +11020,18 @@ KISSY.Editor.add("clipboard", function(editor) {
                 return retval;
             }
 
+            /**
+             * 给所有右键都加入复制粘贴
+             */
             KE.on("contextmenu", function(ev) {
                 //debugger
                 var contextmenu = ev.contextmenu,
                     editor = contextmenu.cfg["editor"],
                     //原始内容
-                    el = contextmenu.el.originalEl,
+                    el = contextmenu.elDom,
                     pastes = {"copy":0,"cut":0,"paste":0};
                 for (var i in pastes) {
+
                     if (!pastes.hasOwnProperty(i))return;
                     pastes[i] = el.one(".ke-paste-" + i);
                     (function(cmd) {
@@ -10997,7 +11046,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 if (cmdObj.hasClass("ke-menuitem-disable"))
                                     return;
                                 contextmenu.hide();
-
                                 //给 ie 一点 hide() 中的事件触发 handler 运行机会，
                                 // 原编辑器获得焦点后再进行下步操作
                                 setTimeout(function() {
@@ -11031,9 +11079,8 @@ KISSY.Editor.add("colorsupport", function(editor) {
         S = KISSY,
         Node = S.Node,
         Event = S.Event,
-        Overlay = KE.SimpleOverlay,
+        Overlay = KE.Overlay,
         TripleButton = KE.TripleButton,
-        //KEStyle = KE.Style,
         DOM = S.DOM;
     if (KE.ColorSupport) return;
 
@@ -11236,22 +11283,24 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 doc = document,
                 el = self.el,
                 editor = self.get("editor"),
-                colorPanel = new Node(html);
+                colorPanel;
             self.colorWin = new Overlay({
-                el:colorPanel,
+                elCls:"ks-popup",
+                content:html,
+                focus4e:false,
                 width:"170px",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
-                mask:false,
-                focusMgr:false
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
             });
 
-            colorPanel._4e_unselectable();
+            var colorWin = self.colorWin;
+            colorWin.renderer();
+            colorPanel = colorWin.get("contentEl");
             colorPanel.on("click", self._selectColor, self);
+
             self.colorPanel = colorPanel;
             Event.on(doc, "click", self._hidePanel, self);
             Event.on(editor.document, "click", self._hidePanel, self);
 
-            var colorWin = self.colorWin;
             colorWin.on("show", el.bon, el);
             colorWin.on("hide", el.boff, el);
             var others = colorPanel.one(".ke-color-others");
@@ -11272,7 +11321,8 @@ KISSY.Editor.add("colorsupport", function(editor) {
             if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
                 xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
             }
-            self.colorWin.show(xy);
+            self.colorWin.set("xy",[xy.left,xy.top]);
+            self.colorWin.show();
         },
         _showColors:function(ev) {
             var self = this,
@@ -11296,7 +11346,7 @@ KISSY.Editor.add("contextmenu", function() {
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
-        HTML = "<div onmousedown='return false;'>";
+        HTML = "<div>";
     if (KE.ContextMenu) return;
 
     /**
@@ -11381,7 +11431,9 @@ KISSY.Editor.add("contextmenu", function() {
     };
 
     function applyRules(elem, rules) {
-        for (var i = 0; i < rules.length; i++) {
+        for (var i = 0;
+             i < rules.length;
+             i++) {
             var rule = rules[i];
             //增加函数判断
             if (S.isFunction(rule)) {
@@ -11394,14 +11446,17 @@ KISSY.Editor.add("contextmenu", function() {
 
     ContextMenu.hide = function() {
         var doc = this;
-        for (var i = 0; i < global_rules.length; i++) {
-            var instance = global_rules[i].instance,doc2 = global_rules[i].doc;
+        for (var i = 0;
+             i < global_rules.length;
+             i++) {
+            var instance = global_rules[i].instance,
+                doc2 = global_rules[i].doc;
             if (doc === doc2)
                 instance.hide();
         }
     };
 
-    var Overlay = KE.SimpleOverlay;
+    var Overlay = KE.Overlay;
     S.augment(ContextMenu, {
         /**
          * 根据配置构造右键菜单内容
@@ -11410,16 +11465,15 @@ KISSY.Editor.add("contextmenu", function() {
             var self = this,
                 cfg = self.cfg,
                 funcs = cfg.funcs;
-            self.elDom = new Node(HTML);
-            var el = self.elDom;
-
             //使它具备 overlay 的能力，其实这里并不是实体化
             self.el = new Overlay({
-                el:el,
+                content:HTML,
                 width:cfg.width,
-                cls:"ke-menu"
+                elCls:"ke-menu"
             });
-
+            self.el.renderer();
+            self.elDom = self.el.get("contentEl").one("div");
+            var el = self.elDom;
             for (var f in funcs) {
                 var a = new Node("<a href='#'>" + f + "</a>");
                 el[0].appendChild(a[0]);
@@ -11447,7 +11501,8 @@ KISSY.Editor.add("contextmenu", function() {
             KE.fire("contextmenu", {
                 contextmenu:self
             });
-            this.el.show(offset);
+            this.el.set("xy", [offset.left,offset.top]);
+            this.el.show();
         },
         _prepareShow:function() {
             this._init();
@@ -11460,26 +11515,24 @@ KISSY.Editor.add("contextmenu", function() {
     KE.ContextMenu = ContextMenu;
 });
 /**
- * dd support for kissy editor
- * @author:yiminghe@gmail.com
+ * dd support for kissy
+ * @author: yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function() {
-    var S = KISSY,
-        KE = S.Editor,
-        Event = S.Event,
-        UA = S.UA,
-        DOM = S.DOM,
-        Node = S.Node;
-    if (KE.DD) return;
-    KE.DD = {};
+KISSY.add('dd', function(S) {
 
-    function Manager() {
-        var self = this;
-        Manager.superclass.constructor.apply(self, arguments);
-        self._init();
+    var Event = S.Event,
+        DOM = S.DOM,
+        Node = S.Node,
+        SHIM_ZINDEX = 999999;
+
+    S.DD = { };
+
+    function DDM() {
+        DDM.superclass.constructor.apply(this, arguments);
+        this._init();
     }
 
-    Manager.ATTRS = {
+    DDM.ATTRS = {
         /**
          * mousedown 后 buffer 触发时间  timeThred
          */
@@ -11495,12 +11548,13 @@ KISSY.Editor.add("dd", function() {
      负责拖动涉及的全局事件：
      1.全局统一的鼠标移动监控
      2.全局统一的鼠标弹起监控，用来通知当前拖动对象停止
-     3.为了跨越iframe而统一在底下的遮罩层
+     3.为了跨越 iframe 而统一在底下的遮罩层
      */
-    S.extend(Manager, S.Base, {
+    S.extend(DDM, S.Base, {
+
         _init: function() {
             var self = this;
-            self._showShimMove = KE.Utils.throttle(self._move, self, 30);
+            self._showShimMove = throttle(self._move, self, 30);
         },
 
         /*
@@ -11586,7 +11640,7 @@ KISSY.Editor.add("dd", function() {
                 "top:0;" +
                 "z-index:" +
                 //覆盖iframe上面即可
-                KE.baseZIndex(KE.zIndexManager.DD_PG)
+                SHIM_ZINDEX
                 + ";" +
                 "'></div>").appendTo(doc.body);
             //0.5 for debug
@@ -11604,6 +11658,7 @@ KISSY.Editor.add("dd", function() {
             self._clearSelection();
         },
         _clearSelection:function() {
+            S.log("_clearSelection");
             //清除由于浏览器导致的选择文字
             if (window.getSelection) {
                 window.getSelection().removeAllRanges();
@@ -11635,54 +11690,123 @@ KISSY.Editor.add("dd", function() {
         }
     });
 
-    KE.DD.DDM = new Manager();
-    var DDM = KE.DD.DDM;
+    S.DD.DDM = new DDM();
+
+    /**
+     * Throttles a call to a method based on the time between calls. from YUI
+     * @method throttle
+     * @for KISSY
+     * @param fn {function} The function call to throttle.
+     * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
+     * @return {function} Returns a wrapped function that calls fn throttled.
+     * ! Based on work by Simon Willison: http://gist.github.com/292562
+     */
+    function throttle(fn, scope, ms) {
+        ms = ms || 150;
+
+        if (ms === -1) {
+            return (function() {
+                fn.apply(scope, arguments);
+            });
+        }
+
+        var last = S.now();
+        return (function() {
+            var now = S.now();
+            if (now - last > ms) {
+                last = now;
+                fn.apply(scope, arguments);
+            }
+        });
+    }
+});
+/**
+ * dd support for kissy, drag for dd
+ * @author: yiminghe@gmail.com
+ */
+KISSY.add('dd-draggable', function(S) {
+
+    var UA = S.UA,Node = S.Node;
 
     /*
      拖放纯功能类
      */
     function Draggable() {
-        var self = this;
-        Draggable.superclass.constructor.apply(self, arguments);
-        self._init();
+        Draggable.superclass.constructor.apply(this, arguments);
+        this._init();
     }
 
     Draggable.ATTRS = {
-        //拖放节点
-        node:{},
-        //handler 集合，注意暂时必须在 node 里面
-        handlers:{value:{}}
+        /**
+         * 拖放节点
+         */
+        node: {
+            setter:function(v) {
+                return new Node(v);
+            }
+        },
+
+        /**
+         * handler 集合，注意暂时必须在 node 里面
+         */
+        handlers:{
+            value:{},
+            setter:function(vs) {
+                if (vs) {
+                    for (var i = 0; i < vs.length; i++) {
+                        vs[i] = new Node(vs[i]);
+                    }
+                }
+            }
+        }
     };
 
     S.extend(Draggable, S.Base, {
-        _init:function() {
+
+        _init: function() {
             var self = this,
-                node = self.get("node"),
-                handlers = self.get("handlers");
-            //DDM.reg(node);
+                node = self.get('node'),
+                handlers = self.get('handlers');
+
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }
+
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                var hl = handlers[h],ori = hl.css("cursor");
-                if (!hl._4e_equals(node)) {
-                    if (!ori || ori === "auto")
-                        hl.css("cursor", "move");
-                    //ie 不能被选择了
-                    //hl._4e_unselectable();
+                var hl = handlers[h],
+                    ori = hl.css('cursor');
+                if (hl[0] != node[0]) {
+                    if (!ori || ori === 'auto')
+                        hl.css('cursor', 'move');
                 }
             }
-            node.on("mousedown", self._handleMouseDown, self);
+            node.on('mousedown', self._handleMouseDown, self);
         },
-        _check:function(t) {
-            var handlers = this.get("handlers");
+
+        destroy:function() {
+            var self = this,
+                node = self.get('node'),
+                handlers = self.get('handlers');
+            for (var h in handlers) {
+                if (!handlers.hasOwnProperty(h)) continue;
+                var hl = handlers[h];
+                if (hl.css("cursor") == "move") {
+                    hl.css("cursor", "auto");
+                }
+            }
+            node.detach('mousedown', self._handleMouseDown, self);
+        },
+
+        _check: function(t) {
+            var handlers = this.get('handlers');
+
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
                 if (handlers[h].contains(t)
                     ||
                     //子区域内点击也可以启动
-                    handlers[h]._4e_equals(t)) return true;
+                    handlers[h][0] == t[0]) return true;
             }
             return false;
         },
@@ -11693,17 +11817,17 @@ KISSY.Editor.add("dd", function() {
          * 通知全局管理器开始作用
          * @param ev
          */
-        _handleMouseDown:function(ev) {
+        _handleMouseDown: function(ev) {
             var self = this,
-                t = new Node(ev.target);
+                t = new S.Node(ev.target);
             if (!self._check(t)) return;
             //chrome 阻止了 flash 点击？？
             if (!UA.webkit) {
                 //firefox 默认会拖动对象地址
                 ev.preventDefault();
             }
-            //
-            DDM._start(self);
+
+            S.DD.DDM._start(self);
 
             var node = self.get("node"),
                 mx = ev.pageX,
@@ -11718,45 +11842,40 @@ KISSY.Editor.add("dd", function() {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
+            self.set("diff", self._diff);
 
         },
-        _move:function(ev) {
-            this.fire("move", ev)
-        },
-        _end:function() {
-            this.fire("end");
-        },
-        _start:function() {
-            this.fire("start");
-        }
-    });
 
-    /*
-     拖放实体，功能反应移动时，同时移动节点
-     */
-    function Drag() {
-        Drag.superclass.constructor.apply(this, arguments);
-    }
-
-    S.extend(Drag, Draggable, {
-        _init:function() {
-            var self = this;
-            Drag.superclass._init.apply(self, arguments);
-            var node = self.get("node");
-            self.on("move", function(ev) {
-                var left = ev.pageX - self._diff.left,
-                    top = ev.pageY - self._diff.top;
-                node.offset({
-                    left:left,
-                    top:top
-                })
+        _move: function(ev) {
+            var self = this,
+                diff = self.get("diff"),
+                left = ev.pageX - diff.left,
+                top = ev.pageY - diff.top;
+            S.mix(ev, {
+                left:left,
+                top:top
             });
+            this.fire("drag", ev);
+        },
+
+        _end: function() {
+            this.fire("dragend");
+        },
+
+        _start: function() {
+            this.fire("dragstart");
         }
+
     });
 
-    KE.Draggable = Draggable;
-    KE.Drag = Drag;
+    S.Draggable = Draggable;
 
+}, { host: 'dd' });
+/**
+ * dumb ,告诉 editor ，其dd已经loaded，否则会动态请求
+ * 桥 kissy dd ->  editor dd
+ */
+KISSY.Editor.add("dd", function() {
 });/**
  * draft support for kissy editor
  * @author:yiminghe@gmail.com
@@ -11911,7 +12030,7 @@ KISSY.Editor.add("draft", function(editor) {
                         cfg = editor.cfg.pluginConfig,
                         draftCfg = cfg.draft,
                         helpBtn = self.helpBtn,
-                        help = new Node(draftCfg.helpHtml || "").appendTo(document.body);
+                        help = new Node(draftCfg.helpHtml || "");
                     var arrowCss = "height:0;" +
                         "position:absolute;" +
                         "font-size:0;" +
@@ -11936,13 +12055,12 @@ KISSY.Editor.add("draft", function(editor) {
                         border:"1px solid #ACB4BE",
                         "text-align":"left"
                     });
-                    self._help = new KE.SimpleOverlay({
-                        el:help,
-                        focusMgr:false,
-                        draggable:false,
+                    self._help = new S.Overlay({
+                        content:help,
                         width:help.width() + "px",
                         mask:false
                     });
+                    self._help.renderer();
                     self._help.el.css("border", "none");
                     self._help.arrow = arrow;
                     Event.on([document,editor.document], "click", function(ev) {
@@ -12091,7 +12209,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                         cfg = self.cfg,
                         editor = cfg.editor,
                         holder = self.holder,
-                        statusDom = holder[0] || holder;
+                        statusDom = holder;
                     var elementPath = ev.path,
                         elements = elementPath.elements,
                         element,i,
@@ -12120,12 +12238,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                                 }, 50);
                             });
                         })(element);
-                        if (statusDom.firstChild) {
-                            DOM.insertBefore(a[0], statusDom.firstChild);
-                        }
-                        else {
-                            statusDom.appendChild(a[0]);
-                        }
+                        statusDom.prepend(a);
                     }
 
                 }
@@ -12701,15 +12814,13 @@ KISSY.Editor.add("flash/support", function(editor) {
                     func:checkFlash,
                     init:function() {
                         var bubble = this,
-                            el = bubble.el;
+                            el = bubble.get("contentEl");
                         el.html(label + tipHtml);
                         var tipurl = el.one(".ke-bubbleview-url"),
                             tipchange = el.one(".ke-bubbleview-change"),
                             tipremove = el.one(".ke-bubbleview-remove");
                         //ie focus not lose
-                        tipchange._4e_unselectable();
-                        tipurl._4e_unselectable();
-                        tipremove._4e_unselectable();
+                        KE.Utils.preventFocus(el);
 
                         tipchange.on("click", function(ev) {
                             //回调show，传入选中元素
@@ -12733,10 +12844,10 @@ KISSY.Editor.add("flash/support", function(editor) {
                         /*
                          位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                          */
-                        bubble.on("beforeVisibleChange", function(ev) {
-                            var v = ev.newVal,a = bubble._selectedEl,
+                        bubble.on("show", function(ev) {
+                            var a = bubble._selectedEl,
                                 flash = bubble._plugin;
-                            if (!v || !a)return;
+                            if (!a)return;
                             flash._updateTip(tipurl, a);
                         });
                     }
@@ -14714,15 +14825,14 @@ KISSY.Editor.add("image", function(editor) {
                     func:checkFlash,
                     init:function() {
                         var bubble = this,
-                            el = bubble.el;
+                            el = bubble.get("contentEl");
                         el.html(label + tipHtml);
                         var tipurl = el.one(".ke-bubbleview-url"),
                             tipchange = el.one(".ke-bubbleview-change"),
                             tipremove = el.one(".ke-bubbleview-remove");
                         //ie focus not lose
-                        tipchange._4e_unselectable();
-                        tipurl._4e_unselectable();
-                        tipremove._4e_unselectable();
+                        KE.Utils.preventFocus(el);
+
                         tipchange.on("click", function(ev) {
                             bubble._plugin.show(null, bubble._selectedEl);
                             ev.halt();
@@ -14741,12 +14851,11 @@ KISSY.Editor.add("image", function(editor) {
                         /*
                          位置变化
                          */
-                        bubble.on("afterVisibleChange", function(ev) {
-                            var v = ev.newVal,
-                                a = bubble._selectedEl,
-                                flash = bubble._plugin;
-                            if (!v || !a)return;
-                            flash._updateTip(tipurl, a);
+                        bubble.on("show", function(ev) {
+                            var a = bubble._selectedEl,
+                                b = bubble._plugin;
+                            if (!a)return;
+                            b._updateTip(tipurl, a);
                         });
                     }
                 });
@@ -14895,7 +15004,7 @@ KISSY.Editor.add("indent", function(editor) {
                 }
 
                 if (newList) {
-                    DOM.insertBefore(newList.listNode, listNode[0]);
+                    DOM.insertBefore(newList.listNode, listNode);
                     listNode._4e_remove();
                 }
                 // Move the nested <li> to be appeared after the parent.
@@ -15277,11 +15386,11 @@ KISSY.Editor.add("link", function(editor) {
             Link.link_Style = link_Style;
             Link._ke_saved_href = _ke_saved_href;
 
-                function checkLink(lastElement) {
-                    return lastElement._4e_ascendant(function(node) {
-                        return node._4e_name() === 'a' && (!!node.attr("href"));
-                    }, true);
-                }
+            function checkLink(lastElement) {
+                return lastElement._4e_ascendant(function(node) {
+                    return node._4e_name() === 'a' && (!!node.attr("href"));
+                }, true);
+            }
 
             Link.checkLink = checkLink;
 
@@ -15289,15 +15398,16 @@ KISSY.Editor.add("link", function(editor) {
                 pluginName:"link",
                 func:checkLink,
                 init:function() {
-                    var bubble = this,el = bubble.el;
+
+                    var bubble = this,
+                        el = bubble.get("contentEl");
                     el.html(tipHtml);
                     var tipurl = el.one(".ke-bubbleview-url"),
                         tipchange = el.one(".ke-bubbleview-change"),
                         tipremove = el.one(".ke-bubbleview-remove");
                     //ie focus not lose
-                    tipchange._4e_unselectable();
-                    tipurl._4e_unselectable();
-                    tipremove._4e_unselectable();
+                    KE.Utils.preventFocus(el);
+
                     tipchange.on("click", function(ev) {
                         bubble._plugin.show();
                         ev.halt();
@@ -15309,7 +15419,7 @@ KISSY.Editor.add("link", function(editor) {
                         ev.halt();
                     });
 
-                    bubble.on("afterVisibleChange", function() {
+                    bubble.on("show", function() {
                         var a = bubble._selectedEl;
                         if (!a)return;
                         var href = a.attr(_ke_saved_href) ||
@@ -15617,7 +15727,7 @@ KISSY.Editor.add("list", function(editor) {
                         if (child._4e_name() == this.type)
                             listsCreated.push(child);
                     }
-                    DOM.insertBefore(newList.listNode, groupObj.root[0]);
+                    DOM.insertBefore(newList.listNode, groupObj.root);
                     groupObj.root._4e_remove();
                 },
                 createList:function(editor, groupObj, listsCreated) {
@@ -15685,9 +15795,9 @@ KISSY.Editor.add("list", function(editor) {
                             listItem._4e_appendBogus();
                     }
                     if (insertAnchor[0])
-                        DOM.insertBefore(listNode[0], insertAnchor[0]);
+                        DOM.insertBefore(listNode, insertAnchor);
                     else
-                        commonParent[0].appendChild(listNode[0]);
+                        commonParent.append(listNode);
                 },
                 removeList:function(editor, groupObj, database) {
                     // This is very much like the change list type operation.
@@ -15745,7 +15855,7 @@ KISSY.Editor.add("list", function(editor) {
                             siblingNode._4e_isBlockBoundary({ br : 1 }) ))
 
                             DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
-                                boundaryNode[0]);
+                                boundaryNode);
                     }
 
                     compensateBrs(true);
@@ -16388,8 +16498,7 @@ KISSY.Editor.add("music", function(editor) {
         TYPE_MUSIC = 'music',
         MUSIC_PLAYER = "niftyplayer.swf",
         dataProcessor = editor.htmlDataProcessor,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        TIP = "请输入如 http://xxx.com/xx.mp3";
+        dataFilter = dataProcessor && dataProcessor.dataFilter;
 
 
     function music(src) {
@@ -16498,459 +16607,1280 @@ KISSY.Editor.add("music", function(editor) {
     });
 
 });/**
- * simple overlay for kissy editor using lazyRun
- * @author yiminghe@gmail.com
- * @refer http://yiminghe.javaeye.com/blog/734867
+ * align extension
+ * @author:承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
  */
-KISSY.Editor.add("overlay", function() {
-    // 每次实例都要载入!
-    //console.log("overlay loaded!");
-    var S = KISSY,
-        KE = S.Editor,
-        UA = S.UA,
-        focusManager = KE.focusManager,
-        Node = S.Node,
-        Event = S.Event,
-        DOM = S.DOM,
-        dialogMarkUp = "<div class='ke-dialog' " +
-            ">" +
-            "<div class='ke-dialog-wrapper'>" +
-            "<div class='ke-hd'>" +
-            "<span class='ke-hd-title'>" +
-            "@title@" +
-            "</span>"
-            + "<a class='ke-hd-x' href='#'>" +
-            "<span class='ke-close'>X</span>" +
-            "</a>"
-            + "</div>" +
-            "<div class='ke-bd'>" +
-            "</div>" +
-            "<div class='ke-ft'>" +
-            "</div>" +
-            "</div>" +
-            "</div>",
-        focusMarkup = "<a " +
-            "href='#' " +
-            "class='ke-focus' " +
-            "style='" +
-            "width:0;" +
-            "height:0;" +
-            "margin:0;" +
-            "padding:0;" +
-            "overflow:hidden;" +
-            "outline:none;" +
-            "font-size:0;'" +
-            "></a>",
-        mask ,
-        loadingMask,
-        noVisibleStyle = {
-            "left":"-9999px",
-            top:"-9999px"
-        },
-        loadingBaseZindex = KE.baseZIndex(KE.zIndexManager.LOADING);
+KISSY.add("ext-align", function(S) {
+    S.namespace("Ext");
+    var DOM = S.DOM,Node = S.Node;
 
-    //全局的不要重写
-    if (KE.SimpleOverlay) return;
-
-    function Overlay() {
+    function AlignExt() {
+        S.log("align init");
         var self = this;
-        Overlay.superclass.constructor.apply(self, arguments);
-        self._init();
+        self.on("bindUI", self._bindUIAlign, self);
+        self.on("renderUI", self._renderUIAlign, self);
+        self.on("syncUI", self._syncUIAlign, self);
     }
 
+    S.mix(AlignExt, {
+        TL: 'tl',
+        TC: 'tc',
+        TR: 'tr',
+        CL: 'cl',
+        CC: 'cc',
+        CR: 'cr',
+        BL: 'bl',
+        BC: 'bc',
+        BR: 'br'
+    });
 
-    Overlay.mask = function(zIndex) {
-        if (!mask) {
-            /**
-             * 遮罩层
-             */
-            mask = new Overlay({
-                el:new Node("<div>"),
-                cls:"ke-mask",
-                focusMgr:false,
-                draggable:false
-            });
-            mask.el.css({
-                "width":"100%",
-                "background-color": "#000000",
-                "height": DOM.docHeight(),
-                "opacity": 0.15
-            });
+
+    AlignExt.ATTRS = {
+        align:{
+            /*
+             value:{
+             node: null,         // 参考元素, falsy 值为可视区域, 'trigger' 为触发元素, 其他为指定元素
+             points: [AlignExt.CC, AlignExt.CC], // ['tr', 'tl'] 表示 overlay 的 tl 与参考节点的 tr 对齐
+             offset: [0, 0]      // 有效值为 [n, m]
+             }*/
         }
-        zIndex = zIndex || loadingBaseZindex;
-        mask.el.css("z-index", zIndex);
-        mask.show({left:0,top:0});
-    };
-    Overlay.unmask = function() {
-        mask && mask.hide();
     };
 
 
-    Overlay.loading = function(el) {
-        if (!loadingMask) {
-            loadingMask = new Overlay({
-                el:new Node("<div>"),
-                focusMgr:false,
-                cls:"ke-loading",
-                shortkey:false,
-                draggable:false
-            });
-            loadingMask.el.css({
-                opacity:0.15,
-                border:0
-            });
-        }
+    /**
+     * 获取 node 上的 align 对齐点 相对于页面的坐标
+     * @param {?Element} node
+     * @param align
+     */
+    function _getAlignOffset(node, align) {
+        var V = align.charAt(0),
+            H = align.charAt(1),
+            offset, w, h, x, y;
 
-        var width,height,offset,zIndex;
-        if (el) {
-            offset = el.offset();
-            width = el[0].offsetWidth;
-            height = el[0].offsetHeight;
-            zIndex = parseInt(el.css("z-index")) + 1;
-            //在元素的中间
-            loadingMask.el.css("background-attachment", "scroll");
+        if (node) {
+            node = new Node(node);
+            offset = node.offset();
+            w = node[0].offsetWidth;
+            h = node[0].offsetHeight;
         } else {
-            //DOM.addClass(document.documentElement, "ke-overflow-hidden");
-            offset = {
-                left:0,
-                top:0
-            };
-            width = "100%";
-            height = DOM.docHeight();
-            zIndex = loadingBaseZindex;
-            //在视窗的中间
-            loadingMask.el.css("background-attachment", "fixed");
+            offset = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
+            w = DOM.viewportWidth();
+            h = DOM.viewportHeight();
         }
 
-        loadingMask.el.css({
-            width:width,
-            height:height,
-            "z-index":zIndex
-        });
-        loadingMask.show(offset);
-        return loadingMask;
+        x = offset.left;
+        y = offset.top;
+
+        if (V === 'c') {
+            y += h / 2;
+        } else if (V === 'b') {
+            y += h;
+        }
+
+        if (H === 'c') {
+            x += w / 2;
+        } else if (H === 'r') {
+            x += w;
+        }
+
+        return { left: x, top: y };
+    }
+
+    AlignExt.prototype = {
+        _bindUIAlign:function() {
+            S.log("_bindUIAlign");
+        },
+        _renderUIAlign:function() {
+            S.log("_renderUIAlign");
+        },
+        _syncUIAlign:function() {
+            S.log("_syncUIAlign");
+        },
+        _uiSetAlign:function(v) {
+            S.log("_uiSetAlign");
+            if (S.isPlainObject(v)) {
+                this.align(v.node, v.points, v.offset);
+            }
+        },
+        /**
+         * 对齐 Overlay 到 node 的 points 点, 偏移 offset 处
+         * @param {Element=} node 参照元素, 可取配置选项中的设置, 也可是一元素
+         * @param {Array.<string>} points 对齐方式
+         * @param {Array.<number>} offset 偏移
+         */
+        align: function(node, points, offset) {
+            var self = this,
+                xy,
+                diff,
+                p1,
+                el = self.get("el"),
+                p2;
+
+            xy = DOM.offset(el);
+            // p1 是 node 上 points[0] 的 offset
+            // p2 是 overlay 上 points[1] 的 offset
+            p1 = _getAlignOffset(node, points[0]);
+            p2 = _getAlignOffset(el, points[1]);
+            diff = [p2.left - p1.left, p2.top - p1.top];
+
+            self.set("xy", [xy.left - diff[0] + (+offset[0]),
+                xy.top - diff[1] + (+offset[1])]);
+        },
+
+
+
+        /**
+         * 居中显示到可视区域, 一次性居中
+         */
+        center: function(node) {
+            this.set("align", {
+                node:node,
+                points:[AlignExt.CC, AlignExt.CC],
+                offset:[0,0]
+            });
+        },
+
+        __destructor:function() {
+            S.log("align __destructor");
+        }
     };
 
-    Overlay.unloading = function() {
-        //DOM.removeClass(document.documentElement, "ke-overflow-hidden");
-        loadingMask && loadingMask.hide();
+    S.Ext.Align = AlignExt;
+
+});/**
+ * basic box support for component
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-box", function(S) {
+    S.namespace("Ext");
+
+    var doc = document,Node = S.Node;
+
+    function BoxExt() {
+        S.log("box init");
+        var self = this;
+        self.on("renderUI", self._renderUIBoxExt, self);
+        self.on("syncUI", self._syncUIBoxExt, self);
+        self.on("bindUI", self._bindUIBoxExt, self);
+
+    }
+
+    BoxExt.ATTRS = {
+        el: {
+            //容器元素
+            setter:function(v) {
+                if (S.isString(v))
+                    return S.one(v);
+            }
+        },
+        elCls: {
+            // 容器的 class           
+        },
+        elStyle:{
+            //容器的行内样式
+        },
+        width: {
+            // 宽度           
+        },
+        height: {
+            // 高度
+        },
+
+        html: {
+            // 内容, 默认为 undefined, 不设置
+            value: false
+        }
+    };
+
+    BoxExt.HTML_PARSER = {
+        el:function(srcNode) {
+            return srcNode;
+        }
+    };
+
+    BoxExt.prototype = {
+        _syncUIBoxExt:function() {
+            S.log("_syncUIBoxExt");
+        },
+        _bindUIBoxExt:function() {
+            S.log("_bindUIBoxExt");
+        },
+        _renderUIBoxExt:function() {
+            S.log("_renderUIBoxExt");
+            var self = this,
+                render = self.get("render") || S.one(doc.body),
+                el = self.get("el");
+            render = new Node(render);
+            if (!el) {
+                el = new Node("<div>");
+                render.prepend(el);
+                self.set("el", el);
+            }
+        },
+
+        _uiSetElCls:function(cls) {
+            S.log("_uiSetElCls");
+            if (cls) {
+                this.get("el").addClass(cls);
+            }
+        },
+
+        _uiSetElStyle:function(style) {
+            S.log("_uiSetElStyle");
+            if (style) {
+                this.get("el").css(style);
+            }
+        },
+
+        _uiSetWidth:function(w) {
+            S.log("_uiSetWidth");
+            var self = this;
+            if (w) {
+                self.get("el").width(w);
+            }
+        },
+
+        _uiSetHeight:function(h) {
+            S.log("_uiSetHeight");
+            var self = this;
+            if (h) {
+                self.get("el").height(h);
+            }
+        },
+
+        _uiSetHtml:function(c) {
+            S.log("_uiSetHtml");
+            if (c !== false){
+                this.get("el").html(c);
+            }
+
+        },
+
+        __destructor:function() {
+            S.log("box __destructor");
+            var el = this.get("el");
+            if (el) {
+                el.detach();
+                el.remove();
+            }
+        }
+    };
+
+    S.Ext.Box = BoxExt;
+});/**
+ * close extension for kissy dialog
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-overlay-close", function(S) {
+    S.namespace("Ext");
+    var CLS_PREFIX = 'ks-ext-',Node = S.Node;
+
+    function CloseExt() {
+        S.log("close init");
+        var self = this;
+        self.on("renderUI", self._rendUICloseExt, self);
+        self.on("bindUI", self._bindUICloseExt, self);
+        self.on("syncUI", self._syncUICloseExt, self);
+    }
+
+    CloseExt.ATTRS = {
+        closable: {             // 是否需要关闭按钮
+            value: true
+        },
+        closeBtn:{}
+    };
+
+    CloseExt.HTML_PARSER = {
+        closeBtn:"." + CLS_PREFIX + 'close'
+    };
+
+    CloseExt.prototype = {
+        _syncUICloseExt:function() {
+            S.log("_syncUICloseExt");
+        },
+        _uiSetClosable:function(v) {
+            S.log("_uiSetClosable");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            if (closeBtn) {
+                if (v) {
+                    closeBtn.show();
+                } else {
+                    closeBtn.hide();
+                }
+            }
+        },
+        _rendUICloseExt:function() {
+            S.log("_rendUICloseExt");
+            var self = this,
+                closeBtn = self.get("closeBtn"),
+                el = self.get("contentEl");
+
+            if (!closeBtn &&
+                el) {
+                closeBtn = new Node("<a " +
+                    "href='#' " +
+                    "class='" + CLS_PREFIX + "close" + "'>" +
+                    "<span class='" +
+                    CLS_PREFIX + "close-x" +
+                    "'>X</span>" +
+                    "</a>")
+                    .appendTo(el);
+                self.set("closeBtn", closeBtn);
+            }
+        },
+        _bindUICloseExt:function() {
+            S.log("_bindUICloseExt");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            closeBtn && closeBtn.on("click", function(ev) {
+                self.hide();
+                ev.halt();
+            });
+        },
+
+        __destructor:function() {
+            S.log("close-ext __destructor");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            closeBtn && closeBtn.detach();
+        }
+    };
+    S.Ext.Close = CloseExt;
+
+});KISSY.add("ext-constrain", function(S) {
+    S.namespace("Ext");
+
+    var DOM = S.DOM,
+        Node = S.Node;
+
+    function ConstrainExt() {
+        S.log("constrain init");
+        var self = this;
+        self.on("bindUI", self._bindUIConstrain, self);
+        self.on("renderUI", self._renderUIConstrain, self);
+        self.on("syncUI", self._syncUIConstrain, self);
+    }
+
+    ConstrainExt.ATTRS = {
+        constrain:{
+            //不限制
+            //true:viewport限制
+            //node:限制在节点范围
+            value:false
+        }
+    };
+
+    /**
+     * 获取受限区域的宽高, 位置
+     * @return {Object | undefined} {left: 0, top: 0, maxLeft: 100, maxTop: 100}
+     */
+    function _getConstrainRegion(constrain) {
+        var ret = undefined;
+        if (!constrain) return ret;
+        var el = this.get("el");
+        if (constrain !== true) {
+            constrain = new Node(constrain);
+            ret = constrain.offset();
+            S.mix(ret, {
+                maxLeft: ret.left + constrain[0].offsetWidth - el[0].offsetWidth,
+                maxTop: ret.top + constrain[0].offsetHeight - el[0].offsetHeight
+            });
+        }
+        // 没有指定 constrain, 表示受限于可视区域
+        else {
+            ret = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
+
+            S.mix(ret, {
+                maxLeft: ret.left + DOM.viewportWidth() - el[0].offsetWidth,
+                maxTop: ret.top + DOM.viewportHeight() - el[0].offsetHeight
+            });
+        }
+        return ret;
+    }
+
+    ConstrainExt.prototype = {
+        _bindUIConstrain:function() {
+            S.log("_bindUIConstrain");
+            var self = this;
+            self.on("beforeXChange", function(ev) {
+                var v = ev.newVal,
+                    _ConstrainExtRegion = _getConstrainRegion.call(
+                        self, self.get("constrain"));
+                if (!_ConstrainExtRegion) return;
+                if (v >= _ConstrainExtRegion.maxLeft || v <= _ConstrainExtRegion.left) return false;
+            });
+
+            self.on("beforeYChange", function(ev) {
+                var v = ev.newVal,
+                    _ConstrainExtRegion = _getConstrainRegion.call(
+                        self, self.get("constrain"));
+                if (!_ConstrainExtRegion) return;
+                if (v >= _ConstrainExtRegion.maxTop || v <= _ConstrainExtRegion.top) return false;
+            });
+        },
+        _renderUIConstrain:function() {
+            S.log("_renderUIConstrain");
+
+        },
+        _syncUIConstrain:function() {
+            S.log("_syncUIConstrain");
+        },
+
+        _uiSetConstrain:function(v) {
+            S.log("_uiSetConstrain");
+            //this._ConstrainExtRegion = _getConstrainRegion.call(this, v);
+        },
+
+        __destructor:function() {
+            S.log("constrain-ext __destructor");
+        }
+
     };
 
 
-    Overlay.ATTRS = {
-        title:{value:""},
-        width:{value:"500px"},
-        height:{},
-        cls:{},
-        shortkey:{value:true},
-        visible:{value:false},
-        "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)},
-        //帮你管理焦点
-        focusMgr:{value:true},
-        mask:{value:false},
+    S.Ext.Constrain = ConstrainExt;
+
+});/**
+ * 里层包裹层定义，适合mask以及shim
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-contentbox", function(S) {
+
+    S.namespace("Ext");
+    var Node = S.Node;
+
+    function ContentBox() {
+         S.log("contentbox init");
+        var self = this;
+        self.on("renderUI", self._renderUIContentBox, self);
+        self.on("syncUI", self._syncUIContentBox, self);
+        self.on("bindUI", self._bindUIContentBox, self);
+    }
+
+    ContentBox.ATTRS = {
+        //内容容器节点
+        contentEl:{},
+        //层内容
+        content:{}
+    };
+
+
+    ContentBox.HTML_PARSER = {
+        contentEl:".ks-contentbox"
+    };
+
+    ContentBox.prototype = {
+        _syncUIContentBox:function() {
+            S.log("_syncUIContentBox");
+        },
+        _bindUIContentBox:function() {
+            S.log("_bindUIContentBox");
+        },
+        _renderUIContentBox:function() {
+            S.log("_renderUIContentBox");
+            var self = this,
+                contentEl = self.get("contentEl"),
+                el = self.get("el");
+            if (!contentEl) {
+                contentEl = new Node("<div class='ks-contentbox'>").appendTo(el);
+                self.set("contentEl", contentEl);
+            }
+        },
+
+        _uiSetContent:function(c) {
+            S.log("_uiSetContent");
+            if (c !== undefined) {
+                this.get("contentEl").html(c);
+            }
+        },
+
+        __destructor:function(){
+            S.log("contentbox __destructor");
+        }
+    };
+
+    S.Ext.ContentBox = ContentBox;
+});/**
+ * drag extension for position
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-drag", function(S) {
+    S.namespace('Ext');
+    function DragExt() {
+         S.log("drag init");
+        var self = this;
+        self.on("bindUI", self._bindUIDragExt, self);
+        self.on("renderUI", self._renderUIDragExt, self);
+        self.on("syncUIUI", self._syncUIDragExt, self);
+    }
+
+    DragExt.ATTRS = {
+        handlers:{value:[]},
         draggable:{value:true}
     };
 
-    S.extend(Overlay, S.Base, {
-        _init:function() {
-            var self = this;
-            self._createEl();
-            var el = self.el;
-            el.css("z-index", self.get("zIndex"));
-            /**
-             * 窗口显示与隐藏
-             */
-            self.on("afterVisibleChange", function(ev) {
-                var v = ev.newVal;
-                if (v) {
-                    if (typeof v == "boolean") {
-                        self.center();
-                    } else el.offset(v);
-                    self.fire("show");
-                } else {
-                    el.css(noVisibleStyle);
-                    self.fire("hide");
-                }
-            });
+    DragExt.prototype = {
 
-            /**
-             * 关联编辑器焦点保留与复原
-             */
-            if (self.get("focusMgr")) {
-                self._initFocusNotice();
-                self.on("afterVisibleChange", self._editorFocusMg, self);
-            }
-
-
-            /**
-             * 键盘快捷键注册
-             */
-            self.on("afterVisibleChange", function(ev) {
-                var v = ev.newVal;
-                if (v && self.get("shortkey")) {
-                    self._register();
-                } else {
-                    self._unregister();
-                }
-            });
-
-
-            if (self.get("mask")) {
-                /**
-                 * 遮罩层与ie6遮罩垫片同步
-                 */
-                self.on("show", function() {
-                    Overlay.mask(self.get("zIndex") - 1);
-                });
-                self.on("hide", function() {
-                    Overlay.unmask();
-                });
-            }
-
-            self.on("afterZIndexChange", function(ev) {
-                el.css("z-index", ev.newVal)
-            });
-            KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
-
-        },
-        _register:function() {
-            var self = this;
-            Event.on(document, "keydown", self._keydown, self);
-            //mask click support
-            //if (mask) {
-            //    mask.on("click", self.hide, self);
-            //}
-        },
-        //esc keydown support
-        _keydown:function(ev) {
-            //esc
-            if (ev.keyCode == 27) {
-                this.hide();
-                //停止默认行为，例如取消对象选中
-                ev.halt();
-            }
-        },
-        _unregister:function() {
-            var self = this;
-            Event.remove(document, "keydown", self._keydown, self);
-            //if (mask) {
-            //    mask.detach("click", self.hide, self);
-            //}
-        },
-        _createEl:function() {
-            //just manage container
-            var self = this,
-                el = self.get("el");
-            if (!el) {
-                //also gen html
-                el = new Node(
-                    dialogMarkUp.replace(/@title@/,
-                        self.get("title"))).appendTo(document.body
-                    );
-                var head = el.one(".ke-hd"),
-                    height = self.get("height");
-                self.body = el.one(".ke-bd");
-                self.foot = el.one(".ke-ft");
-                self._title = head.one("h1");
-                el.one(".ke-hd-x").on("click", function(ev) {
-                    ev.preventDefault();
-                    self.hide();
-                });
-                if (height) {
-                    self.body.css({
-                        "height": height,
-                        "overflow":"auto"
-                    });
-                }
-
-
-                /**
-                 *  是否支持标题头拖放
-                 */
-                var draggable = self.get("draggable");
-                if (draggable) {
-                    var dragPos = {
-                        "all":el ,
-                        "foot":self.foot,
-                        "body":self.body,
-                        "head":head
-                    };
-                    if (draggable === true)
-                        draggable = head;
-                    else
-                        draggable = dragPos[draggable];
-                    if (draggable) {
-                        new KE.Drag({
-                            node:el,
-                            handlers:{
-                                id:draggable
-                            }
-                        });
-                    }
-                }
-            } else {
-                //已有元素就用dialog包起来
-                self.originalEl = el;
-                if (!el[0].parentNode ||
-                    //ie新节点 为 fragment 类型
-                    el[0].parentNode.nodeType != KE.NODE.NODE_ELEMENT) {
-                    el = new Node("<div class='ke-dialog'>")
-                        .append(new Node("<div class='ke-dialog-wrapper'>")
-                        .append(el))
-                        .appendTo(document.body);
-                } else {
-                    var w = new Node("<div class='ke-dialog'>");
-                    w.insertBefore(el);
-                    w.append(new Node("<div class='ke-dialog-wrapper'>").append(el));
-                    el = w;
-                }
-            }
-            if (self.get("cls")) {
-                el.addClass(self.get("cls"));
-            }
-            if (self.get("width")) {
-                el.css("width", self.get("width"));
-            }
-
-            self.set("el", el);
-            //expose shortcut
-            self.el = el;
-            //初始状态隐藏
-            el.css(noVisibleStyle);
+        _uiSetHanlders:function(v) {
+            S.log("_uiSetHanlders");
+            if (v && v.length > 0)
+                this.__drag.set("handlers", v);
         },
 
-        center :function() {
-            var el = this.el,
-                bw = el.width(),
-                bh = el.height(),
-                vw = DOM.viewportWidth(),
-                vh = DOM.viewportHeight(),
-                bl = (vw - bw) / 2 + DOM.scrollLeft(),
-                bt = (vh - bh) / 2 + DOM.scrollTop();
-            if ((bt - DOM.scrollTop()) > 200) bt -= 150;
+        _syncUIDragExt:function() {
+            S.log("_syncUIDragExt");
+        },
 
-            bl = Math.max(bl, DOM.scrollLeft());
-            bt = Math.max(bt, DOM.scrollTop());
+        _renderUIDragExt:function() {
+            S.log("_renderUIDragExt");
+        },
 
-            el.css({
-                left: bl + "px",
-                top: bt + "px"
+        _bindUIDragExt:function() {
+            S.log("_bindUIDragExt");
+            var self = this,el = self.get("el");
+            self.__drag = new S.Draggable({
+                node:el,
+                handlers:self.get("handlers")
             });
         },
 
-
-        _getFocusEl:function() {
-            var self = this,fel = self._focusEl;
-            if (fel) {
-                return fel;
-            }
-            //焦点管理，显示时用a获得焦点
-            fel = new Node(focusMarkup)
-                .appendTo(self.el);
-            return self._focusEl = fel;
-        }        ,
-
-        _initFocusNotice:function() {
-            var self = this,
-                f = self._getFocusEl();
-            f.on("focus", function() {
-                self.fire("focus");
-            });
-            f.on("blur", function() {
-                self.fire("blur");
-            });
-        },
-
-        /**
-         * 焦点管理，弹出前记住当前的焦点所在editor
-         * 隐藏好重新focus当前的editor
-         */
-        _editorFocusMg:function(ev) {
-            var self = this,
-                editor = self._focusEditor,
-                v = ev.newVal;
-            //console.log(v + " change");
-            //将要出现
+        _uiSetDraggable:function(v) {
+            S.log("_uiSetDraggable");
+            var self = this,d = self.__drag;
             if (v) {
-                //保存当前焦点editor
-                self._focusEditor = focusManager.currentInstance();
-                editor = self._focusEditor;
-                //聚焦到当前窗口
-                if (!UA.webkit) {
-                    //webkit 滚动到页面顶部
-                    //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
-                    self._getFocusEl()[0].focus();
-                }
-                {
-                    /*
-                     * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
-                     * then IE would still leave the caret inside the editing area.
-                     */
-                    if (UA.ie && editor) {
-                        var $selection = editor.document.selection,
-                            $range = $selection.createRange();
-                        if ($range) {
-                            if (
-                            //修改ckeditor，如果单纯选择文字就不用管了
-                            //$range.parentElement && $range.parentElement().ownerDocument == editor.document
-                            //||
-                            //缩放图片那个框在ie下会突出浮动层来
-                                $range.item && $range.item(0).ownerDocument == editor.document) {
-                                var $myRange = document.body.createTextRange();
-                                $myRange.moveToElementText(self.el._4e_first()[0]);
-                                $myRange.collapse(true);
-                                $myRange.select();
-                            }
-                        }
-                    }
-                }
-
-            }
-            //将要隐藏
-            else {
-                editor && editor.focus();
-            }
-        },
-        _prepareShow:function() {
-            if (UA.ie == 6) {
-                /**
-                 * 窗口垫片-shim
-                 */
-                var self = this,
-                    el = self.el,
-                    d_iframe = new Node(
-                        "<" + "iframe class='ke-dialog-iframe'" +
-                            "></iframe>");
-                d_iframe.css(S.mix({
-                    opacity:0
-                }));
-                d_iframe.insertBefore(self.el.one(".ke-dialog-wrapper"));
+                d.on("drag", self._dragExtAction, self);
+            } else {
+                d.detach("drag");
             }
         },
 
+        _dragExtAction:function(offset) {
+            this.set("xy", [offset.left,offset.top])
+        },
+        /**
+         *
+         */
+        __destructor:function() {
+            S.log("DragExt __destructor");
+            var d = this.__drag;
+            d&&d.destroy();
+        }
+
+    };
+
+    S.Ext.Drag = DragExt;
+
+});/**
+ * loading mask support for overlay
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-loading", function(S) {
+    S.namespace("Ext");
+    function LoadingExt() {
+        S.log("LoadingExt init");
+    }
+
+    LoadingExt.prototype = {
         loading:function() {
-            return Overlay.loading(this.el);
+            var self = this;
+            if (!self._loadingExtEl) {
+                self._loadingExtEl = new S.Node("<div " +
+                    "class='ks-ext-loading'" +
+                    " style='position: absolute;" +
+                    "border: none;" +
+                    "width: 100%;" +
+                    "top: 0;" +
+                    "left: 0;" +
+                    "z-index: 99999;" +
+                    "height:100%;" +
+                    "*height: expression(this.parentNode.offsetHeight);" + "'>").appendTo(self.get("el"));
+            }
+            self._loadingExtEl.show();
         },
 
         unloading:function() {
-            Overlay.unloading();
+            var lel = this._loadingExtEl;
+            lel && lel.hide();
+        }
+    };
+
+    S.Ext.Loading = LoadingExt;
+
+});KISSY.add("ext-mask", function(S) {
+    S.namespace("Ext");
+    /**
+     * 多 position 共享一个遮罩
+     */
+    var mask,
+        UA = S.UA,
+        num = 0;
+
+
+    function initMask() {
+        mask = new S.Node("<div class='ks-ext-mask'>").prependTo(document.body);
+        mask.css({
+            "position":"absolute",
+            width:"100%",
+            "height": S.DOM.docHeight()
+        });
+        if (UA.ie == 6) {
+            mask.append("<iframe style='width:100%;" +
+                "height:expression(this.parentNode.offsetHeight);" +
+                "filter:alpha(opacity=0);" +
+                "z-index:-1;'>");
+        }
+    }
+
+    function MaskExt() {
+        S.log("mask init");
+        var self = this;
+        self.on("bindUI", self._bindUIMask, self);
+        self.on("renderUI", self._renderUIMask, self);
+        self.on("syncUI", self._syncUIMask, self);
+    }
+
+    MaskExt.ATTRS = {
+        mask:{
+            value:false
+        }
+    };
+
+    MaskExt.prototype = {
+        _bindUIMask:function() {
+            S.log("_bindUIMask");
         },
-        _realShow : function(v) {
-            this.set("visible", v || true);
+
+        _renderUIMask:function() {
+            S.log("_renderUIMask");
         },
-        show:function(v) {
-            this._prepareShow(v);
+
+        _syncUIMask:function() {
+            S.log("_syncUIMask");
         },
-        hide:function() {
+        _uiSetMask:function(v) {
+            S.log("_uiSetMask");
+            var self = this;
+            if (v) {
+                self.on("show", self._maskExtShow, self);
+                self.on("hide", self._maskExtHide, self);
+            } else {
+                self.detach("show", self._maskExtShow, self);
+                self.detach("hide", self._maskExtHide, self);
+            }
+        },
+
+        _maskExtShow:function() {
+            if (!mask) {
+                initMask();
+            }
+            mask.css({
+                "z-index":this.get("zIndex") - 1
+            });
+            num++;
+            mask.show();
+        },
+
+        _maskExtHide:function() {
+            num--;
+            if (num <= 0) num = 0;
+            if (!num)
+                mask && mask.hide();
+        },
+
+        __destructor:function() {
+            S.log("mask __destructor");
+        }
+
+    };
+
+    S.Ext.Mask = MaskExt;
+});/**
+ * position and visible extension，可定位的隐藏层
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-position", function(S) {
+    S.namespace("Ext");
+
+    var doc = document ,
+        Event = S.Event,
+        KEYDOWN = "keydown";
+
+    function PositionExt() {
+        S.log("position init");
+        var self = this;
+        self.on("bindUI", self._bindUIPosition, self);
+        self.on("renderUI", self._renderUIPosition, self);
+        self.on("syncUI", self._syncUIPosition, self);
+    }
+
+    PositionExt.ATTRS = {
+        x: {
+            // 水平方向绝对位置
+        },
+        y: {
+            // 垂直方向绝对位置
+        },
+        xy: {
+            // 相对 page 定位, 有效值为 [n, m], 为 null 时, 选 align 设置
+            setter: function(v) {
+                var self = this,
+                    xy = S.makeArray(v);
+
+                if (xy.length) {
+                    xy[0] && self.set("x", xy[0]);
+                    xy[1] && self.set("y", xy[1]);
+                }
+                return v;
+            }
+        },
+        zIndex: {
+            value: 9999
+        },
+        visible:{
+            value:undefined
+        }
+    };
+
+
+    PositionExt.prototype = {
+        _syncUIPosition:function() {
+            S.log("_syncUIPosition");
+        },
+        _renderUIPosition:function() {
+            S.log("_renderUIPosition");
+            this.get("el").addClass("ks-ext-position");
+            this.get("el").css("display", "");
+        },
+        _bindUIPosition:function() {
+            S.log("_bindUIPosition");
+        },
+        _uiSetZIndex:function(x) {
+            S.log("_uiSetZIndex");
+            if (x !== undefined)
+                this.get("el").css("z-index", x);
+        },
+        _uiSetX:function(x) {
+            S.log("_uiSetX");
+            if (x !== undefined)
+                this.get("el").offset({
+                    left:x
+                });
+        },
+        _uiSetY:function(y) {
+            S.log("_uiSetY");
+            if (y !== undefined)
+                this.get("el").offset({
+                    top:y
+                });
+        },
+        _uiSetVisible:function(isVisible) {
+            if (isVisible === undefined) return;
+            S.log("_uiSetVisible");
+            var self = this,
+                el = self.get("el");
+            el.css("visibility", isVisible ? "visible" : "hidden");
+            self[isVisible ? "_bindKey" : "_unbindKey" ]();
+            self.fire(isVisible ? "show" : "hide");
+        },
+        /**
+         * 显示/隐藏时绑定的事件
+         */
+        _bindKey: function() {
+            Event.on(doc, KEYDOWN, this._esc, this);
+        },
+
+        _unbindKey: function() {
+            Event.remove(doc, KEYDOWN, this._esc, this);
+        },
+
+        _esc: function(e) {
+            if (e.keyCode === 27) this.hide();
+        },
+        /**
+         * 移动到绝对位置上, move(x, y) or move(x) or move([x, y])
+         * @param {number|Array.<number>} x
+         * @param {number=} y
+         */
+        move: function(x, y) {
+            var self = this;
+            if (S.isArray(x)) {
+                y = x[1];
+                x = x[0];
+            }
+            self.set("xy", [x,y]);
+        },
+
+        /**
+         * 显示 Overlay
+         */
+        show: function() {
+            this._firstShow();
+        },
+
+        /**
+         * 第一次显示时, 需要构建 DOM, 设置位置
+         */
+        _firstShow: function() {
+            var self = this;
+            self.renderer();
+            self._realShow();
+            self._firstShow = self._realShow;
+        },
+
+
+        _realShow: function() {
+            this.set("visible", true);
+        },
+
+        /**
+         * 隐藏
+         */
+        hide: function() {
             this.set("visible", false);
+        },
+
+        __destructor:function() {
+            S.log("position __destructor");
+        }
+
+    };
+
+    S.Ext.Position = PositionExt;
+});/**
+ * shim for ie6 ,require box-ext
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-shim", function(S) {
+    S.namespace("Ext");
+    function ShimExt() {
+        S.log("shim init");
+        var self = this;
+        self.on("renderUI", self._renderUIShimExt, self);
+        self.on("bindUI", self._bindUIShimExt, self);
+        self.on("syncUI", self._syncUIShimExt, self);
+    }
+
+    var Node = S.Node;
+    ShimExt.prototype = {
+        _syncUIShimExt:function() {
+            S.log("_syncUIShimExt");
+        },
+        _bindUIShimExt:function() {
+            S.log("_bindUIShimExt");
+        },
+        _renderUIShimExt:function() {
+            S.log("_renderUIShimExt");
+            var self = this,el = self.get("el");
+            var shim = new Node("<iframe style='position: absolute;" +
+                "border: none;" +
+                "width: expression(this.parentNode.offsetWidth);" +
+                "top: 0;" +
+                "opacity: 0;" +
+                "filter: alpha(opacity=0);" +
+                "left: 0;" +
+                "z-index: -1;" +
+                "height: expression(this.parentNode.offsetHeight);" + "'>");
+            el.prepend(shim);
+        },
+
+        __destructor:function() {
+            S.log("shim __destructor");
+        }
+    };
+    S.Ext.Shim = ShimExt;
+});/**
+ * support standard mod for component
+ * @author: yiminghe@gmail.com
+ */
+KISSY.add("ext-stdmod", function(S) {
+
+    S.namespace("Ext");
+    var CLS_PREFIX = "ks-stdmod-",
+        Node = S.Node;
+
+    function StdMod() {
+        S.log("stdmod init");
+        var self = this;
+        self.on("renderUI", self._renderUIStdMod, self);
+        self.on("syncUI", self._syncUIStdMod, self);
+        self.on("bindUI", self._bindUIStdMod, self);
+    }
+
+    StdMod.ATTRS = {
+        header:{
+        },
+        body:{
+        },
+        footer:{
+        },
+        headerContent:{
+            value:false
+        },
+        bodyContent:{
+            value:false
+        },
+        footerContent:{
+            value:false
+        }
+    };
+
+    StdMod.HTML_PARSER = {
+        header:"." + CLS_PREFIX + "header",
+        body:"." + CLS_PREFIX + "body",
+        footer:"." + CLS_PREFIX + "footer"
+    };
+
+
+    StdMod.prototype = {
+        _bindUIStdMod:function() {
+            S.log("_bindUIStdMod");
+        },
+        _syncUIStdMod:function() {
+            S.log("_syncUIStdMod");
+        },
+        _setStdModContent:function(part, v) {
+            if (v !== false) {
+                if (S.isString(v)) {
+                    this.get(part).html(v);
+                } else {
+                    this.get(part).html("");
+                    this.get(part).append(v);
+                }
+            }
+        },
+        _uiSetBodyContent:function(v) {
+            S.log("_uiSetBodyContent");
+            this._setStdModContent("body", v);
+        },
+        _uiSetHeaderContent:function(v) {
+            S.log("_uiSetHeaderContent");
+            this._setStdModContent("header", v);
+        },
+        _uiSetFooterContent:function(v) {
+            S.log("_uiSetFooterContent");
+            this._setStdModContent("footer", v);
+        },
+        _renderUIStdMod:function() {
+            S.log("_renderUIStdMod");
+            var self = this,
+                el = self.get("contentEl"),
+                header = self.get("header"),
+                body = self.get("body"),
+                footer = self.get("footer"),
+                headerContent = self.get("headerContent"),
+                bodyContent = self.get("bodyContent"),
+                footerContent = self.get("footerContent");
+            if (!header) {
+                header = new Node("<div class='" + CLS_PREFIX + "header'>").appendTo(el);
+                self.set("header", header);
+            }
+            if (!body) {
+                body = new Node("<div class='" + CLS_PREFIX + "body'>").appendTo(el);
+                self.set("body", body);
+            }
+            if (!footer) {
+                footer = new Node("<div class='" + CLS_PREFIX + "footer'>").appendTo(el);
+                self.set("footer", footer);
+            }
+        },
+
+        __destructor:function() {
+            S.log("stdmod __destructor");
+        }
+    };
+
+
+    S.Ext.StdMod = StdMod;
+
+});/**
+ * KISSY Overlay
+ * @author 玉伯<lifesinger@gmail.com>, 承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
+ */
+KISSY.add("overlay", function(S) {
+
+    var Base = S.Base,
+        UA = S.UA;
+
+
+    var Overlay = Base.create([S.Ext.Box,
+        S.Ext.ContentBox,
+        S.Ext.Position,
+        S.Ext.Loading,
+        //ie6 支持,select bug
+        UA.ie == 6 ? S.Ext.Shim : null,
+        S.Ext.Align,
+        S.Ext.Mask], {
+
+        init:function() {
+            S.log("Overlay init");
+            var self = this;
+            self.on("bindUI", self._bindUIOverlay, self);
+            self.on("renderUI", self._renderUIOverlay, self);
+            self.on("syncUI", self._syncUIOverlay, self);
+        },
+
+        _renderUIOverlay:function() {
+            S.log("_renderUIOverlay");
+            this.get("el").addClass("ks-overlay");
+        },
+
+        _syncUIOverlay:function() {
+            S.log("_syncUIOverlay");
+        },
+        /**
+         * bindUI
+         * 注册dom事件以及属性事件
+         * @override
+         */
+        _bindUIOverlay: function() {
+            S.log("_bindUIOverlay");
+        },
+
+        /**
+         * 删除自己, mask 删不了
+         */
+        destructor: function() {
+            S.log("overlay destructor");
+        }
+
+    });
+    S.Overlay = Overlay;
+
+}, {
+    requires: ["core"]
+});
+
+/**
+ * 2010-11-09 2010-11-10 承玉<yiminghe@gmail.com>重构，attribute-base-Overlay ，采用 Base.create
+ *
+ * TODO:
+ *  - effect
+ */
+/**
+ * KISSY.Dialog
+ * @creator  承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
+ */
+KISSY.add('dialog', function(S) {
+
+    S.Dialog = S.Base.create(S.Overlay,
+        [S.Ext.StdMod,
+            S.Ext.Close,
+            S.Ext.Drag,
+            S.Ext.Constrain], {
+        init:function() {
+            S.log("dialog init");
+            var self = this;
+            self.on("renderUI", self._rendUIDialog, self);
+            self.on("bindUI", self._bindUIDialog, self);
+            self.on("syncUI", self._syncUIDialog, self);
+        },
+
+        _rendUIDialog:function() {
+            S.log("_rendUIDialog");
+            var self = this;
+            self.get("el").addClass("ks-dialog");
+            //设置值，drag-ext 绑定时用到
+            self.set("handlers", [self.get("header")]);
+        },
+        _bindUIDialog:function() {
+            S.log("_bindUIDialog");
+        },
+        _syncUIDialog:function() {
+            S.log("_syncUIDialog");
+        },
+        destructor:function() {
+            S.log("Dialog destructor");
         }
     });
-    KE.Utils.lazyRun(Overlay.prototype,
-        "_prepareLoading",
-        "_realLoading");
-    KE.SimpleOverlay = Overlay;
-});
-KISSY.Editor.add("pagebreak", function(editor) {
+
+
+}, { host: 'overlay' });
+
+/**
+ * 2010-11-10 承玉<yiminghe@gmail.com>重构，使用扩展类
+ */
+
+
+
+KISSY.Editor.add("ext-focus", function() {
+    var S = KISSY,
+        UA = S.UA,
+        KE = S.Editor,
+        focusManager = KE.focusManager;
+    KE.namespace("Ext");
+
+    function FocusExt() {
+        S.log("FocusExt init");
+        var self = this;
+        self.on("renderUI", self._renderUIFocusExt, self);
+        self.on("bindUI", self._bindUIFocusExt, self);
+        self.on("syncUI", self._syncUIFocusExt, self);
+    }
+
+    FocusExt.ATTRS = {
+        focus4e:{
+            value:true
+        }
+    };
+
+    FocusExt.prototype = {
+        _uiSetFocus4e:function(v) {
+            var self = this;
+            if (v) {
+                self.on("show", self._show4FocusExt, self);
+                self.on("hide", self._hide4FocusExt, self);
+            } else {
+                self.detach("show", self._show4FocusExt, self);
+                self.detach("hide", self._hide4FocusExt, self);
+            }
+        },
+        _syncUIFocusExt:function() {
+            S.log("_syncUIFocusExt");
+        },
+        _renderUIFocusExt:function() {
+            S.log("_renderUIFocusExt");
+        },
+        _bindUIFocusExt:function() {
+            var self = this;
+            self._focus4e = new S.Node("<a " +
+                "href='#' " +
+                "class='ke-focus' " +
+                "style='" +
+                "width:0;" +
+                "height:0;" +
+                "margin:0;" +
+                "padding:0;" +
+                "overflow:hidden;" +
+                "outline:none;" +
+                "font-size:0;'" +
+                "></a>").appendTo(self.get("el"));
+        },
+        _show4FocusExt:function() {
+            var self = this;
+            //保存当前焦点editor
+            self._focusEditor = focusManager.currentInstance();
+            var editor = self._focusEditor;
+            /*
+             * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
+             * then IE would still leave the caret inside the editing area.
+             */
+            //聚焦到当前窗口
+            //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
+            //chrome 需要下面两句
+            window.focus();
+            document.body.focus();
+
+            //firefox 需要下面一句
+            self._focus4e[0].focus();
+
+            if (UA.ie && editor) {
+                var $selection = editor.document.selection,
+                    $range = $selection.createRange();
+                if ($range) {
+                    if (
+                    //修改ckeditor，如果单纯选择文字就不用管了
+                    //$range.parentElement && $range.parentElement().ownerDocument == editor.document
+                    //||
+                    //缩放图片那个框在ie下会突出浮动层来
+                        $range.item
+                            && $range.item(0).ownerDocument == editor.document) {
+                        var $myRange = document.body.createTextRange();
+                        $myRange.moveToElementText(self.get("el")._4e_first()[0]);
+                        $myRange.collapse(true);
+                        $myRange.select();
+                    }
+                }
+            }
+
+
+        },
+        _hide4FocusExt:function() {
+            var editor = this._focusEditor;
+            editor && editor.focus();
+        }
+    };
+    KE.Ext.Focus = FocusExt;
+
+}, {
+    host:"overlay"
+});/**
+ * custom overlay  for kissy editor
+ * @author:yiminghe@gmail.com
+ */
+KISSY.Editor.add("overlay", function() {
+
+    var S = KISSY,
+        KE = S.Editor;
+    if (KE.Overlay) return;
+    /**
+     * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
+     */
+    var Overlay4E = S.Base.create(S.Overlay, [KE.Ext.Focus], {
+        init:function() {
+            S.log("Overlay4E init");
+            var self = this;
+            //必须等 sync ，等所有状态都同步好再进行 preventFocus
+            self.on("syncUI", self._syncUIOverlay4E, self);
+        },
+        _syncUIOverlay4E:function() {
+            S.log("_syncUIOverlay4E");
+            var self = this;
+            //编辑器 overlay 中的全部点击都不会使得失去焦点
+            KE.Utils.preventFocus(self.get("contentEl"));
+        }
+    }, {
+        ATTRS:{
+            //指定zIndex默认值
+            "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
+        }
+    });
+    var Dialog4E = S.Base.create(S.Dialog, [KE.Ext.Focus], {
+        show:function() {
+            //在 show 之前调用
+            this.center();
+            var y = this.get("y");
+            //居中有点偏下
+            if (y - S.DOM.scrollTop() > 200) {
+                y = S.DOM.scrollTop() + 200;
+                this.set("y", y);
+            }
+            Dialog4E.superclass.show.call(this);
+        }
+    }, {
+        ATTRS:{
+            //指定zIndex默认值
+            "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
+        }
+    });
+
+    KE.Overlay = Overlay4E;
+    KE.Dialog = Dialog4E;
+
+
+    var globalMask;
+
+    KE.Overlay.loading = function() {
+        if (!globalMask) {
+            globalMask = new KE.Overlay({
+                x:0,
+                focus4e:false,
+                width:"100%",
+                y:0,
+                //指定全局 loading zIndex 值
+                "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),
+                elCls:"ke-global-loading"
+            });
+        }
+        globalMask.set("height", S.DOM.docHeight());
+        globalMask.show();
+        globalMask.loading();
+    };
+
+    KE.Overlay.unloading = function() {
+        globalMask && globalMask.hide();
+    };
+});KISSY.Editor.add("pagebreak", function(editor) {
     var S = KISSY,KE = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
@@ -17355,7 +18285,7 @@ KISSY.Editor.add("removeformat", function(editor) {
     if (!KE.Resizer) {
         (function() {
             var markup = "<div class='ke-resizer'></div>",
-                Draggable = KE.Draggable;
+                Draggable = S.Draggable;
 
             function Resizer(editor) {
                 this.editor = editor;
@@ -17379,17 +18309,19 @@ KISSY.Editor.add("removeformat", function(editor) {
                         resizer.css("display", "");
                     });
                     var d = new Draggable({
-                        node:resizer
+                        node:resizer,
+                        handlers:[resizer]
                     }),height = 0,width = 0,
                         heightEl = editor.wrap,
                         widthEl = editor.editorWrap;
-                    d.on("start", function() {
+                    d.on("dragstart", function() {
                         height = heightEl.height();
                         width = widthEl.width();
                     });
-                    d.on("move", function(ev) {
+                    d.on("drag", function(ev) {
                         var diffX = ev.pageX - this.startMousePos.left,
                             diffY = ev.pageY - this.startMousePos.top;
+                       
                         if (S.inArray("y", cfg)) heightEl.height(height + diffY);
                         if (S.inArray("x", cfg)) widthEl.width(width + diffX);
                     });
@@ -17424,8 +18356,7 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span>" +
             "</span>" +
             "</a></span>",
-        menu_markup = "<div onmousedown='return false;'>" +
-            "</div>";
+        menu_markup = "<div>" ;
 
     if (KE.Select) return;
     function Select(cfg) {
@@ -17595,18 +18526,20 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 popUpWidth = self.get("popUpWidth"),
                 focusA = self._focusA,
-                menuNode = new Node(menu_markup);
+                menuNode;
             //要在适当位置插入 !!!
-            menuNode.appendTo(self.get("menuContainer"));
-
-            var menu = new KE.SimpleOverlay({
-                el:menuNode,
-                cls:"ke-menu",
+            var menu = new KE.Overlay({
+                render:self.get("menuContainer"),
+                content:menu_markup,
+                focus4e:false,
+                elCls:"ke-menu",
                 width:popUpWidth ? popUpWidth : el.width(),
                 zIndex:KE.baseZIndex(KE.zIndexManager.SELECT),
                 focusMgr:false
             }),
                 items = self.get("items");
+            menu.renderer();
+            menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
@@ -17641,6 +18574,7 @@ KISSY.Editor.add("select", function() {
             });
 
             self.on("afterItemsChange", self._itemsChange, self);
+            self.menuNode = menuNode;
         },
         _stateChange:function(ev) {
             var v = ev.newVal,el = this.el;
@@ -17660,14 +18594,15 @@ KISSY.Editor.add("select", function() {
             ev.halt();
             var self = this,
                 menu = self.menu,
-                menuNode = menu.el,
+                menuNode = self.menuNode,
                 t = new Node(ev.target),
                 a = t._4e_ascendant(function(n) {
                     return menuNode.contains(n) && n._4e_name() == "a";
                 }, true);
 
             if (!a) return;
-            var preVal = self.get("value"),newVal = a.attr("data-value");
+            var preVal = self.get("value"),
+                newVal = a.attr("data-value");
             //更新逻辑值
             self.set("value", newVal);
 
@@ -17684,8 +18619,8 @@ KISSY.Editor.add("select", function() {
                 el = self.el,
                 xy = el.offset(),
                 orixy = S.clone(xy),
-                menuHeight = self.menu.el.height(),
-                menuWidth = self.menu.el.width(),
+                menuHeight = self.menu.get("el").height(),
+                menuWidth = self.menu.get("el").width(),
                 wt = DOM.scrollTop(),
                 wl = DOM.scrollLeft(),
                 wh = DOM.viewportHeight() ,
@@ -17760,7 +18695,8 @@ KISSY.Editor.add("select", function() {
                     xy.left = orixy.left;
                 }
             }
-            self.menu.show(xy);
+            self.menu.set("xy", [xy.left,xy.top]);
+            self.menu.show();
         },
         _click:function(ev) {
             ev.preventDefault();
@@ -17809,7 +18745,7 @@ KISSY.Editor.add("smiley", function(editor) {
         DOM = S.DOM,
         Event = S.Event,
         Node = S.Node,
-        Overlay = KE.SimpleOverlay,
+        Overlay = KE.Overlay,
         TripleButton = KE.TripleButton;
     if (!KE.Smiley) {
         (function() {
@@ -17853,6 +18789,7 @@ KISSY.Editor.add("smiley", function(editor) {
                         //text:"smiley",
                         contentCls:"ke-toolbar-smiley",
                         title:"插入表情",
+
                         container:editor.toolBarDiv
                     });
                     self.el.on("offClick onClick", this._show, this);
@@ -17892,15 +18829,18 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,
                         el = self.el,
                         editor = self.editor;
-                    self.smileyPanel = new Node(smiley_markup);
                     self.smileyWin = new Overlay({
-                        el:self.smileyPanel,
+                        content:smiley_markup,
+                        focus4e:false,
                         width:"297px",
+                        elCls:"ks-popup",
                         zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
-                        focusMgr:false,
                         mask:false
                     });
+
                     var smileyWin = self.smileyWin;
+                    smileyWin.renderer();
+                    self.smileyPanel = smileyWin.get("contentEl");
                     smileyWin.on("show", el.bon, el);
                     smileyWin.on("hide", el.boff, el);
                     self.smileyPanel.on("click", self._selectSmiley, self);
@@ -17913,7 +18853,8 @@ KISSY.Editor.add("smiley", function(editor) {
                     if (xy.left + this.smileyPanel.width() > DOM.viewportWidth() - 60) {
                         xy.left = DOM.viewportWidth() - this.smileyPanel.width() - 60;
                     }
-                    this.smileyWin.show(xy);
+                    this.smileyWin.set("xy", [xy.left,xy.top]);
+                    this.smileyWin.show();
                 },
                 _show:function(ev) {
                     var self = this,
@@ -18679,7 +19620,7 @@ KISSY.Editor.add("templates", function(editor) {
         //UA = S.UA,
         DOM = S.DOM,
         TripleButton = KE.TripleButton,
-        Overlay = KE.SimpleOverlay;
+        Dialog = KE.Dialog;
 
     if (!KE.TplUI) {
 
@@ -18688,7 +19629,7 @@ KISSY.Editor.add("templates", function(editor) {
                 ".ke-tpl {" +
                     "    border: 2px solid #EEEEEE;" +
                     "    width: 95%;" +
-                    "    margin: 20px auto 0 auto;" +
+                    "    margin: 20px auto;" +
                     "}" +
 
                     ".ke-tpl-list {" +
@@ -18743,9 +19684,13 @@ KISSY.Editor.add("templates", function(editor) {
                     HTML += "</div>";
 
                     this._initDialogOk = true;
-                    var ui = new Overlay({mask:true,title:"内容模板"});
-                    ui.body.html(HTML);
-                    var list = ui.body.all(".ke-tpl-list");
+                    var ui = new Dialog({
+                        width:500,
+                        mask:true,
+                        headerContent:"内容模板",
+                        bodyContent:HTML});
+                    ui.renderer();
+                    var list = ui.get("el").all(".ke-tpl-list");
                     list.on("click", function(ev) {
                         ev.halt();
                         var t = new Node(ev.target);

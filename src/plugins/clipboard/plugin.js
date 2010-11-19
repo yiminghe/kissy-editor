@@ -20,9 +20,12 @@ KISSY.Editor.add("clipboard", function(editor) {
             S.augment(Paste, {
                 _init:function() {
                     var self = this,editor = self.editor;
-                    if (UA.ie)
+                    if (UA.ie) {
                         Event.on(editor.document, "keydown", self._paste, self);
-                    else  Event.on(editor.document, "paste", self._paste, self);
+                    }
+                    else {
+                        Event.on(editor.document, "paste", self._paste, self);
+                    }
 
                     editor.addCommand("copy", new cutCopyCmd("copy"));
                     editor.addCommand("cut", new cutCopyCmd("cut"));
@@ -244,14 +247,18 @@ KISSY.Editor.add("clipboard", function(editor) {
                 return retval;
             }
 
+            /**
+             * 给所有右键都加入复制粘贴
+             */
             KE.on("contextmenu", function(ev) {
                 //debugger
                 var contextmenu = ev.contextmenu,
                     editor = contextmenu.cfg["editor"],
                     //原始内容
-                    el = contextmenu.el.originalEl,
+                    el = contextmenu.elDom,
                     pastes = {"copy":0,"cut":0,"paste":0};
                 for (var i in pastes) {
+
                     if (!pastes.hasOwnProperty(i))return;
                     pastes[i] = el.one(".ke-paste-" + i);
                     (function(cmd) {
@@ -266,7 +273,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 if (cmdObj.hasClass("ke-menuitem-disable"))
                                     return;
                                 contextmenu.hide();
-
                                 //给 ie 一点 hide() 中的事件触发 handler 运行机会，
                                 // 原编辑器获得焦点后再进行下步操作
                                 setTimeout(function() {

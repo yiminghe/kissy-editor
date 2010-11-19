@@ -8,7 +8,7 @@ KISSY.Editor.add("smiley", function(editor) {
         DOM = S.DOM,
         Event = S.Event,
         Node = S.Node,
-        Overlay = KE.SimpleOverlay,
+        Overlay = KE.Overlay,
         TripleButton = KE.TripleButton;
     if (!KE.Smiley) {
         (function() {
@@ -52,6 +52,7 @@ KISSY.Editor.add("smiley", function(editor) {
                         //text:"smiley",
                         contentCls:"ke-toolbar-smiley",
                         title:"插入表情",
+
                         container:editor.toolBarDiv
                     });
                     self.el.on("offClick onClick", this._show, this);
@@ -91,15 +92,18 @@ KISSY.Editor.add("smiley", function(editor) {
                     var self = this,
                         el = self.el,
                         editor = self.editor;
-                    self.smileyPanel = new Node(smiley_markup);
                     self.smileyWin = new Overlay({
-                        el:self.smileyPanel,
+                        content:smiley_markup,
+                        focus4e:false,
                         width:"297px",
+                        elCls:"ks-popup",
                         zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
-                        focusMgr:false,
                         mask:false
                     });
+
                     var smileyWin = self.smileyWin;
+                    smileyWin.renderer();
+                    self.smileyPanel = smileyWin.get("contentEl");
                     smileyWin.on("show", el.bon, el);
                     smileyWin.on("hide", el.boff, el);
                     self.smileyPanel.on("click", self._selectSmiley, self);
@@ -112,7 +116,8 @@ KISSY.Editor.add("smiley", function(editor) {
                     if (xy.left + this.smileyPanel.width() > DOM.viewportWidth() - 60) {
                         xy.left = DOM.viewportWidth() - this.smileyPanel.width() - 60;
                     }
-                    this.smileyWin.show(xy);
+                    this.smileyWin.set("xy", [xy.left,xy.top]);
+                    this.smileyWin.show();
                 },
                 _show:function(ev) {
                     var self = this,

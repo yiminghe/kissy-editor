@@ -818,7 +818,7 @@ KISSY.Editor.add("styles", function(KE) {
                     clonedElement = newElement;
                 }
                 DOM[ boundaryElement.match == 'start' ?
-                    'insertBefore' : 'insertAfter' ](clonedElement[0], boundaryElement[0]);
+                    'insertBefore' : 'insertAfter' ](clonedElement, boundaryElement);
             }
         } else {
             /*

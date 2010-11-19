@@ -11,7 +11,7 @@ KISSY.Editor.add("templates", function(editor) {
         //UA = S.UA,
         DOM = S.DOM,
         TripleButton = KE.TripleButton,
-        Overlay = KE.SimpleOverlay;
+        Dialog = KE.Dialog;
 
     if (!KE.TplUI) {
 
@@ -20,7 +20,7 @@ KISSY.Editor.add("templates", function(editor) {
                 ".ke-tpl {" +
                     "    border: 2px solid #EEEEEE;" +
                     "    width: 95%;" +
-                    "    margin: 20px auto 0 auto;" +
+                    "    margin: 20px auto;" +
                     "}" +
 
                     ".ke-tpl-list {" +
@@ -75,9 +75,13 @@ KISSY.Editor.add("templates", function(editor) {
                     HTML += "</div>";
 
                     this._initDialogOk = true;
-                    var ui = new Overlay({mask:true,title:"内容模板"});
-                    ui.body.html(HTML);
-                    var list = ui.body.all(".ke-tpl-list");
+                    var ui = new Dialog({
+                        width:500,
+                        mask:true,
+                        headerContent:"内容模板",
+                        bodyContent:HTML});
+                    ui.renderer();
+                    var list = ui.get("el").all(".ke-tpl-list");
                     list.on("click", function(ev) {
                         ev.halt();
                         var t = new Node(ev.target);

@@ -1,24 +1,22 @@
 /**
- * dd support for kissy editor
- * @author:yiminghe@gmail.com
+ * dd support for kissy
+ * @author: yiminghe@gmail.com
  */
-KISSY.Editor.add("dd", function() {
-    var S = KISSY,
-        KE = S.Editor,
-        Event = S.Event,
-        UA = S.UA,
-        DOM = S.DOM,
-        Node = S.Node;
-    if (KE.DD) return;
-    KE.DD = {};
+KISSY.add('dd', function(S) {
 
-    function Manager() {
-        var self = this;
-        Manager.superclass.constructor.apply(self, arguments);
-        self._init();
+    var Event = S.Event,
+        DOM = S.DOM,
+        Node = S.Node,
+        SHIM_ZINDEX = 999999;
+
+    S.DD = { };
+
+    function DDM() {
+        DDM.superclass.constructor.apply(this, arguments);
+        this._init();
     }
 
-    Manager.ATTRS = {
+    DDM.ATTRS = {
         /**
          * mousedown 后 buffer 触发时间  timeThred
          */
@@ -34,12 +32,13 @@ KISSY.Editor.add("dd", function() {
      负责拖动涉及的全局事件：
      1.全局统一的鼠标移动监控
      2.全局统一的鼠标弹起监控，用来通知当前拖动对象停止
-     3.为了跨越iframe而统一在底下的遮罩层
+     3.为了跨越 iframe 而统一在底下的遮罩层
      */
-    S.extend(Manager, S.Base, {
+    S.extend(DDM, S.Base, {
+
         _init: function() {
             var self = this;
-            self._showShimMove = KE.Utils.throttle(self._move, self, 30);
+            self._showShimMove = throttle(self._move, self, 30);
         },
 
         /*
@@ -125,7 +124,7 @@ KISSY.Editor.add("dd", function() {
                 "top:0;" +
                 "z-index:" +
                 //覆盖iframe上面即可
-                KE.baseZIndex(KE.zIndexManager.DD_PG)
+                SHIM_ZINDEX
                 + ";" +
                 "'></div>").appendTo(doc.body);
             //0.5 for debug
@@ -143,6 +142,7 @@ KISSY.Editor.add("dd", function() {
             self._clearSelection();
         },
         _clearSelection:function() {
+            S.log("_clearSelection");
             //清除由于浏览器导致的选择文字
             if (window.getSelection) {
                 window.getSelection().removeAllRanges();
@@ -174,54 +174,123 @@ KISSY.Editor.add("dd", function() {
         }
     });
 
-    KE.DD.DDM = new Manager();
-    var DDM = KE.DD.DDM;
+    S.DD.DDM = new DDM();
+
+    /**
+     * Throttles a call to a method based on the time between calls. from YUI
+     * @method throttle
+     * @for KISSY
+     * @param fn {function} The function call to throttle.
+     * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
+     * @return {function} Returns a wrapped function that calls fn throttled.
+     * ! Based on work by Simon Willison: http://gist.github.com/292562
+     */
+    function throttle(fn, scope, ms) {
+        ms = ms || 150;
+
+        if (ms === -1) {
+            return (function() {
+                fn.apply(scope, arguments);
+            });
+        }
+
+        var last = S.now();
+        return (function() {
+            var now = S.now();
+            if (now - last > ms) {
+                last = now;
+                fn.apply(scope, arguments);
+            }
+        });
+    }
+});
+/**
+ * dd support for kissy, drag for dd
+ * @author: yiminghe@gmail.com
+ */
+KISSY.add('dd-draggable', function(S) {
+
+    var UA = S.UA,Node = S.Node;
 
     /*
      拖放纯功能类
      */
     function Draggable() {
-        var self = this;
-        Draggable.superclass.constructor.apply(self, arguments);
-        self._init();
+        Draggable.superclass.constructor.apply(this, arguments);
+        this._init();
     }
 
     Draggable.ATTRS = {
-        //拖放节点
-        node:{},
-        //handler 集合，注意暂时必须在 node 里面
-        handlers:{value:{}}
+        /**
+         * 拖放节点
+         */
+        node: {
+            setter:function(v) {
+                return new Node(v);
+            }
+        },
+
+        /**
+         * handler 集合，注意暂时必须在 node 里面
+         */
+        handlers:{
+            value:{},
+            setter:function(vs) {
+                if (vs) {
+                    for (var i = 0; i < vs.length; i++) {
+                        vs[i] = new Node(vs[i]);
+                    }
+                }
+            }
+        }
     };
 
     S.extend(Draggable, S.Base, {
-        _init:function() {
+
+        _init: function() {
             var self = this,
-                node = self.get("node"),
-                handlers = self.get("handlers");
-            //DDM.reg(node);
+                node = self.get('node'),
+                handlers = self.get('handlers');
+
             if (S.isEmptyObject(handlers)) {
                 handlers[node[0].id] = node;
             }
+
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
-                var hl = handlers[h],ori = hl.css("cursor");
-                if (!hl._4e_equals(node)) {
-                    if (!ori || ori === "auto")
-                        hl.css("cursor", "move");
-                    //ie 不能被选择了
-                    //hl._4e_unselectable();
+                var hl = handlers[h],
+                    ori = hl.css('cursor');
+                if (hl[0] != node[0]) {
+                    if (!ori || ori === 'auto')
+                        hl.css('cursor', 'move');
                 }
             }
-            node.on("mousedown", self._handleMouseDown, self);
+            node.on('mousedown', self._handleMouseDown, self);
         },
-        _check:function(t) {
-            var handlers = this.get("handlers");
+
+        destroy:function() {
+            var self = this,
+                node = self.get('node'),
+                handlers = self.get('handlers');
+            for (var h in handlers) {
+                if (!handlers.hasOwnProperty(h)) continue;
+                var hl = handlers[h];
+                if (hl.css("cursor") == "move") {
+                    hl.css("cursor", "auto");
+                }
+            }
+            node.detach('mousedown', self._handleMouseDown, self);
+        },
+
+        _check: function(t) {
+            var handlers = this.get('handlers');
+
             for (var h in handlers) {
                 if (!handlers.hasOwnProperty(h)) continue;
                 if (handlers[h].contains(t)
                     ||
                     //子区域内点击也可以启动
-                    handlers[h]._4e_equals(t)) return true;
+                    handlers[h][0] == t[0]) return true;
             }
             return false;
         },
@@ -232,17 +301,17 @@ KISSY.Editor.add("dd", function() {
          * 通知全局管理器开始作用
          * @param ev
          */
-        _handleMouseDown:function(ev) {
+        _handleMouseDown: function(ev) {
             var self = this,
-                t = new Node(ev.target);
+                t = new S.Node(ev.target);
             if (!self._check(t)) return;
             //chrome 阻止了 flash 点击？？
             if (!UA.webkit) {
                 //firefox 默认会拖动对象地址
                 ev.preventDefault();
             }
-            //
-            DDM._start(self);
+
+            S.DD.DDM._start(self);
 
             var node = self.get("node"),
                 mx = ev.pageX,
@@ -257,43 +326,38 @@ KISSY.Editor.add("dd", function() {
                 left:mx - nxy.left,
                 top:my - nxy.top
             };
+            self.set("diff", self._diff);
 
         },
-        _move:function(ev) {
-            this.fire("move", ev)
-        },
-        _end:function() {
-            this.fire("end");
-        },
-        _start:function() {
-            this.fire("start");
-        }
-    });
 
-    /*
-     拖放实体，功能反应移动时，同时移动节点
-     */
-    function Drag() {
-        Drag.superclass.constructor.apply(this, arguments);
-    }
-
-    S.extend(Drag, Draggable, {
-        _init:function() {
-            var self = this;
-            Drag.superclass._init.apply(self, arguments);
-            var node = self.get("node");
-            self.on("move", function(ev) {
-                var left = ev.pageX - self._diff.left,
-                    top = ev.pageY - self._diff.top;
-                node.offset({
-                    left:left,
-                    top:top
-                })
+        _move: function(ev) {
+            var self = this,
+                diff = self.get("diff"),
+                left = ev.pageX - diff.left,
+                top = ev.pageY - diff.top;
+            S.mix(ev, {
+                left:left,
+                top:top
             });
+            this.fire("drag", ev);
+        },
+
+        _end: function() {
+            this.fire("dragend");
+        },
+
+        _start: function() {
+            this.fire("dragstart");
         }
+
     });
 
-    KE.Draggable = Draggable;
-    KE.Drag = Drag;
+    S.Draggable = Draggable;
 
+}, { host: 'dd' });
+/**
+ * dumb ,告诉 editor ，其dd已经loaded，否则会动态请求
+ * 桥 kissy dd ->  editor dd
+ */
+KISSY.Editor.add("dd", function() {
 });

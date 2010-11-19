@@ -46,9 +46,10 @@ KISSY.Editor.add("music/dialog", function(editor) {
                     "</label>" +
                     "</p>" +
                     "</div>",
-                footHtml = "<a class='ke-music-ok ke-button' " +
+                footHtml = "<div style='padding:5px 20px 20px;'>" +
+                    "<a class='ke-music-ok ke-button' " +
                     "style='margin:0 20px 0 40px;'>确定</a> " +
-                    "<a class='ke-music-cancel ke-button'>取消</a>";
+                    "<a class='ke-music-cancel ke-button'>取消</a></div>";
 
             function getMusicUrl(url) {
                 return url.replace(/^.+niftyplayer\.swf\?file=/, "");
@@ -77,7 +78,7 @@ KISSY.Editor.add("music/dialog", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = self.d,
-                        el = d.el;
+                        el = d.get("el");
                     self.dUrl = el.one(".ke-music-url");
                     self.dAlign = KE.Select.decorate(el.one(".ke-music-align"));
                     self.dMargin = el.one(".ke-music-margin");
@@ -114,7 +115,7 @@ KISSY.Editor.add("music/dialog", function(editor) {
                         f = self.selectedFlash;
                     if (f) {
                         var r = editor.restoreRealElement(f);
-                        self.dUrl.val(self._getFlashUrl(r));
+                        KE.Utils.valInput(self.dUrl, self._getFlashUrl(r));
                         self.dAlign.val(f.css("float"));
                         self.dMargin.val(parseInt(r._4e_style("margin")) || 0);
                     } else {

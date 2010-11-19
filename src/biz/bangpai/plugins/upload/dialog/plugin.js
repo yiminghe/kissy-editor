@@ -10,7 +10,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
         PIC_SIZE_LIMIT = 1000,
         PIC_SIZE_LIMIT_WARNING = "图片太大，请压缩至 n M以下",
         Node = S.Node,
-        Overlay = KE.SimpleOverlay,
+        Dialog = KE.Dialog,
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
         movie = KE.Config.base +
@@ -68,11 +68,9 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 var _t1 = node1.nextSibling;
                 var _t2 = node2.nextSibling;
                 //将node2插入到原来node1的位置
-                if (_t1)_parent.insertBefore(node2, _t1);
-                else _parent.appendChild(node2);
+                _parent.insertBefore(node2, _t1);
                 //将node1插入到原来node2的位置
-                if (_t2)_parent.insertBefore(node1, _t2);
-                else _parent.appendChild(node1);
+                _parent.insertBefore(node1, _t2);
             }
 
 
@@ -82,18 +80,16 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         editor = self.editor,
                         bangpaiCfg = editor.cfg["pluginConfig"]["bangpai-upload"];
 
-                    self.dialog = new Overlay({
-                        title:"批量上传",
+                    self.dialog = new Dialog({
+                        headerContent:"批量上传",
                         mask:false,
-                        draggable:"all",
-                        //height:"500px",
-                        focusMgr:false,
+                        focus4e:false,
                         width:"600px"
                     });
-
                     var d = self.dialog;
-                    d.foot.hide();
-                    var bangpaiUploaderHolder = d.body,
+                    d.renderer();
+                    d.set("handlers", [d.get("el")]);
+                    var bangpaiUploaderHolder = d.get("body"),
                         btnHolder = new Node(
                             "<div class='ke-upload-btn-wrap'>" +
                                 "<span " +
@@ -102,7 +98,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                 "color:#969696;" +
                                 "display:inline-block;" +
                                 "vertical-align:middle;" +
-                                "width:469px;" +
+                                "width:450px;" +
                                 "'></span>" +
                                 "</div>").appendTo(bangpaiUploaderHolder),
                         listWrap = new Node("<div style='display:none'>")
@@ -159,7 +155,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         delAll = upHolder.one(".ke-bangpaiupload-delall"),
                         fid = S.guid(name),
                         statusText = new Node("<span>")
-                            .insertBefore(upHolder[0].firstChild);
+                            .prependTo(upHolder);
 
 
                     self._sizeLimit = bangpaiCfg.sizeLimit || PIC_SIZE_LIMIT;
@@ -329,7 +325,6 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     uploader.on("fileSelect", self._onSelect, self);
                     uploader.on("uploadStart", self._onUploadStart, self);
                     uploader.on("uploadProgress", self._onProgress, self);
-                    //uploader.on("uploadComplete", self._onComplete, self);
                     uploader.on("uploadCompleteData", self._onUploadCompleteData, self);
                     uploader.on("contentReady", self._ready, self);
                     uploader.on("uploadError", self._uploadError, self);
@@ -343,13 +338,16 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     var previewWidth = bangpaiCfg.previewWidth;
                     var previewSuffix = bangpaiCfg.previewSuffix;
                     if (previewWidth) {
-                        var preview = new Node("<div>").appendTo(listWrap);
-                        var previewWin = new Overlay({
+
+                        var previewWin = new S.Overlay({
                             mask:false,
                             width:previewWidth,
-                            el:preview
+                            render:listWrap
                         });
-                        previewWin.el.css("border", "none");
+                        previewWin.renderer();
+                        var preview = previewWin.get("contentEl");
+                        preview.css("border", "none");
+
                         var currentFid = 0;
                         listWrap.on("mouseover", function(ev) {
                             var t = ev.target,td = DOM.parent(t, ".ke-upload-filename");
@@ -372,7 +370,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                     }
                                     var offset = DOM.offset(td);
                                     offset.left += td.offsetWidth;
-                                    previewWin.show(offset);
+                                    previewWin.set("xy", [offset.left,offset.top]);
+                                    previewWin.show();
                                 }
                             } else {
                                 previewWin.hide();
@@ -400,6 +399,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 },
 
                 _realShow:function() {
+                    this.dialog.center();
                     this.dialog.show();
                 },
                 show:function() {
@@ -455,7 +455,13 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         id = ev.file.id;
                     //S.log(data);
                     if (!data) return;
-                    data = JSON.parse(data);
+                    try {
+                        data = JSON.parse(data);
+                    } catch(ex) {
+                        S.log("bangpai-upload _onUploadCompleteData error :");
+                        S.log(ex);
+                        throw ex;
+                    }
                     if (data.error) {
                         self._uploadError({
                             id:id,
@@ -469,7 +475,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         tr.one(".ke-upload-insert").show();
                         self._tagComplete(tr, data.imgUrl);
                     }
-                    //self.denable();
+
                     self._syncStatus();
 
                 },

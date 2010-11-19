@@ -7,7 +7,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
         trim = S.trim,
         TableUI = KE.TableUI,
         showBorderClassName = TableUI.showBorderClassName,
-        Overlay = KE.SimpleOverlay,
+        Dialog = KE.Dialog,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
         MIDDLE = "vertical-align:middle;",
@@ -124,18 +124,20 @@ KISSY.Editor.add("table/dialog", function(editor) {
             "标题： " +
             "<input " +
             "class='ke-table-caption ke-input' " +
-            "style='width:320px;" +
+            "style='width:380px;" +
             alignStyle + MIDDLE + "'>" +
             "</label>" +
             "</td>" +
             "</tr>" +
             "</table>" +
             "</div>",
-        footHtml = "<a " +
+        footHtml = "<div style='padding:5px 20px 20px;'>" +
+            "<a " +
             "class='ke-table-ok ke-button' " +
             "style='margin-right:20px;'>确定</a> " +
             "<a " +
-            "class='ke-table-cancel ke-button'>取消</a>";
+            "class='ke-table-cancel ke-button'>取消</a>" +
+            "</div>";
 
     if (!TableUI.Dialog) {
         (function() {
@@ -150,21 +152,25 @@ KISSY.Editor.add("table/dialog", function(editor) {
                 KE.Utils.lazyRun(self, "_prepareTableShow", "_realTableShow");
             }
 
+            DOM.addStyleSheet(".ke-table-config td {" +
+                "padding:2px;" +
+                "}", "ke-table-dialog");
+
             TableUI.Dialog = TableUIDialog;
 
             S.augment(TableUIDialog, {
                 _tableInit:function() {
                     var self = this,
                         editor = self.editor,
-                        d = new Overlay({
-                            width:"430px",
+                        d = new Dialog({
+                            width:"500px",
                             mask:true,
-                            title:"表格"//属性"
-                        }),
-                        body = d.body;
-                    d.body.html(TABLE_HTML);
-                    d.foot.html(footHtml);
-                    var dbody = d.body;
+                            headerContent:"表格",//属性",
+                            bodyContent:TABLE_HTML,
+                            footerContent:footHtml
+                        });
+                    d.renderer();
+                    var dbody = d.get("body"),foot = d.get("footer");
                     d.twidth = dbody.one(".ke-table-width");
                     d.theight = dbody.one(".ke-table-height");
                     d.tborder = dbody.one(".ke-table-border");
@@ -175,8 +181,8 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     d.thead = KE.Select.decorate(dbody.one(".ke-table-head"));
                     d.cellpaddingHolder = dbody.one(".ke-table-cellpadding-holder");
                     d.cellpadding = dbody.one(".ke-table-cellpadding");
-                    var tok = d.foot.one(".ke-table-ok"),
-                        tclose = d.foot.one(".ke-table-cancel");
+                    var tok = foot.one(".ke-table-ok"),
+                        tclose = foot.one(".ke-table-cancel");
                     d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
                     self.tableDialog = d;
                     tok.on("click", self._tableOk, self);
@@ -191,7 +197,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
                 _tableOk:function() {
                     var self = this,
                         tableDialog = self.tableDialog,
-                        inputs = tableDialog.el.all("input");
+                        inputs = tableDialog.get("el").all("input");
 
                     if (tableDialog.twidthunit.val() == "%") {
                         var tw = parseInt(tableDialog.twidth.val());
@@ -383,12 +389,12 @@ KISSY.Editor.add("table/dialog", function(editor) {
 
                     if (self.selectedTable) {
                         self._fillTableDialog();
-                        d.body
+                        d.get("el")
                             .all(".ke-table-create-only")
                             .attr("disabled", "disabled");
                         d.thead.disable();
                     } else {
-                        d.body.all(".ke-table-create-only")
+                        d.get("el").all(".ke-table-create-only")
                             .removeAttr("disabled");
                         d.thead.enable();
                     }

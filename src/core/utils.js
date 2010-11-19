@@ -550,7 +550,20 @@ KISSY.Editor.add("utils", function(KE) {
             ieEngine:(function() {
                 if (!UA.ie) return;
                 return document.documentMode || UA.ie;
-            })()
+            })(),
+
+            /**
+             * 点击 el 或者 el 内的元素，不会使得焦点转移
+             * @param el
+             */
+            preventFocus:function(el) {
+                if (UA.ie) {
+                    //ie 点击按钮不丢失焦点
+                    el._4e_unselectable();
+                } else {
+                    el.attr("onmousedown", "return false;");
+                }
+            }
         };
 
     KE.Utils = Utils;

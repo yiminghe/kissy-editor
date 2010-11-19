@@ -695,14 +695,13 @@ KISSY.Editor.add("selection", function(KE) {
                 // element to avoid the selection moving inside of it.
                 dummySpan = self.document.createElement('span');
                 dummySpan.innerHTML = '&#65279;';	// Zero Width No-Break Space (U+FEFF). See #1359.
-                dummySpan = new Node(dummySpan);
-                DOM.insertBefore(dummySpan[0], startNode[0]);
+                dummySpan = new Node(dummySpan).insertBefore(startNode);
                 if (isStartMarkerAlone) {
                     // To expand empty blocks or line spaces after <br>, we need
                     // instead to have any char, which will be later deleted using the
                     // selection.
                     // \ufeff = Zero Width No-Break Space (U+FEFF). (#1359)
-                    DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode[0]);
+                    DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode);
                 }
             }
 
