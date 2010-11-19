@@ -193,17 +193,19 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 doc = editor.document,
                 styles = self.get("styles");
             editor.fire("save");
-            if (c)
+            if (c) {
                 new KE.Style(styles, {
                     color:c
                 }).apply(doc);
-            else
-            // Value 'inherit'  is treated as a wildcard,
-            // which will match any value.
-            //清除已设格式
+            } else {
+                // Value 'inherit'  is treated as a wildcard,
+                // which will match any value.
+                //!TODO bug : 不能清除颜色
+                //清除已设格式
                 new KE.Style(styles, {
                     color:"inherit"
                 }).remove(doc);
+            }
             editor.fire("save");
         },
         _prepare:function() {
@@ -249,7 +251,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
             if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
                 xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
             }
-            self.colorWin.set("xy",[xy.left,xy.top]);
+            self.colorWin.set("xy", [xy.left,xy.top]);
             self.colorWin.show();
         },
         _showColors:function(ev) {

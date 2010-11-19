@@ -115,7 +115,7 @@ KISSY.Editor.add("removeformat", function(editor) {
 
                     // This node must not be a fake element.
                     if (!( currentNode._4e_name() == 'img'
-                        && currentNode.attr('_cke_realelement') )
+                        && currentNode.attr('_ke_realelement') )
                         ) {
                         // Remove elements nodes that match with this style rules.
                         if (tagsRegex.test(currentNode._4e_name()))

@@ -31,10 +31,16 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     "</label>" +
                     "</p>" +
                     "<p " +
-                    "style='margin: 15px 0 10px 64px;'>" +
+                    "style='margin: 15px 0 10px 0px;'>" +
+                    "<label>" +
+                    "链接名称： " +
+                    "<input class='ke-link-title ke-input' style='width:100px;" +
+                    MIDDLE + "'>" +
+                    "</label> " +
                     "<label>" +
                     "<input " +
                     "class='ke-link-blank' " +
+                    "style='vertical-align: middle; margin-left: 21px;' " +
                     "type='checkbox'/>" +
                     " &nbsp; 在新窗口打开链接" +
                     "</label>" +
@@ -71,6 +77,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     self.dialog = d;
                     var body = d.get("body"),foot = d.get("footer");
                     d.urlEl = body.one(".ke-link-url");
+                    d.urlTitle = body.one(".ke-link-title");
                     d.targetEl = body.one(".ke-link-blank");
                     var cancel = foot.one(".ke-link-cancel"),
                         ok = foot.one(".ke-link-ok");
@@ -127,6 +134,10 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     } else {
                         attr.target = "_self";
                     }
+                    var title = S.trim(d.urlTitle.val());
+                    if (title) {
+                        attr.title = title;
+                    }
                     var sel = editor.getSelection();
                     range = sel && sel.getRanges()[0];
                     //编辑器没有焦点或没有选择区域时直接插入链接地址
@@ -134,6 +145,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         a = new Node("<a " +
                             "href='" + url + "' " +
                             _ke_saved_href + "='" + url + "' " +
+                            (title ? (" title='" + title + "' ") : " ") +
                             "target='" + attr.target + "'>" + url + "</a>",
                             null, editor.document);
                         editor.insertElement(a);
@@ -157,9 +169,11 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     //是修改行为
                     if (link) {
                         KE.Utils.valInput(d.urlEl, link.attr(_ke_saved_href) || link.attr("href"));
+                        d.urlTitle.val(link.attr("title"));
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     } else {
                         KE.Utils.resetInput(d.urlEl);
+                        d.urlTitle.val("");
                     }
                     d.show();
                 },

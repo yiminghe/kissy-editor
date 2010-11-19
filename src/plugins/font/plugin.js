@@ -16,7 +16,7 @@ KISSY.Editor.add("font", function(editor) {
         }
         return v;
     }
-    
+
     var S = KISSY,
         KE = S.Editor,
         KEStyle = KE.Style,
@@ -66,6 +66,10 @@ KISSY.Editor.add("font", function(editor) {
 
         pluginConfig["font-size"] = FONT_SIZES;
     }
+
+    FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
+        size:"inherit"
+    });
 
     var FONT_FAMILIES = pluginConfig["font-family"];
 
@@ -124,7 +128,9 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
     }
-
+    FONT_FAMILY_STYLES["inherit"] = new KEStyle(fontFamily_style, {
+        family:"inherit"
+    });
     if (!KE.Font) {
         (function() {
 
@@ -179,11 +185,14 @@ KISSY.Editor.add("font", function(editor) {
                         styles = self.get("styles");
                     editor.focus();
                     editor.fire("save");
+                    var style = styles[v];
                     if (v == pre) {
-                        styles[v].remove(editor.document);
+                        //清除,wildcard pls
+                        //!TODO inherit 小问题
+                        style.remove(editor.document);
                         self.el.set("value", "");
                     } else {
-                        styles[v].apply(editor.document);
+                        style.apply(editor.document);
                     }
                     editor.fire("save");
                 },
@@ -194,13 +203,13 @@ KISSY.Editor.add("font", function(editor) {
                         elementPath = ev.path,
                         elements = elementPath.elements,
                         styles = self.get("styles");
-                   //S.log(ev);
+                    //S.log(ev);
                     // For each element into the elements path.
                     for (var i = 0, element; i < elements.length; i++) {
                         element = elements[i];
                         // Check if the element is removable by any of
                         // the styles.
-                        for (var value in styles) {                            
+                        for (var value in styles) {
                             if (styles[ value ].checkElementRemovable(element, true)) {
                                 //S.log(value);
                                 self.el.set("value", value);

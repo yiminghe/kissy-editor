@@ -17,6 +17,7 @@ KISSY.Editor.add("link", function(editor) {
                     element : 'a',
                     attributes:{
                         "href":"#(href)",
+                        "title":"#(title)",
                         //ie < 8 会把锚点地址修改
                         "_ke_saved_href":"#(_ke_saved_href)",
                         target:"#(target)"
@@ -94,14 +95,23 @@ KISSY.Editor.add("link", function(editor) {
                 }
             });
 
-            function _removeLink(a, editor) {
-                var attr = {
-                    href:a.attr("href"),
-                    _ke_saved_href:a.attr(_ke_saved_href)
-                };
-                if (a._4e_hasAttribute("target")) {
-                    attr.target = a.attr("target");
+            function getAttributes(el) {
+                var attributes = el.attributes,re = {};
+                for (var i = 0; i < attributes.length; i++) {
+                    var a = attributes[i];
+                    if (a.specified) {
+                        re[a.name] = a.value;
+                    }
                 }
+                if (el.style.cssText) {
+                    re.style = el.style.cssText;
+                }
+                return re;
+            }
+
+            function _removeLink(a, editor) {
+
+                var attr = getAttributes(a[0]);
                 var linkStyle = new KEStyle(link_Style, attr);
                 editor.fire("save");
                 linkStyle.remove(editor.document);

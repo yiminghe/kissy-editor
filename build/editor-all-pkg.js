@@ -395,7 +395,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-19 15:41:38");
+                re += "t=" + encodeURIComponent("2010-11-19 17:29:25");
                 return  re;
             },
             /**
@@ -8273,7 +8273,6 @@ KISSY.Editor.add("styles", function(KE) {
                 if (element == startPath.block ||
                     element == startPath.blockLimit)
                     break;
-
                 if (this.checkElementRemovable(element)) {
                     var endOfElement = range.checkBoundaryOfElement(element, KER.END),
                         startOfElement = !endOfElement &&
@@ -8456,6 +8455,11 @@ KISSY.Editor.add("styles", function(KE) {
             .toLowerCase();
     }
 
+    /**
+     * 把 styles(css配置) 作为 属性 style 统一看待
+     * 注意对 inherit 的处理
+     * @param styleDefinition
+     */
     function getAttributesForComparison(styleDefinition) {
         // If we have already computed it, just return it.
         var attribs = styleDefinition._AC;
@@ -8583,6 +8587,7 @@ KISSY.Editor.add("styles", function(KE) {
                 continue;
 
             removeEmpty = removeEmpty || !!element._4e_style(styleName);
+            //设置空即为：清除样式
             element._4e_style(styleName, "");
         }
 
@@ -11265,17 +11270,19 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 doc = editor.document,
                 styles = self.get("styles");
             editor.fire("save");
-            if (c)
+            if (c) {
                 new KE.Style(styles, {
                     color:c
                 }).apply(doc);
-            else
-            // Value 'inherit'  is treated as a wildcard,
-            // which will match any value.
-            //清除已设格式
+            } else {
+                // Value 'inherit'  is treated as a wildcard,
+                // which will match any value.
+                //!TODO bug : 不能清除颜色
+                //清除已设格式
                 new KE.Style(styles, {
                     color:"inherit"
                 }).remove(doc);
+            }
             editor.fire("save");
         },
         _prepare:function() {
@@ -11321,7 +11328,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
             if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
                 xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
             }
-            self.colorWin.set("xy",[xy.left,xy.top]);
+            self.colorWin.set("xy", [xy.left,xy.top]);
             self.colorWin.show();
         },
         _showColors:function(ev) {
@@ -13337,7 +13344,7 @@ KISSY.Editor.add("font", function(editor) {
         }
         return v;
     }
-    
+
     var S = KISSY,
         KE = S.Editor,
         KEStyle = KE.Style,
@@ -13387,6 +13394,10 @@ KISSY.Editor.add("font", function(editor) {
 
         pluginConfig["font-size"] = FONT_SIZES;
     }
+
+    FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
+        size:"inherit"
+    });
 
     var FONT_FAMILIES = pluginConfig["font-family"];
 
@@ -13445,7 +13456,9 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
     }
-
+    FONT_FAMILY_STYLES["inherit"] = new KEStyle(fontFamily_style, {
+        family:"inherit"
+    });
     if (!KE.Font) {
         (function() {
 
@@ -13500,11 +13513,14 @@ KISSY.Editor.add("font", function(editor) {
                         styles = self.get("styles");
                     editor.focus();
                     editor.fire("save");
+                    var style = styles[v];
                     if (v == pre) {
-                        styles[v].remove(editor.document);
+                        //清除,wildcard pls
+                        //!TODO inherit 小问题
+                        style.remove(editor.document);
                         self.el.set("value", "");
                     } else {
-                        styles[v].apply(editor.document);
+                        style.apply(editor.document);
                     }
                     editor.fire("save");
                 },
@@ -13515,13 +13531,13 @@ KISSY.Editor.add("font", function(editor) {
                         elementPath = ev.path,
                         elements = elementPath.elements,
                         styles = self.get("styles");
-                   //S.log(ev);
+                    //S.log(ev);
                     // For each element into the elements path.
                     for (var i = 0, element; i < elements.length; i++) {
                         element = elements[i];
                         // Check if the element is removable by any of
                         // the styles.
-                        for (var value in styles) {                            
+                        for (var value in styles) {
                             if (styles[ value ].checkElementRemovable(element, true)) {
                                 //S.log(value);
                                 self.el.set("value", value);
@@ -15353,6 +15369,7 @@ KISSY.Editor.add("link", function(editor) {
                     element : 'a',
                     attributes:{
                         "href":"#(href)",
+                        "title":"#(title)",
                         //ie < 8 会把锚点地址修改
                         "_ke_saved_href":"#(_ke_saved_href)",
                         target:"#(target)"
@@ -15430,14 +15447,23 @@ KISSY.Editor.add("link", function(editor) {
                 }
             });
 
-            function _removeLink(a, editor) {
-                var attr = {
-                    href:a.attr("href"),
-                    _ke_saved_href:a.attr(_ke_saved_href)
-                };
-                if (a._4e_hasAttribute("target")) {
-                    attr.target = a.attr("target");
+            function getAttributes(el) {
+                var attributes = el.attributes,re = {};
+                for (var i = 0; i < attributes.length; i++) {
+                    var a = attributes[i];
+                    if (a.specified) {
+                        re[a.name] = a.value;
+                    }
                 }
+                if (el.style.cssText) {
+                    re.style = el.style.cssText;
+                }
+                return re;
+            }
+
+            function _removeLink(a, editor) {
+
+                var attr = getAttributes(a[0]);
                 var linkStyle = new KEStyle(link_Style, attr);
                 editor.fire("save");
                 linkStyle.remove(editor.document);
@@ -18250,7 +18276,7 @@ KISSY.Editor.add("removeformat", function(editor) {
 
                     // This node must not be a fake element.
                     if (!( currentNode._4e_name() == 'img'
-                        && currentNode.attr('_cke_realelement') )
+                        && currentNode.attr('_ke_realelement') )
                         ) {
                         // Remove elements nodes that match with this style rules.
                         if (tagsRegex.test(currentNode._4e_name()))

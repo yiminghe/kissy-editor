@@ -772,7 +772,6 @@ KISSY.Editor.add("styles", function(KE) {
                 if (element == startPath.block ||
                     element == startPath.blockLimit)
                     break;
-
                 if (this.checkElementRemovable(element)) {
                     var endOfElement = range.checkBoundaryOfElement(element, KER.END),
                         startOfElement = !endOfElement &&
@@ -955,6 +954,11 @@ KISSY.Editor.add("styles", function(KE) {
             .toLowerCase();
     }
 
+    /**
+     * 把 styles(css配置) 作为 属性 style 统一看待
+     * 注意对 inherit 的处理
+     * @param styleDefinition
+     */
     function getAttributesForComparison(styleDefinition) {
         // If we have already computed it, just return it.
         var attribs = styleDefinition._AC;
@@ -1082,6 +1086,7 @@ KISSY.Editor.add("styles", function(KE) {
                 continue;
 
             removeEmpty = removeEmpty || !!element._4e_style(styleName);
+            //设置空即为：清除样式
             element._4e_style(styleName, "");
         }
 
