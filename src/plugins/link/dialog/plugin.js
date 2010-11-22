@@ -6,7 +6,6 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
         (function() {
             var checkLink = Link.checkLink,
-                _removeLink = Link._removeLink,
                 KEStyle = KE.Style,
                 Node = S.Node,
                 KERange = KE.Range,
@@ -118,42 +117,33 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     d.hide();
 
                     link = self._getSelectedLink();
-                    //是修改行为
-                    if (link) {
-                        range = new KERange(editor.document);
-                        range.selectNodeContents(link);
-                        editor.getSelection().selectRanges([range]);
-                        _removeLink(link, editor);
-                    }
+
                     attr = {
                         href:url,
-                        _ke_saved_href:url
+                        _ke_saved_href:url,
+                        target:d.targetEl[0].checked ? "_blank" : "_self",
+                        title:S.trim(d.urlTitle.val())
                     };
-                    if (d.targetEl[0].checked) {
-                        attr.target = "_blank";
-                    } else {
-                        attr.target = "_self";
-                    }
-                    var title = S.trim(d.urlTitle.val());
-                    if (title) {
-                        attr.title = title;
-                    }
-                    var sel = editor.getSelection();
-                    range = sel && sel.getRanges()[0];
-                    //编辑器没有焦点或没有选择区域时直接插入链接地址
-                    if (!range || range.collapsed) {
-                        a = new Node("<a " +
-                            "href='" + url + "' " +
-                            _ke_saved_href + "='" + url + "' " +
-                            (title ? (" title='" + title + "' ") : " ") +
-                            "target='" + attr.target + "'>" + url + "</a>",
-                            null, editor.document);
-                        editor.insertElement(a);
-                    } else {
+
+                    //是修改行为
+                    if (link) {
                         editor.fire("save");
-                        linkStyle = new KEStyle(link_Style, attr);
-                        linkStyle.apply(editor.document);
+                        link.attr(attr);
                         editor.fire("save");
+                    } else {
+                        var sel = editor.getSelection();
+                        range = sel && sel.getRanges()[0];
+                        //编辑器没有焦点或没有选择区域时直接插入链接地址
+                        if (!range || range.collapsed) {
+                            a = new Node("<a>" + url + "</a>",
+                                attr, editor.document);
+                            editor.insertElement(a);
+                        } else {
+                            editor.fire("save");
+                            linkStyle = new KEStyle(link_Style, attr);
+                            linkStyle.apply(editor.document);
+                            editor.fire("save");
+                        }
                     }
 
                     editor.notifySelectionChange();
@@ -168,8 +158,8 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     d.link = this;
                     //是修改行为
                     if (link) {
-                        KE.Utils.valInput(d.urlEl, link.attr(_ke_saved_href) || link.attr("href"));
-                        d.urlTitle.val(link.attr("title"));
+                        KE.Utils.valInput(d.urlEl, link.attr(_ke_saved_href) || link.attr("href") || "");
+                        d.urlTitle.val(link.attr("title") || "");
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     } else {
                         KE.Utils.resetInput(d.urlEl);

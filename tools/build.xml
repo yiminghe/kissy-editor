@@ -39,11 +39,11 @@ build file for kissy editor
     <filelist id="core_js" dir="${build.dir}/core" files="
     ../editor.js,
     utils.js,
+    dom.js,
     focusmanager.js,
     definition.js,
     zindexmanager.js,
-    dtd.js,
-    dom.js,
+    dtd.js,    
     elementpath.js,
     walker.js,
     range.js,

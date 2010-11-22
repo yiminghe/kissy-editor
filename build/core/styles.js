@@ -63,7 +63,7 @@ KISSY.Editor.add("styles", function(KE) {
             "dd":1,
             "form":1
         },
-        semicolonFixRegex = /\s*(?:;\s*|$)/,
+        semicolonFixRegex = /\s*(?:;\s*|$)/g,
         varRegex = /#\((.+?)\)/g;
 
     KE.STYLE = KEST;
@@ -744,6 +744,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function removeInlineStyle(range) {
+
         /*
          * Make sure our range has included all "collpased" parent inline nodes so
          * that our operation logic can be simpler.
@@ -816,6 +817,9 @@ KISSY.Editor.add("styles", function(KE) {
                     newElement[0].appendChild(clonedElement[0]);
                     clonedElement = newElement;
                 }
+                //脱离当前的元素，将 bookmark 插入到当前元素后面
+                //<strong>xx|</strong>  ->
+                //<strong>xx<strong>|
                 DOM[ boundaryElement.match == 'start' ?
                     'insertBefore' : 'insertAfter' ](clonedElement, boundaryElement);
             }

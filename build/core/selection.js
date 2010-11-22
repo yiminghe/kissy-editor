@@ -82,7 +82,8 @@ KISSY.Editor.add("selection", function(KE) {
                 }
                 :
                 function() {
-                    var self = this,cache = self._.cache;
+                    var self = this,
+                        cache = self._.cache;
                     return cache.nativeSel || ( cache.nativeSel = DOM._4e_getWin(self.document).getSelection() );
                 },
 

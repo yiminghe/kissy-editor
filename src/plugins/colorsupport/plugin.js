@@ -59,36 +59,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
         "    background-color: #D6E9F8;" +
         "}", "ke-color-plugin");
 
-    function padding2(str) {
-        return ("0" + str).slice(str.length - 1, str.length + 1);
-    }
-
-    var rgbColorReg = /^rgb\((\d+),(\d+),(\d+)\)$/i;
-
-    function normalColor(color) {
-        color = S.trim(color);
-        if (color.charAt(0) == "#") color = color.substring(1);
-        //console.log(color);
-        color = color.replace(/\s+/g, "");
-        var str = "",simpleColorReg = /^[0-9a-f]{3,3}$/i;
-
-        if (simpleColorReg.test(color)) {
-            str = color.replace(/[0-9a-f]/ig, function(m) {
-                return m + m;
-            });
-        } else {
-            var m = color.match(rgbColorReg);
-            if (m && m[0]) {
-                for (var i = 1; i < 4; i++) {
-                    str += padding2(parseInt(m[i]).toString(16));
-                }
-            } else {
-                str = color;
-            }
-        }
-        return "#" + str.toLowerCase();
-    }
-
     var COLORS = [
         ["000", "444", "666", "999", "CCC", "EEE", "F3F3F3", "FFF"],
         ["F00", "F90", "FF0", "0F0", "0FF", "00F", "90F", "F0F"],
@@ -100,37 +70,42 @@ KISSY.Editor.add("colorsupport", function(editor) {
             "990000", "B45F06", "BF9000", "38761D", "134F5C", "0B5394", "351C75", "741B47",
             "660000", "783F04", "7F6000", "274E13", "0C343D", "073763", "20124D", "4C1130"
         ]
-    ],
+    ],html;
+
+
+    function initHtml() {
+        if (html) return;
         html = "<div class='ke-color-panel'>" +
             "<a class='ke-color-remove' " +
             "href=\"javascript:void('清除');\">" +
             "清除" +
             "</a>";
-    for (var i = 0; i < 3; i++) {
-        html += "<div class='ke-color-palette'><table>";
-        var c = COLORS[i],l = c.length / 8;
-        for (var k = 0; k < l; k++) {
-            html += "<tr>";
-            for (var j = 0; j < 8; j++) {
-                var currentColor = normalColor(c[8 * k + j]);
-                html += "<td>";
-                html += "<a href='javascript:void(0);' " +
-                    "class='ke-color-a' " +
-                    "style='background-color:"
-                    + currentColor
-                    + "'" +
-                    "></a>";
-                html += "</td>";
+        for (var i = 0; i < 3; i++) {
+            html += "<div class='ke-color-palette'><table>";
+            var c = COLORS[i],l = c.length / 8;
+            for (var k = 0; k < l; k++) {
+                html += "<tr>";
+                for (var j = 0; j < 8; j++) {
+                    var currentColor = "#" + (c[8 * k + j]);
+                    html += "<td>";
+                    html += "<a href='javascript:void(0);' " +
+                        "class='ke-color-a' " +
+                        "style='background-color:"
+                        + currentColor
+                        + "'" +
+                        "></a>";
+                    html += "</td>";
+                }
+                html += "</tr>";
             }
-            html += "</tr>";
+            html += "</table></div>";
         }
-        html += "</table></div>";
+        html += "" +
+            "<div>" +
+            "<a class='ke-button ke-color-others'>其他颜色</a>" +
+            "</div>" +
+            "</div>";
     }
-    html += "" +
-        "<div>" +
-        "<a class='ke-button ke-color-others'>其他颜色</a>" +
-        "</div>" +
-        "</div>";
 
     function ColorSupport(cfg) {
         var self = this;
@@ -172,18 +147,20 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 t = ev.target,
                 colorWin = self.colorWin;
             //当前按钮点击无效
-            if (el._4e_equals(t) || el.contains(t)) {
+            if (el._4e_equals(t)
+                || el.contains(t)) {
                 return;
             }
             colorWin.hide();
         },
         _selectColor:function(ev) {
             ev.halt();
+
             var self = this,
                 t = ev.target;
             if (DOM._4e_name(t) == "a" && !DOM.hasClass(t, "ke-button")) {
                 t = new Node(t);
-                self._applyColor(normalColor(t._4e_style("background-color")));
+                self._applyColor(t._4e_style("background-color"));
                 self.colorWin.hide();
             }
         },
@@ -200,7 +177,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
             } else {
                 // Value 'inherit'  is treated as a wildcard,
                 // which will match any value.
-                //!TODO bug : 不能清除颜色
                 //清除已设格式
                 new KE.Style(styles, {
                     color:"inherit"
@@ -214,6 +190,7 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 el = self.el,
                 editor = self.get("editor"),
                 colorPanel;
+            initHtml();
             self.colorWin = new Overlay({
                 elCls:"ks-popup",
                 content:html,
@@ -246,10 +223,12 @@ KISSY.Editor.add("colorsupport", function(editor) {
             var self = this,
                 el = self.el.el,
                 colorPanel = self.colorPanel,
+                viewWidth = DOM.viewportWidth(),
+                cpWidth = colorPanel.width(),
                 xy = el.offset();
             xy.top += el.height() + 5;
-            if (xy.left + colorPanel.width() > DOM.viewportWidth() - 60) {
-                xy.left = DOM.viewportWidth() - colorPanel.width() - 60;
+            if (xy.left + cpWidth > viewWidth - 60) {
+                xy.left = viewWidth - cpWidth - 60;
             }
             self.colorWin.set("xy", [xy.left,xy.top]);
             self.colorWin.show();

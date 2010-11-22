@@ -110,15 +110,21 @@ KISSY.Editor.add("link", function(editor) {
             }
 
             function _removeLink(a, editor) {
-
-                var attr = getAttributes(a[0]);
-                var linkStyle = new KEStyle(link_Style, attr);
                 editor.fire("save");
-                linkStyle.remove(editor.document);
+                var sel = editor.getSelection(),
+                    range = sel.getRanges()[0];
+                if (range && range.collapsed) {
+                    var bs = sel.createBookmarks();
+                    //不使用核心 styles ，直接清除元素标记即可。
+                    a._4e_remove(true);
+                    sel.selectBookmarks(bs);
+                } else if (range) {
+                    var attrs = getAttributes(a[0]);
+                    new KEStyle(link_Style, attrs).remove(editor.document);
+                }
                 editor.fire("save");
             }
 
-            Link._removeLink = _removeLink;
 
             S.augment(Link, {
                 _init:function() {
