@@ -30,7 +30,7 @@
 
 <script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy-min.js"></script>
 <script src="http://a.tbcdn.cn/s/kissy/1.1.5/editor/editor-all-pkg-min.js"></script>
-
+<script src="word-count.js"></script>
 <script>
 
 
@@ -40,7 +40,7 @@
         S.use('editor', function() {
 
 
-            S.Editor("#editor", {
+            var editor = S.Editor("#editor", {
                 customStyle:"p{text-indent:2em;}",
                 attachForm:true,
                 //编辑器内弹窗z-index底线，防止互相覆盖
@@ -55,6 +55,7 @@
                             fileInput:"Filedata"
                         }
                     },
+
                     "font-size":false,
                     "font-family":false,
                     //"font-bold":false,
@@ -72,32 +73,25 @@
                                 "请选择恢复编辑历史</div></div>"
                     }
                 }
-            }).use("font,image,flash", function() {
+            }).use("font,image,flash,preview,undo", function() {
                 var self = this,
                         htmlDataProcessor = self.htmlDataProcessor,
                         dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
 
                 if (dataFilter) {
                     dataFilter.addRules({
-
                         elements : {
                             $:function(el) {
                                 var tagName = el.name || "";
-                                if (tagName != "img") {
-                                    delete el.name;
-                                } else {
-                                    if (el.attributes &&
-                                            el.attributes['class']
-                                            &&
-                                            el.attributes['class'].indexOf("ke_") != -1)
-                                        return false;
-                                }
+                                if (!S.inArray(tagName, ["object","embed","img"]))
+                                    delete el.attributes;
                             }
                         }
                     });
                 }
-
             });
+
+            KISSY.wordcount.bind('#editor', 0, 1000, editor);
         });
     });
 </script>
