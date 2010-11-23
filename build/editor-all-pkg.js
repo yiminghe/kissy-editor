@@ -17031,8 +17031,7 @@ KISSY.add("ext-overlay-close", function(S) {
                 yAttr = attrs["y"],
                 oriXSetter = xAttr["setter"],
                 oriYSetter = yAttr["setter"];
-            xAttr.setter = function(v) {
-                
+            xAttr.setter = function(v) {                
                 var r = oriXSetter && oriXSetter(v);
                 if (r === undefined) {
                     r = v;
