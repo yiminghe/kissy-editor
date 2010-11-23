@@ -297,7 +297,9 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         dataFilter = dataProcessor && dataProcessor.dataFilter;
 
     function getProvider(url) {
-        for (var i = 0; i < provider.length; i++) {
+        for (var i = 0;
+             i < provider.length;
+             i++) {
             var p = provider[i];
             if (p.reg.test(url)) {
                 return p;
@@ -345,6 +347,15 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             }
         }
     ];
+
+    var cfg = editor.cfg.pluginConfig;
+    cfg["bangpai-video"] = cfg["bangpai-video"] || {};
+    var videoCfg = cfg["bangpai-video"];
+    if (videoCfg.providers) {
+        provider.push.apply(provider, videoCfg.providers);
+    }
+    videoCfg.getProvider = getProvider;
+
     dataFilter && dataFilter.addRules({
         elements : {
             'object' : function(element) {
@@ -396,7 +407,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
                 BangPaiVideo.superclass.constructor.apply(this, arguments);
             }
 
-            BangPaiVideo.getProvider = getProvider;
 
             S.extend(BangPaiVideo, Flash, {
                 _config:function() {

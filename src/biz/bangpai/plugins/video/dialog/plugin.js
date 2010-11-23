@@ -8,7 +8,6 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
 
     if (!BangPaiVideo.Dialog) {
         (function() {
-            var getProvider = BangPaiVideo.getProvider;
             var MIDDLE = "vertical-align:middle;",
                 MARGIN_DEFAULT = 0;
             var bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
@@ -118,7 +117,11 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
 
                     var self = this,
                         url = self.dUrl.val(),
-                        p = getProvider(url);
+                        editor = self.editor,
+                        cfg = editor.cfg.pluginConfig;
+                    cfg["bangpai-video"] = cfg["bangpai-video"] || {};
+                    var videoCfg = cfg["bangpai-video"],
+                        p = videoCfg.getProvider(url);
                     if (!p) {
                         alert("不支持该链接来源!");
                     } else {

@@ -194,7 +194,7 @@ S.ready(function() {
                         //错误：{error:""}
                         //中文 \uxxxx 转义
                         serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{                           
+                        serverParams:{
                         },
                         fileInput:"Filedata",
                         sizeLimit:1000,//k
@@ -376,6 +376,16 @@ S.ready(function() {
                             reg:/tudou\.com/i,
                             url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
                                     "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        }
+                    ],
+                    providers:[
+                        {
+                            reg:/taobaocdn\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                return url;
+                            }
                         }
                     ]
                 },

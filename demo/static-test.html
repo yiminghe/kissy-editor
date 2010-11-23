@@ -413,6 +413,16 @@ xiami 音乐
                                 url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
                                         "url=@url@&callback=@callback@"//"&rand=@rand@"
                             }
+                        ],
+                        providers:[
+                            {
+                                reg:/taobaocdn\.com/i,
+                                width:480,
+                                height:400,
+                                detect:function(url) {
+                                    return url;
+                                }
+                            }
                         ]
                     },
                     "draft":{
