@@ -50,7 +50,7 @@ KISSY.add("ext-align", function(S) {
             offset, w, h, x, y;
 
         if (node) {
-            node = new Node(node);
+            node = S.one(node);
             offset = node.offset();
             w = node[0].offsetWidth;
             h = node[0].offsetHeight;
@@ -101,22 +101,23 @@ KISSY.add("ext-align", function(S) {
          * @param {Array.<number>} offset 偏移
          */
         align: function(node, points, offset) {
+
             var self = this,
                 xy,
                 diff,
                 p1,
                 el = self.get("el"),
                 p2;
-
+            offset = offset || [0,0];
             xy = DOM.offset(el);
             // p1 是 node 上 points[0] 的 offset
             // p2 是 overlay 上 points[1] 的 offset
             p1 = _getAlignOffset(node, points[0]);
             p2 = _getAlignOffset(el, points[1]);
             diff = [p2.left - p1.left, p2.top - p1.top];
-
-            self.set("xy", [xy.left - diff[0] + (+offset[0]),
-                xy.top - diff[1] + (+offset[1])]);
+            var v = [xy.left - diff[0] + (+offset[0]),
+                xy.top - diff[1] + (+offset[1])];
+            self.set("xy", v);
         },
 
 
@@ -372,7 +373,7 @@ KISSY.add("ext-overlay-close", function(S) {
         if (!constrain) return ret;
         var el = this.get("el");
         if (constrain !== true) {
-            constrain = new Node(constrain);
+            constrain = S.one(constrain);
             ret = constrain.offset();
             S.mix(ret, {
                 maxLeft: ret.left + constrain[0].offsetWidth - el[0].offsetWidth,
@@ -381,10 +382,11 @@ KISSY.add("ext-overlay-close", function(S) {
         }
         // 没有指定 constrain, 表示受限于可视区域
         else {
+            var vWidth = document.documentElement.clientWidth;
             ret = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
 
             S.mix(ret, {
-                maxLeft: ret.left + DOM.viewportWidth() - el[0].offsetWidth,
+                maxLeft: ret.left + vWidth - el[0].offsetWidth,
                 maxTop: ret.top + DOM.viewportHeight() - el[0].offsetHeight
             });
         }
@@ -394,36 +396,48 @@ KISSY.add("ext-overlay-close", function(S) {
     ConstrainExt.prototype = {
         _bindUIConstrain:function() {
             S.log("_bindUIConstrain");
-            var self = this;
-            self.on("beforeXChange", function(ev) {
-                var v = ev.newVal,
-                    _ConstrainExtRegion = _getConstrainRegion.call(
-                        self, self.get("constrain"));
-                if (!_ConstrainExtRegion) return;
-                if (v >= _ConstrainExtRegion.maxLeft || v <= _ConstrainExtRegion.left) return false;
-            });
 
-            self.on("beforeYChange", function(ev) {
-                var v = ev.newVal,
-                    _ConstrainExtRegion = _getConstrainRegion.call(
-                        self, self.get("constrain"));
-                if (!_ConstrainExtRegion) return;
-                if (v >= _ConstrainExtRegion.maxTop || v <= _ConstrainExtRegion.top) return false;
-            });
         },
         _renderUIConstrain:function() {
             S.log("_renderUIConstrain");
-
+            var self = this,
+                attrs = self.getDefAttrs(),
+                xAttr = attrs["x"],
+                yAttr = attrs["y"],
+                oriXSetter = xAttr["setter"],
+                oriYSetter = yAttr["setter"];
+            xAttr.setter = function(v) {
+                
+                var r = oriXSetter && oriXSetter(v);
+                if (r === undefined) {
+                    r = v;
+                }
+                if (!self.get("constrain")) return r;
+                var _ConstrainExtRegion = _getConstrainRegion.call(
+                    self, self.get("constrain"));
+                return Math.min(Math.max(r,
+                    _ConstrainExtRegion.left),
+                    _ConstrainExtRegion.maxLeft);
+            };
+            yAttr.setter = function(v) {
+                var r = oriYSetter && oriYSetter(v);
+                if (r === undefined) {
+                    r = v;
+                }
+                if (!self.get("constrain")) return r;
+                var _ConstrainExtRegion = _getConstrainRegion.call(
+                    self, self.get("constrain"));
+                return Math.min(Math.max(r,
+                    _ConstrainExtRegion.top),
+                    _ConstrainExtRegion.maxTop);
+            };
+            self.addAttr("x", xAttr);
+            self.addAttr("y", yAttr);
         },
+
         _syncUIConstrain:function() {
             S.log("_syncUIConstrain");
         },
-
-        _uiSetConstrain:function(v) {
-            S.log("_uiSetConstrain");
-            //this._ConstrainExtRegion = _getConstrainRegion.call(this, v);
-        },
-
         __destructor:function() {
             S.log("constrain-ext __destructor");
         }
@@ -541,6 +555,7 @@ KISSY.add("ext-drag", function(S) {
             S.log("_uiSetDraggable");
             var self = this,d = self.__drag;
             if (v) {
+                d.detach("drag");
                 d.on("drag", self._dragExtAction, self);
             } else {
                 d.detach("drag");
@@ -613,6 +628,8 @@ KISSY.add("ext-loading", function(S) {
         mask = new S.Node("<div class='ks-ext-mask'>").prependTo(document.body);
         mask.css({
             "position":"absolute",
+            left:0,
+            top:0,
             width:"100%",
             "height": S.DOM.docHeight()
         });
@@ -716,6 +733,7 @@ KISSY.add("ext-position", function(S) {
         xy: {
             // 相对 page 定位, 有效值为 [n, m], 为 null 时, 选 align 设置
             setter: function(v) {
+                
                 var self = this,
                     xy = S.makeArray(v);
 
@@ -906,6 +924,8 @@ KISSY.add("ext-stdmod", function(S) {
         },
         footer:{
         },
+        bodyStyle:{
+        },
         headerContent:{
             value:false
         },
@@ -939,6 +959,11 @@ KISSY.add("ext-stdmod", function(S) {
                     this.get(part).html("");
                     this.get(part).append(v);
                 }
+            }
+        },
+        _uiSetBodyStyle:function(v) {
+            if (v !== undefined) {
+                this.get("body").css(v);
             }
         },
         _uiSetBodyContent:function(v) {
@@ -1241,6 +1266,7 @@ KISSY.Editor.add("overlay", function() {
         }
     }, {
         ATTRS:{
+            constrain:{value:true},
             //指定zIndex默认值
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }

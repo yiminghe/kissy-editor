@@ -223,15 +223,16 @@ KISSY.Editor.add("colorsupport", function(editor) {
             var self = this,
                 el = self.el.el,
                 colorPanel = self.colorPanel,
-                viewWidth = DOM.viewportWidth(),
-                cpWidth = colorPanel.width(),
-                xy = el.offset();
-            xy.top += el.height() + 5;
-            if (xy.left + cpWidth > viewWidth - 60) {
-                xy.left = viewWidth - cpWidth - 60;
+                colorWin = self.colorWin,
+                panelWidth = parseInt(colorWin.get("width")),
+                margin = 30,
+                viewWidth = DOM.viewportWidth();
+            colorWin.align(el, ["bl","tl"], [0,2]);
+            if (colorWin.get("x") + panelWidth
+                > viewWidth - margin) {
+                colorWin.set("x", viewWidth - margin - panelWidth);
             }
-            self.colorWin.set("xy", [xy.left,xy.top]);
-            self.colorWin.show();
+            colorWin.show();
         },
         _showColors:function(ev) {
             var self = this,

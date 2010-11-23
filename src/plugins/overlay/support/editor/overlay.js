@@ -43,6 +43,7 @@ KISSY.Editor.add("overlay", function() {
         }
     }, {
         ATTRS:{
+            constrain:{value:true},
             //指定zIndex默认值
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }
