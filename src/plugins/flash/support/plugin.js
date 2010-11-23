@@ -252,8 +252,36 @@ KISSY.Editor.add("flash/support", function(editor) {
 
             Flash.CLS_FLASH = CLS_FLASH;
             Flash.TYPE_FLASH = TYPE_FLASH;
+
+            Flash.Insert = function(editor, src, attrs, _cls, _type) {
+                var nodeInfo = flashUtils.createSWF(src, {
+                    attrs:attrs
+                }, editor.document),
+                    real = nodeInfo.el,
+                    substitute = editor.createFakeElement ?
+                        editor.createFakeElement(real,
+                            _cls || 'ke_flash',
+                            _type || 'flash',
+                            true,
+                            nodeInfo.html,
+                            attrs) :
+                        real;
+                substitute = editor.insertElement(substitute);
+                return substitute;
+            };
         })();
     }
+
+    /**
+     * 注册添加 flash 的命令
+     */
+
+    editor.addCommand("insertFlash", {
+        exec:function(editor) {
+            var args = S.makeArray(arguments);
+            return KE.Flash.Insert.apply(null, args);
+        }
+    });
 
     dataFilter && dataFilter.addRules({
         elements : {

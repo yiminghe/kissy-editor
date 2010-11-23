@@ -5,8 +5,9 @@
     S.namespace('wordcount');
 
     //参数：textarea的ID，初始化编辑器源代码数，最大限制数，编辑器editor对象
-    KISSY.wordcount.bind = function(textarea, size, max, editor) {
+    KISSY.wordcount.bind = function(textarea, max, editor) {
         //在当前text编辑器后面加入操作节点
+        var size = 0;
         S.DOM.insertAfter(S.DOM.create('<div class="J_WS">源码:已输入 <em class="J_WordSize">' + size + '</em>/最多输入 <em class="J_WsMax">' + max + '</em> <span class="J_WsTips"></span></div>'), S.one(textarea).parent('.ke-editor-wrap'));
         var wordsizenode = S.one(textarea).parent('.ke-editor-wrap').next('.J_WS').children('.J_WordSize');
         var tips = "请减少源码数量，否则无法发布成功";

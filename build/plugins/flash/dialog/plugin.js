@@ -211,19 +211,9 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                     if (!dinfo) return;
                     var re = KE.Utils.verifyInputs(self.d.get("el").all("input"));
                     if (!re) return;
-                    var nodeInfo = flashUtils.createSWF(url, {
-                        attrs:attrs
-                    }, editor.document),
-                        real = nodeInfo.el,
-                        substitute = editor.createFakeElement ?
-                            editor.createFakeElement(real,
-                                self._cls,
-                                self._type,
-                                true,
-                                nodeInfo.html,
-                                attrs) :
-                            real;
-                    substitute = editor.insertElement(substitute);
+
+                    var substitute = editor.execCommand("insertFlash", url, attrs, self._cls, self._type);
+
                     //如果是修改，就再选中
                     if (self.selectedFlash) {
                         editor.getSelection().selectElement(substitute);

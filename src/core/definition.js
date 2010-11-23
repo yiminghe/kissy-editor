@@ -1127,8 +1127,6 @@ KISSY.Editor.add("definition", function(KE) {
         "hasCommand":KEP.hasCommand,
         "execCommand":KEP.execCommand,
         "addPlugin":KEP.addPlugin,
-
-
         "useDialog":KEP.useDialog,
         "addDialog":KEP.addDialog,
         "getDialog":KEP.getDialog,

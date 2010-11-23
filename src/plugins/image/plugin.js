@@ -101,7 +101,9 @@ KISSY.Editor.add("image", function(editor) {
                     var self = this,
                         t = new Node(ev.target);
                     if (checkImg(t)) {
-                        self.show(null, t);
+                        setTimeout(function() {
+                            self.show(null, t);
+                        }, 1000);
                         ev.halt();
                     }
                 },
