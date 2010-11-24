@@ -11655,7 +11655,11 @@ KISSY.add('dd', function(S) {
             }
             //防止 ie 莫名选择文字
             else if (document.selection) {
-                document.selection.empty();
+                try {
+                    document.selection.empty();
+                }
+                catch(e) {
+                }
             }
         },
 
@@ -11732,19 +11736,19 @@ KISSY.add('dd-draggable', function(S) {
          */
         node: {
             setter:function(v) {
-                return new Node(v);
+                return S.one(v);
             }
         },
 
         /**
-         * handler 集合，注意暂时必须在 node 里面
+         * handler 数组，注意暂时必须在 node 里面
          */
         handlers:{
-            value:{},
+            value:[],
             setter:function(vs) {
                 if (vs) {
                     for (var i = 0; i < vs.length; i++) {
-                        vs[i] = new Node(vs[i]);
+                        vs[i] = S.one(vs[i]);
                     }
                 }
             }
@@ -11758,19 +11762,19 @@ KISSY.add('dd-draggable', function(S) {
                 node = self.get('node'),
                 handlers = self.get('handlers');
 
-            if (S.isEmptyObject(handlers)) {
-                handlers[node[0].id] = node;
+            if (handlers.length == 0) {
+                handlers[0] = node;
             }
 
-            for (var h in handlers) {
-                if (!handlers.hasOwnProperty(h)) continue;
-                var hl = handlers[h],
+            for (var i = 0; i < handlers.length; i++) {
+                var hl = handlers[i],
                     ori = hl.css('cursor');
                 if (hl[0] != node[0]) {
                     if (!ori || ori === 'auto')
                         hl.css('cursor', 'move');
                 }
             }
+
             node.on('mousedown', self._handleMouseDown, self);
         },
 
@@ -11778,9 +11782,8 @@ KISSY.add('dd-draggable', function(S) {
             var self = this,
                 node = self.get('node'),
                 handlers = self.get('handlers');
-            for (var h in handlers) {
-                if (!handlers.hasOwnProperty(h)) continue;
-                var hl = handlers[h];
+            for (var i = 0; i < handlers.length; i++) {
+                var hl = handlers[i];
                 if (hl.css("cursor") == "move") {
                     hl.css("cursor", "auto");
                 }
@@ -11791,12 +11794,12 @@ KISSY.add('dd-draggable', function(S) {
         _check: function(t) {
             var handlers = this.get('handlers');
 
-            for (var h in handlers) {
-                if (!handlers.hasOwnProperty(h)) continue;
-                if (handlers[h].contains(t)
+            for (var i = 0; i < handlers.length; i++) {
+                var hl = handlers[i];
+                if (hl.contains(t)
                     ||
                     //子区域内点击也可以启动
-                    handlers[h][0] == t[0]) return true;
+                    hl[0] == t[0]) return true;
             }
             return false;
         },
@@ -11810,6 +11813,7 @@ KISSY.add('dd-draggable', function(S) {
         _handleMouseDown: function(ev) {
             var self = this,
                 t = new S.Node(ev.target);
+            
             if (!self._check(t)) return;
             //chrome 阻止了 flash 点击？？
             if (!UA.webkit) {
@@ -17180,7 +17184,7 @@ KISSY.add("ext-drag", function(S) {
 
     DragExt.prototype = {
 
-        _uiSetHanlders:function(v) {
+        _uiSetHandlers:function(v) {
             S.log("_uiSetHanlders");
             if (v && v.length > 0)
                 this.__drag.set("handlers", v);
