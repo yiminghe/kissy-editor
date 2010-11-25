@@ -8,7 +8,7 @@
 <link href="http://a.tbcdn.cn/s/kissy/1.1.5/editor/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet"/>
 <![endif]-->
 <!--[if gte IE 8]><!-->
-<link href="../build/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
+<link href="http://a.tbcdn.cn/s/kissy/1.1.5/editor/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
 <!--<![endif]-->
 </head>
 <body>
@@ -158,7 +158,7 @@
         <p>3</p>
         <p>4</p>
     </textarea>
-    
+
 </div>
 
 <div style="width: 60%; margin: 50px auto">
@@ -166,127 +166,128 @@
     <textarea id="editor2" style="width:100%;height:400px;margin:0 auto;"></textarea>
 </div>
 
-<script src="https://github.com/yiminghe/kissy/raw/master/build/kissy-min.js"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy-min.js"></script>
 <script>
 
 
     KISSY.ready(function(S) {
         // just for test
         var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
-        S.Config.base = base;
+        //S.Config.base = base;
         S.add({
-            editor:{
+            "core-editor":{
                 requires:["core"],
-                path:"/build/editor-all-pkg-min.js"
+                path:"editor/editor-all-pkg-min.js?t" + new Date()
             },
-            "bangpai-editor":{
-                requires:["editor"],
-                path:"/build/biz/bangpai/editor-plugin-pkg-min.js"
+            "bangpai-plugins":{
+                requires:["core-editor"],
+                path:"editor/biz/bangpai/editor-plugin-pkg-min.js?t" + new Date()
             }
         });
 
-        S.use('bangpai-editor', function() {
+        S.use('core-editor', function() {
 
-            var KE = S.Editor;
-            KE.Config.base = base + "build/";
+            S.use("bangpai-plugins", function() {
+                var KE = S.Editor;
+                //KE.Config.base = base + "build/";
 
-            window.editor = KE("#editor", {
+                window.editor = KE("#editor", {
 
-                pluginConfig: {
-                    "image":{
-                        upload:{
-                            serverUrl:"/code/upload/upload.jsp",
-                            serverParams:{
-                            },
-                            fileInput:"Filedata"
-                        }
-                    },
-                    "templates": [
-                        {
-                            demo: "模板1效果演示html"  ,
-                            html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
+                    pluginConfig: {
+                        "image":{
+                            upload:{
+                                serverUrl:"/code/upload/upload.jsp",
+                                serverParams:{
+                                },
+                                fileInput:"Filedata"
+                            }
                         },
-                        {
-                            demo: "模板2效果演示html",
-                            html: "<div style='border:1px solid red'>模板2效果演示html</div>"
-                        }
-                    ],
-                    "font-size":{
-                        items:[
+                        "templates": [
                             {
-                                value:"14px",
-                                attrs:{
-                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
-                                },
-                                name:"" +
-                                        " <span style='font-size:14px'>标准</span>" +
-                                        "<span style='position:absolute;top:1px;right:3px;'>14px</span>"
+                                demo: "模板1效果演示html"  ,
+                                html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
                             },
                             {
-                                value:"16px",
-                                attrs:{
-                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
-                                },
-                                name:"" +
-                                        " <span style='font-size:16px'>大</span>" +
-                                        "<span style='position:absolute;top:1px;right:3px;'>16px</span>"
-                            },
-                            {
-                                value:"18px",
-                                attrs:{
-                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
-                                },
-                                name:"" +
-                                        " <span style='font-size:18px'>特大</span>" +
-                                        "<span style='position:absolute;top:1px;right:3px;'>18px</span>"
-                            },
-                            {
-                                value:"20px",
-                                attrs:{
-                                    style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
-                                },
-                                name:"" +
-                                        " <span style='font-size:20px'>极大</span>" +
-                                        "<span style='position:absolute;top:1px;right:3px;'>20px</span>"
+                                demo: "模板2效果演示html",
+                                html: "<div style='border:1px solid red'>模板2效果演示html</div>"
                             }
                         ],
-                        width:"115px"
-                    }
-                    //,"font-family":["song"]
-                    ,"bangpai-upload":{
-                        holder:"#imgup1",
-                        serverUrl:"/code/upload/upload.jsp",
-                        serverParams:{
+                        "font-size":{
+                            items:[
+                                {
+                                    value:"14px",
+                                    attrs:{
+                                        style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                    },
+                                    name:"" +
+                                            " <span style='font-size:14px'>标准</span>" +
+                                            "<span style='position:absolute;top:1px;right:3px;'>14px</span>"
+                                },
+                                {
+                                    value:"16px",
+                                    attrs:{
+                                        style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                    },
+                                    name:"" +
+                                            " <span style='font-size:16px'>大</span>" +
+                                            "<span style='position:absolute;top:1px;right:3px;'>16px</span>"
+                                },
+                                {
+                                    value:"18px",
+                                    attrs:{
+                                        style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                    },
+                                    name:"" +
+                                            " <span style='font-size:18px'>特大</span>" +
+                                            "<span style='position:absolute;top:1px;right:3px;'>18px</span>"
+                                },
+                                {
+                                    value:"20px",
+                                    attrs:{
+                                        style:'position: relative; border: 1px solid #DDDDDD; margin: 2px; padding: 2px;'
+                                    },
+                                    name:"" +
+                                            " <span style='font-size:20px'>极大</span>" +
+                                            "<span style='position:absolute;top:1px;right:3px;'>20px</span>"
+                                }
+                            ],
+                            width:"115px"
                         }
-                    },
-                    "bangpai-video":{
-                        urlCfg:[
-                            {
-                                reg:/tudou\.com/i,
-                                url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
-                                        "url=@url@&callback=@callback@"//"&rand=@rand@"
+                        //,"font-family":["song"]
+                        ,"bangpai-upload":{
+                            holder:"#imgup1",
+                            serverUrl:"/code/upload/upload.jsp",
+                            serverParams:{
                             }
-                        ]
-                    },
-                    "draft":{
-                        interval:5,
-                        limit:10
+                        },
+                        "bangpai-video":{
+                            urlCfg:[
+                                {
+                                    reg:/tudou\.com/i,
+                                    url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
+                                            "url=@url@&callback=@callback@"//"&rand=@rand@"
+                                }
+                            ]
+                        },
+                        "draft":{
+                            interval:5,
+                            limit:10
+                        }
                     }
-                }
-            }).use("elementpaths,sourcearea,preview," +
-                    "templates,separator," +
-                    "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                    "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                    );
+                }).use("elementpaths,sourcearea,preview," +
+                        "templates,separator," +
+                        "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+                        "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
+                        "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
+                        );
 
 
-            KE("#editor2", {
-                disableObjectResizing:true,
-                disableInlineTableEditing:true
-            }).use("undo,font,image,music");
-        })
-                ;
+                KE("#editor2", {
+                    disableObjectResizing:true,
+                    disableInlineTableEditing:true
+                }).use("undo,font,image,music");
+            });
+        });
     });
 
 </script>
