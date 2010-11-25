@@ -13367,7 +13367,7 @@ KISSY.Editor.add("font", function(editor) {
         pluginConfig = editor.cfg.pluginConfig,
         Node = S.Node;
 
-    var FONT_SIZES = pluginConfig["font-size"];
+    var FONT_SIZES = pluginConfig["font-size"],item,name,attrs;
 
     if (FONT_SIZES !== false) {
 
@@ -13391,10 +13391,10 @@ KISSY.Editor.add("font", function(editor) {
             };
 
         for (i = 0; i < FONT_SIZES.items.length; i++) {
-            var item = FONT_SIZES.items[i],
-                name = item.name,
-                attrs = item.attrs,
-                size = item.value;
+            item = FONT_SIZES.items[i];
+            name = item.name;
+            attrs = item.attrs;
+            var size = item.value;
 
             FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
                 size:size
@@ -13458,10 +13458,10 @@ KISSY.Editor.add("font", function(editor) {
 
 
         for (i = 0; i < FONT_FAMILIES.items.length; i++) {
-            var item = FONT_FAMILIES.items[i],
-                name = item.name,
-                attrs = item.attrs || {},
-                value = item.value;
+            item = FONT_FAMILIES.items[i];
+            name = item.name;
+            attrs = item.attrs || {};
+            var value = item.value;
             attrs.style = attrs.style || "";
             attrs.style += ";font-family:" + value;
             FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
@@ -13537,7 +13537,7 @@ KISSY.Editor.add("font", function(editor) {
                     var style = styles[v];
                     if (v == pre) {
                         //清除,wildcard pls
-                        //!TODO inherit 小问题
+                        //!TODO inherit 小问题，在中间点inherit
                         style.remove(editor.document);
                         self.el.set("value", "");
                     } else {

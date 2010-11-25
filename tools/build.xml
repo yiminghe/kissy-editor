@@ -178,22 +178,11 @@ build file for kissy editor
                         <exec executable="cmd" failonerror="true">
                             <arg line="/c git push ${git.origin} ${git.master}"/>
                         </exec>
-
+                        <!--push master to gh-pages also-->
                         <exec executable="cmd" failonerror="true">
-                            <arg line="/c git checkout ${git.gh-pages}"/>
+                            <arg line="/c git push ${git.origin} ${git.master}:${git.gh-pages}"/>
                         </exec>
 
-                        <exec executable="cmd" failonerror="true">
-                            <arg line="/c git merge ${git.master}"/>
-                        </exec>
-
-                        <exec executable="cmd" failonerror="true">
-                            <arg line="/c git push ${git.origin} ${git.gh-pages}"/>
-                        </exec>
-
-                        <exec executable="cmd" failonerror="true">
-                            <arg line="/c git checkout ${git.master}"/>
-                        </exec>
                     </ac:then>
                     <ac:else>
                         <echo>offline no push!</echo>
