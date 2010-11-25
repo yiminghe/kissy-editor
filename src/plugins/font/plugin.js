@@ -194,7 +194,7 @@ KISSY.Editor.add("font", function(editor) {
                     var style = styles[v];
                     if (v == pre) {
                         //清除,wildcard pls
-                        //!TODO inherit 小问题
+                        //!TODO inherit 小问题，在中间点inherit
                         style.remove(editor.document);
                         self.el.set("value", "");
                     } else {
