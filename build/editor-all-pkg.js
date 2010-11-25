@@ -13410,9 +13410,12 @@ KISSY.Editor.add("font", function(editor) {
         pluginConfig["font-size"] = FONT_SIZES;
     }
 
-    FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
-        size:"inherit"
-    });
+
+    /*
+     FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
+     size:"inherit"
+     });
+     */
 
     var FONT_FAMILIES = pluginConfig["font-family"];
 
@@ -13471,9 +13474,12 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
     }
-    FONT_FAMILY_STYLES["inherit"] = new KEStyle(fontFamily_style, {
-        family:"inherit"
-    });
+
+    /*
+     FONT_FAMILY_STYLES["inherit"] = new KEStyle(fontFamily_style, {
+     family:"inherit"
+     });*/
+
     if (!KE.Font) {
         (function() {
 
