@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-19 15:41:38
+ * @buildtime: 2010-11-29 19:04:14
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -14,7 +14,7 @@ KISSY.add("editor", function(S, undefined) {
     /**
      * 初始化编辑器
      * @constructor
-     * @param textarea {(string|KISSY.Node)} 将要替换的 textarea
+     * @param textarea {(string)} 将要替换的 textarea
      * @param cfg {Object} 编辑器配置
      * @return {Editor} 返回编辑器实例
      */
@@ -140,38 +140,12 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-19 15:41:38");
+        re += "t=" + encodeURIComponent("2010-11-29 19:04:14");
         return  re;
     }
 
     var debug = S["Config"]["debug"],
-        /**
-         * @type {Array.<string>}
-         */
-        core_mods = [
-            "utils",
-            "focusmanager",
-            "definition",
-            "dtd",
-            "dom",
-            "elementpath",
-            "walker",
-            "range",
-            "domiterator",
-            "selection",
-            "styles",
-            "htmlparser",
-            "htmlparser-basicwriter",
-            "htmlparser-comment",
-            "htmlparser-element",
-            "htmlparser-filter",
-            "htmlparser-fragment",
-            "htmlparser-htmlwriter",
-            "htmlparser-text"
-        ],
-        /**
-         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
-         */
+
         plugin_mods = [
             "separator",
             "sourcearea/support",
@@ -179,25 +153,14 @@ KISSY.add("editor", function(S, undefined) {
             "flashbridge",
             "flashutils",
             "clipboard",
-
+            "colorsupport/dialog/colorpicker",
             {
                 "name": "colorsupport",
                 "requires":["overlay"]
             },
-            {
-                "name": "colorsupport/dialog"
-            },
-            {
-                "name": "forecolor",
-                "requires":["colorsupport"]
-            },
-            {
-                "name": "bgcolor",
-                "requires":["colorsupport"]
-            },
-            {
-                "name": "elementpaths"
-            },
+            "color/dialog",
+            "color",
+            "elementpaths",
             "enterkey",
             {
                 "name":"pagebreak",
@@ -207,30 +170,27 @@ KISSY.add("editor", function(S, undefined) {
                 "name":"fakeobjects",
                 "requires":["htmldataprocessor"]
             },
+            "draft",
             {
-                "name":"draft",
+                "name":"draft/support",
                 "requires":["localStorage"]
             },
             {
                 "name":"flash",
-                "requires":["flash/support"]
+                "requires":["fakeobjects"]
             },
-            {
-                "name":"flash/dialog"
-            },
+            "flash/dialog",
             {
                 "name": "flash/support",
                 "requires": ["flashutils","contextmenu",
-                    "fakeobjects","bubbleview"]
+                    "bubbleview"]
             },
             {
                 "name":"font",
                 "requires":["select"]
             },
             "format",
-            {
-                "name": "htmldataprocessor"
-            },
+            "htmldataprocessor",
             {
                 "name": "image",
                 "requires": ["contextmenu","bubbleview"]
@@ -240,19 +200,24 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["tabs"]
             },
             "indent",
+            "indent/support",
             "justify",
             {
                 "name":"link",
                 "requires": ["bubbleview"]
             },
-            {
-                "name":"link/dialog"
-            },
+            "link/dialog",
+            "list/support",
             "list",
             "maximize",
+            "maximize/support",
+            {
+                "name":"music/support",
+                "requires":["flash/support"]
+            },
             {
                 "name":"music",
-                "requires":["flash/support"]
+                "requires":["fakeobjects"]
             },
             {
                 "name":"music/dialog",
@@ -260,20 +225,23 @@ KISSY.add("editor", function(S, undefined) {
             },
             "preview",
             "removeformat",
+            "smiley",
             {
-                "name": "smiley"
+                name:"smiley/support",
+                requires:["overlay"]
             },
             {
                 "name":"sourcearea",
                 "requires":["sourcearea/support"]
             },
             {
-                "name": "table",
-                "requires": ["contextmenu"]
+                "name": "table"
             },
             {
-                "name": "table/dialog"
+                "name": "table/support",
+                "requires": ["contextmenu"]
             },
+            "table/dialog",
             {
                 "name": "templates",
                 "requires": ["overlay"]
@@ -284,21 +252,23 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["dd"]
             }
         ],
-        /**
-         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
-         */
+
         mis_mods = [
+            "ext",
             {
                 "name":"localStorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
-            {"name":"button"},
-            {"name":"dd"},
-            {"name":"progressbar"},
+            {
+                "name":"button",
+                "requires":["ext"]
+            },
+            "dd",
+            "progressbar",
             {
                 "name":"overlay",
-                "requires":["dd"]
+                "requires":["dd","ext"]
             },
             {
                 "name": "contextmenu",
@@ -313,12 +283,10 @@ KISSY.add("editor", function(S, undefined) {
                 "requires": ["overlay"]
             }
         ],
-        i, len,
-        /**
-         * @type {(string|{name:string,requires:Array.<string>})}
-         */
+        i,len,
+
         mod,
-        name, requires,mods = {};
+        name,requires,mods = {};
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {

@@ -217,22 +217,23 @@
 <script src="../src/plugins/button/plugin.js"></script>
 <script src="../src/plugins/contextmenu/plugin.js"></script>
 
+<script src="../src/plugins/ext/support/align-ext.js"></script>
+<script src="../src/plugins/ext/support/box-ext.js"></script>
+<script src="../src/plugins/ext/support/close-ext.js"></script>
+<script src="../src/plugins/ext/support/constrain-ext.js"></script>
+<script src="../src/plugins/ext/support/contentbox-ext.js"></script>
+<script src="../src/plugins/ext/support/drag-ext.js"></script>
+<script src="../src/plugins/ext/support/mask-ext.js"></script>
+<script src="../src/plugins/ext/support/position-ext.js"></script>
+<script src="../src/plugins/ext/support/shim-ext.js"></script>
+<script src="../src/plugins/ext/support/stdmod-ext.js"></script>
+<script src="../src/plugins/ext/support/loading-ext.js"></script>
+<script src="../src/plugins/ext/editor/import.js"></script>
 
-<script src="../src/plugins/overlay/support/ext/loading-ext.js"></script>
-<script src="../src/plugins/overlay/support/editor/focus_4e-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/align-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/box-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/close-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/loading-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/constrain-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/contentbox-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/drag-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/mask-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/position-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/shim-ext.js"></script>
-<script src="../src/plugins/overlay/support/ext/stdmod-ext.js"></script>
+
 <script src="../src/plugins/overlay/support/overlay/overlay.js"></script>
 <script src="../src/plugins/overlay/support/overlay/dialog.js"></script>
+<script src="../src/plugins/overlay/support/editor/focus_4e-ext.js"></script>
 <script src="../src/plugins/overlay/support/editor/overlay.js"></script>
 
 <!--overlay component start
@@ -241,7 +242,6 @@ overlay component end-->
 
 <script src="../src/plugins/select/plugin.js"></script>
 <script src="../src/plugins/bubbleview/plugin.js"></script>
-
 
 
 <script src="../src/plugins/dd/support/ddm.js"></script>
@@ -260,6 +260,7 @@ overlay component end-->
 
 <!--草稿-->
 <script src="../src/plugins/draft/plugin.js"></script>
+<script src="../src/plugins/draft/support/plugin.js"></script>
 <!--源码-->
 <script src="../src/plugins/sourcearea/support/plugin.js"></script>
 <script src="../src/plugins/sourcearea/plugin.js"></script>
@@ -277,12 +278,13 @@ overlay component end-->
 <script src="../src/plugins/format/plugin.js"></script>
 <!--颜色-->
 <script src="../src/plugins/colorsupport/plugin.js"></script>
-<script src="../src/plugins/forecolor/plugin.js"></script>
-<script src="../src/plugins/bgcolor/plugin.js"></script>
+<script src="../src/plugins/color/plugin.js"></script>
 <!--列表-->
 <script src="../src/plugins/list/plugin.js"></script>
+<script src="../src/plugins/list/support/plugin.js"></script>
 <!--缩进-->
 <script src="../src/plugins/indent/plugin.js"></script>
+<script src="../src/plugins/indent/support/plugin.js"></script>
 <!--对齐-->
 <script src="../src/plugins/justify/plugin.js"></script>
 <!--链接-->
@@ -296,12 +298,16 @@ overlay component end-->
 <script src="../src/plugins/flash/plugin.js"></script>
 <!--音乐-->
 <script src="../src/plugins/music/plugin.js"></script>
+<script src="../src/plugins/music/support/plugin.js"></script>
 <!--表格-->
 <script src="../src/plugins/table/plugin.js"></script>
+<script src="../src/plugins/table/support/plugin.js"></script>
 <!--表情-->
 <script src="../src/plugins/smiley/plugin.js"></script>
+<script src="../src/plugins/smiley/support/plugin.js"></script>
 <!--最大化-->
 <script src="../src/plugins/maximize/plugin.js"></script>
+<script src="../src/plugins/maximize/support/plugin.js"></script>
 <!--路径-->
 <script src="../src/plugins/elementpaths/plugin.js"></script>
 <!--捕获粘贴-->
@@ -319,12 +325,12 @@ overlay component end-->
 youku,ku6,tudou视频
 -->
 <script src="../src/biz/bangpai/plugins/video/plugin.js"></script>
-
+<script src="../src/biz/bangpai/plugins/video/support/plugin.js"></script>
 <!--
 xiami 音乐
 -->
 <script src="../src/biz/bangpai/plugins/music/plugin.js"></script>
-
+<script src="../src/biz/bangpai/plugins/music/support/plugin.js"></script>
 <!--
 xiami 音乐
 -->
@@ -350,8 +356,7 @@ xiami 音乐
             KISSY.Config.debug = "dev";
 
             KE.Config.base = base + "src/";
-
-            window.editor2 = KE("#editor", {
+            var cfg = {
                 attachForm:true,
                 baseZIndex:10000,
                 //自定义样式
@@ -439,20 +444,25 @@ xiami 音乐
                         direction:["y"]
                     }
                 }
-            }).use("elementpaths,sourcearea,preview," +
+            };
+
+            window.editor2 = KE("#editor", S.clone(cfg)).use("elementpaths,sourcearea,preview," +
                     "bangpai-sourcearea,templates,separator," +
-                    "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                    "list,indent,justify,separator,link,image,flash,"
-                //+ "bangpai-music,bangpai-video,draft,resize,bangpai-upload"
-                    + "bangpai-video,music,bangpai-music,smiley," +
-                    "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                    );
-
-            KE("#editor2", {
-                disableObjectResizing:true,
-                disableInlineTableEditing:true
-            }).use("sourcearea,undo,font,link,image,templates,maximize");
-
+                    "undo,separator,removeformat,font,format,color,separator," +
+                    "list,indent" +
+                    ",justify,separator,link" +
+                    ",image,flash,bangpai-video,music," +
+                    "bangpai-music,smiley,separator,table,resize," +
+                    "draft,bangpai-upload,pagebreak,separator,maximize");
+            /*
+            window.editor3 = KE("#editor2", S.clone(cfg)).use("elementpaths,sourcearea,preview," +
+                    "bangpai-sourcearea,templates,separator," +
+                    "undo,separator,removeformat,font,format,color,separator," +
+                    "list,indent" +
+                    ",justify,separator,link" +
+                    ",image,flash,bangpai-video,music," +
+                    "bangpai-music,smiley,separator,table,resize," +
+                    "draft,bangpai-upload,pagebreak,separator,maximize");*/
         });
     });
 

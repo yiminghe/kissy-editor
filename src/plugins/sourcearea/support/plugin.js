@@ -72,8 +72,6 @@ KISSY.Editor.add("sourcearea/support", function(editor) {
             KE.SourceAreaSupport = new SourceAreaSupport();
         })();
     }
-    editor.addPlugin(function() {
-        editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
-    });
+    editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
 
 });

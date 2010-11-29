@@ -3,113 +3,84 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    var S = KISSY,KE = S.Editor;
-
-    if (!KE.Link) {
-        (function() {
-            var TripleButton = KE.TripleButton,
-                KEStyle = KE.Style,
-                Node = S.Node,
-                KERange = KE.Range,
-                _ke_saved_href = "_ke_saved_href",
-                BubbleView = KE.BubbleView,
-                link_Style = {
-                    element : 'a',
-                    attributes:{
-                        "href":"#(href)",
-                        "title":"#(title)",
-                        //ie < 8 会把锚点地址修改
-                        "_ke_saved_href":"#(_ke_saved_href)",
-                        target:"#(target)"
-                    }
-                },
-                /**
-                 * bubbleview/tip 初始化，所有共享一个 tip
-                 */
-                tipHtml = '前往链接： '
-                    + ' <a ' +
-                    'href="" '
-                    + ' target="_blank" ' +
-                    'class="ke-bubbleview-url">' +
-                    '</a> - '
-                    + ' <span ' +
-                    'class="ke-bubbleview-link ke-bubbleview-change">' +
-                    '编辑' +
-                    '</span> - '
-                    + ' <span ' +
-                    'class="ke-bubbleview-link ke-bubbleview-remove">' +
-                    '去除' +
-                    '</span>';
-
-
-            function Link(editor) {
-                var self = this;
-                self.editor = editor;
-                self._init();
+    var S = KISSY,
+        KE = S.Editor,
+        KEStyle = KE.Style,
+        _ke_saved_href = "_ke_saved_href",
+        BubbleView = KE.BubbleView,
+        link_Style = {
+            element : 'a',
+            attributes:{
+                "href":"#(href)",
+                "title":"#(title)",
+                //ie < 8 会把锚点地址修改
+                "_ke_saved_href":"#(_ke_saved_href)",
+                target:"#(target)"
             }
+        },
+        /**
+         * bubbleview/tip 初始化，所有共享一个 tip
+         */
+        tipHtml = '前往链接： '
+            + ' <a ' +
+            'href="" '
+            + ' target="_blank" ' +
+            'class="ke-bubbleview-url">' +
+            '</a> - '
+            + ' <span ' +
+            'class="ke-bubbleview-link ke-bubbleview-change">' +
+            '编辑' +
+            '</span> - '
+            + ' <span ' +
+            'class="ke-bubbleview-link ke-bubbleview-remove">' +
+            '去除' +
+            '</span>';
 
-            Link.link_Style = link_Style;
-            Link._ke_saved_href = _ke_saved_href;
+    function checkLink(lastElement) {
+        return lastElement._4e_ascendant(function(node) {
+            return node._4e_name() === 'a' && (!!node.attr("href"));
+        }, true);
+    }
 
-            function checkLink(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'a' && (!!node.attr("href"));
-                }, true);
+    function getAttributes(el) {
+        var attributes = el.attributes,re = {};
+        for (var i = 0; i < attributes.length; i++) {
+            var a = attributes[i];
+            if (a.specified) {
+                re[a.name] = a.value;
             }
+        }
+        if (el.style.cssText) {
+            re.style = el.style.cssText;
+        }
+        return re;
+    }
 
-            Link.checkLink = checkLink;
+    editor.ready(function() {
 
-            BubbleView.register({
-                pluginName:"link",
-                func:checkLink,
-                init:function() {
-
-                    var bubble = this,
-                        el = bubble.get("contentEl");
-                    el.html(tipHtml);
-                    var tipurl = el.one(".ke-bubbleview-url"),
-                        tipchange = el.one(".ke-bubbleview-change"),
-                        tipremove = el.one(".ke-bubbleview-remove");
-                    //ie focus not lose
-                    KE.Utils.preventFocus(el);
-
-                    tipchange.on("click", function(ev) {
-                        bubble._plugin.show();
-                        ev.halt();
-                    });
-                    tipremove.on("click", function(ev) {
-                        var link = bubble._plugin,editor = link.editor;
-                        _removeLink(bubble._selectedEl, editor);
-                        editor.notifySelectionChange();
-                        ev.halt();
-                    });
-
-                    bubble.on("show", function() {
-                        var a = bubble._selectedEl;
-                        if (!a)return;
-                        var href = a.attr(_ke_saved_href) ||
-                            a.attr("href");
-                        tipurl.html(href);
-                        tipurl.attr("href", href);
-                    });
+        var context = editor.addButton("link", {
+            contentCls:"ke-toolbar-link",
+            title:"插入链接",
+            mode:KE.WYSIWYG_MODE,
+            //得到当前选中的 link a
+            _getSelectedLink:function() {
+                var self = this,
+                    editor = self.editor,
+                    //ie焦点很容易丢失,tipwin没了
+                    selection = editor.getSelection(),
+                    common = selection && selection.getStartElement();
+                if (common) {
+                    common = checkLink(common);
                 }
-            });
-
-            function getAttributes(el) {
-                var attributes = el.attributes,re = {};
-                for (var i = 0; i < attributes.length; i++) {
-                    var a = attributes[i];
-                    if (a.specified) {
-                        re[a.name] = a.value;
-                    }
-                }
-                if (el.style.cssText) {
-                    re.style = el.style.cssText;
-                }
-                return re;
-            }
-
-            function _removeLink(a, editor) {
+                return common;
+            },
+            _getSelectionLinkUrl:function() {
+                var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
+                if (link) return link.attr(_ke_saved_href) || link.attr("href");
+            },
+            _removeLink:function(a) {
+                var self = this,
+                    editor = self.editor;
                 editor.fire("save");
                 var sel = editor.getSelection(),
                     range = sel.getRanges()[0];
@@ -123,44 +94,79 @@ KISSY.Editor.add("link", function(editor) {
                     new KEStyle(link_Style, attrs).remove(editor.document);
                 }
                 editor.fire("save");
-            }
-
-
-            S.augment(Link, {
-                _init:function() {
-                    var self = this,editor = self.editor;
-                    self.el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        contentCls:"ke-toolbar-link",
-                        title:"插入链接 "
-                    });
-                    self.el.on("offClick", self.show, self);
-                    BubbleView.attach({
-                        pluginName:"link",
-                        pluginInstance:self
-                    });
-                    KE.Utils.sourceDisable(editor, self);
-                },
-
-                disable:function() {
-                    this.el.disable();
-                },
-
-                enable:function() {
-                    this.el.enable();
-                },
-
-                show:function() {
-                    this.editor.useDialog("link/dialog", function(dialog) {
-                        dialog.show();
-                    });
+                editor.notifySelectionChange();
+            },
+            _link:function(attr) {
+                var self = this,
+                    cfg = self.cfg,
+                    editor = self.editor,
+                    link = cfg._getSelectedLink.call(self);
+                attr["_ke_saved_href"] = attr.href;
+                //是修改行为
+                if (link) {
+                    editor.fire("save");
+                    link.attr(attr);
+                    editor.fire("save");
+                } else {
+                    var sel = editor.getSelection(),
+                        range = sel && sel.getRanges()[0];
+                    //编辑器没有焦点或没有选择区域时直接插入链接地址
+                    if (!range || range.collapsed) {
+                        a = new Node("<a>" + url + "</a>",
+                            attr, editor.document);
+                        editor.insertElement(a);
+                    } else {
+                        editor.fire("save");
+                        var linkStyle = new KEStyle(link_Style, attr);
+                        linkStyle.apply(editor.document);
+                        editor.fire("save");
+                    }
                 }
-            });
+                editor.notifySelectionChange();
+            },
+            offClick:function() {
+                var self = this;
+                self.editor.useDialog("link/dialog", function(dialog) {
+                    dialog.show(self);
+                });
+            }
+        });
 
-            KE.Link = Link;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.Link(editor);
+        BubbleView.register({
+            pluginName:"link",
+            editor:editor,
+            pluginContext:context,
+            func:checkLink,
+            init:function() {
+                var bubble = this,
+                    el = bubble.get("contentEl");
+                el.html(tipHtml);
+                var tipurl = el.one(".ke-bubbleview-url"),
+                    tipchange = el.one(".ke-bubbleview-change"),
+                    tipremove = el.one(".ke-bubbleview-remove");
+                //ie focus not lose
+                KE.Utils.preventFocus(el);
+                tipchange.on("click", function(ev) {
+                    var link = bubble._plugin;
+                    link.call("offClick");
+                    ev.halt();
+                });
+                tipremove.on("click", function(ev) {
+                    var link = bubble._plugin
+                    link.call("_removeLink", bubble._selectedEl);
+                    ev.halt();
+                });
+
+                bubble.on("show", function() {
+                    var a = bubble._selectedEl;
+                    if (!a)return;
+                    var href = a.attr(_ke_saved_href) ||
+                        a.attr("href");
+                    tipurl.html(href);
+                    tipurl.attr("href", href);
+                });
+            }
+        });
+
     });
 });

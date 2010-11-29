@@ -563,6 +563,15 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     el.attr("onmousedown", "return false;");
                 }
+            },
+            
+            isFlashEmbed:function(element) {
+                var attributes = element.attributes;
+                return (
+                    attributes.type == 'application/x-shockwave-flash'
+                        ||
+                        /\.swf(?:$|\?)/i.test(attributes.src || '')
+                    );
             }
         };
 

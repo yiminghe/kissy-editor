@@ -2,115 +2,67 @@
  * triple state button for kissy editor
  * @author: yiminghe@gmail.com
  */
-KISSY.Editor.add("button", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+KISSY.Editor.add("button", function() {
+    var S = KISSY,
+        KE = S.Editor,
+        Base = S.Base,
         ON = "on",
         OFF = "off",
         DISABLED = "disabled",
-        Node = S.Node,
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
         OFF_CLASS = "ke-triplebutton-off",
         ACTIVE_CLASS = "ke-triplebutton-active",
-        DISABLED_CLASS = "ke-triplebutton-disabled",
-        BUTTON_HTML = "<a class='" +
-            [BUTTON_CLASS,OFF_CLASS].join(" ")
-            + "' href='#'" +
-            "" +
-            //' tabindex="-1"' +
-            //' hidefocus="true"' +
-            ' role="button"' +
-            //' onblur="this.style.cssText = this.style.cssText;"' +
-            //' onfocus="event&&event.preventBubble();return false;"' +
-            "></a>";
+        DISABLED_CLASS = "ke-triplebutton-disabled";
+
     if (KE.TripleButton) return;
 
-    function TripleButton(cfg) {
-        TripleButton.superclass.constructor.call(this, cfg);
-        this._init();
-    }
-
-    TripleButton.ON = ON;
-    TripleButton.OFF = OFF;
-    TripleButton.DISABLED = DISABLED;
-
-    TripleButton.ON_CLASS = ON_CLASS;
-    TripleButton.OFF_CLASS = OFF_CLASS;
-    TripleButton.DISABLED_CLASS = DISABLED_CLASS;
-
-    TripleButton.ATTRS = {
-        state: {value:OFF},
-        container:{},
-        text:{},
-        contentCls:{},
-        cls:{},
-        el:{}
-    };
-
-
-    S.extend(TripleButton, S.Base, {
-        _init:function() {
-            var self = this,
-                container = self.get("container"),
-                elHolder = self.get("el"),
-                title = self.get("title"),
-                text = self.get("text"),
-                contentCls = self.get("contentCls");
-            self.el = new Node(BUTTON_HTML);
-            var el = self.el;
-            el._4e_unselectable();
-            self._attachCls();
-            //button有文子
-            if (text) {
-                el.html(text);
-                //直接上图标
-            } else if (contentCls) {
-                el.html("<span class='ke-toolbar-item " +
-                    contentCls + "'></span>");
-                el.one("span")._4e_unselectable();
-            }
-            if (title) el.attr("title", title);
-            //替换已有元素
-            if (elHolder) {
-                elHolder[0].parentNode.replaceChild(el[0], elHolder[0]);
-            }
-            //加入容器
-            else if (container) {
-                container.append(el);
-            }
-            el.on("click", self._action, self);
-            self.on("afterStateChange", self._stateChange, self);
-
-
-            if (!self.get("cls")) {
-                //添加鼠标点击视觉效果
-                el.on("mousedown", function() {
-                    if (self.get("state") == OFF) {
-                        el.addClass(ACTIVE_CLASS);
-                    }
-                });
-                el.on("mouseup mouseleave", function() {
-                    if (self.get("state") == OFF &&
-                        el.hasClass(ACTIVE_CLASS)) {
-                        //click 后出发
-                        setTimeout(function() {
-                            el.removeClass(ACTIVE_CLASS);
-                        }, 300);
-                    }
-                });
-            }
-        },
-        _attachCls:function() {
+    var TripleButton = Base.create([S.Ext.Box], {
+        init:function() {
             var self = this;
-            var cls = self.get("cls");
-            if (cls) self.el.addClass(cls);
+            self.on("bindUI", self._bindUIButton, self);
         },
 
-        _stateChange:function(ev) {
-            var n = ev.newVal,self = this;
-            self["_" + n]();
-            self._attachCls();
+
+        _bindUIButton:function() {
+            var self = this,el = self.get("el");
+            el.on("click", self._action, self);
+            //添加鼠标点击视觉效果
+            el.on("mousedown", function() {
+                if (self.get("state") == OFF) {
+                    el.addClass(ACTIVE_CLASS);
+                }
+            });
+            el.on("mouseup mouseleave", function() {
+                if (self.get("state") == OFF &&
+                    el.hasClass(ACTIVE_CLASS)) {
+                    //click 后出发
+                    setTimeout(function() {
+                        el.removeClass(ACTIVE_CLASS);
+                    }, 300);
+                }
+            });
+        },
+        _uiSetTitle:function() {
+            this.get("el").attr("title", this.get("title"));
+        },
+        _uiSetContentCls:function(contentCls) {
+            var self = this,
+                el = self.get("el");
+            if (contentCls !== undefined) {
+                el.html("<span class='ke-toolbar-item " + contentCls + "'>");
+                //ie 失去焦点
+                el._4e_unselectable();
+            }
+        },
+        _uiSetText:function(text) {
+            var self = this,
+                el = self.get("el");
+            if (text !== undefined)
+                el.html(text)
+        },
+        _uiSetState:function(n) {
+            this["_" + n]();
         },
         disable:function() {
             var self = this;
@@ -125,6 +77,7 @@ KISSY.Editor.add("button", function(editor) {
         _action:function(ev) {
             var self = this;
             self.fire(self.get("state") + "Click", ev);
+            ev.type = self.get("state") + "Click";
             self.fire("click", ev);
             ev.preventDefault();
         },
@@ -135,14 +88,90 @@ KISSY.Editor.add("button", function(editor) {
             this.set("state", OFF);
         },
         _on:function() {
-            this.el[0].className = [BUTTON_CLASS,ON_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(OFF_CLASS + " " + DISABLED_CLASS);
+            el.addClass(ON_CLASS);
         },
         _off:function() {
-            this.el[0].className = [BUTTON_CLASS,OFF_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(ON_CLASS + " " + DISABLED_CLASS);
+            el.addClass(OFF_CLASS);
         },
         _disabled:function() {
-            this.el[0].className = [BUTTON_CLASS,DISABLED_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(OFF_CLASS + " " + ON_CLASS);
+            el.addClass(DISABLED_CLASS);
+        }
+    }, {
+        ATTRS : {
+            state: {value:OFF},
+            elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
+            elAttrs:{
+                href:{value:"#"}
+            },
+            elTagName:{value:"a"},
+            title:{},
+            contentCls:{},
+            text:{}
         }
     });
+
+    TripleButton.ON = ON;
+    TripleButton.OFF = OFF;
+    TripleButton.DISABLED = DISABLED;
+    TripleButton.ON_CLASS = ON_CLASS;
+    TripleButton.OFF_CLASS = OFF_CLASS;
+    TripleButton.DISABLED_CLASS = DISABLED_CLASS;
+
+
     KE.TripleButton = TripleButton;
+
+    KE.prototype.addButton = function(name, btnCfg) {
+        var self = this,
+            editor = self,
+            b = new TripleButton({
+                render:self.toolBarDiv,
+                autoRender:true,
+                title:btnCfg.title,
+                text:btnCfg.text,
+                contentCls:btnCfg.contentCls
+            }),
+            context = {
+                btn:b,
+                editor:self,
+                cfg:btnCfg,
+                call:function() {
+                    var args = S.makeArray(arguments),
+                        method = args.shift();
+                    return btnCfg[method].apply(context, args);
+                },
+                /**
+                 * 依赖于其他模块，先出来占位！
+                 * @param cfg
+                 */
+                reload:function(cfg) {
+                    S.mix(btnCfg, cfg);
+                    b.enable();
+                    self.on("selectionChange", function() {
+                        btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
+                    });
+                    b.on("click", function(ev) {
+                        var t = ev.type;
+                        if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                    });
+                    if (btnCfg.mode == KE.WYSIWYG_MODE) {
+                        editor.on("wysiwygmode", b.enable, b);
+                        editor.on("sourcemode", b.disable, b);
+                    }
+                    btnCfg.init && btnCfg.init.call(context);
+                }
+            };
+        if (btnCfg.loading) {
+            b.disable();
+        } else {
+            //否则立即初始化，开始作用
+            context.reload();
+        }
+        return context;
+    };
 });

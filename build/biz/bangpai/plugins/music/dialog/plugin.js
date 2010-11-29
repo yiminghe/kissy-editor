@@ -91,10 +91,10 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     "style='width:374px;" + MIDDLE
                     + "'" +
                     "/> &nbsp; " +
-                    " <button " +
-                    "class='ke-xiami-submit'" +
+                    " <a " +
+                    "class='ke-xiami-submit ke-button'" +
                     ">"
-                    + BTIP + "</button>" +
+                    + BTIP + "</a>" +
                     "</p>" +
                     "<p " +
                     "style='margin:10px 0'>" +
@@ -154,13 +154,10 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     self._xiami_input = input;
                     KE.Utils.placeholder(input, TIP);
                     self._xiamia_list = del.one(".ke-xiami-list");
-                    self._xiami_submit = new KE.TripleButton({
-                        el:del.one(".ke-xiami-submit"),
-                        cls:'ke-button',
-                        text:"搜&nbsp;索"
-                    });
-                    self._xiami_submit.on("offClick", function() {
-                        loadRecordsByPage(1);
+                    self._xiami_submit = del.one(".ke-xiami-submit");
+                    self._xiami_submit.on("click", function() {
+                        if (!self._xiami_submit.hasClass("ke-triplebutton-disabled"))
+                            loadRecordsByPage(1);
                     });
                     input.on("keydown", function(ev) {
                         if (ev.keyCode === 13) {
@@ -202,7 +199,8 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                             alert("不能为空！");
                             return;
                         }
-                        self._xiami_submit.disable();
+                        self._xiami_submit.addClass("ke-triplebutton-disabled");
+                        //self._xiami_submit.disable();
                         var params = {
                             key:encodeURIComponent(input.val()),
                             page:page,
@@ -225,7 +223,8 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                             },
                             error:function() {
                                 node.src = '';
-                                self._xiami_submit.enable();
+                                self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                                //self._xiami_submit.enable();
                                 var html = "<p style='text-align:center;margin:10px 0;'>" +
                                     "不好意思，超时了，请重试！" +
                                     "</p>";
@@ -275,7 +274,8 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         html = "";
                     //xiami 返回结果自动trim了
                     if (data.key == S.trim(self._xiami_input.val())) {
-                        self._xiami_submit.enable();
+                        self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                        //self._xiami_submit.enable();
                         if (re && re.length) {
                             html = "<ul>";
                             for (i = 0; i < re.length; i++) {
@@ -365,7 +365,8 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         self._xiami_url_wrap.show();
                         self.d.get("footer").hide();
                         self._xiamia_title.hide();
-                        self._xiami_submit.enable();
+                        self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                        //self._xiami_submit.enable();
                     }
                     self._xiamia_list.hide();
                     self._xiamia_list.html("");

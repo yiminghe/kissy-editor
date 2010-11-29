@@ -62,7 +62,7 @@ build file for kissy editor
 
     <fileset dir="${build.dir}"
              includes="plugins/**/plugin.js"
-             excludes="**/dialog/plugin.js"
+             excludes="**/dialog/**/plugin.js"
              id="core_plugin_js">
     </fileset>
 
@@ -76,6 +76,18 @@ build file for kissy editor
     -->
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
+
+        <concat destfile="${src.dir}/plugins/ext/plugin.js"
+                encoding="${charset}"
+                outputencoding="${charset}"
+                >
+            <fileset dir="${src.dir}/plugins/ext/support/"
+                     includes="*.js"
+                    ></fileset>
+            <filelist dir="${src.dir}/plugins/ext/editor/"
+                      files="import.js"
+                    ></filelist>
+        </concat>
         <!--
         引入kissy overlay 到 editor
         -->
@@ -83,9 +95,7 @@ build file for kissy editor
                 encoding="${charset}"
                 outputencoding="${charset}"
                 >
-            <fileset dir="${src.dir}/plugins/overlay/support/ext/"
-                     includes="*.js"
-                    ></fileset>
+
             <filelist dir="${src.dir}/plugins/overlay/support/overlay/"
                       files="overlay.js,dialog.js"></filelist>
             <filelist dir="${src.dir}/plugins/overlay/support/editor/"
@@ -423,7 +433,7 @@ build file for kissy editor
                             <fileset
                                     dir="@{biz}/plugins"
                                     includes="**/plugin.js"
-                                    excludes="**/dialog/plugin.js"
+                                    excludes="**/dialog/**/plugin.js"
                                     />
                         </concat>
                     </ac:then>

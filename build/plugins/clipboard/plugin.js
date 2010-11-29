@@ -293,7 +293,7 @@ KISSY.Editor.add("clipboard", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.Paste(editor);
     });
 });

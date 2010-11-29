@@ -268,6 +268,13 @@ KISSY.Editor.add("definition", function(KE) {
             Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
+                /**
+                 * 可能窗口在等待其他模块载入，不能立即获取
+                 */
+                if (!dialog) {
+                    S.later(arguments.callee, 50, false, self);
+                    return;
+                }
                 callback(dialog);
                 Overlay.unloading();
             });
@@ -288,14 +295,6 @@ KISSY.Editor.add("definition", function(KE) {
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        }
-        ,
-        /**
-         *@this {KISSY.Editor}
-         * @param func {function()}
-         */
-        addPlugin:function(func) {
-            this.ready(func);
         }
         ,
         /**
@@ -1125,8 +1124,7 @@ KISSY.Editor.add("definition", function(KE) {
         "addCustomStyle":KEP.addCustomStyle,
         "addCommand":KEP.addCommand,
         "hasCommand":KEP.hasCommand,
-        "execCommand":KEP.execCommand,
-        "addPlugin":KEP.addPlugin,
+        "execCommand":KEP.execCommand,      
         "useDialog":KEP.useDialog,
         "addDialog":KEP.addDialog,
         "getDialog":KEP.getDialog,

@@ -1,8 +1,12 @@
 KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
+
     var S = KISSY,
         KE = S.Editor,
-        UA = S.UA,
-        BangPaiUpload = KE.BangPaiUpload,
+        UA = S.UA;
+
+    KE.namespace("BangPaiUpload");
+
+    var BangPaiUpload = KE.BangPaiUpload,
         DOM = S.DOM,
         JSON = S.JSON,
         PIC_NUM_LIMIT = 15,
@@ -103,11 +107,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                                 "</div>").appendTo(bangpaiUploaderHolder),
                         listWrap = new Node("<div style='display:none'>")
                             .appendTo(bangpaiUploaderHolder),
-                        btn = new KE.TripleButton({
-                            text:"浏&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;览",
-                            cls:"ke-button",
-                            container:btnHolder
-                        }),
+                        btn = new Node("<a class='ke-button'>浏&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;览</a>")
+                            .appendTo(btnHolder),
 
                         listTableWrap = new Node("<div>" +
                             "<table class='ke-upload-list'>" +
@@ -173,7 +174,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                             " target='_blank'>点此升级</a>";
                     }
 
-                    btn.disable();
+                    btn.addClass("ke-triplebutton-disabled");
                     self.tipSpan = btnHolder.one("span");
                     self.tipSpan.html(TIP);
                     if (!UA.fpvGEQ(FLASH_VERSION_REQUIRED)) {
@@ -194,9 +195,10 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     self.up = up;
 
 
-                    var boffset = btn.el.offset(),
-                        fwidth = btn.el.width() * 2,
-                        fheight = btn.el.height() * 1.5,
+                    var bel = btn,
+                        boffset = bel.offset(),
+                        fwidth = bel.width() * 2,
+                        fheight = bel.height() * 1.5,
                         flashPos = new Node("<div style='" +
                             ("position:absolute;" +
                                 "width:" + fwidth + "px;" +
@@ -237,10 +239,10 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     self.uploader = uploader;
 
                     uploader.on("mouseOver", function() {
-                        btn.el.addClass("ke-button-hover");
+                        bel.addClass("ke-button-hover");
                     });
                     uploader.on("mouseOut", function() {
-                        btn.el.removeClass("ke-button-hover");
+                        bel.removeClass("ke-button-hover");
                     });
                     insertAll.on("click", function() {
                         var trs = list.all("tr");
@@ -490,7 +492,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 ddisable:function() {
                     var self = this;
                     self.uploader.lock();
-                    self.btn.disable();
+                    self.btn.addClass("ke-triplebutton-disabled");
                     self.flashPos.offset({
                         left:-9999,
                         top:-9999
@@ -499,8 +501,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                 denable:function() {
                     var self = this;
                     self.uploader.unlock();
-                    self.btn.enable();
-                    self.flashPos.offset(self.btn.el.offset());
+                    self.btn.removeClass("ke-triplebutton-disabled");
+                    self.flashPos.offset(self.btn.offset());
                 },
                 _syncStatus:function() {
                     var self = this,
@@ -734,8 +736,8 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         });
                         return;
                     }
-                    btn.enable();
-                    flashPos.offset(btn.el.offset());
+                    btn.removeClass("ke-triplebutton-disabled");
+                    flashPos.offset(btn.offset());
                     uploader.setAllowMultipleFiles(true);
                     uploader.setFileFilters([
                         {

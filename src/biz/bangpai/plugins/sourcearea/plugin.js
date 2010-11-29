@@ -62,7 +62,7 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.BangPaiSourceArea(editor);
     });
 },

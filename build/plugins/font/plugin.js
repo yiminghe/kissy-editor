@@ -137,7 +137,7 @@ KISSY.Editor.add("font", function(editor) {
      family:"inherit"
      });*/
 
-    if (!KE.Font) {
+    if (!KE.FontSelect) {
         (function() {
 
 
@@ -226,95 +226,14 @@ KISSY.Editor.add("font", function(editor) {
                     this.el.reset("value");
                 }
             });
-
-            function SingleFont(cfg) {
-                var self = this;
-                SingleFont.superclass.constructor.call(self, cfg);
-                self._init();
-            }
-
-            SingleFont.ATTRS = {
-                editor:{},
-                text:{},
-                contentCls:{},
-                title:{},
-                style:{}
-            };
-
-            S.extend(SingleFont, S.Base, {
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    self.el = new TripleButton({
-                        text:text,
-                        title:title,
-                        contentCls:self.get("contentCls"),
-                        container:editor.toolBarDiv
-                    });
-                    self.el.on("offClick", self._on, self);
-                    self.el.on("onClick", self._off, self);
-                    editor.on("selectionChange", self._selectionChange, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _on:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    editor.fire("save");
-                    style.apply(editor.document);
-                    editor.fire("save");
-                    editor.notifySelectionChange();
-                    editor.focus();
-                },
-                _off:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    editor.fire("save");
-                    style.remove(editor.document);
-                    editor.fire("save");
-                    editor.notifySelectionChange();
-                    editor.focus();
-                },
-                _selectionChange:function(ev) {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title"),
-                        el = self.el,
-                        elementPath = ev.path;
-                    if (el.get("state") == TripleButton.DISABLED)
-                        return;
-                    if (style.checkActive(elementPath)) {
-                        el.set("state", TripleButton.ON);
-                    } else {
-                        el.set("state", TripleButton.OFF);
-                    }
-                }
-            });
-            Font.SingleFont = SingleFont;
-            KE.Font = Font;
+            KE.FontSelect = Font;
         })();
     }
-    editor.addPlugin(function() {
+    editor.ready(function() {
 
 
         if (false !== pluginConfig["font-size"]) {
-            new KE.Font({
+            new KE.FontSelect({
                 editor:editor,
                 title:"大小",
                 width:"30px",
@@ -326,7 +245,7 @@ KISSY.Editor.add("font", function(editor) {
         }
 
         if (false !== pluginConfig["font-family"]) {
-            new KE.Font({
+            new KE.FontSelect({
                 editor:editor,
                 title:"字体",
                 width:"110px",
@@ -336,11 +255,46 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
+
+        var singleFontTpl = {
+            mode:KE.WYSIWYG_MODE,
+            offClick:function() {
+                var self = this,
+                    editor = self.editor,
+                    style = self.cfg.style;
+                editor.fire("save");
+                style.apply(editor.document);
+                editor.fire("save");
+                editor.notifySelectionChange();
+                editor.focus();
+            },
+            onClick:function() {
+                var self = this,
+                    editor = self.editor,
+                    style = self.cfg.style;
+                editor.fire("save");
+                style.remove(editor.document);
+                editor.fire("save");
+                editor.notifySelectionChange();
+                editor.focus();
+            },
+            selectionChange:function(ev) {
+                var self = this,
+                    style = self.cfg.style,
+                    btn = self.btn,
+                    elementPath = ev.path;
+                if (style.checkActive(elementPath)) {
+                    btn.set("state", TripleButton.ON);
+                } else {
+                    btn.set("state", TripleButton.OFF);
+                }
+            }
+        };
+
         if (false !== pluginConfig["font-bold"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-bold", S.mix({
                 contentCls:"ke-toolbar-bold",
                 title:"粗体 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'strong',
                     overrides    : [
@@ -349,14 +303,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-weight: bold;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-italic"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-italic", S.mix({
                 contentCls:"ke-toolbar-italic",
                 title:"斜体 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'em',
                     overrides    : [
@@ -365,14 +318,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-style: italic;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-underline"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-underline",
                 title:"下划线 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'u',
                     overrides    : [
@@ -380,14 +332,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'text-decoration: underline;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-strikeThrough"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'del',
                     overrides    : [
@@ -396,7 +347,7 @@ KISSY.Editor.add("font", function(editor) {
                         { element : 's' }
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
     });

@@ -30,26 +30,33 @@ KISSY.Editor.add("bubbleview", function() {
     }, {
         ATTRS:{
             focus4e:false,
-            "zIndex":{value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)}
+            "zIndex":{
+                value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)
+            }
         }
     });
 
 
     var holder = {};
 
+    function getInstance(pluginName) {
+        var h = holder[pluginName];
+        if (!h.bubble) {
+            h.bubble = new BubbleView();
+            h.bubble.renderer();
+            h.cfg.init && h.cfg.init.call(h.bubble);
+        }
+        return h.bubble;
+    }
 
-    /**
-     * 延迟化创建实例
-     * @param cfg
-     */
     BubbleView.attach = function(cfg) {
-        var pluginInstance = cfg.pluginInstance,
-            pluginName = cfg.pluginName,
-            editor = pluginInstance.editor,
-            h = holder[pluginName];
-        if (!h) return;
-        var func = h.cfg.func,
-            bubble = holder[pluginName].bubble;
+        var pluginName = cfg.pluginName;
+        var cfgDef = holder[pluginName];
+        S.mix(cfg, cfgDef.cfg, false);
+        var pluginContext = cfg.pluginContext,
+            func = cfg.func,
+            editor = cfg.editor,
+            bubble = cfg.bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {
             var elementPath = ev.path,
@@ -60,11 +67,10 @@ KISSY.Editor.add("bubbleview", function() {
                 lastElement = elementPath.lastElement;
                 if (!lastElement) return;
                 a = func(lastElement);
-
                 if (a) {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
-                    bubble._plugin = pluginInstance;
+                    bubble._plugin = pluginContext;
                     bubble.hide();
                     bubble.show();
                 } else if (bubble) {
@@ -77,26 +83,18 @@ KISSY.Editor.add("bubbleview", function() {
         Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
             bubble && bubble.hide();
         });
-        Event.on(document, "click", function() {
-            bubble && bubble.hide();
-        });
     };
-    function getInstance(pluginName) {
-        var h = holder[pluginName];
-        if (!h.bubble) {
-            h.bubble = new BubbleView();
-            h.bubble.renderer();
-            h.cfg.init && h.cfg.init.call(h.bubble);
-        }
-        return h.bubble;
-    }
-
-
     BubbleView.register = function(cfg) {
         var pluginName = cfg.pluginName;
-        holder[pluginName] = {
+        holder[pluginName] = holder[pluginName] || {
             cfg:cfg
         };
+        Event.on(document, "click", function() {
+            cfg.bubble && cfg.bubble.hide();
+        });
+        if (cfg.editor) {
+            BubbleView.attach(cfg);
+        }
     };
 
     KE.BubbleView = BubbleView;

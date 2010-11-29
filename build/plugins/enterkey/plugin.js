@@ -202,7 +202,7 @@ KISSY.Editor.add("enterkey", function(editor) {
             KE.EnterKey = EnterKey;
         })();
     }
-    editor.addPlugin(function() {
+    editor.ready(function() {
         editor.addCommand("enterBlock", {
             exec:KE.EnterKey.enterBlock
         });

@@ -18,7 +18,10 @@ KISSY.Editor.add("undo", function(editor) {
             function Snapshot(editor) {
                 var contents = editor._getRawData(),
                     self = this,
-                    selection = contents && editor.getSelection();
+                    selection;
+                if (contents) {
+                    selection = editor.getSelection();
+                }
                 //内容html
                 self.contents = contents;
                 //选择区域书签标志
@@ -83,7 +86,8 @@ KISSY.Editor.add("undo", function(editor) {
 
             var editingKeyCodes = { /*Backspace*/ 8:1, /*Delete*/ 46:1 },
                 modifierKeyCodes = { /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1 },
-                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },// Arrows: L, T, R, B
+                // Arrows: L, T, R, B
+                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },
                 zKeyCode = 90,
                 yKeyCode = 89;
 
@@ -210,108 +214,83 @@ KISSY.Editor.add("undo", function(editor) {
                     }
                 }
             });
-
-
-            var TripleButton = KE.TripleButton,RedoMap = {
-                "redo":1,
-                "undo":-1
-            };
-
-            /**
-             * 工具栏重做与撤销的ui功能
-             * @param editor
-             * @param text
-             */
-            function RestoreUI(editor, text, title, contentCls) {
-                var self = this;
-                self.editor = editor;
-                self.title = title;
-                self.text = text;
-                self.contentCls = contentCls;
-                self._init();
-            }
-
-            S.augment(RestoreUI, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor;
-
-                    self.el = new TripleButton({
-                        contentCls:self.contentCls,
-                        title:self.title,
-                        container:editor.toolBarDiv
-                    });
-                    var el = self.el;
-                    el.set("state", TripleButton.DISABLED);
-                    /**
-                     * save,restore完，更新工具栏状态
-                     */
-                    editor.on("afterSave afterRestore", self._respond, self);
-
-                    /**
-                     * 触发重做或撤销动作，都是restore，方向不同
-                     */
-                    el.on("offClick", function() {
-                        editor.fire("restore", {
-                            d:RedoMap[self.text]
-                        });
-                    });
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this._saveState = this.el.get("state");
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", this._saveState);
-                },
-
-                _respond:function(ev) {
-                    this.updateUI(ev.history, ev.index);
-                },
-
-                updateUI:function(history, index) {
-                    var self = this,
-                        el = self.el,
-                        text = self.text;
-                    if (text == "undo") {
-                        //有状态可退
-                        if (index > 0) {
-                            el.set("state", TripleButton.OFF);
-                        } else {
-                            el.set("state", TripleButton.DISABLED);
-                        }
-                    } else if (text == "redo") {
-                        //有状态可前进
-                        if (index < history.length - 1) {
-                            el.set("state", TripleButton.OFF);
-                        } else {
-                            el.set("state", TripleButton.DISABLED);
-                        }
-                    }
-                }
-            });
             KE.UndoManager = UndoManager;
-            KE.RestoreUI = RestoreUI;
         })();
     }
 
-    editor.addPlugin(function() {
 
+    editor.ready(function() {
         /**
          * 编辑器历史中央管理
          */
         new KE.UndoManager(editor);
+        var RedoMap = {
+            "redo":1,
+            "undo":-1
+        },
+            tplCfg = {
+                mode:KE.WYSIWYG_MODE,
+                init:function() {
+                    var self = this,
+                        editor = self.editor;
+                    /**
+                     * save,restore完，更新工具栏状态
+                     */
+                    editor.on("afterSave afterRestore",
+                        self.cfg._respond,
+                        self);
+                    self.btn.disable();
+                },
+                offClick:function() {
+                    var self = this;
+                    self.editor.fire("restore", {
+                        d:RedoMap[self.cfg.flag]
+                    });
+                }
+            },
+            undoCfg = S.mix({
+                title:"撤销",
+                flag:"undo",
+                contentCls:"ke-toolbar-undo",
+                _respond:function(ev) {
+                    var self = this,
+                        index = ev.index,
+                        btn = self.btn;
+
+                    //有状态可退
+                    if (index > 0) {
+                        btn.boff();
+                    } else {
+                        btn.disable();
+                    }
+                }
+            }, tplCfg, false),
+            redoCfg = S.mix({
+                title:"重做",
+                flag:"redo",
+                contentCls:"ke-toolbar-redo",
+                _respond:function(ev) {
+                    var self = this,
+                        history = ev.history,
+                        index = ev.index,
+                        btn = self.btn;
+                    //有状态可前进
+                    if (index < history.length - 1) {
+                        btn.boff();
+                    } else {
+                        btn.disable();
+                    }
+                }
+            }, tplCfg, false);
 
         /**
          * 撤销工具栏按钮
          */
-        new KE.RestoreUI(editor, "undo", "撤销", "ke-toolbar-undo");
+        editor.addButton("undo", undoCfg);
+
         /**
          * 重做工具栏按钮
          */
-        new KE.RestoreUI(editor, "redo", "重做", "ke-toolbar-redo");
+        editor.addButton("undo", redoCfg);
     });
-
-
 });

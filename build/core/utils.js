@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-19 17:29:25");
+                re += "t=" + encodeURIComponent("2010-11-29 19:04:14");
                 return  re;
             },
             /**
@@ -563,6 +563,15 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     el.attr("onmousedown", "return false;");
                 }
+            },
+            
+            isFlashEmbed:function(element) {
+                var attributes = element.attributes;
+                return (
+                    attributes.type == 'application/x-shockwave-flash'
+                        ||
+                        /\.swf(?:$|\?)/i.test(attributes.src || '')
+                    );
             }
         };
 

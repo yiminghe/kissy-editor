@@ -1,16 +1,11 @@
 KISSY.Editor.add("flash/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor,
-        //UA = S.UA,
-        //Event = S.Event,
-        //ContextMenu = KE.ContextMenu,
-        //Node = S.Node,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
         Dialog = KE.Dialog,
         flashUtils = KE.Utils.flash,
-        TIP = "请输入如 http://www.xxx.com/xxx.swf"
-        ;
+        TIP = "请输入如 http://www.xxx.com/xxx.swf";
 
     if (!KE.Flash.FlashDialog) {
         (function() {
@@ -221,12 +216,8 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                     self.d.hide();
                 }
             });
-
-
         })();
     }
 
-
     editor.addDialog("flash/dialog", new KE.Flash.FlashDialog(editor));
-
 });

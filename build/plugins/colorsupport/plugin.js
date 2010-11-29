@@ -2,15 +2,13 @@
  * color support for kissy editor
  * @author : yiminghe@gmail.com
  */
-KISSY.Editor.add("colorsupport", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+KISSY.Editor.add("colorsupport", function() {
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
         Event = S.Event,
         Overlay = KE.Overlay,
-        TripleButton = KE.TripleButton,
         DOM = S.DOM;
-    if (KE.ColorSupport) return;
 
     DOM.addStyleSheet(".ke-color-panel a {" +
         "display: block;" +
@@ -107,43 +105,69 @@ KISSY.Editor.add("colorsupport", function(editor) {
             "</div>";
     }
 
-    function ColorSupport(cfg) {
-        var self = this;
-        ColorSupport.superclass.constructor.call(self, cfg);
-        self._init();
-    }
-
-    ColorSupport.ATTRS = {
-        editor:{},
-        styles:{},
-        contentCls:{},
-        text:{}
-    };
-    S.extend(ColorSupport, S.Base, {
-        _init:function() {
+    KE.ColorSupport = {
+        offClick:function(ev) {
             var self = this,
-                editor = self.get("editor"),
-                toolBarDiv = editor.toolBarDiv,
-                el = new TripleButton({
-                    container:toolBarDiv,
-                    title:self.get("title"),
-                    contentCls:self.get("contentCls")
+                cfg = self.cfg,
+                colorWin = self.colorWin;
+            if (colorWin && colorWin.get("visible")) {
+                colorWin.hide();
+            } else {
+                cfg._prepare.call(self, ev);
+            }
+        },
+        _prepare:function() {
+            var self = this,
+                cfg = self.cfg,
+                doc = document,
+                el = self.btn,
+                editor = self.editor,
+                colorPanel;
+            initHtml();
+            self.colorWin = new Overlay({
+                elCls:"ks-popup",
+                content:html,
+                focus4e:false,
+                autoRender:true,
+                width:"170px",
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
+            });
+
+            var colorWin = self.colorWin;
+            colorPanel = colorWin.get("contentEl");
+            colorPanel.on("click", cfg._selectColor, self);
+            Event.on(doc, "click", cfg._hidePanel, self);
+            Event.on(editor.document, "click", cfg._hidePanel, self);
+            colorWin.on("show", el.bon, el);
+            colorWin.on("hide", el.boff, el);
+            var others = colorPanel.one(".ke-color-others");
+            others.on("click", function(ev) {
+                ev.halt();
+                colorWin.hide();
+                editor.useDialog("color/dialog", function(dialog) {
+                    dialog.show(self);
                 });
-
-            el.on("offClick onClick", self._showColors, self);
-            self.el = el;
-            KE.Utils.lazyRun(self, "_prepare", "_real");
-            KE.Utils.sourceDisable(editor, self);
+            });
+            cfg._prepare = cfg._show;
+            cfg._show.call(self);
         },
-        disable:function() {
-            this.el.disable();
-        },
-        enable:function() {
-            this.el.enable();
-        },
-        _hidePanel:function(ev) {
+        _show:function() {
             var self = this,
-                el = self.el.el,
+                el = self.btn.get("el"),
+                colorWin = self.colorWin,
+                panelWidth = parseInt(colorWin.get("width")),
+                margin = 30,
+                viewWidth = DOM.viewportWidth();
+            colorWin.align(el, ["bl","tl"], [0,2]);
+            if (colorWin.get("x") + panelWidth
+                > viewWidth - margin) {
+                colorWin.set("x", viewWidth - margin - panelWidth);
+            }
+            colorWin.show();
+        },
+        _hidePanel : function(ev) {
+            var self = this,
+                el = self.btn.get("el"),
                 t = ev.target,
                 colorWin = self.colorWin;
             //当前按钮点击无效
@@ -153,22 +177,22 @@ KISSY.Editor.add("colorsupport", function(editor) {
             }
             colorWin.hide();
         },
-        _selectColor:function(ev) {
+        _selectColor : function(ev) {
             ev.halt();
-
             var self = this,
-                t = ev.target;
-            if (DOM._4e_name(t) == "a" && !DOM.hasClass(t, "ke-button")) {
-                t = new Node(t);
-                self._applyColor(t._4e_style("background-color"));
+                cfg = self.cfg,
+                t = new Node(ev.target);
+            if (t._4e_name() == "a" && !t.hasClass("ke-button")) {
+                cfg._applyColor.call(self, t._4e_style("background-color"));
                 self.colorWin.hide();
             }
         },
-        _applyColor:function(c) {
+        _applyColor : function(c) {
             var self = this,
-                editor = self.get("editor"),
+                editor = self.editor,
                 doc = editor.document,
-                styles = self.get("styles");
+                styles = self.cfg.styles;
+
             editor.fire("save");
             if (c) {
                 new KE.Style(styles, {
@@ -183,66 +207,6 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 }).remove(doc);
             }
             editor.fire("save");
-        },
-        _prepare:function() {
-            var self = this,
-                doc = document,
-                el = self.el,
-                editor = self.get("editor"),
-                colorPanel;
-            initHtml();
-            self.colorWin = new Overlay({
-                elCls:"ks-popup",
-                content:html,
-                focus4e:false,
-                width:"170px",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
-            });
-
-            var colorWin = self.colorWin;
-            colorWin.renderer();
-            colorPanel = colorWin.get("contentEl");
-            colorPanel.on("click", self._selectColor, self);
-
-            self.colorPanel = colorPanel;
-            Event.on(doc, "click", self._hidePanel, self);
-            Event.on(editor.document, "click", self._hidePanel, self);
-
-            colorWin.on("show", el.bon, el);
-            colorWin.on("hide", el.boff, el);
-            var others = colorPanel.one(".ke-color-others");
-            others.on("click", function(ev) {
-                ev.halt();
-                colorWin.hide();
-                editor.useDialog("colorsupport/dialog", function(dialog) {
-                    dialog.show(self);
-                });
-            });
-        },
-        _real:function() {
-            var self = this,
-                el = self.el.el,
-                colorPanel = self.colorPanel,
-                colorWin = self.colorWin,
-                panelWidth = parseInt(colorWin.get("width")),
-                margin = 30,
-                viewWidth = DOM.viewportWidth();
-            colorWin.align(el, ["bl","tl"], [0,2]);
-            if (colorWin.get("x") + panelWidth
-                > viewWidth - margin) {
-                colorWin.set("x", viewWidth - margin - panelWidth);
-            }
-            colorWin.show();
-        },
-        _showColors:function(ev) {
-            var self = this,
-                colorWin = self.colorWin;
-            if (colorWin && colorWin.get("visible")) {
-                colorWin.hide();
-            } else {
-                self._prepare(ev);
-            }
         }
-    });
-    KE.ColorSupport = ColorSupport;
+    };
 });

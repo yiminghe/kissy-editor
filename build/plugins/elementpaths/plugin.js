@@ -82,7 +82,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.ElementPaths({
             editor:editor
         });

@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-19 15:41:38
+ * @buildtime: 2010-11-29 19:04:14
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -14,7 +14,7 @@ KISSY.add("editor", function(S, undefined) {
     /**
      * 初始化编辑器
      * @constructor
-     * @param textarea {(string|KISSY.Node)} 将要替换的 textarea
+     * @param textarea {(string)} 将要替换的 textarea
      * @param cfg {Object} 编辑器配置
      * @return {Editor} 返回编辑器实例
      */
@@ -140,38 +140,12 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-19 15:41:38");
+        re += "t=" + encodeURIComponent("2010-11-29 19:04:14");
         return  re;
     }
 
     var debug = S["Config"]["debug"],
-        /**
-         * @type {Array.<string>}
-         */
-        core_mods = [
-            "utils",
-            "focusmanager",
-            "definition",
-            "dtd",
-            "dom",
-            "elementpath",
-            "walker",
-            "range",
-            "domiterator",
-            "selection",
-            "styles",
-            "htmlparser",
-            "htmlparser-basicwriter",
-            "htmlparser-comment",
-            "htmlparser-element",
-            "htmlparser-filter",
-            "htmlparser-fragment",
-            "htmlparser-htmlwriter",
-            "htmlparser-text"
-        ],
-        /**
-         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
-         */
+
         plugin_mods = [
             "separator",
             "sourcearea/support",
@@ -179,25 +153,14 @@ KISSY.add("editor", function(S, undefined) {
             "flashbridge",
             "flashutils",
             "clipboard",
-
+            "colorsupport/dialog/colorpicker",
             {
                 "name": "colorsupport",
                 "requires":["overlay"]
             },
-            {
-                "name": "colorsupport/dialog"
-            },
-            {
-                "name": "forecolor",
-                "requires":["colorsupport"]
-            },
-            {
-                "name": "bgcolor",
-                "requires":["colorsupport"]
-            },
-            {
-                "name": "elementpaths"
-            },
+            "color/dialog",
+            "color",
+            "elementpaths",
             "enterkey",
             {
                 "name":"pagebreak",
@@ -207,30 +170,27 @@ KISSY.add("editor", function(S, undefined) {
                 "name":"fakeobjects",
                 "requires":["htmldataprocessor"]
             },
+            "draft",
             {
-                "name":"draft",
+                "name":"draft/support",
                 "requires":["localStorage"]
             },
             {
                 "name":"flash",
-                "requires":["flash/support"]
+                "requires":["fakeobjects"]
             },
-            {
-                "name":"flash/dialog"
-            },
+            "flash/dialog",
             {
                 "name": "flash/support",
                 "requires": ["flashutils","contextmenu",
-                    "fakeobjects","bubbleview"]
+                    "bubbleview"]
             },
             {
                 "name":"font",
                 "requires":["select"]
             },
             "format",
-            {
-                "name": "htmldataprocessor"
-            },
+            "htmldataprocessor",
             {
                 "name": "image",
                 "requires": ["contextmenu","bubbleview"]
@@ -240,19 +200,24 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["tabs"]
             },
             "indent",
+            "indent/support",
             "justify",
             {
                 "name":"link",
                 "requires": ["bubbleview"]
             },
-            {
-                "name":"link/dialog"
-            },
+            "link/dialog",
+            "list/support",
             "list",
             "maximize",
+            "maximize/support",
+            {
+                "name":"music/support",
+                "requires":["flash/support"]
+            },
             {
                 "name":"music",
-                "requires":["flash/support"]
+                "requires":["fakeobjects"]
             },
             {
                 "name":"music/dialog",
@@ -260,20 +225,23 @@ KISSY.add("editor", function(S, undefined) {
             },
             "preview",
             "removeformat",
+            "smiley",
             {
-                "name": "smiley"
+                name:"smiley/support",
+                requires:["overlay"]
             },
             {
                 "name":"sourcearea",
                 "requires":["sourcearea/support"]
             },
             {
-                "name": "table",
-                "requires": ["contextmenu"]
+                "name": "table"
             },
             {
-                "name": "table/dialog"
+                "name": "table/support",
+                "requires": ["contextmenu"]
             },
+            "table/dialog",
             {
                 "name": "templates",
                 "requires": ["overlay"]
@@ -284,21 +252,23 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["dd"]
             }
         ],
-        /**
-         * @type {Array.<(string|{name:string,requires:Array.<string>})>}
-         */
+
         mis_mods = [
+            "ext",
             {
                 "name":"localStorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
-            {"name":"button"},
-            {"name":"dd"},
-            {"name":"progressbar"},
+            {
+                "name":"button",
+                "requires":["ext"]
+            },
+            "dd",
+            "progressbar",
             {
                 "name":"overlay",
-                "requires":["dd"]
+                "requires":["dd","ext"]
             },
             {
                 "name": "contextmenu",
@@ -313,12 +283,10 @@ KISSY.add("editor", function(S, undefined) {
                 "requires": ["overlay"]
             }
         ],
-        i, len,
-        /**
-         * @type {(string|{name:string,requires:Array.<string>})}
-         */
+        i,len,
+
         mod,
-        name, requires,mods = {};
+        name,requires,mods = {};
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -395,7 +363,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-19 17:29:25");
+                re += "t=" + encodeURIComponent("2010-11-29 19:04:14");
                 return  re;
             },
             /**
@@ -926,6 +894,15 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     el.attr("onmousedown", "return false;");
                 }
+            },
+            
+            isFlashEmbed:function(element) {
+                var attributes = element.attributes;
+                return (
+                    attributes.type == 'application/x-shockwave-flash'
+                        ||
+                        /\.swf(?:$|\?)/i.test(attributes.src || '')
+                    );
             }
         };
 
@@ -2605,6 +2582,13 @@ KISSY.Editor.add("definition", function(KE) {
             Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
+                /**
+                 * 可能窗口在等待其他模块载入，不能立即获取
+                 */
+                if (!dialog) {
+                    S.later(arguments.callee, 50, false, self);
+                    return;
+                }
                 callback(dialog);
                 Overlay.unloading();
             });
@@ -2625,14 +2609,6 @@ KISSY.Editor.add("definition", function(KE) {
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        }
-        ,
-        /**
-         *@this {KISSY.Editor}
-         * @param func {function()}
-         */
-        addPlugin:function(func) {
-            this.ready(func);
         }
         ,
         /**
@@ -3462,8 +3438,7 @@ KISSY.Editor.add("definition", function(KE) {
         "addCustomStyle":KEP.addCustomStyle,
         "addCommand":KEP.addCommand,
         "hasCommand":KEP.hasCommand,
-        "execCommand":KEP.execCommand,
-        "addPlugin":KEP.addPlugin,
+        "execCommand":KEP.execCommand,      
         "useDialog":KEP.useDialog,
         "addDialog":KEP.addDialog,
         "getDialog":KEP.getDialog,
@@ -10506,30 +10481,6 @@ KISSY.Editor.add("htmlparser-comment", function() {
     };
 });
 /**
- * background-color support for kissy editor
- * @author : yiminghe@gmail.com
- */
-KISSY.Editor.add("bgcolor", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        ColorSupport = KE.ColorSupport,
-        colorButton_backStyle = {
-            element        : 'span',
-            styles        : { 'background-color' : '#(color)' }
-        };
-
-
-    editor.addPlugin(function() {
-        new ColorSupport({
-            editor:editor,
-            styles:colorButton_backStyle,
-            title:"背景颜色",
-            contentCls:"ke-toolbar-bgcolor",
-            text:"bgcolor"
-        });
-    });
-});
-/**
  * bubble or tip view for kissy editor
  * @author:yiminghe@gmail.com
  */
@@ -10561,26 +10512,33 @@ KISSY.Editor.add("bubbleview", function() {
     }, {
         ATTRS:{
             focus4e:false,
-            "zIndex":{value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)}
+            "zIndex":{
+                value:KE.baseZIndex(KE.zIndexManager.BUBBLE_VIEW)
+            }
         }
     });
 
 
     var holder = {};
 
+    function getInstance(pluginName) {
+        var h = holder[pluginName];
+        if (!h.bubble) {
+            h.bubble = new BubbleView();
+            h.bubble.renderer();
+            h.cfg.init && h.cfg.init.call(h.bubble);
+        }
+        return h.bubble;
+    }
 
-    /**
-     * 延迟化创建实例
-     * @param cfg
-     */
     BubbleView.attach = function(cfg) {
-        var pluginInstance = cfg.pluginInstance,
-            pluginName = cfg.pluginName,
-            editor = pluginInstance.editor,
-            h = holder[pluginName];
-        if (!h) return;
-        var func = h.cfg.func,
-            bubble = holder[pluginName].bubble;
+        var pluginName = cfg.pluginName;
+        var cfgDef = holder[pluginName];
+        S.mix(cfg, cfgDef.cfg, false);
+        var pluginContext = cfg.pluginContext,
+            func = cfg.func,
+            editor = cfg.editor,
+            bubble = cfg.bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {
             var elementPath = ev.path,
@@ -10591,11 +10549,10 @@ KISSY.Editor.add("bubbleview", function() {
                 lastElement = elementPath.lastElement;
                 if (!lastElement) return;
                 a = func(lastElement);
-
                 if (a) {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
-                    bubble._plugin = pluginInstance;
+                    bubble._plugin = pluginContext;
                     bubble.hide();
                     bubble.show();
                 } else if (bubble) {
@@ -10608,26 +10565,18 @@ KISSY.Editor.add("bubbleview", function() {
         Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
             bubble && bubble.hide();
         });
-        Event.on(document, "click", function() {
-            bubble && bubble.hide();
-        });
     };
-    function getInstance(pluginName) {
-        var h = holder[pluginName];
-        if (!h.bubble) {
-            h.bubble = new BubbleView();
-            h.bubble.renderer();
-            h.cfg.init && h.cfg.init.call(h.bubble);
-        }
-        return h.bubble;
-    }
-
-
     BubbleView.register = function(cfg) {
         var pluginName = cfg.pluginName;
-        holder[pluginName] = {
+        holder[pluginName] = holder[pluginName] || {
             cfg:cfg
         };
+        Event.on(document, "click", function() {
+            cfg.bubble && cfg.bubble.hide();
+        });
+        if (cfg.editor) {
+            BubbleView.attach(cfg);
+        }
     };
 
     KE.BubbleView = BubbleView;
@@ -10635,115 +10584,67 @@ KISSY.Editor.add("bubbleview", function() {
  * triple state button for kissy editor
  * @author: yiminghe@gmail.com
  */
-KISSY.Editor.add("button", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+KISSY.Editor.add("button", function() {
+    var S = KISSY,
+        KE = S.Editor,
+        Base = S.Base,
         ON = "on",
         OFF = "off",
         DISABLED = "disabled",
-        Node = S.Node,
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
         OFF_CLASS = "ke-triplebutton-off",
         ACTIVE_CLASS = "ke-triplebutton-active",
-        DISABLED_CLASS = "ke-triplebutton-disabled",
-        BUTTON_HTML = "<a class='" +
-            [BUTTON_CLASS,OFF_CLASS].join(" ")
-            + "' href='#'" +
-            "" +
-            //' tabindex="-1"' +
-            //' hidefocus="true"' +
-            ' role="button"' +
-            //' onblur="this.style.cssText = this.style.cssText;"' +
-            //' onfocus="event&&event.preventBubble();return false;"' +
-            "></a>";
+        DISABLED_CLASS = "ke-triplebutton-disabled";
+
     if (KE.TripleButton) return;
 
-    function TripleButton(cfg) {
-        TripleButton.superclass.constructor.call(this, cfg);
-        this._init();
-    }
-
-    TripleButton.ON = ON;
-    TripleButton.OFF = OFF;
-    TripleButton.DISABLED = DISABLED;
-
-    TripleButton.ON_CLASS = ON_CLASS;
-    TripleButton.OFF_CLASS = OFF_CLASS;
-    TripleButton.DISABLED_CLASS = DISABLED_CLASS;
-
-    TripleButton.ATTRS = {
-        state: {value:OFF},
-        container:{},
-        text:{},
-        contentCls:{},
-        cls:{},
-        el:{}
-    };
-
-
-    S.extend(TripleButton, S.Base, {
-        _init:function() {
-            var self = this,
-                container = self.get("container"),
-                elHolder = self.get("el"),
-                title = self.get("title"),
-                text = self.get("text"),
-                contentCls = self.get("contentCls");
-            self.el = new Node(BUTTON_HTML);
-            var el = self.el;
-            el._4e_unselectable();
-            self._attachCls();
-            //button有文子
-            if (text) {
-                el.html(text);
-                //直接上图标
-            } else if (contentCls) {
-                el.html("<span class='ke-toolbar-item " +
-                    contentCls + "'></span>");
-                el.one("span")._4e_unselectable();
-            }
-            if (title) el.attr("title", title);
-            //替换已有元素
-            if (elHolder) {
-                elHolder[0].parentNode.replaceChild(el[0], elHolder[0]);
-            }
-            //加入容器
-            else if (container) {
-                container.append(el);
-            }
-            el.on("click", self._action, self);
-            self.on("afterStateChange", self._stateChange, self);
-
-
-            if (!self.get("cls")) {
-                //添加鼠标点击视觉效果
-                el.on("mousedown", function() {
-                    if (self.get("state") == OFF) {
-                        el.addClass(ACTIVE_CLASS);
-                    }
-                });
-                el.on("mouseup mouseleave", function() {
-                    if (self.get("state") == OFF &&
-                        el.hasClass(ACTIVE_CLASS)) {
-                        //click 后出发
-                        setTimeout(function() {
-                            el.removeClass(ACTIVE_CLASS);
-                        }, 300);
-                    }
-                });
-            }
-        },
-        _attachCls:function() {
+    var TripleButton = Base.create([S.Ext.Box], {
+        init:function() {
             var self = this;
-            var cls = self.get("cls");
-            if (cls) self.el.addClass(cls);
+            self.on("bindUI", self._bindUIButton, self);
         },
 
-        _stateChange:function(ev) {
-            var n = ev.newVal,self = this;
-            self["_" + n]();
-            self._attachCls();
+
+        _bindUIButton:function() {
+            var self = this,el = self.get("el");
+            el.on("click", self._action, self);
+            //添加鼠标点击视觉效果
+            el.on("mousedown", function() {
+                if (self.get("state") == OFF) {
+                    el.addClass(ACTIVE_CLASS);
+                }
+            });
+            el.on("mouseup mouseleave", function() {
+                if (self.get("state") == OFF &&
+                    el.hasClass(ACTIVE_CLASS)) {
+                    //click 后出发
+                    setTimeout(function() {
+                        el.removeClass(ACTIVE_CLASS);
+                    }, 300);
+                }
+            });
+        },
+        _uiSetTitle:function() {
+            this.get("el").attr("title", this.get("title"));
+        },
+        _uiSetContentCls:function(contentCls) {
+            var self = this,
+                el = self.get("el");
+            if (contentCls !== undefined) {
+                el.html("<span class='ke-toolbar-item " + contentCls + "'>");
+                //ie 失去焦点
+                el._4e_unselectable();
+            }
+        },
+        _uiSetText:function(text) {
+            var self = this,
+                el = self.get("el");
+            if (text !== undefined)
+                el.html(text)
+        },
+        _uiSetState:function(n) {
+            this["_" + n]();
         },
         disable:function() {
             var self = this;
@@ -10758,6 +10659,7 @@ KISSY.Editor.add("button", function(editor) {
         _action:function(ev) {
             var self = this;
             self.fire(self.get("state") + "Click", ev);
+            ev.type = self.get("state") + "Click";
             self.fire("click", ev);
             ev.preventDefault();
         },
@@ -10768,16 +10670,92 @@ KISSY.Editor.add("button", function(editor) {
             this.set("state", OFF);
         },
         _on:function() {
-            this.el[0].className = [BUTTON_CLASS,ON_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(OFF_CLASS + " " + DISABLED_CLASS);
+            el.addClass(ON_CLASS);
         },
         _off:function() {
-            this.el[0].className = [BUTTON_CLASS,OFF_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(ON_CLASS + " " + DISABLED_CLASS);
+            el.addClass(OFF_CLASS);
         },
         _disabled:function() {
-            this.el[0].className = [BUTTON_CLASS,DISABLED_CLASS].join(" ");
+            var el = this.get("el");
+            el.removeClass(OFF_CLASS + " " + ON_CLASS);
+            el.addClass(DISABLED_CLASS);
+        }
+    }, {
+        ATTRS : {
+            state: {value:OFF},
+            elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
+            elAttrs:{
+                href:{value:"#"}
+            },
+            elTagName:{value:"a"},
+            title:{},
+            contentCls:{},
+            text:{}
         }
     });
+
+    TripleButton.ON = ON;
+    TripleButton.OFF = OFF;
+    TripleButton.DISABLED = DISABLED;
+    TripleButton.ON_CLASS = ON_CLASS;
+    TripleButton.OFF_CLASS = OFF_CLASS;
+    TripleButton.DISABLED_CLASS = DISABLED_CLASS;
+
+
     KE.TripleButton = TripleButton;
+
+    KE.prototype.addButton = function(name, btnCfg) {
+        var self = this,
+            editor = self,
+            b = new TripleButton({
+                render:self.toolBarDiv,
+                autoRender:true,
+                title:btnCfg.title,
+                text:btnCfg.text,
+                contentCls:btnCfg.contentCls
+            }),
+            context = {
+                btn:b,
+                editor:self,
+                cfg:btnCfg,
+                call:function() {
+                    var args = S.makeArray(arguments),
+                        method = args.shift();
+                    return btnCfg[method].apply(context, args);
+                },
+                /**
+                 * 依赖于其他模块，先出来占位！
+                 * @param cfg
+                 */
+                reload:function(cfg) {
+                    S.mix(btnCfg, cfg);
+                    b.enable();
+                    self.on("selectionChange", function() {
+                        btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
+                    });
+                    b.on("click", function(ev) {
+                        var t = ev.type;
+                        if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                    });
+                    if (btnCfg.mode == KE.WYSIWYG_MODE) {
+                        editor.on("wysiwygmode", b.enable, b);
+                        editor.on("sourcemode", b.disable, b);
+                    }
+                    btnCfg.init && btnCfg.init.call(context);
+                }
+            };
+        if (btnCfg.loading) {
+            b.disable();
+        } else {
+            //否则立即初始化，开始作用
+            context.reload();
+        }
+        return context;
+    };
 });
 /**
  * monitor user's paste key ,clear user input,modified from ckeditor
@@ -11074,23 +11052,70 @@ KISSY.Editor.add("clipboard", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.Paste(editor);
     });
 });
-/**
+KISSY.Editor.add("color", function(editor) {
+    var S = KISSY,
+        KE = S.Editor;
+
+    editor.ready(function() {
+        var pluginConfig = editor.cfg.pluginConfig;
+        if (false !== pluginConfig["forecolor"]) {
+            (function() {
+                var COLOR_STYLES = {
+                    element        : 'span',
+                    styles        : { 'color' : '#(color)' },
+                    overrides    : [
+                        { element : 'font', attributes : { 'color' : null } }
+                    ]
+                },
+                    context = editor.addButton("color", {
+                        styles:COLOR_STYLES,
+                        title:"文本颜色",
+                        loading:true,
+                        contentCls:"ke-toolbar-color"
+                    });
+                /**
+                 * 注意：use 可同时在模块以及实例上 use
+                 */
+                KE.use("colorsupport", function() {
+                    context.reload(KE.ColorSupport);
+                });
+            })();
+        }
+        if (false !== pluginConfig["bgcolor"]) {
+            (function() {
+                var colorButton_backStyle = {
+                    element        : 'span',
+                    styles        : { 'background-color' : '#(color)' }
+                };
+                var context = editor.addButton("color", {
+                    styles:colorButton_backStyle,
+                    title:"背景颜色",
+                    loading:true,
+                    contentCls:"ke-toolbar-bgcolor"
+                });
+                KE.use("colorsupport", function() {
+                    context.reload(KE.ColorSupport);
+                });
+            })();
+        }
+
+
+    });
+});/**
  * color support for kissy editor
  * @author : yiminghe@gmail.com
  */
-KISSY.Editor.add("colorsupport", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+KISSY.Editor.add("colorsupport", function() {
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
         Event = S.Event,
         Overlay = KE.Overlay,
-        TripleButton = KE.TripleButton,
         DOM = S.DOM;
-    if (KE.ColorSupport) return;
 
     DOM.addStyleSheet(".ke-color-panel a {" +
         "display: block;" +
@@ -11187,43 +11212,69 @@ KISSY.Editor.add("colorsupport", function(editor) {
             "</div>";
     }
 
-    function ColorSupport(cfg) {
-        var self = this;
-        ColorSupport.superclass.constructor.call(self, cfg);
-        self._init();
-    }
-
-    ColorSupport.ATTRS = {
-        editor:{},
-        styles:{},
-        contentCls:{},
-        text:{}
-    };
-    S.extend(ColorSupport, S.Base, {
-        _init:function() {
+    KE.ColorSupport = {
+        offClick:function(ev) {
             var self = this,
-                editor = self.get("editor"),
-                toolBarDiv = editor.toolBarDiv,
-                el = new TripleButton({
-                    container:toolBarDiv,
-                    title:self.get("title"),
-                    contentCls:self.get("contentCls")
+                cfg = self.cfg,
+                colorWin = self.colorWin;
+            if (colorWin && colorWin.get("visible")) {
+                colorWin.hide();
+            } else {
+                cfg._prepare.call(self, ev);
+            }
+        },
+        _prepare:function() {
+            var self = this,
+                cfg = self.cfg,
+                doc = document,
+                el = self.btn,
+                editor = self.editor,
+                colorPanel;
+            initHtml();
+            self.colorWin = new Overlay({
+                elCls:"ks-popup",
+                content:html,
+                focus4e:false,
+                autoRender:true,
+                width:"170px",
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
+            });
+
+            var colorWin = self.colorWin;
+            colorPanel = colorWin.get("contentEl");
+            colorPanel.on("click", cfg._selectColor, self);
+            Event.on(doc, "click", cfg._hidePanel, self);
+            Event.on(editor.document, "click", cfg._hidePanel, self);
+            colorWin.on("show", el.bon, el);
+            colorWin.on("hide", el.boff, el);
+            var others = colorPanel.one(".ke-color-others");
+            others.on("click", function(ev) {
+                ev.halt();
+                colorWin.hide();
+                editor.useDialog("color/dialog", function(dialog) {
+                    dialog.show(self);
                 });
-
-            el.on("offClick onClick", self._showColors, self);
-            self.el = el;
-            KE.Utils.lazyRun(self, "_prepare", "_real");
-            KE.Utils.sourceDisable(editor, self);
+            });
+            cfg._prepare = cfg._show;
+            cfg._show.call(self);
         },
-        disable:function() {
-            this.el.disable();
-        },
-        enable:function() {
-            this.el.enable();
-        },
-        _hidePanel:function(ev) {
+        _show:function() {
             var self = this,
-                el = self.el.el,
+                el = self.btn.get("el"),
+                colorWin = self.colorWin,
+                panelWidth = parseInt(colorWin.get("width")),
+                margin = 30,
+                viewWidth = DOM.viewportWidth();
+            colorWin.align(el, ["bl","tl"], [0,2]);
+            if (colorWin.get("x") + panelWidth
+                > viewWidth - margin) {
+                colorWin.set("x", viewWidth - margin - panelWidth);
+            }
+            colorWin.show();
+        },
+        _hidePanel : function(ev) {
+            var self = this,
+                el = self.btn.get("el"),
                 t = ev.target,
                 colorWin = self.colorWin;
             //当前按钮点击无效
@@ -11233,22 +11284,22 @@ KISSY.Editor.add("colorsupport", function(editor) {
             }
             colorWin.hide();
         },
-        _selectColor:function(ev) {
+        _selectColor : function(ev) {
             ev.halt();
-
             var self = this,
-                t = ev.target;
-            if (DOM._4e_name(t) == "a" && !DOM.hasClass(t, "ke-button")) {
-                t = new Node(t);
-                self._applyColor(t._4e_style("background-color"));
+                cfg = self.cfg,
+                t = new Node(ev.target);
+            if (t._4e_name() == "a" && !t.hasClass("ke-button")) {
+                cfg._applyColor.call(self, t._4e_style("background-color"));
                 self.colorWin.hide();
             }
         },
-        _applyColor:function(c) {
+        _applyColor : function(c) {
             var self = this,
-                editor = self.get("editor"),
+                editor = self.editor,
                 doc = editor.document,
-                styles = self.get("styles");
+                styles = self.cfg.styles;
+
             editor.fire("save");
             if (c) {
                 new KE.Style(styles, {
@@ -11263,68 +11314,8 @@ KISSY.Editor.add("colorsupport", function(editor) {
                 }).remove(doc);
             }
             editor.fire("save");
-        },
-        _prepare:function() {
-            var self = this,
-                doc = document,
-                el = self.el,
-                editor = self.get("editor"),
-                colorPanel;
-            initHtml();
-            self.colorWin = new Overlay({
-                elCls:"ks-popup",
-                content:html,
-                focus4e:false,
-                width:"170px",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
-            });
-
-            var colorWin = self.colorWin;
-            colorWin.renderer();
-            colorPanel = colorWin.get("contentEl");
-            colorPanel.on("click", self._selectColor, self);
-
-            self.colorPanel = colorPanel;
-            Event.on(doc, "click", self._hidePanel, self);
-            Event.on(editor.document, "click", self._hidePanel, self);
-
-            colorWin.on("show", el.bon, el);
-            colorWin.on("hide", el.boff, el);
-            var others = colorPanel.one(".ke-color-others");
-            others.on("click", function(ev) {
-                ev.halt();
-                colorWin.hide();
-                editor.useDialog("colorsupport/dialog", function(dialog) {
-                    dialog.show(self);
-                });
-            });
-        },
-        _real:function() {
-            var self = this,
-                el = self.el.el,
-                colorPanel = self.colorPanel,
-                colorWin = self.colorWin,
-                panelWidth = parseInt(colorWin.get("width")),
-                margin = 30,
-                viewWidth = DOM.viewportWidth();
-            colorWin.align(el, ["bl","tl"], [0,2]);
-            if (colorWin.get("x") + panelWidth
-                > viewWidth - margin) {
-                colorWin.set("x", viewWidth - margin - panelWidth);
-            }
-            colorWin.show();
-        },
-        _showColors:function(ev) {
-            var self = this,
-                colorWin = self.colorWin;
-            if (colorWin && colorWin.get("visible")) {
-                colorWin.hide();
-            } else {
-                self._prepare(ev);
-            }
         }
-    });
-    KE.ColorSupport = ColorSupport;
+    };
 });
 /**
  * contextmenu for kissy editor
@@ -11876,287 +11867,286 @@ KISSY.Editor.add("dd", function() {
  */
 KISSY.Editor.add("draft", function(editor) {
     var S = KISSY,KE = S.Editor;
-    if (!KE.Draft) {
-        (function() {
-            var Node = S.Node,
-                LIMIT = 5,
-                Event = S.Event,
-                INTERVAL = 5,
-                UA = KISSY.UA,
-                JSON = S.JSON,
-                DRAFT_SAVE = "ke-draft-save",
-                localStorage = window[KE.STORE];
-
-            function padding(n, l, p) {
-                n += "";
-                while (n.length < l) {
-                    n = p + n;
-                }
-                return n;
-            }
-
-            function date(d) {
-                if (S.isNumber(d)) {
-                    d = new Date(d);
-                }
-                if (d instanceof Date)
-                    return [
-                        d.getFullYear(),
-                        "-",
-                        padding(d.getMonth() + 1, 2, "0"),
-                        "-",
-                        padding(d.getDate(), 2, "0"),
-                        " ",
-                        //"&nbsp;",
-                        padding(d.getHours(), 2, "0"),
-                        ":",
-                        padding(d.getMinutes(), 2, "0"),
-                        ":",
-                        padding(d.getSeconds(), 2, "0")
-                        //"&nbsp;",
-                        //"&nbsp;"
-                    ].join("");
-                else
-                    return d;
-            }
-
-            function Draft(editor) {
-                this.editor = editor;
-                this._init();
-            }
-
-            S.augment(Draft, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor,
-                        toolbar = editor.toolBarDiv,
-                        statusbar = editor.statusDiv,
-                        cfg = editor.cfg.pluginConfig;
-                    cfg.draft = cfg.draft || {};
-                    self.draftInterval = cfg.draft.interval
-                        = cfg.draft.interval || INTERVAL;
-                    self.draftLimit = cfg.draft.limit
-                        = cfg.draft.limit || LIMIT;
-                    var holder = new Node(
-                        "<div class='ke-draft'>" +
-                            "<spa class='ke-draft-title'>" +
-                            "内容正文每" +
-                            cfg.draft.interval
-                            + "分钟自动保存一次。" +
-                            "</span>" +
-                            "</div>").appendTo(statusbar);
-                    self.timeTip = new Node("<span class='ke-draft-time'>")
-                        .appendTo(holder);
-
-                    var save = new Node(
-                        "<a " +
-                            "class='ke-button ke-draft-save-btn' " +
-                            "style='" +
-                            "vertical-align:middle;" +
-                            "padding:1px 9px;" +
-                            "'>" +
-                            "<span class='ke-draft-mansave'>" +
-                            "</span>" +
-                            "<span>立即保存</span>" +
-                            "</a>"
-                        ).appendTo(holder),
-                        versions = new KE.Select({
-                            container: holder,
-                            menuContainer:document.body,
-                            doc:editor.document,
-                            width:"85px",
-                            popUpWidth:"225px",
-                            align:["r","t"],
-                            title:"恢复编辑历史"
-                        }),
-                        str = localStorage.getItem(DRAFT_SAVE),
-                        drafts = [],date;
-                    self.versions = versions;
-                    if (str) {
-                        drafts = S.isString(str) ?
-                            JSON.parse(decodeURIComponent(str)) : str;
-                    }
-                    self.drafts = drafts;
-                    self.sync();
-
-                    save.on("click", function() {
-                        self.save(false);
-                    });
-
-                    /*
-                     监控form提交，每次提交前保存一次，防止出错
-                     */
-                    (function() {
-                        var textarea = editor.textarea,
-                            form = textarea[0].form;
-                        form && Event.on(form, "submit", function() {
-                            self.save(false);
-                        });
-                    })();
-
-
-                    setInterval(function() {
-                        self.save(true);
-                    }, self.draftInterval * 60 * 1000);
-
-                    versions.on("click", self.recover, self);
-                    self.holder = holder;
-                    //KE.Utils.sourceDisable(editor, self);
-                    if (cfg.draft.helpHtml) {
-                        var help = new KE.TripleButton({
-                            cls:"ke-draft-help",
-                            title:"帮助",
-                            text:"帮助",
-                            container: holder
-                        });
-                        help.on("click", function() {
-                            self._prepareHelp();
-                        });
-                        KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
-                        self.helpBtn = help.el;
-                    }
-                    self._holder = holder;
-
-                },
-                _prepareHelp:function() {
-                    var self = this,
-                        editor = self.editor,
-                        cfg = editor.cfg.pluginConfig,
-                        draftCfg = cfg.draft,
-                        helpBtn = self.helpBtn,
-                        help = new Node(draftCfg.helpHtml || "");
-                    var arrowCss = "height:0;" +
-                        "position:absolute;" +
-                        "font-size:0;" +
-                        "width:0;" +
-                        "border:8px #000 solid;" +
-                        "border-color:#000 transparent transparent transparent;" +
-                        "border-style:solid dashed dashed dashed;";
-                    var arrow = new Node("<div style='" +
-                        arrowCss +
-                        "border-top-color:#CED5E0;" +
-                        "'>" +
-                        "<div style='" +
-                        arrowCss +
-                        "left:-8px;" +
-                        "top:-10px;" +
-                        "border-top-color:white;" +
-                        "'>" +
-                        "</div>" +
-                        "</div>");
-                    help.append(arrow);
-                    help.css({
-                        border:"1px solid #ACB4BE",
-                        "text-align":"left"
-                    });
-                    self._help = new S.Overlay({
-                        content:help,
-                        width:help.width() + "px",
-                        mask:false
-                    });
-                    self._help.renderer();
-                    self._help.el.css("border", "none");
-                    self._help.arrow = arrow;
-                    Event.on([document,editor.document], "click", function(ev) {
-                        var t = ev.target;
-                        if (t == helpBtn[0] || helpBtn.contains(t))
-                            return;
-                        self._help.hide();
-                    })
-                },
-                _realHelp:function() {
-                    var win = this._help,
-                        helpBtn = this.helpBtn,
-                        arrow = win.arrow;
-                    win.show();
-                    var off = helpBtn.offset();
-                    win.el.offset({
-                        left:(off.left - win.el.width()) + 17,
-                        top:(off.top - win.el.height()) - 7
-                    });
-                    arrow.offset({
-                        left:off.left - 2,
-                        top:off.top - 8
-                    });
-                },
-                disable:function() {
-                    this.holder.css("visibility", "hidden");
-                },
-                enable:function() {
-                    this.holder.css("visibility", "");
-                },
-                sync:function() {
-                    var self = this,
-                        draftLimit = self.draftLimit,
-                        timeTip = self.timeTip,
-                        versions = self.versions,drafts = self.drafts;
-                    if (drafts.length > draftLimit)
-                        drafts.splice(0, drafts.length - draftLimit);
-                    var items = [],draft,tip;
-                    for (var i = 0; i < drafts.length; i++) {
-                        draft = drafts[i];
-                        tip = (draft.auto ? "自动" : "手动") + "保存于 : "
-                            + date(draft.date);
-                        items.push({
-                            name:tip,
-                            value:i
-                        });
-                    }
-                    versions.set("items", items.reverse());
-                    timeTip.html(tip);
-                    localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
-                },
-
-                save:function(auto) {
-                    var self = this,
-                        drafts = self.drafts,
-                        //不使用rawdata
-                        //undo 只需获得可视区域内代码
-                        //可视区域内代码！= 最终代码
-                        //代码模式也要支持草稿功能
-                        //统一获得最终代码
-                        data = editor.getData(true);
-
-                    //如果当前内容为空，不保存版本
-                    if (!data) return;
-
-                    if (drafts[drafts.length - 1] &&
-                        data == drafts[drafts.length - 1].content) {
-                        drafts.length -= 1;
-                    }
-                    self.drafts = drafts.concat({
-                        content:data,
-                        date:new Date().getTime(),
-                        auto:auto
-                    });
-                    self.sync();
-                },
-
-                recover:function(ev) {
-                    var self = this,
-                        editor = self.editor,
-                        versions = self.versions,
-                        drafts = self.drafts,
-                        v = ev.newVal;
-                    versions.reset("value");
-                    if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
-                        editor.fire("save");
-                        editor.setData(drafts[v].content);
-                        editor.fire("save");
-                    }
-                }
+    editor.ready(function() {
+        KE.use("draft/support", function() {
+            KE.storeReady(function() {
+                new KE.Draft(editor);
             });
-            KE.Draft = Draft;
-        })();
-    }
-
-    editor.addPlugin(function() {
-        KE.storeReady(function() {
-            new KE.Draft(editor);
         });
     });
+});KISSY.Editor.add("draft/support", function() {
+    var S = KISSY,
+        KE = S.Editor,
+        Node = S.Node,
+        LIMIT = 5,
+        Event = S.Event,
+        INTERVAL = 5,
+        UA = S.UA,
+        JSON = S.JSON,
+        DRAFT_SAVE = "ke-draft-save",
+        localStorage = window[KE.STORE];
+
+    function padding(n, l, p) {
+        n += "";
+        while (n.length < l) {
+            n = p + n;
+        }
+        return n;
+    }
+
+    function date(d) {
+        if (S.isNumber(d)) {
+            d = new Date(d);
+        }
+        if (d instanceof Date)
+            return [
+                d.getFullYear(),
+                "-",
+                padding(d.getMonth() + 1, 2, "0"),
+                "-",
+                padding(d.getDate(), 2, "0"),
+                " ",
+                //"&nbsp;",
+                padding(d.getHours(), 2, "0"),
+                ":",
+                padding(d.getMinutes(), 2, "0"),
+                ":",
+                padding(d.getSeconds(), 2, "0")
+                //"&nbsp;",
+                //"&nbsp;"
+            ].join("");
+        else
+            return d;
+    }
+
+    function Draft(editor) {
+        this.editor = editor;
+        this._init();
+    }
+
+    S.augment(Draft, {
+        _init:function() {
+            var self = this,
+                editor = self.editor,
+                toolbar = editor.toolBarDiv,
+                statusbar = editor.statusDiv,
+                cfg = editor.cfg.pluginConfig;
+            cfg.draft = cfg.draft || {};
+            self.draftInterval = cfg.draft.interval
+                = cfg.draft.interval || INTERVAL;
+            self.draftLimit = cfg.draft.limit
+                = cfg.draft.limit || LIMIT;
+            var holder = new Node(
+                "<div class='ke-draft'>" +
+                    "<spa class='ke-draft-title'>" +
+                    "内容正文每" +
+                    cfg.draft.interval
+                    + "分钟自动保存一次。" +
+                    "</span>" +
+                    "</div>").appendTo(statusbar);
+            self.timeTip = new Node("<span class='ke-draft-time'>")
+                .appendTo(holder);
+
+            var save = new Node(
+                "<a " +
+                    "class='ke-button ke-draft-save-btn' " +
+                    "style='" +
+                    "vertical-align:middle;" +
+                    "padding:1px 9px;" +
+                    "'>" +
+                    "<span class='ke-draft-mansave'>" +
+                    "</span>" +
+                    "<span>立即保存</span>" +
+                    "</a>"
+                ).appendTo(holder),
+                versions = new KE.Select({
+                    container: holder,
+                    menuContainer:document.body,
+                    doc:editor.document,
+                    width:"85px",
+                    popUpWidth:"225px",
+                    align:["r","t"],
+                    title:"恢复编辑历史"
+                }),
+                str = localStorage.getItem(DRAFT_SAVE),
+                drafts = [],date;
+            self.versions = versions;
+            if (str) {
+                drafts = S.isString(str) ?
+                    JSON.parse(decodeURIComponent(str)) : str;
+            }
+            self.drafts = drafts;
+            self.sync();
+
+            save.on("click", function() {
+                self.save(false);
+            });
+
+            /*
+             监控form提交，每次提交前保存一次，防止出错
+             */
+            (function() {
+                var textarea = editor.textarea,
+                    form = textarea[0].form;
+                form && Event.on(form, "submit", function() {
+                    self.save(false);
+                });
+            })();
 
 
+            setInterval(function() {
+                self.save(true);
+            }, self.draftInterval * 60 * 1000);
+
+            versions.on("click", self.recover, self);
+            self.holder = holder;
+            //KE.Utils.sourceDisable(editor, self);
+            if (cfg.draft.helpHtml) {
+                var help = new KE.TripleButton({
+                    cls:"ke-draft-help",
+                    title:"帮助",
+                    text:"帮助",
+                    container: holder
+                });
+                help.on("click", function() {
+                    self._prepareHelp();
+                });
+                KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
+                self.helpBtn = help.el;
+            }
+            self._holder = holder;
+
+        },
+        _prepareHelp:function() {
+            var self = this,
+                editor = self.editor,
+                cfg = editor.cfg.pluginConfig,
+                draftCfg = cfg.draft,
+                helpBtn = self.helpBtn,
+                help = new Node(draftCfg.helpHtml || "");
+            var arrowCss = "height:0;" +
+                "position:absolute;" +
+                "font-size:0;" +
+                "width:0;" +
+                "border:8px #000 solid;" +
+                "border-color:#000 transparent transparent transparent;" +
+                "border-style:solid dashed dashed dashed;";
+            var arrow = new Node("<div style='" +
+                arrowCss +
+                "border-top-color:#CED5E0;" +
+                "'>" +
+                "<div style='" +
+                arrowCss +
+                "left:-8px;" +
+                "top:-10px;" +
+                "border-top-color:white;" +
+                "'>" +
+                "</div>" +
+                "</div>");
+            help.append(arrow);
+            help.css({
+                border:"1px solid #ACB4BE",
+                "text-align":"left"
+            });
+            self._help = new S.Overlay({
+                content:help,
+                autoRender:true,
+                width:help.width() + "px",
+                mask:false
+            });
+            self._help.el.css("border", "none");
+            self._help.arrow = arrow;
+            Event.on([document,editor.document], "click", function(ev) {
+                var t = ev.target;
+                if (t == helpBtn[0] || helpBtn.contains(t))
+                    return;
+                self._help.hide();
+            })
+        },
+        _realHelp:function() {
+            var win = this._help,
+                helpBtn = this.helpBtn,
+                arrow = win.arrow;
+            win.show();
+            var off = helpBtn.offset();
+            win.el.offset({
+                left:(off.left - win.el.width()) + 17,
+                top:(off.top - win.el.height()) - 7
+            });
+            arrow.offset({
+                left:off.left - 2,
+                top:off.top - 8
+            });
+        },
+        disable:function() {
+            this.holder.css("visibility", "hidden");
+        },
+        enable:function() {
+            this.holder.css("visibility", "");
+        },
+        sync:function() {
+            var self = this,
+                draftLimit = self.draftLimit,
+                timeTip = self.timeTip,
+                versions = self.versions,drafts = self.drafts;
+            if (drafts.length > draftLimit)
+                drafts.splice(0, drafts.length - draftLimit);
+            var items = [],draft,tip;
+            for (var i = 0; i < drafts.length; i++) {
+                draft = drafts[i];
+                tip = (draft.auto ? "自动" : "手动") + "保存于 : "
+                    + date(draft.date);
+                items.push({
+                    name:tip,
+                    value:i
+                });
+            }
+            versions.set("items", items.reverse());
+            timeTip.html(tip);
+            localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
+        },
+
+        save:function(auto) {
+            var self = this,
+                drafts = self.drafts,
+                editor = self.editor,
+                //不使用rawdata
+                //undo 只需获得可视区域内代码
+                //可视区域内代码！= 最终代码
+                //代码模式也要支持草稿功能
+                //统一获得最终代码
+                data = editor.getData(true);
+
+            //如果当前内容为空，不保存版本
+            if (!data) return;
+
+            if (drafts[drafts.length - 1] &&
+                data == drafts[drafts.length - 1].content) {
+                drafts.length -= 1;
+            }
+            self.drafts = drafts.concat({
+                content:data,
+                date:new Date().getTime(),
+                auto:auto
+            });
+            self.sync();
+        },
+
+        recover:function(ev) {
+            var self = this,
+                editor = self.editor,
+                versions = self.versions,
+                drafts = self.drafts,
+                v = ev.newVal;
+            versions.reset("value");
+            if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
+                editor.fire("save");
+                editor.setData(drafts[v].content);
+                editor.fire("save");
+            }
+        }
+    });
+    KE.Draft = Draft;
 });/**
  * element path shown in status bar,modified from ckeditor
  * @modifier: yiminghe@gmail.com
@@ -12241,7 +12231,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.ElementPaths({
             editor:editor
         });
@@ -12451,7 +12441,7 @@ KISSY.Editor.add("enterkey", function(editor) {
             KE.EnterKey = EnterKey;
         })();
     }
-    editor.addPlugin(function() {
+    editor.ready(function() {
         editor.addCommand("enterBlock", {
             exec:KE.EnterKey.enterBlock
         });
@@ -12461,6 +12451,1047 @@ KISSY.Editor.add("enterkey", function(editor) {
 
 });
 /**
+ * align extension
+ * @author:承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
+ */
+KISSY.add("ext-align", function(S) {
+    S.namespace("Ext");
+    var DOM = S.DOM,Node = S.Node;
+
+    function AlignExt() {
+        S.log("align init");
+        var self = this;
+        self.on("bindUI", self._bindUIAlign, self);
+        self.on("renderUI", self._renderUIAlign, self);
+        self.on("syncUI", self._syncUIAlign, self);
+    }
+
+    S.mix(AlignExt, {
+        TL: 'tl',
+        TC: 'tc',
+        TR: 'tr',
+        CL: 'cl',
+        CC: 'cc',
+        CR: 'cr',
+        BL: 'bl',
+        BC: 'bc',
+        BR: 'br'
+    });
+
+
+    AlignExt.ATTRS = {
+        align:{
+            /*
+             value:{
+             node: null,         // 参考元素, falsy 值为可视区域, 'trigger' 为触发元素, 其他为指定元素
+             points: [AlignExt.CC, AlignExt.CC], // ['tr', 'tl'] 表示 overlay 的 tl 与参考节点的 tr 对齐
+             offset: [0, 0]      // 有效值为 [n, m]
+             }*/
+        }
+    };
+
+
+    /**
+     * 获取 node 上的 align 对齐点 相对于页面的坐标
+     * @param {?Element} node
+     * @param align
+     */
+    function _getAlignOffset(node, align) {
+        var V = align.charAt(0),
+            H = align.charAt(1),
+            offset, w, h, x, y;
+
+        if (node) {
+            node = S.one(node);
+            offset = node.offset();
+            w = node[0].offsetWidth;
+            h = node[0].offsetHeight;
+        } else {
+            offset = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
+            w = DOM.viewportWidth();
+            h = DOM.viewportHeight();
+        }
+
+        x = offset.left;
+        y = offset.top;
+
+        if (V === 'c') {
+            y += h / 2;
+        } else if (V === 'b') {
+            y += h;
+        }
+
+        if (H === 'c') {
+            x += w / 2;
+        } else if (H === 'r') {
+            x += w;
+        }
+
+        return { left: x, top: y };
+    }
+
+    AlignExt.prototype = {
+        _bindUIAlign:function() {
+            S.log("_bindUIAlign");
+        },
+        _renderUIAlign:function() {
+            S.log("_renderUIAlign");
+        },
+        _syncUIAlign:function() {
+            S.log("_syncUIAlign");
+        },
+        _uiSetAlign:function(v) {
+            S.log("_uiSetAlign");
+            if (S.isPlainObject(v)) {
+                this.align(v.node, v.points, v.offset);
+            }
+        },
+        /**
+         * 对齐 Overlay 到 node 的 points 点, 偏移 offset 处
+         * @param {Element=} node 参照元素, 可取配置选项中的设置, 也可是一元素
+         * @param {Array.<string>} points 对齐方式
+         * @param {Array.<number>} offset 偏移
+         */
+        align: function(node, points, offset) {
+
+            var self = this,
+                xy,
+                diff,
+                p1,
+                el = self.get("el"),
+                p2;
+            offset = offset || [0,0];
+            xy = DOM.offset(el);
+            // p1 是 node 上 points[0] 的 offset
+            // p2 是 overlay 上 points[1] 的 offset
+            p1 = _getAlignOffset(node, points[0]);
+            p2 = _getAlignOffset(el, points[1]);
+            diff = [p2.left - p1.left, p2.top - p1.top];
+            var v = [xy.left - diff[0] + (+offset[0]),
+                xy.top - diff[1] + (+offset[1])];
+            self.set("xy", v);
+        },
+
+
+
+        /**
+         * 居中显示到可视区域, 一次性居中
+         */
+        center: function(node) {
+            this.set("align", {
+                node:node,
+                points:[AlignExt.CC, AlignExt.CC],
+                offset:[0,0]
+            });
+        },
+
+        __destructor:function() {
+            S.log("align __destructor");
+        }
+    };
+
+    S.Ext.Align = AlignExt;
+
+});/**
+ * basic box support for component
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-box", function(S) {
+    S.namespace("Ext");
+
+    var doc = document,Node = S.Node;
+
+    function BoxExt() {
+        S.log("box init");
+        var self = this;
+        self.on("renderUI", self._renderUIBoxExt, self);
+        self.on("syncUI", self._syncUIBoxExt, self);
+        self.on("bindUI", self._bindUIBoxExt, self);
+
+    }
+
+    BoxExt.ATTRS = {
+        el: {
+            //容器元素
+            setter:function(v) {
+                if (S.isString(v))
+                    return S.one(v);
+            }
+        },
+        elCls: {
+            // 容器的 class           
+        },
+        elStyle:{
+            //容器的行内样式
+        },
+        width: {
+            // 宽度           
+        },
+        height: {
+            // 高度
+        },
+        elTagName:{
+            //生成标签名字
+            value:"div"
+        },
+        elAttrs:{
+            //其他属性
+        },
+        elOrder:{
+            //插入容器位置
+            //0 : prepend
+            //1 : append
+            value:1
+        },
+        html: {
+            // 内容, 默认为 undefined, 不设置
+            value: false
+        }
+    };
+
+    BoxExt.HTML_PARSER = {
+        el:function(srcNode) {
+            return srcNode;
+        }
+    };
+
+    BoxExt.prototype = {
+        _syncUIBoxExt:function() {
+            S.log("_syncUIBoxExt");
+        },
+        _bindUIBoxExt:function() {
+            S.log("_bindUIBoxExt");
+        },
+        _renderUIBoxExt:function() {
+            S.log("_renderUIBoxExt");
+            var self = this,
+                render = self.get("render") || S.one(doc.body),
+                el = self.get("el");
+            render = new Node(render);
+            if (!el) {
+                el = new Node("<" + self.get("elTagName") + ">");
+                if (self.get("elOrder")) {
+                    render.append(el);
+                } else {
+                    render.prepend(el);
+                }
+                self.set("el", el);
+            }
+        },
+        _uiSetElAttrs:function(attrs) {
+            S.log("_uiSetElAttrs");
+            if (attrs) {
+                this.get("el").attr(attrs);
+            }
+        },
+        _uiSetElCls:function(cls) {
+            if (cls) {
+                this.get("el").addClass(cls);
+            }
+        },
+
+        _uiSetElStyle:function(style) {
+            S.log("_uiSetElStyle");
+            if (style) {
+                this.get("el").css(style);
+            }
+        },
+
+        _uiSetWidth:function(w) {
+            S.log("_uiSetWidth");
+            var self = this;
+            if (w) {
+                self.get("el").width(w);
+            }
+        },
+
+        _uiSetHeight:function(h) {
+            S.log("_uiSetHeight");
+            var self = this;
+            if (h) {
+                self.get("el").height(h);
+            }
+        },
+
+        _uiSetHtml:function(c) {
+            S.log("_uiSetHtml");
+            if (c !== false) {
+                this.get("el").html(c);
+            }
+
+        },
+
+        __destructor:function() {
+            S.log("box __destructor");
+            var el = this.get("el");
+            if (el) {
+                el.detach();
+                el.remove();
+            }
+        }
+    };
+
+    S.Ext.Box = BoxExt;
+});/**
+ * close extension for kissy dialog
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-overlay-close", function(S) {
+    S.namespace("Ext");
+    var CLS_PREFIX = 'ks-ext-',Node = S.Node;
+
+    function CloseExt() {
+        S.log("close init");
+        var self = this;
+        self.on("renderUI", self._rendUICloseExt, self);
+        self.on("bindUI", self._bindUICloseExt, self);
+        self.on("syncUI", self._syncUICloseExt, self);
+    }
+
+    CloseExt.ATTRS = {
+        closable: {             // 是否需要关闭按钮
+            value: true
+        },
+        closeBtn:{}
+    };
+
+    CloseExt.HTML_PARSER = {
+        closeBtn:"." + CLS_PREFIX + 'close'
+    };
+
+    CloseExt.prototype = {
+        _syncUICloseExt:function() {
+            S.log("_syncUICloseExt");
+        },
+        _uiSetClosable:function(v) {
+            S.log("_uiSetClosable");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            if (closeBtn) {
+                if (v) {
+                    closeBtn.show();
+                } else {
+                    closeBtn.hide();
+                }
+            }
+        },
+        _rendUICloseExt:function() {
+            S.log("_rendUICloseExt");
+            var self = this,
+                closeBtn = self.get("closeBtn"),
+                el = self.get("contentEl");
+
+            if (!closeBtn &&
+                el) {
+                closeBtn = new Node("<a " +
+                    "href='#' " +
+                    "class='" + CLS_PREFIX + "close" + "'>" +
+                    "<span class='" +
+                    CLS_PREFIX + "close-x" +
+                    "'>X</span>" +
+                    "</a>")
+                    .appendTo(el);
+                self.set("closeBtn", closeBtn);
+            }
+        },
+        _bindUICloseExt:function() {
+            S.log("_bindUICloseExt");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            closeBtn && closeBtn.on("click", function(ev) {
+                self.hide();
+                ev.halt();
+            });
+        },
+
+        __destructor:function() {
+            S.log("close-ext __destructor");
+            var self = this,
+                closeBtn = self.get("closeBtn");
+            closeBtn && closeBtn.detach();
+        }
+    };
+    S.Ext.Close = CloseExt;
+
+});KISSY.add("ext-constrain", function(S) {
+    S.namespace("Ext");
+
+    var DOM = S.DOM,
+        Node = S.Node;
+
+    function ConstrainExt() {
+        S.log("constrain init");
+        var self = this;
+        self.on("bindUI", self._bindUIConstrain, self);
+        self.on("renderUI", self._renderUIConstrain, self);
+        self.on("syncUI", self._syncUIConstrain, self);
+    }
+
+    ConstrainExt.ATTRS = {
+        constrain:{
+            //不限制
+            //true:viewport限制
+            //node:限制在节点范围
+            value:false
+        }
+    };
+
+    /**
+     * 获取受限区域的宽高, 位置
+     * @return {Object | undefined} {left: 0, top: 0, maxLeft: 100, maxTop: 100}
+     */
+    function _getConstrainRegion(constrain) {
+        var ret = undefined;
+        if (!constrain) return ret;
+        var el = this.get("el");
+        if (constrain !== true) {
+            constrain = S.one(constrain);
+            ret = constrain.offset();
+            S.mix(ret, {
+                maxLeft: ret.left + constrain[0].offsetWidth - el[0].offsetWidth,
+                maxTop: ret.top + constrain[0].offsetHeight - el[0].offsetHeight
+            });
+        }
+        // 没有指定 constrain, 表示受限于可视区域
+        else {
+            var vWidth = document.documentElement.clientWidth;
+            ret = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
+
+            S.mix(ret, {
+                maxLeft: ret.left + vWidth - el[0].offsetWidth,
+                maxTop: ret.top + DOM.viewportHeight() - el[0].offsetHeight
+            });
+        }
+        return ret;
+    }
+
+    ConstrainExt.prototype = {
+        _bindUIConstrain:function() {
+            S.log("_bindUIConstrain");
+
+        },
+        _renderUIConstrain:function() {
+            S.log("_renderUIConstrain");
+            var self = this,
+                attrs = self.getDefAttrs(),
+                xAttr = attrs["x"],
+                yAttr = attrs["y"],
+                oriXSetter = xAttr["setter"],
+                oriYSetter = yAttr["setter"];
+            xAttr.setter = function(v) {                
+                var r = oriXSetter && oriXSetter(v);
+                if (r === undefined) {
+                    r = v;
+                }
+                if (!self.get("constrain")) return r;
+                var _ConstrainExtRegion = _getConstrainRegion.call(
+                    self, self.get("constrain"));
+                return Math.min(Math.max(r,
+                    _ConstrainExtRegion.left),
+                    _ConstrainExtRegion.maxLeft);
+            };
+            yAttr.setter = function(v) {
+                var r = oriYSetter && oriYSetter(v);
+                if (r === undefined) {
+                    r = v;
+                }
+                if (!self.get("constrain")) return r;
+                var _ConstrainExtRegion = _getConstrainRegion.call(
+                    self, self.get("constrain"));
+                return Math.min(Math.max(r,
+                    _ConstrainExtRegion.top),
+                    _ConstrainExtRegion.maxTop);
+            };
+            self.addAttr("x", xAttr);
+            self.addAttr("y", yAttr);
+        },
+
+        _syncUIConstrain:function() {
+            S.log("_syncUIConstrain");
+        },
+        __destructor:function() {
+            S.log("constrain-ext __destructor");
+        }
+
+    };
+
+
+    S.Ext.Constrain = ConstrainExt;
+
+});/**
+ * 里层包裹层定义，适合mask以及shim
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-contentbox", function(S) {
+
+    S.namespace("Ext");
+    var Node = S.Node;
+
+    function ContentBox() {
+        S.log("contentbox init");
+        var self = this;
+        self.on("renderUI", self._renderUIContentBox, self);
+        self.on("syncUI", self._syncUIContentBox, self);
+        self.on("bindUI", self._bindUIContentBox, self);
+    }
+
+    ContentBox.ATTRS = {
+        //内容容器节点
+        contentEl:{},
+        contentElAttrs:{},
+        contentTagName:{value:"div"},
+        //层内容
+        content:{}
+    };
+
+
+    ContentBox.HTML_PARSER = {
+        contentEl:".ks-contentbox"
+    };
+
+    ContentBox.prototype = {
+        _syncUIContentBox:function() {
+            S.log("_syncUIContentBox");
+        },
+        _bindUIContentBox:function() {
+            S.log("_bindUIContentBox");
+        },
+        _renderUIContentBox:function() {
+            S.log("_renderUIContentBox");
+            var self = this,
+                contentEl = self.get("contentEl"),
+                el = self.get("el");
+            if (!contentEl) {
+                contentEl = new Node("<" +
+                    self.get("contentTagName") +
+                    " class='ks-contentbox'>").appendTo(el);
+                self.set("contentEl", contentEl);
+            }
+        },
+        _uiSetContentElAttrs:function(attrs) {
+            S.log("_uiSetContentElAttrs");
+            if (attrs) {
+                this.get("contentEl").attr(attrs);
+            }
+        },
+        _uiSetContent:function(c) {
+            S.log("_uiSetContent");
+            if (c !== undefined) {
+                this.get("contentEl").html(c);
+            }
+        },
+
+        __destructor:function() {
+            S.log("contentbox __destructor");
+        }
+    };
+
+    S.Ext.ContentBox = ContentBox;
+});/**
+ * drag extension for position
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-drag", function(S) {
+    S.namespace('Ext');
+    function DragExt() {
+         S.log("drag init");
+        var self = this;
+        self.on("bindUI", self._bindUIDragExt, self);
+        self.on("renderUI", self._renderUIDragExt, self);
+        self.on("syncUIUI", self._syncUIDragExt, self);
+    }
+
+    DragExt.ATTRS = {
+        handlers:{value:[]},
+        draggable:{value:true}
+    };
+
+    DragExt.prototype = {
+
+        _uiSetHandlers:function(v) {
+            S.log("_uiSetHanlders");
+            if (v && v.length > 0)
+                this.__drag.set("handlers", v);
+        },
+
+        _syncUIDragExt:function() {
+            S.log("_syncUIDragExt");
+        },
+
+        _renderUIDragExt:function() {
+            S.log("_renderUIDragExt");
+        },
+
+        _bindUIDragExt:function() {
+            S.log("_bindUIDragExt");
+            var self = this,el = self.get("el");
+            self.__drag = new S.Draggable({
+                node:el,
+                handlers:self.get("handlers")
+            });
+        },
+
+        _uiSetDraggable:function(v) {
+            S.log("_uiSetDraggable");
+            var self = this,d = self.__drag;
+            if (v) {
+                d.detach("drag");
+                d.on("drag", self._dragExtAction, self);
+            } else {
+                d.detach("drag");
+            }
+        },
+
+        _dragExtAction:function(offset) {
+            this.set("xy", [offset.left,offset.top])
+        },
+        /**
+         *
+         */
+        __destructor:function() {
+            S.log("DragExt __destructor");
+            var d = this.__drag;
+            d&&d.destroy();
+        }
+
+    };
+
+    S.Ext.Drag = DragExt;
+
+});/**
+ * loading mask support for overlay
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-loading", function(S) {
+    S.namespace("Ext");
+    function LoadingExt() {
+        S.log("LoadingExt init");
+    }
+
+    LoadingExt.prototype = {
+        loading:function() {
+            var self = this;
+            if (!self._loadingExtEl) {
+                self._loadingExtEl = new S.Node("<div " +
+                    "class='ks-ext-loading'" +
+                    " style='position: absolute;" +
+                    "border: none;" +
+                    "width: 100%;" +
+                    "top: 0;" +
+                    "left: 0;" +
+                    "z-index: 99999;" +
+                    "height:100%;" +
+                    "*height: expression(this.parentNode.offsetHeight);" + "'>").appendTo(self.get("el"));
+            }
+            self._loadingExtEl.show();
+        },
+
+        unloading:function() {
+            var lel = this._loadingExtEl;
+            lel && lel.hide();
+        }
+    };
+
+    S.Ext.Loading = LoadingExt;
+
+});KISSY.add("ext-mask", function(S) {
+    S.namespace("Ext");
+    /**
+     * 多 position 共享一个遮罩
+     */
+    var mask,
+        UA = S.UA,
+        num = 0;
+
+
+    function initMask() {
+        mask = new S.Node("<div class='ks-ext-mask'>").prependTo(document.body);
+        mask.css({
+            "position":"absolute",
+            left:0,
+            top:0,
+            width:"100%",
+            "height": S.DOM.docHeight()
+        });
+        if (UA.ie == 6) {
+            mask.append("<iframe style='width:100%;" +
+                "height:expression(this.parentNode.offsetHeight);" +
+                "filter:alpha(opacity=0);" +
+                "z-index:-1;'>");
+        }
+    }
+
+    function MaskExt() {
+        S.log("mask init");
+        var self = this;
+        self.on("bindUI", self._bindUIMask, self);
+        self.on("renderUI", self._renderUIMask, self);
+        self.on("syncUI", self._syncUIMask, self);
+    }
+
+    MaskExt.ATTRS = {
+        mask:{
+            value:false
+        }
+    };
+
+    MaskExt.prototype = {
+        _bindUIMask:function() {
+            S.log("_bindUIMask");
+        },
+
+        _renderUIMask:function() {
+            S.log("_renderUIMask");
+        },
+
+        _syncUIMask:function() {
+            S.log("_syncUIMask");
+        },
+        _uiSetMask:function(v) {
+            S.log("_uiSetMask");
+            var self = this;
+            if (v) {
+                self.on("show", self._maskExtShow, self);
+                self.on("hide", self._maskExtHide, self);
+            } else {
+                self.detach("show", self._maskExtShow, self);
+                self.detach("hide", self._maskExtHide, self);
+            }
+        },
+
+        _maskExtShow:function() {
+            if (!mask) {
+                initMask();
+            }
+            mask.css({
+                "z-index":this.get("zIndex") - 1
+            });
+            num++;
+            mask.show();
+        },
+
+        _maskExtHide:function() {
+            num--;
+            if (num <= 0) num = 0;
+            if (!num)
+                mask && mask.hide();
+        },
+
+        __destructor:function() {
+            S.log("mask __destructor");
+        }
+
+    };
+
+    S.Ext.Mask = MaskExt;
+});/**
+ * position and visible extension，可定位的隐藏层
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-position", function(S) {
+    S.namespace("Ext");
+
+    var doc = document ,
+        Event = S.Event,
+        KEYDOWN = "keydown";
+
+    function PositionExt() {
+        S.log("position init");
+        var self = this;
+        self.on("bindUI", self._bindUIPosition, self);
+        self.on("renderUI", self._renderUIPosition, self);
+        self.on("syncUI", self._syncUIPosition, self);
+    }
+
+    PositionExt.ATTRS = {
+        x: {
+            // 水平方向绝对位置
+        },
+        y: {
+            // 垂直方向绝对位置
+        },
+        xy: {
+            // 相对 page 定位, 有效值为 [n, m], 为 null 时, 选 align 设置
+            setter: function(v) {
+                
+                var self = this,
+                    xy = S.makeArray(v);
+
+                if (xy.length) {
+                    xy[0] && self.set("x", xy[0]);
+                    xy[1] && self.set("y", xy[1]);
+                }
+                return v;
+            }
+        },
+        zIndex: {
+            value: 9999
+        },
+        visible:{
+            value:undefined
+        }
+    };
+
+
+    PositionExt.prototype = {
+        _syncUIPosition:function() {
+            S.log("_syncUIPosition");
+        },
+        _renderUIPosition:function() {
+            S.log("_renderUIPosition");
+            this.get("el").addClass("ks-ext-position");
+            this.get("el").css("display", "");
+        },
+        _bindUIPosition:function() {
+            S.log("_bindUIPosition");
+        },
+        _uiSetZIndex:function(x) {
+            S.log("_uiSetZIndex");
+            if (x !== undefined)
+                this.get("el").css("z-index", x);
+        },
+        _uiSetX:function(x) {
+            S.log("_uiSetX");
+            if (x !== undefined)
+                this.get("el").offset({
+                    left:x
+                });
+        },
+        _uiSetY:function(y) {
+            S.log("_uiSetY");
+            if (y !== undefined)
+                this.get("el").offset({
+                    top:y
+                });
+        },
+        _uiSetVisible:function(isVisible) {
+            if (isVisible === undefined) return;
+            S.log("_uiSetVisible");
+            var self = this,
+                el = self.get("el");
+            el.css("visibility", isVisible ? "visible" : "hidden");
+            self[isVisible ? "_bindKey" : "_unbindKey" ]();
+            self.fire(isVisible ? "show" : "hide");
+        },
+        /**
+         * 显示/隐藏时绑定的事件
+         */
+        _bindKey: function() {
+            Event.on(doc, KEYDOWN, this._esc, this);
+        },
+
+        _unbindKey: function() {
+            Event.remove(doc, KEYDOWN, this._esc, this);
+        },
+
+        _esc: function(e) {
+            if (e.keyCode === 27) this.hide();
+        },
+        /**
+         * 移动到绝对位置上, move(x, y) or move(x) or move([x, y])
+         * @param {number|Array.<number>} x
+         * @param {number=} y
+         */
+        move: function(x, y) {
+            var self = this;
+            if (S.isArray(x)) {
+                y = x[1];
+                x = x[0];
+            }
+            self.set("xy", [x,y]);
+        },
+
+        /**
+         * 显示 Overlay
+         */
+        show: function() {
+            this._firstShow();
+        },
+
+        /**
+         * 第一次显示时, 需要构建 DOM, 设置位置
+         */
+        _firstShow: function() {
+            var self = this;
+            self.renderer();
+            self._realShow();
+            self._firstShow = self._realShow;
+        },
+
+
+        _realShow: function() {
+            this.set("visible", true);
+        },
+
+        /**
+         * 隐藏
+         */
+        hide: function() {
+            this.set("visible", false);
+        },
+
+        __destructor:function() {
+            S.log("position __destructor");
+        }
+
+    };
+
+    S.Ext.Position = PositionExt;
+});/**
+ * shim for ie6 ,require box-ext
+ * @author:yiminghe@gmail.com
+ */
+KISSY.add("ext-shim", function(S) {
+    S.namespace("Ext");
+    function ShimExt() {
+        S.log("shim init");
+        var self = this;
+        self.on("renderUI", self._renderUIShimExt, self);
+        self.on("bindUI", self._bindUIShimExt, self);
+        self.on("syncUI", self._syncUIShimExt, self);
+    }
+
+    var Node = S.Node;
+    ShimExt.prototype = {
+        _syncUIShimExt:function() {
+            S.log("_syncUIShimExt");
+        },
+        _bindUIShimExt:function() {
+            S.log("_bindUIShimExt");
+        },
+        _renderUIShimExt:function() {
+            S.log("_renderUIShimExt");
+            var self = this,el = self.get("el");
+            var shim = new Node("<iframe style='position: absolute;" +
+                "border: none;" +
+                "width: expression(this.parentNode.offsetWidth);" +
+                "top: 0;" +
+                "opacity: 0;" +
+                "filter: alpha(opacity=0);" +
+                "left: 0;" +
+                "z-index: -1;" +
+                "height: expression(this.parentNode.offsetHeight);" + "'>");
+            el.prepend(shim);
+        },
+
+        __destructor:function() {
+            S.log("shim __destructor");
+        }
+    };
+    S.Ext.Shim = ShimExt;
+});/**
+ * support standard mod for component
+ * @author: yiminghe@gmail.com
+ */
+KISSY.add("ext-stdmod", function(S) {
+
+    S.namespace("Ext");
+    var CLS_PREFIX = "ks-stdmod-",
+        Node = S.Node;
+
+    function StdMod() {
+        S.log("stdmod init");
+        var self = this;
+        self.on("renderUI", self._renderUIStdMod, self);
+        self.on("syncUI", self._syncUIStdMod, self);
+        self.on("bindUI", self._bindUIStdMod, self);
+    }
+
+    StdMod.ATTRS = {
+        header:{
+        },
+        body:{
+        },
+        footer:{
+        },
+        bodyStyle:{
+        },
+        headerContent:{
+            value:false
+        },
+        bodyContent:{
+            value:false
+        },
+        footerContent:{
+            value:false
+        }
+    };
+
+    StdMod.HTML_PARSER = {
+        header:"." + CLS_PREFIX + "header",
+        body:"." + CLS_PREFIX + "body",
+        footer:"." + CLS_PREFIX + "footer"
+    };
+
+
+    StdMod.prototype = {
+        _bindUIStdMod:function() {
+            S.log("_bindUIStdMod");
+        },
+        _syncUIStdMod:function() {
+            S.log("_syncUIStdMod");
+        },
+        _setStdModContent:function(part, v) {
+            if (v !== false) {
+                if (S.isString(v)) {
+                    this.get(part).html(v);
+                } else {
+                    this.get(part).html("");
+                    this.get(part).append(v);
+                }
+            }
+        },
+        _uiSetBodyStyle:function(v) {
+            if (v !== undefined) {
+                this.get("body").css(v);
+            }
+        },
+        _uiSetBodyContent:function(v) {
+            S.log("_uiSetBodyContent");
+            this._setStdModContent("body", v);
+        },
+        _uiSetHeaderContent:function(v) {
+            S.log("_uiSetHeaderContent");
+            this._setStdModContent("header", v);
+        },
+        _uiSetFooterContent:function(v) {
+            S.log("_uiSetFooterContent");
+            this._setStdModContent("footer", v);
+        },
+        _renderUIStdMod:function() {
+            S.log("_renderUIStdMod");
+            var self = this,
+                el = self.get("contentEl"),
+                header = self.get("header"),
+                body = self.get("body"),
+                footer = self.get("footer"),
+                headerContent = self.get("headerContent"),
+                bodyContent = self.get("bodyContent"),
+                footerContent = self.get("footerContent");
+            if (!header) {
+                header = new Node("<div class='" + CLS_PREFIX + "header'>").appendTo(el);
+                self.set("header", header);
+            }
+            if (!body) {
+                body = new Node("<div class='" + CLS_PREFIX + "body'>").appendTo(el);
+                self.set("body", body);
+            }
+            if (!footer) {
+                footer = new Node("<div class='" + CLS_PREFIX + "footer'>").appendTo(el);
+                self.set("footer", footer);
+            }
+        },
+
+        __destructor:function() {
+            S.log("stdmod __destructor");
+        }
+    };
+
+
+    S.Ext.StdMod = StdMod;
+
+});KISSY.Editor.add("ext", function() {
+});/**
  * fakeobjects for music ,video,flash
  * @author: yiminghe@gmail.com
  */
@@ -12609,15 +13640,69 @@ KISSY.Editor.add("fakeobjects", function(editor) {
 
 });
 KISSY.Editor.add("flash", function(editor) {
-    editor.addPlugin(function() {
-        new KISSY.Editor.Flash(editor);
+    editor.ready(function() {
+        var S = KISSY,
+            KE = S.Editor,
+            CLS_FLASH = 'ke_flash',
+            TYPE_FLASH = 'flash',
+            dataProcessor = editor.htmlDataProcessor,
+            pluginConfig = editor.cfg.pluginConfig,
+            dataFilter = dataProcessor && dataProcessor.dataFilter;
+
+        dataFilter && dataFilter.addRules({
+            elements : {
+                'object' : function(element) {
+                    var attributes = element.attributes,i,
+                        classId = attributes['classid'] && String(attributes['classid']).toLowerCase();
+                    if (!classId) {
+                        // Look for the inner <embed>
+                        for (i = 0; i < element.children.length; i++) {
+                            if (element.children[ i ].name == 'embed') {
+                                if (!KE.Utils.isFlashEmbed(element.children[ i ]))
+                                    return null;
+                                return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
+                            }
+                        }
+                        return null;
+                    }
+                    return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
+                },
+
+                'embed' : function(element) {
+                    if (!KE.Utils.isFlashEmbed(element))
+                        return null;
+                    return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
+                }
+            }}, 5);
+
+        KE.use("flash/support", function() {
+            var Flash = KE.Flash,
+                CLS_FLASH = Flash.CLS_FLASH;
+            var TYPE_FLASH = Flash.TYPE_FLASH;
+
+            /**
+             * 注册添加 flash 的命令
+             */
+            editor.addCommand("insertFlash", {
+                exec:function(editor) {
+                    var args = S.makeArray(arguments);
+                    return KE.Flash.Insert.apply(null, args);
+                }
+            });
+
+
+            if (!pluginConfig["flash"] ||
+                pluginConfig["flash"].btn !== false)
+                new Flash(editor);
+        });
+
     });
 });
 /**
  * flash base for all flash-based plugin
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("flash/support", function(editor) {
+KISSY.Editor.add("flash/support", function() {
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -12626,303 +13711,234 @@ KISSY.Editor.add("flash/support", function(editor) {
         Node = S.Node,
         BubbleView = KE.BubbleView,
         TripleButton = KE.TripleButton,
-        dataProcessor = editor.htmlDataProcessor,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
-        flashUtils = KE.Utils.flash,
-        dataFilter = dataProcessor && dataProcessor.dataFilter;
+        flashUtils = KE.Utils.flash;
 
+    /**
+     * 所有基于 flash 的插件基类，使用 template 模式抽象
+     * @param editor
+     */
+    function Flash(editor) {
+        var self = this;
+        self.editor = editor;
+        self._init();
+    }
 
-    if (!KE.Flash) {
+    S.augment(Flash, {
 
-        (function() {
+        /**
+         * 配置信息，用于子类覆盖
+         * @override
+         */
+        _config:function() {
+            var self = this;
+            self._cls = CLS_FLASH;
+            self._type = TYPE_FLASH;
+            self._contentCls = "ke-toolbar-flash";
+            self._tip = "插入Flash";
+            self._contextMenu = contextMenu;
+            self._flashRules = ["img." + CLS_FLASH];
+        },
+        _init:function() {
+            this._config();
+            var self = this,
+                editor = self.editor,
+                myContexts = {},
+                contextMenu = self._contextMenu;
 
-            var flashFilenameRegex = /\.swf(?:$|\?)/i;
-
-            /**
-             * 所有基于 flash 的插件基类，使用 template 模式抽象
-             * @param editor
-             */
-            function Flash(editor) {
-                var self = this;
-                self.editor = editor;
-                self._init();
-            }
-
-            Flash.isFlashEmbed = function (element) {
-                var attributes = element.attributes;
-                return (
-                    attributes.type == 'application/x-shockwave-flash'
-                        ||
-                        flashFilenameRegex.test(attributes.src || '')
-                    );
-            };
-
-            S.augment(Flash, {
-
-                /**
-                 * 配置信息，用于子类覆盖
-                 * @override
-                 */
-                _config:function() {
-                    var self = this;
-                    self._cls = CLS_FLASH;
-                    self._type = TYPE_FLASH;
-                    self._contentCls = "ke-toolbar-flash";
-                    self._tip = "插入Flash";
-                    self._contextMenu = contextMenu;
-                    self._flashRules = ["img." + CLS_FLASH];
-
-
-                },
-                _init:function() {
-                    this._config();
-                    var self = this,
-                        editor = self.editor,
-                        myContexts = {},
-                        contextMenu = self._contextMenu;
-
-                    //注册属于编辑器的功能实例
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars[self._type] = self;
-
-                    //生成编辑器工具按钮
-                    self.el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        contentCls:self._contentCls,
-                        title:self._tip
-                    });
-                    self.el.on("offClick", self.show, this);
-
-
-                    //右键功能关联到编辑器实例
-                    if (contextMenu) {
-                        for (var f in contextMenu) {
-                            (function(f) {
-                                myContexts[f] = function() {
-                                    contextMenu[f](editor);
-                                }
-                            })(f);
-                        }
-                    }
-                    //注册右键，contextmenu时检测
-                    ContextMenu.register({
-                        editor:editor,
-                        rules:self._flashRules,
-                        width:"120px",
-                        funcs:myContexts
-                    });
-
-
-                    //注册泡泡，selectionChange时检测
-                    BubbleView.attach({
-                        pluginName:self._type,
-                        pluginInstance:self
-                    });
-
-                    //注册双击，双击时检测
-                    Event.on(editor.document, "dblclick", self._dbclick, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-
-                /**
-                 * 子类覆盖，如何从flash url得到合适的应用表示地址
-                 * @override
-                 * @param r flash 元素
-                 */
-                _getFlashUrl:function(r) {
-                    return flashUtils.getUrl(r);
-                },
-                /**
-                 * 更新泡泡弹出的界面，子类覆盖
-                 * @override
-                 * @param tipurl
-                 * @param selectedFlash
-                 */
-                _updateTip:function(tipurl, selectedFlash) {
-                    var self = this,
-                        editor = self.editor,
-                        r = editor.restoreRealElement(selectedFlash);
-                    if (!r) return;
-                    var url = self._getFlashUrl(r);
-                    tipurl.html(url);
-                    tipurl.attr("href", url);
-                },
-
-                //根据图片标志触发本插件应用
-                _dbclick:function(ev) {
-                    var self = this,t = new Node(ev.target);
-                    if (t._4e_name() === "img" && t.hasClass(self._cls)) {
-                        self.show(null, t);
-                        ev.halt();
-                    }
-                },
-
-                show:function(ev, selected) {
-                    var self = this,
-                        editor = self.editor;
-                    editor.useDialog(self._type + "/dialog", function(dialog) {
-                        dialog.show(selected);
-                    });
+            var context = editor.addButton("flash", {
+                contentCls:self._contentCls,
+                title:self._tip ,
+                offClick:function() {
+                    self.show();
                 }
             });
 
-            KE.Flash = Flash;
-
-            /**
-             * tip初始化，所有共享一个tip
-             */
-            var tipHtml = ' <a ' +
-                'class="ke-bubbleview-url" ' +
-                'target="_blank" ' +
-                'href="#"></a> - '
-                + ' <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-                + ' <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>';
-
-            /**
-             * 泡泡判断是否选择元素符合
-             * @param node
-             */
-            function checkFlash(node) {
-                return node._4e_name() === 'img' &&
-                    (!!node.hasClass(CLS_FLASH)) &&
-                    node;
-            }
-
-            /**
-             * 注册一个泡泡
-             * @param pluginName
-             * @param label
-             * @param checkFlash
-             */
-            Flash.registerBubble = function(pluginName, label, checkFlash) {
-
-                BubbleView.register({
-                    pluginName:pluginName,
-                    func:checkFlash,
-                    init:function() {
-                        var bubble = this,
-                            el = bubble.get("contentEl");
-                        el.html(label + tipHtml);
-                        var tipurl = el.one(".ke-bubbleview-url"),
-                            tipchange = el.one(".ke-bubbleview-change"),
-                            tipremove = el.one(".ke-bubbleview-remove");
-                        //ie focus not lose
-                        KE.Utils.preventFocus(el);
-
-                        tipchange.on("click", function(ev) {
-                            //回调show，传入选中元素
-                            bubble._plugin.show(null, bubble._selectedEl);
-                            ev.halt();
-                        });
-
-                        tipremove.on("click", function(ev) {
-                            var flash = bubble._plugin;
-                            //chrome remove 后会没有焦点
-                            if (UA.webkit) {
-                                var r = flash.editor.getSelection().getRanges();
-                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
-                            }
-                            bubble._selectedEl._4e_remove();
-                            bubble.hide();
-                            flash.editor.notifySelectionChange();
-                            ev.halt();
-                        });
-
-                        /*
-                         位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
-                         */
-                        bubble.on("show", function(ev) {
-                            var a = bubble._selectedEl,
-                                flash = bubble._plugin;
-                            if (!a)return;
-                            flash._updateTip(tipurl, a);
-                        });
-                    }
-                });
-            };
-
-
-            Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
-            Flash.checkFlash = checkFlash;
-
-            //右键功能列表
-            var contextMenu = {
-                "Flash属性":function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        flash = checkFlash(startElement),
-                        flashUI = editor._toolbars[TYPE_FLASH];
-                    if (flash) {
-                        flashUI.show(null, flash);
-                    }
+            //右键功能关联到编辑器实例
+            if (contextMenu) {
+                for (var f in contextMenu) {
+                    (function(f) {
+                        myContexts[f] = function() {
+                            contextMenu[f](self);
+                        }
+                    })(f);
                 }
-            };
+            }
+            //注册右键，contextmenu时检测
+            ContextMenu.register({
+                editor:editor,
+                rules:self._flashRules,
+                width:"120px",
+                funcs:myContexts
+            });
 
-            Flash.CLS_FLASH = CLS_FLASH;
-            Flash.TYPE_FLASH = TYPE_FLASH;
+            //注册泡泡，selectionChange时检测
+            BubbleView.attach({
+                pluginName:self._type,
+                editor:self.editor,
+                pluginContext:self
+            });
+            //注册双击，双击时检测
+            Event.on(editor.document, "dblclick", self._dbclick, self);
+        },
 
-            Flash.Insert = function(editor, src, attrs, _cls, _type) {
-                var nodeInfo = flashUtils.createSWF(src, {
-                    attrs:attrs
-                }, editor.document),
-                    real = nodeInfo.el,
-                    substitute = editor.createFakeElement ?
-                        editor.createFakeElement(real,
-                            _cls || 'ke_flash',
-                            _type || 'flash',
-                            true,
-                            nodeInfo.html,
-                            attrs) :
-                        real;
-                substitute = editor.insertElement(substitute);
-                return substitute;
-            };
-        })();
-    }
+        /**
+         * 子类覆盖，如何从flash url得到合适的应用表示地址
+         * @override
+         * @param r flash 元素
+         */
+        _getFlashUrl:function(r) {
+            return flashUtils.getUrl(r);
+        },
+        /**
+         * 更新泡泡弹出的界面，子类覆盖
+         * @override
+         * @param tipurl
+         * @param selectedFlash
+         */
+        _updateTip:function(tipurl, selectedFlash) {
+            var self = this,
+                editor = self.editor,
+                r = editor.restoreRealElement(selectedFlash);
+            if (!r) return;
+            var url = self._getFlashUrl(r);
+            tipurl.html(url);
+            tipurl.attr("href", url);
+        },
 
-    /**
-     * 注册添加 flash 的命令
-     */
+        //根据图片标志触发本插件应用
+        _dbclick:function(ev) {
+            var self = this,t = new Node(ev.target);
+            if (t._4e_name() === "img" && t.hasClass(self._cls)) {
+                self.show(null, t);
+                ev.halt();
+            }
+        },
 
-    editor.addCommand("insertFlash", {
-        exec:function(editor) {
-            var args = S.makeArray(arguments);
-            return KE.Flash.Insert.apply(null, args);
+        show:function(ev, selected) {
+            var self = this,
+                editor = self.editor;
+            editor.useDialog(self._type + "/dialog", function(dialog) {
+                dialog.show(selected);
+            });
         }
     });
 
-    dataFilter && dataFilter.addRules({
-        elements : {
-            'object' : function(element) {
-                var attributes = element.attributes,i,
-                    classId = attributes['classid'] && String(attributes['classid']).toLowerCase();
-                if (!classId) {
-                    // Look for the inner <embed>
-                    for (i = 0; i < element.children.length; i++) {
-                        if (element.children[ i ].name == 'embed') {
-                            if (!KE.Flash.isFlashEmbed(element.children[ i ]))
-                                return null;
-                            return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
-                        }
-                    }
-                    return null;
-                }
-                return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
-            },
+    KE.Flash = Flash;
 
-            'embed' : function(element) {
-                if (!KE.Flash.isFlashEmbed(element))
-                    return null;
-                return dataProcessor.createFakeParserElement(element, CLS_FLASH, TYPE_FLASH, true);
+    /**
+     * tip初始化，所有共享一个tip
+     */
+    var tipHtml = ' <a ' +
+        'class="ke-bubbleview-url" ' +
+        'target="_blank" ' +
+        'href="#"></a> - '
+        + ' <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+        + ' <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>';
+
+    /**
+     * 泡泡判断是否选择元素符合
+     * @param node
+     */
+    function checkFlash(node) {
+        return node._4e_name() === 'img' &&
+            (!!node.hasClass(CLS_FLASH)) &&
+            node;
+    }
+
+    /**
+     * 注册一个泡泡
+     * @param pluginName
+     * @param label
+     * @param checkFlash
+     */
+    Flash.registerBubble = function(pluginName, label, checkFlash) {
+
+        BubbleView.register({
+            pluginName:pluginName,
+            func:checkFlash,
+            init:function() {
+                var bubble = this,
+                    el = bubble.get("contentEl");
+                el.html(label + tipHtml);
+                var tipurl = el.one(".ke-bubbleview-url"),
+                    tipchange = el.one(".ke-bubbleview-change"),
+                    tipremove = el.one(".ke-bubbleview-remove");
+                //ie focus not lose
+                KE.Utils.preventFocus(el);
+
+                tipchange.on("click", function(ev) {
+                    //回调show，传入选中元素
+                    bubble._plugin.show(null, bubble._selectedEl);
+                    ev.halt();
+                });
+
+                tipremove.on("click", function(ev) {
+                    var flash = bubble._plugin;
+                    //chrome remove 后会没有焦点
+                    if (UA.webkit) {
+                        var r = flash.editor.getSelection().getRanges();
+                        r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                    }
+                    bubble._selectedEl._4e_remove();
+                    bubble.hide();
+                    flash.editor.notifySelectionChange();
+                    ev.halt();
+                });
+
+                /*
+                 位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
+                 */
+                bubble.on("show", function() {
+                    var a = bubble._selectedEl,
+                        flash = bubble._plugin;
+                    if (!a)return;
+                    flash._updateTip(tipurl, a);
+                });
             }
-        }}, 5);
+        });
+    };
+
+
+    Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
+    Flash.checkFlash = checkFlash;
+
+    //右键功能列表
+    var contextMenu = {
+        "Flash属性":function(cmd) {
+            var editor = cmd.editor,
+                selection = editor.getSelection(),
+                startElement = selection && selection.getStartElement(),
+                flash = checkFlash(startElement);
+            if (flash) {
+                cmd.show(null, flash);
+            }
+        }
+    };
+
+    Flash.CLS_FLASH = CLS_FLASH;
+    Flash.TYPE_FLASH = TYPE_FLASH;
+
+    Flash.Insert = function(editor, src, attrs, _cls, _type) {
+        var nodeInfo = flashUtils.createSWF(src, {
+            attrs:attrs
+        }, editor.document),
+            real = nodeInfo.el,
+            substitute = editor.createFakeElement ?
+                editor.createFakeElement(real,
+                    _cls || 'ke_flash',
+                    _type || 'flash',
+                    true,
+                    nodeInfo.html,
+                    attrs) :
+                real;
+        substitute = editor.insertElement(substitute);
+        return substitute;
+    };
+
+    KE.Flash = Flash;
+
 });/**
  * simplified flash bridge for yui swf
  * @author:yiminghe@gmail.com
@@ -13480,7 +14496,7 @@ KISSY.Editor.add("font", function(editor) {
      family:"inherit"
      });*/
 
-    if (!KE.Font) {
+    if (!KE.FontSelect) {
         (function() {
 
 
@@ -13569,95 +14585,14 @@ KISSY.Editor.add("font", function(editor) {
                     this.el.reset("value");
                 }
             });
-
-            function SingleFont(cfg) {
-                var self = this;
-                SingleFont.superclass.constructor.call(self, cfg);
-                self._init();
-            }
-
-            SingleFont.ATTRS = {
-                editor:{},
-                text:{},
-                contentCls:{},
-                title:{},
-                style:{}
-            };
-
-            S.extend(SingleFont, S.Base, {
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    self.el = new TripleButton({
-                        text:text,
-                        title:title,
-                        contentCls:self.get("contentCls"),
-                        container:editor.toolBarDiv
-                    });
-                    self.el.on("offClick", self._on, self);
-                    self.el.on("onClick", self._off, self);
-                    editor.on("selectionChange", self._selectionChange, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _on:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    editor.fire("save");
-                    style.apply(editor.document);
-                    editor.fire("save");
-                    editor.notifySelectionChange();
-                    editor.focus();
-                },
-                _off:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title");
-                    editor.fire("save");
-                    style.remove(editor.document);
-                    editor.fire("save");
-                    editor.notifySelectionChange();
-                    editor.focus();
-                },
-                _selectionChange:function(ev) {
-                    var self = this,
-                        editor = self.get("editor"),
-                        text = self.get("text"),
-                        style = self.get("style"),
-                        title = self.get("title"),
-                        el = self.el,
-                        elementPath = ev.path;
-                    if (el.get("state") == TripleButton.DISABLED)
-                        return;
-                    if (style.checkActive(elementPath)) {
-                        el.set("state", TripleButton.ON);
-                    } else {
-                        el.set("state", TripleButton.OFF);
-                    }
-                }
-            });
-            Font.SingleFont = SingleFont;
-            KE.Font = Font;
+            KE.FontSelect = Font;
         })();
     }
-    editor.addPlugin(function() {
+    editor.ready(function() {
 
 
         if (false !== pluginConfig["font-size"]) {
-            new KE.Font({
+            new KE.FontSelect({
                 editor:editor,
                 title:"大小",
                 width:"30px",
@@ -13669,7 +14604,7 @@ KISSY.Editor.add("font", function(editor) {
         }
 
         if (false !== pluginConfig["font-family"]) {
-            new KE.Font({
+            new KE.FontSelect({
                 editor:editor,
                 title:"字体",
                 width:"110px",
@@ -13679,11 +14614,46 @@ KISSY.Editor.add("font", function(editor) {
             });
         }
 
+
+        var singleFontTpl = {
+            mode:KE.WYSIWYG_MODE,
+            offClick:function() {
+                var self = this,
+                    editor = self.editor,
+                    style = self.cfg.style;
+                editor.fire("save");
+                style.apply(editor.document);
+                editor.fire("save");
+                editor.notifySelectionChange();
+                editor.focus();
+            },
+            onClick:function() {
+                var self = this,
+                    editor = self.editor,
+                    style = self.cfg.style;
+                editor.fire("save");
+                style.remove(editor.document);
+                editor.fire("save");
+                editor.notifySelectionChange();
+                editor.focus();
+            },
+            selectionChange:function(ev) {
+                var self = this,
+                    style = self.cfg.style,
+                    btn = self.btn,
+                    elementPath = ev.path;
+                if (style.checkActive(elementPath)) {
+                    btn.set("state", TripleButton.ON);
+                } else {
+                    btn.set("state", TripleButton.OFF);
+                }
+            }
+        };
+
         if (false !== pluginConfig["font-bold"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-bold", S.mix({
                 contentCls:"ke-toolbar-bold",
                 title:"粗体 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'strong',
                     overrides    : [
@@ -13692,14 +14662,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-weight: bold;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-italic"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-italic", S.mix({
                 contentCls:"ke-toolbar-italic",
                 title:"斜体 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'em',
                     overrides    : [
@@ -13708,14 +14677,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-style: italic;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-underline"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-underline",
                 title:"下划线 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'u',
                     overrides    : [
@@ -13723,14 +14691,13 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'text-decoration: underline;' }}
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
         if (false !== pluginConfig["font-strikeThrough"]) {
-            new KE.Font.SingleFont({
+            editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",
-                editor:editor,
                 style:new KEStyle({
                     element        : 'del',
                     overrides    : [
@@ -13739,36 +14706,11 @@ KISSY.Editor.add("font", function(editor) {
                         { element : 's' }
                     ]
                 })
-            });
+            }, singleFontTpl));
         }
 
     });
 
-});
-/**
- * forecolor support for kissy editor
- * @author : yiminghe@gmail.com
- */
-KISSY.Editor.add("forecolor", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        ColorSupport = KE.ColorSupport;
-    var COLOR_STYLES = {
-        element        : 'span',
-        styles        : { 'color' : '#(color)' },
-        overrides    : [
-            { element : 'font', attributes : { 'color' : null } }
-        ]
-    };
-    editor.addPlugin(function() {
-        new ColorSupport({
-            editor:editor,
-            styles:COLOR_STYLES,
-            title:"文本颜色",
-            contentCls:"ke-toolbar-color",
-            text:"color"
-        });
-    });
 });
 /**
  * format formatting,modified from ckeditor
@@ -13892,7 +14834,7 @@ KISSY.Editor.add("format", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.Format({
             editor:editor,
             html:FORMAT_SELECTION_ITEMS,
@@ -14728,194 +15670,169 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("image", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
-        //DOM = S.DOM,
+    var S = KISSY,
+        KE = S.Editor,
         UA = S.UA,
-        //JSON = S.JSON,
         Node = S.Node,
         Event = S.Event,
-        TYPE_IMG = 'image',
         BubbleView = KE.BubbleView;
 
+    var checkImg = function (node) {
+        return node._4e_name() === 'img' &&
+            (!/(^|\s+)ke_/.test(node[0].className)) &&
+            node;
+    };
 
+    var tipHtml = ' '
+        + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+        + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+        + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+        + '';
     //重新采用form提交，不采用flash，国产浏览器很多问题
 
-    if (!KE.ImageInserter) {
-        (function() {
 
-            var checkImg = function (node) {
-                return node._4e_name() === 'img' &&
-                    (!/(^|\s+)ke_/.test(node[0].className)) &&
-                    node;
-            };
-
-            function ImageInserter(cfg) {
-                ImageInserter.superclass.constructor.call(this, cfg);
-                this._init();
+    editor.ready(function() {
+        var context = editor.addButton("image", {
+            contentCls:"ke-toolbar-image",
+            title:"插入图片",
+            offClick:function() {
+                this.call("show");
+            },
+            _updateTip:function(tipurl, img) {
+                var src = img.attr("src");
+                tipurl.html(src);
+                tipurl.attr("href", src);
+            },
+            show:function(ev, _selectedEl) {
+                var editor = this.editor;
+                editor.useDialog("image/dialog", function(dialog) {
+                    dialog.show(_selectedEl);
+                });
             }
-
-            var TripleButton = KE.TripleButton;
-
-
-            ImageInserter.ATTRS = {
-                editor:{}
-            };
-
-            var contextMenu = {
+        }),
+            contextMenu = {
                 "图片属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
-                        flash = checkImg(startElement),
-                        flashUI = editor._toolbars[TYPE_IMG];
+                        flash = checkImg(startElement);
                     if (flash) {
-                        flashUI.show(null, flash);
+                        context.call("show", null, flash);
                     }
                 }
             };
 
-            S.extend(ImageInserter, S.Base, {
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        toolBarDiv = editor.toolBarDiv,
-                        myContexts = {};
-                    self.editor = editor;
-                    self.el = new TripleButton({
-                        contentCls:"ke-toolbar-image",
-                        title:"插入图片",
-                        container:toolBarDiv
-                    });
-                    self.el.on("offClick", self.show, self);
-                    Event.on(editor.document, "dblclick", self._dblclick, self);
-                    KE.Utils.lazyRun(self, "_prepare", "_real");
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars[TYPE_IMG] = self;
+        var myContexts = {};
 
-                    if (contextMenu) {
-                        for (var f in contextMenu) {
-                            (function(f) {
-                                myContexts[f] = function() {
-                                    contextMenu[f](editor);
-                                }
-                            })(f);
-                        }
-                        KE.ContextMenu.register({
-                            editor:editor,
-                            rules:[checkImg],
-                            width:"120px",
-                            funcs:myContexts
-                        });
-                    }
-
-
-                    BubbleView.attach({
-                        pluginName:TYPE_IMG,
-                        pluginInstance:self
-                    });
-
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.disable();
-                },
-                enable:function() {
-                    this.el.boff();
-                },
-                _dblclick:function(ev) {
-                    var self = this,
-                        t = new Node(ev.target);
-                    if (checkImg(t)) {
-                        setTimeout(function() {
-                            self.show(null, t);
-                        }, 1000);
-                        ev.halt();
-                    }
-                },
-
-                _updateTip:function(tipurl, img) {
-                    var src = img.attr("src");
-                    tipurl.html(src);
-                    tipurl.attr("href", src);
-                },
-
-
-
-                show:function(ev, _selectedEl) {
-                    var editor = this.get("editor");
-                    editor.useDialog("image/dialog", function(dialog) {
-                        dialog.show(_selectedEl);
-                    });
+        for (var f in contextMenu) {
+            (function(f) {
+                myContexts[f] = function() {
+                    contextMenu[f](editor);
                 }
-            });
+            })(f);
+        }
+        KE.ContextMenu.register({
+            editor:editor,
+            rules:[checkImg],
+            width:"120px",
+            funcs:myContexts
+        });
 
-            KE.ImageInserter = ImageInserter;
+        Event.on(editor.document, "dblclick", function(ev) {
+            var t = new Node(ev.target);
+            ev.halt();
+            if (checkImg(t)) {
+                //setTimeout(function() {
+                context.call("show", null, t);
+                //}, 30);
+            }
+        });
 
-            var tipHtml = ' '
-                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
-                + '';
-
-            (function(pluginName, label, checkFlash) {
-
-                BubbleView.register({
-                    pluginName:pluginName,
-                    func:checkFlash,
-                    init:function() {
-                        var bubble = this,
-                            el = bubble.get("contentEl");
-                        el.html(label + tipHtml);
-                        var tipurl = el.one(".ke-bubbleview-url"),
-                            tipchange = el.one(".ke-bubbleview-change"),
-                            tipremove = el.one(".ke-bubbleview-remove");
-                        //ie focus not lose
-                        KE.Utils.preventFocus(el);
-
-                        tipchange.on("click", function(ev) {
-                            bubble._plugin.show(null, bubble._selectedEl);
-                            ev.halt();
-                        });
-                        tipremove.on("click", function(ev) {
-                            var flash = bubble._plugin;
-                            if (UA.webkit) {
-                                var r = flash.editor.getSelection().getRanges();
-                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
-                            }
-                            bubble._selectedEl._4e_remove();
-                            bubble.hide();
-                            flash.editor.notifySelectionChange();
-                            ev.halt();
-                        });
-                        /*
-                         位置变化
-                         */
-                        bubble.on("show", function(ev) {
-                            var a = bubble._selectedEl,
-                                b = bubble._plugin;
-                            if (!a)return;
-                            b._updateTip(tipurl, a);
-                        });
-                    }
+        BubbleView.register({
+            pluginName:'image',
+            pluginContext:context,
+            editor:editor,
+            func:checkImg,
+            init:function() {
+                var bubble = this,
+                    el = bubble.get("contentEl");
+                el.html("图片网址： " + tipHtml);
+                var tipurl = el.one(".ke-bubbleview-url"),
+                    tipchange = el.one(".ke-bubbleview-change"),
+                    tipremove = el.one(".ke-bubbleview-remove");
+                //ie focus not lose
+                KE.Utils.preventFocus(el);
+                tipchange.on("click", function(ev) {
+                    bubble._plugin.call("show", null, bubble._selectedEl);
+                    ev.halt();
                 });
-            })(TYPE_IMG, "图片网址： ", checkImg);
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.ImageInserter({
-            editor:editor
+                tipremove.on("click", function(ev) {
+                    var flash = bubble._plugin;
+                    if (UA.webkit) {
+                        var r = flash.editor.getSelection().getRanges();
+                        r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                    }
+                    bubble._selectedEl._4e_remove();
+                    bubble.hide();
+                    flash.editor.notifySelectionChange();
+                    ev.halt();
+                });
+                /*
+                 位置变化
+                 */
+                bubble.on("show", function() {
+                    var a = bubble._selectedEl,
+                        b = bubble._plugin;
+                    if (!a)return;
+                    b.call("_updateTip", tipurl, a);
+                });
+            }
         });
     });
 });/**
- * indent formatting,modified from ckeditor
- * @modifier: yiminghe@gmail.com
+ * indent formatting
+ * @author: yiminghe@gmail.com
  */
+KISSY.Editor.add("indent", function(editor) {
+    var KE = KISSY.Editor;
+
+    editor.ready(function() {
+        var outdent = editor.addButton("outdent", {
+            title:"减少缩进量 ",
+            contentCls:"ke-toolbar-outdent",
+            type:"outdent",
+            loading:true
+        });
+
+        var indent = editor.addButton("indent", {
+            title:"增加缩进量 ",
+            contentCls:"ke-toolbar-indent",
+            type:"indent",
+            loading:true
+        });
+
+        KE.use("indent/support", function() {
+            outdent.reload(KE.IndentSupport);
+            indent.reload(KE.IndentSupport);
+        });
+
+        editor.addCommand("indent", {
+            exec:function() {
+                indent.call("offClick");
+            }
+        });
+        
+        editor.addCommand("outdent", {
+            exec:function() {
+                outdent.call("offClick");
+            }
+        });
+    });
+});
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("indent", function(editor) {
+KISSY.Editor.add("indent/support", function() {
     var KE = KISSY.Editor,
         listNodeNames = {ol:1,ul:1},
         S = KISSY,
@@ -14924,453 +15841,382 @@ KISSY.Editor.add("indent", function(editor) {
         Node = S.Node,
         UA = S.UA,
         KEN = KE.NODE;
-    if (!KE.Indent) {
-        (function() {
-            var isNotWhitespaces = Walker.whitespaces(true),
-                isNotBookmark = Walker.bookmark(false, true);
+    var isNotWhitespaces = Walker.whitespaces(true),
+        isNotBookmark = Walker.bookmark(false, true);
 
-            function IndentCommand(type) {
-                this.type = type;
-                this.indentCssProperty = "margin-left";
-                this.indentOffset = 40;
-                this.indentUnit = "px";
-            }
-
-            function isListItem(node) {
-                return node[0].nodeType == KEN.NODE_ELEMENT && node._4e_name() == 'li';
-            }
-
-            function indentList(range, listNode) {
-                // Our starting and ending points of the range might be inside some blocks under a list item...
-                // So before playing with the iterator, we need to expand the block to include the list items.
-
-                var startContainer = range.startContainer,
-                    endContainer = range.endContainer;
-                while (startContainer &&
-                    !startContainer.parent()._4e_equals(listNode))
-                    startContainer = startContainer.parent();
-                while (endContainer &&
-                    !endContainer.parent()._4e_equals(listNode))
-                    endContainer = endContainer.parent();
-
-                if (!startContainer || !endContainer)
-                    return;
-
-                // Now we can iterate over the individual items on the same tree depth.
-                var block = startContainer,
-                    itemsToMove = [],
-                    stopFlag = false;
-                while (!stopFlag) {
-                    if (block._4e_equals(endContainer))
-                        stopFlag = true;
-                    itemsToMove.push(block);
-                    block = block.next();
-                }
-                if (itemsToMove.length < 1)
-                    return;
-
-                // Do indent or outdent operations on the array model of the list, not the
-                // list's DOM tree itself. The array model demands that it knows as much as
-                // possible about the surrounding lists, we need to feed it the further
-                // ancestor node that is still a list.
-                var listParents = listNode._4e_parents(true);
-                for (var i = 0; i < listParents.length; i++) {
-                    if (listNodeNames[ listParents[i]._4e_name() ]) {
-                        listNode = listParents[i];
-                        break;
-                    }
-                }
-                var indentOffset = this.type == 'indent' ? 1 : -1,
-                    startItem = itemsToMove[0],
-                    lastItem = itemsToMove[ itemsToMove.length - 1 ],
-                    database = {};
-
-                // Convert the list DOM tree into a one dimensional array.
-                var listArray = KE.ListUtils.listToArray(listNode, database);
-
-                // Apply indenting or outdenting on the array.
-                // listarray_index 为 item 在数组中的下标，方便计算
-                var baseIndent = listArray[ lastItem.data('listarray_index') ].indent;
-                for (i = startItem.data('listarray_index');
-                     i <= lastItem.data('listarray_index'); i++) {
-                    listArray[ i ].indent += indentOffset;
-                    // Make sure the newly created sublist get a brand-new element of the same type. (#5372)
-                    var listRoot = listArray[ i ].parent;
-                    listArray[ i ].parent =
-                        new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
-                }
-                /*
-                 嵌到下层的li
-                 <li>鼠标所在开始</li>
-                 <li>ss鼠标所在结束ss
-                 <ul>
-                 <li></li>
-                 <li></li>
-                 </ul>
-                 </li>
-                 baseIndent 为鼠标所在结束的嵌套层次，
-                 如果下面的比结束li的indent大，那么证明是嵌在结束li里面的，也要缩进
-                 一直处理到大于或等于，跳出了当前嵌套
-                 */
-                for (i = lastItem.data('listarray_index') + 1;
-                     i < listArray.length && listArray[i].indent > baseIndent; i++)
-                    listArray[i].indent += indentOffset;
-
-                // Convert the array back to a DOM forest (yes we might have a few subtrees now).
-                // And replace the old list with the new forest.
-                var newList = KE.ListUtils.arrayToList(listArray,
-                    database, null,
-                    "p",
-                    0);
-
-                // Avoid nested <li> after outdent even they're visually same,
-                // recording them for later refactoring.(#3982)
-                var pendingList = [];
-                if (this.type == 'outdent') {
-                    var parentLiElement;
-                    if (( parentLiElement = listNode.parent() ) &&
-                        parentLiElement._4e_name() == 'li') {
-                        var children = newList.listNode.childNodes
-                            ,count = children.length,
-                            child;
-
-                        for (i = count - 1; i >= 0; i--) {
-                            if (( child = new Node(children[i]) ) &&
-                                child._4e_name() == 'li')
-                                pendingList.push(child);
-                        }
-                    }
-                }
-
-                if (newList) {
-                    DOM.insertBefore(newList.listNode, listNode);
-                    listNode._4e_remove();
-                }
-                // Move the nested <li> to be appeared after the parent.
-                if (pendingList && pendingList.length) {
-                    for (i = 0; i < pendingList.length; i++) {
-                        var li = pendingList[ i ],
-                            followingList = li;
-
-                        // Nest preceding <ul>/<ol> inside current <li> if any.
-                        while (( followingList = followingList.next() ) &&
-
-                            followingList._4e_name() in listNodeNames) {
-                            // IE requires a filler NBSP for nested list inside empty list item,
-                            // otherwise the list item will be inaccessiable. (#4476)
-                            if (UA.ie && !li._4e_first(function(node) {
-                                return isNotWhitespaces(node) && isNotBookmark(node);
-                            }))
-                                li[0].appendChild(range.document.createTextNode('\u00a0'));
-
-                            li[0].appendChild(followingList[0]);
-                        }
-                        DOM.insertAfter(li[0], parentLiElement[0]);
-                    }
-                }
-
-                // Clean up the markers.
-                KE.Utils.clearAllMarkers(database);
-            }
-
-            function indentBlock(range) {
-                var iterator = range.createIterator();
-                //  enterMode = "p";
-                iterator.enforceRealBlocks = true;
-                iterator.enlargeBr = true;
-                var block;
-                while (( block = iterator.getNextParagraph() ))
-                    indentElement.call(this, block);
-            }
-
-            function indentElement(element) {
-
-                var currentOffset = parseInt(element._4e_style(this.indentCssProperty), 10);
-                if (isNaN(currentOffset))
-                    currentOffset = 0;
-                currentOffset += ( this.type == 'indent' ? 1 : -1 ) * this.indentOffset;
-
-                if (currentOffset < 0)
-                    return false;
-
-                currentOffset = Math.max(currentOffset, 0);
-                currentOffset = Math.ceil(currentOffset / this.indentOffset) * this.indentOffset;
-                element.css(this.indentCssProperty, currentOffset ? currentOffset + this.indentUnit : '');
-                if (element[0].style.cssText === '')
-                    element.removeAttr('style');
-
-                return true;
-            }
-
-            S.augment(IndentCommand, {
-                exec:function(editor) {
-
-                    var selection = editor.getSelection(),
-                        range = selection && selection.getRanges()[0];
-                    var startContainer = range.startContainer,
-                        endContainer = range.endContainer,
-                        rangeRoot = range.getCommonAncestor(),
-                        nearestListBlock = rangeRoot;
-
-                    while (nearestListBlock && !( nearestListBlock[0].nodeType == KEN.NODE_ELEMENT &&
-                        listNodeNames[ nearestListBlock._4e_name() ] ))
-                        nearestListBlock = nearestListBlock.parent();
-
-                    // Avoid selection anchors under list root.
-                    // <ul>[<li>...</li>]</ul> =>	<ul><li>[...]</li></ul>
-                    //注：firefox 永远不会出现
-                    //注2：哪种情况会出现？
-                    if (nearestListBlock
-                        && startContainer[0].nodeType == KEN.NODE_ELEMENT
-                        && startContainer._4e_name() in listNodeNames) {
-                        //S.log("indent from ul/ol");
-                        var walker = new Walker(range);
-                        walker.evaluator = isListItem;
-                        range.startContainer = walker.next();
-                    }
-
-                    if (nearestListBlock
-                        && endContainer[0].nodeType == KEN.NODE_ELEMENT
-                        && endContainer._4e_name() in listNodeNames) {
-                        walker = new Walker(range);
-                        walker.evaluator = isListItem;
-                        range.endContainer = walker.previous();
-                    }
-
-                    var bookmarks = selection.createBookmarks(true);
-
-                    if (nearestListBlock) {
-                        var firstListItem = nearestListBlock._4e_first();
-                        while (firstListItem
-                            &&
-                            firstListItem._4e_name() != "li") {
-                            firstListItem = firstListItem.next();
-                        }
-                        var rangeStart = range.startContainer,
-                            indentWholeList = firstListItem[0] == rangeStart[0]
-                                || firstListItem.contains(rangeStart);
-
-                        // Indent the entire list if  cursor is inside the first list item. (#3893)
-                        if (!( indentWholeList
-                            &&
-                            indentElement.call(this, nearestListBlock) ))
-                            indentList.call(this, range, nearestListBlock);
-                    }
-                    else
-                        indentBlock.call(this, range);
-                    selection.selectBookmarks(bookmarks);
-                }
-            });
-
-
-            var TripleButton = KE.TripleButton;
-
-            /**
-             * 用到了按钮三状态的两个状态：off可点击，disabled:不可点击
-             * @param cfg
-             */
-            function Indent(cfg) {
-                Indent.superclass.constructor.call(this, cfg);
-
-                var editor = this.get("editor"),
-                    toolBarDiv = editor.toolBarDiv;
-                // el = this.el;
-
-                var self = this;
-                self.el = new TripleButton({
-                    container:toolBarDiv,
-                    contentCls:this.get("contentCls"),
-                    //text:this.get("type"),
-                    title:this.get("title")
-                });
-                this.indentCommand = new IndentCommand(this.get("type"));
-                this._init();
-            }
-
-            Indent.ATTRS = {
-                type:{},
-                contentCls:{},
-                editor:{}
-            };
-
-            S.extend(Indent, S.Base, {
-
-                _init:function() {
-                    var editor = this.get("editor"),toolBarDiv = editor.toolBarDiv,
-                        el = this.el;
-                    var self = this;
-                    //off状态下触发捕获，注意没有on状态
-                    el.on("offClick", this.exec, this);
-                    if (this.get("type") == "outdent")
-                        editor.on("selectionChange", this._selectionChange, this);
-                    else
-                        el.set("state", TripleButton.OFF);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-
-
-                exec:function() {
-                    var editor = this.get("editor"),
-                        el = this.el,
-                        self = this;
-                    //ie要等会才能获得焦点窗口的选择区域
-                    editor.fire("save");
-                    setTimeout(function() {
-                        self.indentCommand.exec(editor);
-                        editor.fire("save");
-                        editor.notifySelectionChange();
-                    }, 10);
-                },
-
-                _selectionChange:function(ev) {
-                    var editor = this.get("editor"),type = this.get("type")
-                        , elementPath = ev.path,
-                        blockLimit = elementPath.blockLimit,
-                        el = this.el;
-
-                    if (elementPath.contains(listNodeNames)) {
-                        el.set("state", TripleButton.OFF);
-                    } else {
-                        var block = elementPath.block || blockLimit;
-                        if (block && block._4e_style(this.indentCommand.indentCssProperty)) {
-                            el.set("state", TripleButton.OFF);
-                        } else {
-                            el.set("state", TripleButton.DISABLED);
-                        }
-                    }
-                }
-            });
-            KE.Indent = Indent;
-        })();
+    function IndentCommand(type) {
+        this.type = type;
+        this.indentCssProperty = "margin-left";
+        this.indentOffset = 40;
+        this.indentUnit = "px";
     }
-    editor.addPlugin(function() {
-        editor.addCommand("outdent", new KE.Indent({
-            editor:editor,
-            title:"减少缩进量 ",
-            contentCls:"ke-toolbar-outdent",
-            type:"outdent"
-        }));
-        editor.addCommand("indent", new KE.Indent({
-            editor:editor,
-            title:"增加缩进量 ",
-            contentCls:"ke-toolbar-indent",
-            type:"indent"
-        }));
+
+    function isListItem(node) {
+        return node[0].nodeType == KEN.NODE_ELEMENT && node._4e_name() == 'li';
+    }
+
+    function indentList(range, listNode) {
+        // Our starting and ending points of the range might be inside some blocks under a list item...
+        // So before playing with the iterator, we need to expand the block to include the list items.
+
+        var startContainer = range.startContainer,
+            endContainer = range.endContainer;
+        while (startContainer &&
+            !startContainer.parent()._4e_equals(listNode))
+            startContainer = startContainer.parent();
+        while (endContainer &&
+            !endContainer.parent()._4e_equals(listNode))
+            endContainer = endContainer.parent();
+
+        if (!startContainer || !endContainer)
+            return;
+
+        // Now we can iterate over the individual items on the same tree depth.
+        var block = startContainer,
+            itemsToMove = [],
+            stopFlag = false;
+        while (!stopFlag) {
+            if (block._4e_equals(endContainer))
+                stopFlag = true;
+            itemsToMove.push(block);
+            block = block.next();
+        }
+        if (itemsToMove.length < 1)
+            return;
+
+        // Do indent or outdent operations on the array model of the list, not the
+        // list's DOM tree itself. The array model demands that it knows as much as
+        // possible about the surrounding lists, we need to feed it the further
+        // ancestor node that is still a list.
+        var listParents = listNode._4e_parents(true);
+        for (var i = 0; i < listParents.length; i++) {
+            if (listNodeNames[ listParents[i]._4e_name() ]) {
+                listNode = listParents[i];
+                break;
+            }
+        }
+        var indentOffset = this.type == 'indent' ? 1 : -1,
+            startItem = itemsToMove[0],
+            lastItem = itemsToMove[ itemsToMove.length - 1 ],
+            database = {};
+
+        // Convert the list DOM tree into a one dimensional array.
+        var listArray = KE.ListUtils.listToArray(listNode, database);
+
+        // Apply indenting or outdenting on the array.
+        // listarray_index 为 item 在数组中的下标，方便计算
+        var baseIndent = listArray[ lastItem.data('listarray_index') ].indent;
+        for (i = startItem.data('listarray_index');
+             i <= lastItem.data('listarray_index'); i++) {
+            listArray[ i ].indent += indentOffset;
+            // Make sure the newly created sublist get a brand-new element of the same type. (#5372)
+            var listRoot = listArray[ i ].parent;
+            listArray[ i ].parent =
+                new Node(listRoot[0].ownerDocument.createElement(listRoot._4e_name()));
+        }
+        /*
+         嵌到下层的li
+         <li>鼠标所在开始</li>
+         <li>ss鼠标所在结束ss
+         <ul>
+         <li></li>
+         <li></li>
+         </ul>
+         </li>
+         baseIndent 为鼠标所在结束的嵌套层次，
+         如果下面的比结束li的indent大，那么证明是嵌在结束li里面的，也要缩进
+         一直处理到大于或等于，跳出了当前嵌套
+         */
+        for (i = lastItem.data('listarray_index') + 1;
+             i < listArray.length && listArray[i].indent > baseIndent; i++)
+            listArray[i].indent += indentOffset;
+
+        // Convert the array back to a DOM forest (yes we might have a few subtrees now).
+        // And replace the old list with the new forest.
+        var newList = KE.ListUtils.arrayToList(listArray,
+            database, null,
+            "p",
+            0);
+
+        // Avoid nested <li> after outdent even they're visually same,
+        // recording them for later refactoring.(#3982)
+        var pendingList = [];
+        if (this.type == 'outdent') {
+            var parentLiElement;
+            if (( parentLiElement = listNode.parent() ) &&
+                parentLiElement._4e_name() == 'li') {
+                var children = newList.listNode.childNodes
+                    ,count = children.length,
+                    child;
+
+                for (i = count - 1; i >= 0; i--) {
+                    if (( child = new Node(children[i]) ) &&
+                        child._4e_name() == 'li')
+                        pendingList.push(child);
+                }
+            }
+        }
+
+        if (newList) {
+            DOM.insertBefore(newList.listNode, listNode);
+            listNode._4e_remove();
+        }
+        // Move the nested <li> to be appeared after the parent.
+        if (pendingList && pendingList.length) {
+            for (i = 0; i < pendingList.length; i++) {
+                var li = pendingList[ i ],
+                    followingList = li;
+
+                // Nest preceding <ul>/<ol> inside current <li> if any.
+                while (( followingList = followingList.next() ) &&
+
+                    followingList._4e_name() in listNodeNames) {
+                    // IE requires a filler NBSP for nested list inside empty list item,
+                    // otherwise the list item will be inaccessiable. (#4476)
+                    if (UA.ie && !li._4e_first(function(node) {
+                        return isNotWhitespaces(node) && isNotBookmark(node);
+                    }))
+                        li[0].appendChild(range.document.createTextNode('\u00a0'));
+
+                    li[0].appendChild(followingList[0]);
+                }
+                DOM.insertAfter(li[0], parentLiElement[0]);
+            }
+        }
+
+        // Clean up the markers.
+        KE.Utils.clearAllMarkers(database);
+    }
+
+    function indentBlock(range) {
+        var iterator = range.createIterator();
+        //  enterMode = "p";
+        iterator.enforceRealBlocks = true;
+        iterator.enlargeBr = true;
+        var block;
+        while (( block = iterator.getNextParagraph() ))
+            indentElement.call(this, block);
+    }
+
+    function indentElement(element) {
+
+        var currentOffset = parseInt(element._4e_style(this.indentCssProperty), 10);
+        if (isNaN(currentOffset))
+            currentOffset = 0;
+        currentOffset += ( this.type == 'indent' ? 1 : -1 ) * this.indentOffset;
+
+        if (currentOffset < 0)
+            return false;
+
+        currentOffset = Math.max(currentOffset, 0);
+        currentOffset = Math.ceil(currentOffset / this.indentOffset) * this.indentOffset;
+        element.css(this.indentCssProperty, currentOffset ? currentOffset + this.indentUnit : '');
+        if (element[0].style.cssText === '')
+            element.removeAttr('style');
+
+        return true;
+    }
+
+    S.augment(IndentCommand, {
+        exec:function(editor) {
+
+            var selection = editor.getSelection(),
+                range = selection && selection.getRanges()[0];
+            var startContainer = range.startContainer,
+                endContainer = range.endContainer,
+                rangeRoot = range.getCommonAncestor(),
+                nearestListBlock = rangeRoot;
+
+            while (nearestListBlock && !( nearestListBlock[0].nodeType == KEN.NODE_ELEMENT &&
+                listNodeNames[ nearestListBlock._4e_name() ] ))
+                nearestListBlock = nearestListBlock.parent();
+
+            // Avoid selection anchors under list root.
+            // <ul>[<li>...</li>]</ul> =>	<ul><li>[...]</li></ul>
+            //注：firefox 永远不会出现
+            //注2：哪种情况会出现？
+            if (nearestListBlock
+                && startContainer[0].nodeType == KEN.NODE_ELEMENT
+                && startContainer._4e_name() in listNodeNames) {
+                //S.log("indent from ul/ol");
+                var walker = new Walker(range);
+                walker.evaluator = isListItem;
+                range.startContainer = walker.next();
+            }
+
+            if (nearestListBlock
+                && endContainer[0].nodeType == KEN.NODE_ELEMENT
+                && endContainer._4e_name() in listNodeNames) {
+                walker = new Walker(range);
+                walker.evaluator = isListItem;
+                range.endContainer = walker.previous();
+            }
+
+            var bookmarks = selection.createBookmarks(true);
+
+            if (nearestListBlock) {
+                var firstListItem = nearestListBlock._4e_first();
+                while (firstListItem
+                    &&
+                    firstListItem._4e_name() != "li") {
+                    firstListItem = firstListItem.next();
+                }
+                var rangeStart = range.startContainer,
+                    indentWholeList = firstListItem[0] == rangeStart[0]
+                        || firstListItem.contains(rangeStart);
+
+                // Indent the entire list if  cursor is inside the first list item. (#3893)
+                if (!( indentWholeList
+                    &&
+                    indentElement.call(this, nearestListBlock) ))
+                    indentList.call(this, range, nearestListBlock);
+            }
+            else
+                indentBlock.call(this, range);
+            selection.selectBookmarks(bookmarks);
+        }
     });
-});
-/**
+
+
+    var TripleButton = KE.TripleButton;
+
+
+    KE.IndentSupport = {
+        init:function() {
+            var self = this,
+                cfg = self.cfg;
+            self.indentCommand = new IndentCommand(cfg.type);
+        },
+        offClick:function() {
+            var self = this,
+                editor = self.editor,
+                el = self.btn;
+            //ie要等会才能获得焦点窗口的选择区域
+            editor.fire("save");
+            setTimeout(function() {
+                self.indentCommand.exec(editor);
+                editor.fire("save");
+                editor.notifySelectionChange();
+            }, 10);
+        },
+        selectionChange:function(ev) {
+            var self = this,
+                cfg = self.cfg;
+            if (cfg.type != "outdent") return;
+
+            var elementPath = ev.path,
+                blockLimit = elementPath.blockLimit,
+                el = self.btn;
+
+            if (elementPath.contains(listNodeNames)) {
+                el.boff();
+            } else {
+                var block = elementPath.block || blockLimit;
+                if (block && block._4e_style(self.indentCommand.indentCssProperty)) {
+                    el.boff();
+                } else {
+                    el.disable();
+                }
+            }
+        }
+    };
+});/**
  * align support for kissy editor
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("justify", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,TripleButton = KE.TripleButton;
+    var S = KISSY,
+        KE = S.Editor,
+        TripleButton = KE.TripleButton;
+    var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
+        default_align = "left";
 
-    if (!KE.Justify) {
-        (function() {
-            function Justify(editor, v, title, contentCls) {
-                var self = this;
-                self.editor = editor;
-                self.v = v;
-                self.contentCls = contentCls;
-                self.title = title;
-                self._init();
-            }
+    editor.ready(function() {
+        var JustifyTpl = {
+            offClick:function() {
+                this.call("_change");
+            },
+            onClick:function() {
+                this.call("_change");
+            },
+            _change:function() {
+                var self = this,
+                    editor = self.editor,
+                    selection = editor.getSelection(),
+                    enterMode = "p",
+                    state = self.btn.get("state");
 
-            var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
-                default_align = "left";
-            S.augment(Justify, {
-                _init:function() {
-                    var self = this,editor = self.editor,toolBarDiv = editor.toolBarDiv;
-                    self.el = new TripleButton({
-                        contentCls:self.contentCls,
-                        //text:self.v,
-                        title:self.title,
-                        container:toolBarDiv
-                    });
-                    editor.on("selectionChange", self._selectionChange, self);
-                    self.el.on("offClick", self._effect, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _effect:function() {
-                    var self = this,editor = self.editor,
-                        selection = editor.getSelection(),
-                        enterMode = "p",state = self.el.get("state");
+                if (!selection)
+                    return;
 
-                    if (!selection)
-                        return;
-
-                    var bookmarks = selection.createBookmarks(),
-                        ranges = selection.getRanges(),
-                        iterator,
-                        block;
-                    editor.fire("save");
-                    for (var i = ranges.length - 1; i >= 0; i--) {
-                        iterator = ranges[ i ].createIterator();
-                        iterator.enlargeBr = true;
-                        while (( block = iterator.getNextParagraph() )) {
-                            block.removeAttr('align');
-                            if (state == TripleButton.OFF)
-                                block.css('text-align', self.v);
-                            else
-                                block.css('text-align', '');
-                        }
-                    }
-                    editor.notifySelectionChange();
-                    selection.selectBookmarks(bookmarks);
-                    editor.fire("save");
-                },
-                _selectionChange:function(ev) {
-                    var self = this,
-                        el = self.el,
-                        path = ev.path,
-                        //elements = path.elements,
-                        block = path.block || path.blockLimit;
-                    //如果block是body，就不要设置，
-                    // <body>
-                    // <ul>
-                    // <li style='text-align:center'>
-                    // </li>
-                    // </ul>
-                    // </body>
-                    //gecko ctrl-a 为直接得到 container : body
-                    //其他浏览器 ctrl-a 得到 container : li
-                    if (!block || block._4e_name() === "body") {
-                        el.set("state", TripleButton.OFF);
-                        return;
-                    }
-
-                    var align = block.css("text-align").replace(alignRemoveRegex, "")
-                        ||
-                        //默认值，没有设置
-                        default_align;
-                    if (align == self.v) {
-                        el.set("state", TripleButton.ON);
-                    } else {
-                        el.set("state", TripleButton.OFF);
+                var bookmarks = selection.createBookmarks(),
+                    ranges = selection.getRanges(),
+                    iterator,
+                    block;
+                editor.fire("save");
+                for (var i = ranges.length - 1; i >= 0; i--) {
+                    iterator = ranges[ i ].createIterator();
+                    iterator.enlargeBr = true;
+                    while (( block = iterator.getNextParagraph() )) {
+                        block.removeAttr('align');
+                        if (state == TripleButton.OFF)
+                            block.css('text-align', self.cfg.v);
+                        else
+                            block.css('text-align', '');
                     }
                 }
-            });
-            KE.Justify = Justify;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.Justify(editor, "left", "左对齐 ", "ke-toolbar-alignleft");
-        new KE.Justify(editor, "center", "居中对齐 ", "ke-toolbar-aligncenter");
-        new KE.Justify(editor, "right", "右对齐 ", "ke-toolbar-alignright");
-        //new Justify(editor, "justify", "两端对齐 ");
+                editor.notifySelectionChange();
+                selection.selectBookmarks(bookmarks);
+                editor.fire("save");
+            },
+            selectionChange:function(ev) {
+                var self = this,
+                    el = self.btn,
+                    path = ev.path,
+                    //elements = path.elements,
+                    block = path.block || path.blockLimit;
+                //如果block是body，就不要设置，
+                // <body>
+                // <ul>
+                // <li style='text-align:center'>
+                // </li>
+                // </ul>
+                // </body>
+                //gecko ctrl-a 为直接得到 container : body
+                //其他浏览器 ctrl-a 得到 container : li
+                if (!block || block._4e_name() === "body") {
+                    el.boff();
+                    return;
+                }
+                var align = block.css("text-align")
+                    .replace(alignRemoveRegex, "")
+                    //默认值，没有设置
+                    || default_align;
+                if (align == self.cfg.v) {
+                    el.bon();
+                } else {
+                    el.boff();
+                }
+            }
+        };
+        editor.addButton("alignleft", S.mix({
+            contentCls:"ke-toolbar-alignleft",
+            title:"左对齐",
+            v:"left"
+        }, JustifyTpl));
+
+        editor.addButton("aligncenter", S.mix({
+            contentCls:"ke-toolbar-aligncenter",
+            title:"居中对齐",
+            v:"center"
+        }, JustifyTpl));
+
+        editor.addButton("alignright", S.mix({
+            contentCls:"ke-toolbar-alignright",
+            title:"右对齐",
+            v:"right"
+        }, JustifyTpl));
+
     });
 });
 /**
@@ -15378,113 +16224,84 @@ KISSY.Editor.add("justify", function(editor) {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    var S = KISSY,KE = S.Editor;
-
-    if (!KE.Link) {
-        (function() {
-            var TripleButton = KE.TripleButton,
-                KEStyle = KE.Style,
-                Node = S.Node,
-                KERange = KE.Range,
-                _ke_saved_href = "_ke_saved_href",
-                BubbleView = KE.BubbleView,
-                link_Style = {
-                    element : 'a',
-                    attributes:{
-                        "href":"#(href)",
-                        "title":"#(title)",
-                        //ie < 8 会把锚点地址修改
-                        "_ke_saved_href":"#(_ke_saved_href)",
-                        target:"#(target)"
-                    }
-                },
-                /**
-                 * bubbleview/tip 初始化，所有共享一个 tip
-                 */
-                tipHtml = '前往链接： '
-                    + ' <a ' +
-                    'href="" '
-                    + ' target="_blank" ' +
-                    'class="ke-bubbleview-url">' +
-                    '</a> - '
-                    + ' <span ' +
-                    'class="ke-bubbleview-link ke-bubbleview-change">' +
-                    '编辑' +
-                    '</span> - '
-                    + ' <span ' +
-                    'class="ke-bubbleview-link ke-bubbleview-remove">' +
-                    '去除' +
-                    '</span>';
-
-
-            function Link(editor) {
-                var self = this;
-                self.editor = editor;
-                self._init();
+    var S = KISSY,
+        KE = S.Editor,
+        KEStyle = KE.Style,
+        _ke_saved_href = "_ke_saved_href",
+        BubbleView = KE.BubbleView,
+        link_Style = {
+            element : 'a',
+            attributes:{
+                "href":"#(href)",
+                "title":"#(title)",
+                //ie < 8 会把锚点地址修改
+                "_ke_saved_href":"#(_ke_saved_href)",
+                target:"#(target)"
             }
+        },
+        /**
+         * bubbleview/tip 初始化，所有共享一个 tip
+         */
+        tipHtml = '前往链接： '
+            + ' <a ' +
+            'href="" '
+            + ' target="_blank" ' +
+            'class="ke-bubbleview-url">' +
+            '</a> - '
+            + ' <span ' +
+            'class="ke-bubbleview-link ke-bubbleview-change">' +
+            '编辑' +
+            '</span> - '
+            + ' <span ' +
+            'class="ke-bubbleview-link ke-bubbleview-remove">' +
+            '去除' +
+            '</span>';
 
-            Link.link_Style = link_Style;
-            Link._ke_saved_href = _ke_saved_href;
+    function checkLink(lastElement) {
+        return lastElement._4e_ascendant(function(node) {
+            return node._4e_name() === 'a' && (!!node.attr("href"));
+        }, true);
+    }
 
-            function checkLink(lastElement) {
-                return lastElement._4e_ascendant(function(node) {
-                    return node._4e_name() === 'a' && (!!node.attr("href"));
-                }, true);
+    function getAttributes(el) {
+        var attributes = el.attributes,re = {};
+        for (var i = 0; i < attributes.length; i++) {
+            var a = attributes[i];
+            if (a.specified) {
+                re[a.name] = a.value;
             }
+        }
+        if (el.style.cssText) {
+            re.style = el.style.cssText;
+        }
+        return re;
+    }
 
-            Link.checkLink = checkLink;
+    editor.ready(function() {
 
-            BubbleView.register({
-                pluginName:"link",
-                func:checkLink,
-                init:function() {
-
-                    var bubble = this,
-                        el = bubble.get("contentEl");
-                    el.html(tipHtml);
-                    var tipurl = el.one(".ke-bubbleview-url"),
-                        tipchange = el.one(".ke-bubbleview-change"),
-                        tipremove = el.one(".ke-bubbleview-remove");
-                    //ie focus not lose
-                    KE.Utils.preventFocus(el);
-
-                    tipchange.on("click", function(ev) {
-                        bubble._plugin.show();
-                        ev.halt();
-                    });
-                    tipremove.on("click", function(ev) {
-                        var link = bubble._plugin,editor = link.editor;
-                        _removeLink(bubble._selectedEl, editor);
-                        editor.notifySelectionChange();
-                        ev.halt();
-                    });
-
-                    bubble.on("show", function() {
-                        var a = bubble._selectedEl;
-                        if (!a)return;
-                        var href = a.attr(_ke_saved_href) ||
-                            a.attr("href");
-                        tipurl.html(href);
-                        tipurl.attr("href", href);
-                    });
+        var context = editor.addButton("link", {
+            contentCls:"ke-toolbar-link",
+            title:"插入链接",
+            mode:KE.WYSIWYG_MODE,
+            //得到当前选中的 link a
+            _getSelectedLink:function() {
+                var self = this,
+                    editor = self.editor,
+                    //ie焦点很容易丢失,tipwin没了
+                    selection = editor.getSelection(),
+                    common = selection && selection.getStartElement();
+                if (common) {
+                    common = checkLink(common);
                 }
-            });
-
-            function getAttributes(el) {
-                var attributes = el.attributes,re = {};
-                for (var i = 0; i < attributes.length; i++) {
-                    var a = attributes[i];
-                    if (a.specified) {
-                        re[a.name] = a.value;
-                    }
-                }
-                if (el.style.cssText) {
-                    re.style = el.style.cssText;
-                }
-                return re;
-            }
-
-            function _removeLink(a, editor) {
+                return common;
+            },
+            _getSelectionLinkUrl:function() {
+                var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
+                if (link) return link.attr(_ke_saved_href) || link.attr("href");
+            },
+            _removeLink:function(a) {
+                var self = this,
+                    editor = self.editor;
                 editor.fire("save");
                 var sel = editor.getSelection(),
                     range = sel.getRanges()[0];
@@ -15498,55 +16315,111 @@ KISSY.Editor.add("link", function(editor) {
                     new KEStyle(link_Style, attrs).remove(editor.document);
                 }
                 editor.fire("save");
-            }
-
-
-            S.augment(Link, {
-                _init:function() {
-                    var self = this,editor = self.editor;
-                    self.el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        contentCls:"ke-toolbar-link",
-                        title:"插入链接 "
-                    });
-                    self.el.on("offClick", self.show, self);
-                    BubbleView.attach({
-                        pluginName:"link",
-                        pluginInstance:self
-                    });
-                    KE.Utils.sourceDisable(editor, self);
-                },
-
-                disable:function() {
-                    this.el.disable();
-                },
-
-                enable:function() {
-                    this.el.enable();
-                },
-
-                show:function() {
-                    this.editor.useDialog("link/dialog", function(dialog) {
-                        dialog.show();
-                    });
+                editor.notifySelectionChange();
+            },
+            _link:function(attr) {
+                var self = this,
+                    cfg = self.cfg,
+                    editor = self.editor,
+                    link = cfg._getSelectedLink.call(self);
+                attr["_ke_saved_href"] = attr.href;
+                //是修改行为
+                if (link) {
+                    editor.fire("save");
+                    link.attr(attr);
+                    editor.fire("save");
+                } else {
+                    var sel = editor.getSelection(),
+                        range = sel && sel.getRanges()[0];
+                    //编辑器没有焦点或没有选择区域时直接插入链接地址
+                    if (!range || range.collapsed) {
+                        a = new Node("<a>" + url + "</a>",
+                            attr, editor.document);
+                        editor.insertElement(a);
+                    } else {
+                        editor.fire("save");
+                        var linkStyle = new KEStyle(link_Style, attr);
+                        linkStyle.apply(editor.document);
+                        editor.fire("save");
+                    }
                 }
-            });
+                editor.notifySelectionChange();
+            },
+            offClick:function() {
+                var self = this;
+                self.editor.useDialog("link/dialog", function(dialog) {
+                    dialog.show(self);
+                });
+            }
+        });
 
-            KE.Link = Link;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.Link(editor);
+        BubbleView.register({
+            pluginName:"link",
+            editor:editor,
+            pluginContext:context,
+            func:checkLink,
+            init:function() {
+                var bubble = this,
+                    el = bubble.get("contentEl");
+                el.html(tipHtml);
+                var tipurl = el.one(".ke-bubbleview-url"),
+                    tipchange = el.one(".ke-bubbleview-change"),
+                    tipremove = el.one(".ke-bubbleview-remove");
+                //ie focus not lose
+                KE.Utils.preventFocus(el);
+                tipchange.on("click", function(ev) {
+                    var link = bubble._plugin;
+                    link.call("offClick");
+                    ev.halt();
+                });
+                tipremove.on("click", function(ev) {
+                    var link = bubble._plugin
+                    link.call("_removeLink", bubble._selectedEl);
+                    ev.halt();
+                });
+
+                bubble.on("show", function() {
+                    var a = bubble._selectedEl;
+                    if (!a)return;
+                    var href = a.attr(_ke_saved_href) ||
+                        a.attr("href");
+                    tipurl.html(href);
+                    tipurl.attr("href", href);
+                });
+            }
+        });
+
     });
 });/**
- * list formatting,modified from ckeditor
+ * list formatting
  * @modifier: yiminghe@gmail.com
  */
+KISSY.Editor.add("list", function(editor) {
+    var KE = KISSY.Editor;
+    editor.ready(function() {
+        var context = editor.addButton("ul", {
+            title:"项目列表",
+            contentCls:"ke-toolbar-ul",
+            loading:true,
+            type:"ul"
+        });
+        var contextOl = editor.addButton("ol", {
+            title:"编号列表",
+            contentCls:"ke-toolbar-ol",
+            loading:true,
+            type:"ol"
+        });
+        KE.use("list/support", function() {
+            context.reload(KE.ListSupport);
+            contextOl.reload(KE.ListSupport);
+        });
+    });
+});
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("list", function(editor) {
+KISSY.Editor.add("list/support", function() {
     var KE = KISSY.Editor,
         listNodeNames = {"ol":1,"ul":1},
         listNodeNames_arr = ["ol","ul"],
@@ -15559,621 +16432,565 @@ KISSY.Editor.add("list", function(editor) {
         UA = S.UA,
         Node = S.Node,
         DOM = S.DOM;
-    if (!KE.List) {
-        (function() {
+    var list = {
+        /*
+         * Convert a DOM list tree into a data structure that is easier to
+         * manipulate. This operation should be non-intrusive in the sense that it
+         * does not change the DOM tree, with the exception that it may add some
+         * markers to the list item nodes when database is specified.
+         * 扁平化处理，深度遍历，利用 indent 和顺序来表示一棵树
+         */
+        listToArray : function(listNode,
+                               database,
+                               baseArray,
+                               baseIndentLevel,
+                               grandparentNode) {
+            if (!listNodeNames[ listNode._4e_name() ])
+                return [];
 
+            if (!baseIndentLevel)
+                baseIndentLevel = 0;
+            if (!baseArray)
+                baseArray = [];
 
-            var list = {
-                /*
-                 * Convert a DOM list tree into a data structure that is easier to
-                 * manipulate. This operation should be non-intrusive in the sense that it
-                 * does not change the DOM tree, with the exception that it may add some
-                 * markers to the list item nodes when database is specified.
-                 * 扁平化处理，深度遍历，利用 indent 和顺序来表示一棵树
-                 */
-                listToArray : function(listNode,
-                                       database,
-                                       baseArray,
-                                       baseIndentLevel,
-                                       grandparentNode) {
-                    if (!listNodeNames[ listNode._4e_name() ])
-                        return [];
+            // Iterate over all list items to and look for inner lists.
+            for (var i = 0, count = listNode[0].childNodes.length;
+                 i < count; i++) {
+                var listItem = new Node(listNode[0].childNodes[i]);
 
-                    if (!baseIndentLevel)
-                        baseIndentLevel = 0;
-                    if (!baseArray)
-                        baseArray = [];
+                // It may be a text node or some funny stuff.
+                if (listItem._4e_name() != 'li')
+                    continue;
 
-                    // Iterate over all list items to and look for inner lists.
-                    for (var i = 0, count = listNode[0].childNodes.length;
-                         i < count; i++) {
-                        var listItem = new Node(listNode[0].childNodes[i]);
-
-                        // It may be a text node or some funny stuff.
-                        if (listItem._4e_name() != 'li')
-                            continue;
-
-                        var itemObj = { 'parent' : listNode,
-                            indent : baseIndentLevel,
-                            element : listItem, contents : [] };
-                        if (!grandparentNode) {
-                            itemObj.grandparent = listNode.parent();
-                            if (itemObj.grandparent && itemObj.grandparent._4e_name() == 'li')
-                                itemObj.grandparent = itemObj.grandparent.parent();
-                        }
-                        else
-                            itemObj.grandparent = grandparentNode;
-
-                        if (database)
-                            listItem._4e_setMarker(database,
-                                'listarray_index',
-                                baseArray.length);
-                        baseArray.push(itemObj);
-
-                        for (var j = 0, itemChildCount = listItem[0].childNodes.length, child;
-                             j < itemChildCount; j++) {
-                            child = new Node(listItem[0].childNodes[j]);
-                            if (child[0].nodeType == KEN.NODE_ELEMENT &&
-                                listNodeNames[ child._4e_name() ])
-                            // Note the recursion here, it pushes inner list items with
-                            // +1 indentation in the correct order.
-                                list.listToArray(child, database, baseArray,
-                                    baseIndentLevel + 1, itemObj.grandparent);
-                            else
-                                itemObj.contents.push(child);
-                        }
-                    }
-                    return baseArray;
-                },
-
-                // Convert our internal representation of a list back to a DOM forest.
-                //根据包含indent属性的元素数组来生成树
-                arrayToList : function(listArray, database,
-                                       baseIndex, paragraphMode) {
-                    if (!baseIndex)
-                        baseIndex = 0;
-                    if (!listArray || listArray.length < baseIndex + 1)
-                        return null;
-                    var doc = listArray[ baseIndex ].parent[0].ownerDocument,
-                        retval = doc.createDocumentFragment(),
-                        rootNode = null,
-                        currentIndex = baseIndex,
-                        indentLevel = Math.max(listArray[ baseIndex ].indent, 0),
-                        currentListItem = null;
-                    //,paragraphName = paragraphMode;
-
-                    while (true) {
-                        var item = listArray[ currentIndex ];
-                        if (item.indent == indentLevel) {
-                            if (!rootNode
-                                ||
-                                //用于替换标签,ul->ol ,ol->ul
-                                listArray[ currentIndex ].parent._4e_name() != rootNode._4e_name()) {
-
-                                rootNode = listArray[ currentIndex ].parent._4e_clone(false, true);
-                                retval.appendChild(rootNode[0]);
-                            }
-                            currentListItem = rootNode[0].appendChild(item.element._4e_clone(false, true)[0]);
-                            for (var i = 0; i < item.contents.length; i++)
-                                currentListItem.appendChild(item.contents[i]._4e_clone(true, true)[0]);
-                            currentIndex++;
-                        } else if (item.indent == Math.max(indentLevel, 0) + 1) {
-                            //进入一个li里面，里面的嵌套li递归构造父亲ul/ol
-                            var listData = list.arrayToList(listArray, null,
-                                currentIndex, paragraphMode);
-                            currentListItem.appendChild(listData.listNode);
-                            currentIndex = listData.nextIndex;
-                        } else if (item.indent == -1 && !baseIndex &&
-                            item.grandparent) {
-
-                            if (listNodeNames[ item.grandparent._4e_name() ]) {
-                                currentListItem = item.element._4e_clone(false, true)[0];
-                            } else {
-                                // Create completely new blocks here, attributes are dropped.
-                                //为什么要把属性去掉？？？#3857
-                                if (item.grandparent._4e_name() != 'td') {
-                                    currentListItem = doc.createElement(paragraphMode);
-                                    item.element._4e_copyAttributes(new Node(currentListItem));
-                                }
-                                else
-                                    currentListItem = doc.createDocumentFragment();
-                            }
-
-                            for (i = 0; i < item.contents.length; i++) {
-                                var ic = item.contents[i]._4e_clone(true, true);
-                                //如果是list中，应该只退出ul，保留margin-left
-                                if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT) {
-                                    item.element._4e_copyAttributes(new Node(ic));
-                                }
-                                currentListItem.appendChild(ic[0]);
-                            }
-
-                            if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT
-                                && currentIndex != listArray.length - 1) {
-                                if (currentListItem.lastChild
-                                    && currentListItem.lastChild.nodeType == KEN.NODE_ELEMENT
-                                    && currentListItem.lastChild.getAttribute('type') == '_moz')
-                                    DOM._4e_remove(currentListItem.lastChild);
-                                DOM._4e_appendBogus(currentListItem);
-                            }
-
-                            if (currentListItem.nodeType == KEN.NODE_ELEMENT &&
-                                DOM._4e_name(currentListItem) == paragraphMode &&
-                                currentListItem.firstChild) {
-                                DOM._4e_trim(currentListItem);
-                                var firstChild = currentListItem.firstChild;
-                                if (firstChild.nodeType == KEN.NODE_ELEMENT &&
-                                    DOM._4e_isBlockBoundary(firstChild)
-                                    ) {
-                                    var tmp = doc.createDocumentFragment();
-                                    DOM._4e_moveChildren(currentListItem, tmp);
-                                    currentListItem = tmp;
-                                }
-                            }
-
-                            var currentListItemName = DOM._4e_name(currentListItem);
-                            if (!UA.ie && ( currentListItemName == 'div' ||
-                                currentListItemName == 'p' ))
-                                DOM._4e_appendBogus(currentListItem);
-                            retval.appendChild(currentListItem);
-                            rootNode = null;
-                            currentIndex++;
-                        }
-                        else
-                            return null;
-
-                        if (listArray.length <= currentIndex ||
-                            Math.max(listArray[ currentIndex ].indent, 0) < indentLevel)
-                            break;
-                    }
-
-                    // Clear marker attributes for the new list tree made of cloned nodes, if any.
-                    if (database) {
-                        var currentNode = new Node(retval.firstChild);
-                        while (currentNode && currentNode[0]) {
-                            if (currentNode[0].nodeType == KEN.NODE_ELEMENT) {
-                                currentNode._4e_clearMarkers(database, true);
-                            }
-                            currentNode = currentNode._4e_nextSourceNode();
-                        }
-                    }
-
-                    return { listNode : retval, nextIndex : currentIndex };
+                var itemObj = { 'parent' : listNode,
+                    indent : baseIndentLevel,
+                    element : listItem, contents : [] };
+                if (!grandparentNode) {
+                    itemObj.grandparent = listNode.parent();
+                    if (itemObj.grandparent && itemObj.grandparent._4e_name() == 'li')
+                        itemObj.grandparent = itemObj.grandparent.parent();
                 }
-            };
+                else
+                    itemObj.grandparent = grandparentNode;
 
+                if (database)
+                    listItem._4e_setMarker(database,
+                        'listarray_index',
+                        baseArray.length);
+                baseArray.push(itemObj);
 
-            var headerTagRegex = /^h[1-6]$/;
-
-
-            function ListCommand(type) {
-                this.type = type;
-            }
-
-            ListCommand.prototype = {
-                changeListType:function(editor, groupObj, database, listsCreated) {
-                    // This case is easy...
-                    // 1. Convert the whole list into a one-dimensional array.
-                    // 2. Change the list type by modifying the array.
-                    // 3. Recreate the whole list by converting the array to a list.
-                    // 4. Replace the original list with the recreated list.
-                    var listArray = list.listToArray(groupObj.root, database),
-                        selectedListItems = [];
-
-                    for (var i = 0; i < groupObj.contents.length; i++) {
-                        var itemNode = groupObj.contents[i];
-                        itemNode = itemNode._4e_ascendant('li', true);
-                        if ((!itemNode || !itemNode[0]) ||
-                            itemNode.data('list_item_processed'))
-                            continue;
-                        selectedListItems.push(itemNode);
-                        itemNode._4e_setMarker(database, 'list_item_processed', true);
-                    }
-
-                    var fakeParent = new Node(groupObj.root[0].ownerDocument.createElement(this.type));
-                    for (i = 0; i < selectedListItems.length; i++) {
-                        var listIndex = selectedListItems[i].data('listarray_index');
-                        listArray[listIndex].parent = fakeParent;
-                    }
-                    var newList = list.arrayToList(listArray, database, null, "p");
-                    var child, length = newList.listNode.childNodes.length;
-                    for (i = 0; i < length &&
-                        ( child = new Node(newList.listNode.childNodes[i]) ); i++) {
-                        if (child._4e_name() == this.type)
-                            listsCreated.push(child);
-                    }
-                    DOM.insertBefore(newList.listNode, groupObj.root);
-                    groupObj.root._4e_remove();
-                },
-                createList:function(editor, groupObj, listsCreated) {
-                    var contents = groupObj.contents,
-                        doc = groupObj.root[0].ownerDocument,
-                        listContents = [];
-
-                    // It is possible to have the contents returned by DomRangeIterator to be the same as the root.
-                    // e.g. when we're running into table cells.
-                    // In such a case, enclose the childNodes of contents[0] into a <div>.
-                    if (contents.length == 1
-                        && contents[0][0] === groupObj.root[0]) {
-                        var divBlock = new Node(doc.createElement('div'));
-                        contents[0][0].nodeType != KEN.NODE_TEXT &&
-                        contents[0]._4e_moveChildren(divBlock);
-                        contents[0][0].appendChild(divBlock[0]);
-                        contents[0] = divBlock;
-                    }
-
-                    // Calculate the common parent node of all content blocks.
-                    var commonParent = groupObj.contents[0].parent();
-                    for (var i = 0; i < contents.length; i++)
-                        commonParent = commonParent._4e_commonAncestor(contents[i].parent());
-
-                    // We want to insert things that are in the same tree level only,
-                    // so calculate the contents again
-                    // by expanding the selected blocks to the same tree level.
-                    for (i = 0; i < contents.length; i++) {
-                        var contentNode = contents[i],
-                            parentNode;
-                        while (( parentNode = contentNode.parent() )) {
-                            if (parentNode[0] === commonParent[0]) {
-                                listContents.push(contentNode);
-                                break;
-                            }
-                            contentNode = parentNode;
-                        }
-                    }
-
-                    if (listContents.length < 1)
-                        return;
-
-                    // Insert the list to the DOM tree.
-                    var insertAnchor = new Node(
-                        listContents[ listContents.length - 1 ][0].nextSibling),
-                        listNode = new Node(doc.createElement(this.type));
-
-                    listsCreated.push(listNode);
-                    while (listContents.length) {
-                        var contentBlock = listContents.shift(),
-                            listItem = new Node(doc.createElement('li'));
-
-                        // Preserve heading structure when converting to list item. (#5271)
-                        if (headerTagRegex.test(contentBlock._4e_name())) {
-                            listItem[0].appendChild(contentBlock[0]);
-                        } else {
-                            contentBlock._4e_copyAttributes(listItem);
-                            contentBlock._4e_moveChildren(listItem);
-                            contentBlock._4e_remove();
-                        }
-                        listNode[0].appendChild(listItem[0]);
-
-                        // Append a bogus BR to force the LI to render at full height
-                        if (!UA.ie)
-                            listItem._4e_appendBogus();
-                    }
-                    if (insertAnchor[0])
-                        DOM.insertBefore(listNode, insertAnchor);
+                for (var j = 0, itemChildCount = listItem[0].childNodes.length, child;
+                     j < itemChildCount; j++) {
+                    child = new Node(listItem[0].childNodes[j]);
+                    if (child[0].nodeType == KEN.NODE_ELEMENT &&
+                        listNodeNames[ child._4e_name() ])
+                    // Note the recursion here, it pushes inner list items with
+                    // +1 indentation in the correct order.
+                        list.listToArray(child, database, baseArray,
+                            baseIndentLevel + 1, itemObj.grandparent);
                     else
-                        commonParent.append(listNode);
-                },
-                removeList:function(editor, groupObj, database) {
-                    // This is very much like the change list type operation.
-                    // Except that we're changing the selected items' indent to -1 in the list array.
-                    var listArray = list.listToArray(groupObj.root, database),
-                        selectedListItems = [];
-
-                    for (var i = 0; i < groupObj.contents.length; i++) {
-                        var itemNode = groupObj.contents[i];
-                        itemNode = itemNode._4e_ascendant('li', true);
-                        if (!itemNode || itemNode.data('list_item_processed'))
-                            continue;
-                        selectedListItems.push(itemNode);
-                        itemNode._4e_setMarker(database, 'list_item_processed', true);
-                    }
-
-                    var lastListIndex = null;
-                    for (i = 0; i < selectedListItems.length; i++) {
-                        var listIndex = selectedListItems[i].data('listarray_index');
-                        listArray[listIndex].indent = -1;
-                        lastListIndex = listIndex;
-                    }
-
-                    // After cutting parts of the list out with indent=-1, we still have to maintain the array list
-                    // model's nextItem.indent <= currentItem.indent + 1 invariant. Otherwise the array model of the
-                    // list cannot be converted back to a real DOM list.
-                    for (i = lastListIndex + 1; i < listArray.length; i++) {
-                        //if (listArray[i].indent > listArray[i - 1].indent + 1) {
-                        //modified by yiminghe
-                        if (listArray[i].indent > Math.max(listArray[i - 1].indent, 0)) {
-                            var indentOffset = listArray[i - 1].indent + 1 -
-                                listArray[i].indent;
-                            var oldIndent = listArray[i].indent;
-                            while (listArray[i]
-                                && listArray[i].indent >= oldIndent) {
-                                listArray[i].indent += indentOffset;
-                                i++;
-                            }
-                            i--;
-                        }
-                    }
-
-                    var newList = list.arrayToList(listArray, database, null, "p");
-
-                    // Compensate <br> before/after the list node if the surrounds are non-blocks.(#3836)
-                    var docFragment = newList.listNode, boundaryNode, siblingNode;
-
-                    function compensateBrs(isStart) {
-                        if (( boundaryNode = new Node(docFragment[ isStart ? 'firstChild' : 'lastChild' ]) )
-                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
-                            boundaryNode._4e_isBlockBoundary() )
-                            && ( siblingNode = groupObj.root[ isStart ? '_4e_previous' : '_4e_next' ]
-                            (Walker.whitespaces(true)) )
-                            && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
-                            siblingNode._4e_isBlockBoundary({ br : 1 }) ))
-
-                            DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
-                                boundaryNode);
-                    }
-
-                    compensateBrs(true);
-                    compensateBrs(undefined);
-
-                    DOM.insertBefore(docFragment, groupObj.root);
-                    groupObj.root._4e_remove();
-                },
-
-                exec : function(editor) {
-                    var //doc = editor.document,
-                        selection = editor.getSelection(),
-                        ranges = selection && selection.getRanges();
-
-                    // There should be at least one selected range.
-                    if (!ranges || ranges.length < 1)
-                        return;
-
-                    var bookmarks = selection.createBookmarks(true);
-
-                    // Group the blocks up because there are many cases where multiple lists have to be created,
-                    // or multiple lists have to be cancelled.
-                    var listGroups = [],
-                        database = {};
-                    while (ranges.length > 0) {
-                        var range = ranges.shift();
-
-                        var boundaryNodes = range.getBoundaryNodes(),
-                            startNode = boundaryNodes.startNode,
-                            endNode = boundaryNodes.endNode;
-
-                        if (startNode[0].nodeType == KEN.NODE_ELEMENT && startNode._4e_name() == 'td')
-                            range.setStartAt(boundaryNodes.startNode, KER.POSITION_AFTER_START);
-
-                        if (endNode[0].nodeType == KEN.NODE_ELEMENT && endNode._4e_name() == 'td')
-                            range.setEndAt(boundaryNodes.endNode, KER.POSITION_BEFORE_END);
-
-                        var iterator = range.createIterator(),
-                            block;
-
-                        iterator.forceBrBreak = false;
-
-                        while (( block = iterator.getNextParagraph() )) {
-
-                            // Avoid duplicate blocks get processed across ranges.
-                            if (block.data('list_block'))
-                                continue;
-                            else
-                                block._4e_setMarker(database, 'list_block', 1);
-
-
-                            var path = new ElementPath(block),
-                                pathElements = path.elements,
-                                pathElementsCount = pathElements.length,
-                                listNode = null,
-                                processedFlag = false,
-                                blockLimit = path.blockLimit,
-                                element;
-
-                            // First, try to group by a list ancestor.
-                            //2010-11-17 :
-                            //注意从上往下，从body开始找到最早的list祖先，从那里开始重建!!!
-                            for (var i = pathElementsCount - 1; i >= 0 &&
-                                ( element = pathElements[ i ] ); i--) {
-                                if (listNodeNames[ element._4e_name() ]
-                                    && blockLimit.contains(element))     // Don't leak outside block limit (#3940).
-                                {
-                                    // If we've encountered a list inside a block limit
-                                    // The last group object of the block limit element should
-                                    // no longer be valid. Since paragraphs after the list
-                                    // should belong to a different group of paragraphs before
-                                    // the list. (Bug #1309)
-                                    blockLimit.removeData('list_group_object');
-
-                                    var groupObj = element.data('list_group_object');
-                                    if (groupObj)
-                                        groupObj.contents.push(block);
-                                    else {
-                                        groupObj = { root : element, contents : [ block ] };
-                                        listGroups.push(groupObj);
-                                        element._4e_setMarker(database, 'list_group_object', groupObj);
-                                    }
-                                    processedFlag = true;
-                                    break;
-                                }
-                            }
-
-                            if (processedFlag)
-                                continue;
-
-                            // No list ancestor? Group by block limit.
-                            var root = blockLimit || path.block;
-                            if (root.data('list_group_object'))
-                                root.data('list_group_object').contents.push(block);
-                            else {
-                                groupObj = { root : root, contents : [ block ] };
-                                root._4e_setMarker(database, 'list_group_object', groupObj);
-                                listGroups.push(groupObj);
-                            }
-                        }
-                    }
-
-                    // Now we have two kinds of list groups, groups rooted at a list, and groups rooted at a block limit element.
-                    // We either have to build lists or remove lists, for removing a list does not makes sense when we are looking
-                    // at the group that's not rooted at lists. So we have three cases to handle.
-                    var listsCreated = [];
-                    while (listGroups.length > 0) {
-                        groupObj = listGroups.shift();
-                        if (this.state == "off") {
-
-                            if (listNodeNames[ groupObj.root._4e_name() ])
-                                this.changeListType(editor, groupObj, database, listsCreated);
-                            else {
-                                //2010-11-17
-                                //先将之前原来元素的 expando 去除，
-                                //防止 ie li 复制原来标签属性带来的输出代码多余
-                                KE.Utils.clearAllMarkers(database);
-                                this.createList(editor, groupObj, listsCreated);
-                            }
-                        }
-                        else if (this.state == "on"
-                            &&
-                            listNodeNames[ groupObj.root._4e_name() ])
-                            this.removeList(editor, groupObj, database);
-                    }
-
-                    // For all new lists created, merge adjacent, same type lists.
-                    for (i = 0; i < listsCreated.length; i++) {
-                        listNode = listsCreated[i];
-                        //note by yiminghe,why not use merge sibling directly
-                        //listNode._4e_mergeSiblings();
-
-                        var mergeSibling, listCommand = this;
-                        ( mergeSibling = function(rtl) {
-
-                            var sibling = listNode[ rtl ?
-                                '_4e_previous' : '_4e_next' ](Walker.whitespaces(true));
-                            if (sibling && sibling[0] &&
-                                sibling._4e_name() == listCommand.type) {
-                                sibling._4e_remove();
-                                // Move children order by merge direction.(#3820)
-                                sibling._4e_moveChildren(listNode, rtl ? true : false);
-                            }
-                        } )();
-                        mergeSibling(true);
-
-                    }
-
-                    // Clean up, restore selection and update toolbar button states.
-                    KE.Utils.clearAllMarkers(database);
-                    selection.selectBookmarks(bookmarks);
+                        itemObj.contents.push(child);
                 }
-            };
+            }
+            return baseArray;
+        },
 
+        // Convert our internal representation of a list back to a DOM forest.
+        //根据包含indent属性的元素数组来生成树
+        arrayToList : function(listArray, database,
+                               baseIndex, paragraphMode) {
+            if (!baseIndex)
+                baseIndex = 0;
+            if (!listArray || listArray.length < baseIndex + 1)
+                return null;
+            var doc = listArray[ baseIndex ].parent[0].ownerDocument,
+                retval = doc.createDocumentFragment(),
+                rootNode = null,
+                currentIndex = baseIndex,
+                indentLevel = Math.max(listArray[ baseIndex ].indent, 0),
+                currentListItem = null;
+            //,paragraphName = paragraphMode;
 
-            var TripleButton = KE.TripleButton;
+            while (true) {
+                var item = listArray[ currentIndex ];
+                if (item.indent == indentLevel) {
+                    if (!rootNode
+                        ||
+                        //用于替换标签,ul->ol ,ol->ul
+                        listArray[ currentIndex ].parent._4e_name() != rootNode._4e_name()) {
 
-            /**
-             * 用到了按钮三状态的两个状态：off:点击后格式化，on:点击后清除格式化
-             * @param cfg
-             */
-            function List(cfg) {
-                var self = this;
-                List.superclass.constructor.call(self, cfg);
-                var editor = self.get("editor"),
-                    toolBarDiv = editor.toolBarDiv;
-                self.el = new TripleButton({
-                    //text:this.get("type"),
-                    contentCls:self.get("contentCls"),
-                    title:self.get("title"),
-                    container:toolBarDiv
-                });
-                self.listCommand = new ListCommand(self['get']("type"));
-                self.listCommand.state = self['get']("status");
-                //this._selectionChange({path:1});
-                self._init();
+                        rootNode = listArray[ currentIndex ].parent._4e_clone(false, true);
+                        retval.appendChild(rootNode[0]);
+                    }
+                    currentListItem = rootNode[0].appendChild(item.element._4e_clone(false, true)[0]);
+                    for (var i = 0; i < item.contents.length; i++)
+                        currentListItem.appendChild(item.contents[i]._4e_clone(true, true)[0]);
+                    currentIndex++;
+                } else if (item.indent == Math.max(indentLevel, 0) + 1) {
+                    //进入一个li里面，里面的嵌套li递归构造父亲ul/ol
+                    var listData = list.arrayToList(listArray, null,
+                        currentIndex, paragraphMode);
+                    currentListItem.appendChild(listData.listNode);
+                    currentIndex = listData.nextIndex;
+                } else if (item.indent == -1 && !baseIndex &&
+                    item.grandparent) {
+
+                    if (listNodeNames[ item.grandparent._4e_name() ]) {
+                        currentListItem = item.element._4e_clone(false, true)[0];
+                    } else {
+                        // Create completely new blocks here, attributes are dropped.
+                        //为什么要把属性去掉？？？#3857
+                        if (item.grandparent._4e_name() != 'td') {
+                            currentListItem = doc.createElement(paragraphMode);
+                            item.element._4e_copyAttributes(new Node(currentListItem));
+                        }
+                        else
+                            currentListItem = doc.createDocumentFragment();
+                    }
+
+                    for (i = 0; i < item.contents.length; i++) {
+                        var ic = item.contents[i]._4e_clone(true, true);
+                        //如果是list中，应该只退出ul，保留margin-left
+                        if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT) {
+                            item.element._4e_copyAttributes(new Node(ic));
+                        }
+                        currentListItem.appendChild(ic[0]);
+                    }
+
+                    if (currentListItem.nodeType == KEN.NODE_DOCUMENT_FRAGMENT
+                        && currentIndex != listArray.length - 1) {
+                        if (currentListItem.lastChild
+                            && currentListItem.lastChild.nodeType == KEN.NODE_ELEMENT
+                            && currentListItem.lastChild.getAttribute('type') == '_moz')
+                            DOM._4e_remove(currentListItem.lastChild);
+                        DOM._4e_appendBogus(currentListItem);
+                    }
+
+                    if (currentListItem.nodeType == KEN.NODE_ELEMENT &&
+                        DOM._4e_name(currentListItem) == paragraphMode &&
+                        currentListItem.firstChild) {
+                        DOM._4e_trim(currentListItem);
+                        var firstChild = currentListItem.firstChild;
+                        if (firstChild.nodeType == KEN.NODE_ELEMENT &&
+                            DOM._4e_isBlockBoundary(firstChild)
+                            ) {
+                            var tmp = doc.createDocumentFragment();
+                            DOM._4e_moveChildren(currentListItem, tmp);
+                            currentListItem = tmp;
+                        }
+                    }
+
+                    var currentListItemName = DOM._4e_name(currentListItem);
+                    if (!UA.ie && ( currentListItemName == 'div' ||
+                        currentListItemName == 'p' ))
+                        DOM._4e_appendBogus(currentListItem);
+                    retval.appendChild(currentListItem);
+                    rootNode = null;
+                    currentIndex++;
+                }
+                else
+                    return null;
+
+                if (listArray.length <= currentIndex ||
+                    Math.max(listArray[ currentIndex ].indent, 0) < indentLevel)
+                    break;
             }
 
-            List.ATTRS = {
-                editor:{},
-                type:{},
-                contentCls:{}
-            };
-
-            S.extend(List, S.Base, {
-
-                _init:function() {
-                    var self = this,editor = self.get("editor"),
-                        toolBarDiv = editor.toolBarDiv,
-                        el = self.el;
-
-                    el.on("offClick onClick", self._change, self);
-                    editor.on("selectionChange", self._selectionChange, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-
-
-                _change:function() {
-                    var self = this,editor = self.get("editor"),
-                        type = self.get("type"),
-                        el = self.el;
-                    editor.fire("save");
-                    self.listCommand.state = el.get("state");
-                    self.listCommand.exec(editor);
-                    editor.fire("save");
-                    editor.notifySelectionChange();
-                },
-
-                _selectionChange:function(ev) {
-                    var self = this,editor = self.get("editor"),
-                        type = self.get("type"),
-                        elementPath = ev.path,
-                        element,
-                        el = self.el,
-                        blockLimit = elementPath.blockLimit,
-                        elements = elementPath.elements;
-                    if (!blockLimit)return;
-                    // Grouping should only happen under blockLimit.(#3940).
-                    if (elements)
-                        for (var i = 0; i < elements.length && ( element = elements[ i ] )
-                            && element[0] !== blockLimit[0]; i++) {
-                            var ind = S.indexOf(elements[i]._4e_name(), listNodeNames_arr);
-                            //ul,ol一个生效后，另一个就失效
-                            if (ind !== -1) {
-                                if (listNodeNames_arr[ind] === type) {
-                                    el.set("state", TripleButton.ON);
-                                    return;
-                                } else {
-                                    break;
-                                }
-
-                            }
-                        }
-                    el.set("state", TripleButton.OFF);
+            // Clear marker attributes for the new list tree made of cloned nodes, if any.
+            if (database) {
+                var currentNode = new Node(retval.firstChild);
+                while (currentNode && currentNode[0]) {
+                    if (currentNode[0].nodeType == KEN.NODE_ELEMENT) {
+                        currentNode._4e_clearMarkers(database, true);
+                    }
+                    currentNode = currentNode._4e_nextSourceNode();
                 }
-            });
+            }
 
-            KE.ListUtils = list;
-            KE.List = List
-        })();
+            return { listNode : retval, nextIndex : currentIndex };
+        }
+    };
+
+
+    var headerTagRegex = /^h[1-6]$/;
+
+
+    function ListCommand(type) {
+        this.type = type;
     }
-    editor.addPlugin(function() {
-        new KE.List({
-            editor:editor,
-            title:"项目列表",
-            contentCls:"ke-toolbar-ul",
-            type:"ul"
-        });
-        new KE.List({
-            editor:editor,
-            title:"编号列表",
-            contentCls:"ke-toolbar-ol",
-            type:"ol"
-        });
-    });
-});
-/**
+
+    ListCommand.prototype = {
+        changeListType:function(editor, groupObj, database, listsCreated) {
+            // This case is easy...
+            // 1. Convert the whole list into a one-dimensional array.
+            // 2. Change the list type by modifying the array.
+            // 3. Recreate the whole list by converting the array to a list.
+            // 4. Replace the original list with the recreated list.
+            var listArray = list.listToArray(groupObj.root, database),
+                selectedListItems = [];
+
+            for (var i = 0; i < groupObj.contents.length; i++) {
+                var itemNode = groupObj.contents[i];
+                itemNode = itemNode._4e_ascendant('li', true);
+                if ((!itemNode || !itemNode[0]) ||
+                    itemNode.data('list_item_processed'))
+                    continue;
+                selectedListItems.push(itemNode);
+                itemNode._4e_setMarker(database, 'list_item_processed', true);
+            }
+
+            var fakeParent = new Node(groupObj.root[0].ownerDocument.createElement(this.type));
+            for (i = 0; i < selectedListItems.length; i++) {
+                var listIndex = selectedListItems[i].data('listarray_index');
+                listArray[listIndex].parent = fakeParent;
+            }
+            var newList = list.arrayToList(listArray, database, null, "p");
+            var child, length = newList.listNode.childNodes.length;
+            for (i = 0; i < length &&
+                ( child = new Node(newList.listNode.childNodes[i]) ); i++) {
+                if (child._4e_name() == this.type)
+                    listsCreated.push(child);
+            }
+            DOM.insertBefore(newList.listNode, groupObj.root);
+            groupObj.root._4e_remove();
+        },
+        createList:function(editor, groupObj, listsCreated) {
+            var contents = groupObj.contents,
+                doc = groupObj.root[0].ownerDocument,
+                listContents = [];
+
+            // It is possible to have the contents returned by DomRangeIterator to be the same as the root.
+            // e.g. when we're running into table cells.
+            // In such a case, enclose the childNodes of contents[0] into a <div>.
+            if (contents.length == 1
+                && contents[0][0] === groupObj.root[0]) {
+                var divBlock = new Node(doc.createElement('div'));
+                contents[0][0].nodeType != KEN.NODE_TEXT &&
+                contents[0]._4e_moveChildren(divBlock);
+                contents[0][0].appendChild(divBlock[0]);
+                contents[0] = divBlock;
+            }
+
+            // Calculate the common parent node of all content blocks.
+            var commonParent = groupObj.contents[0].parent();
+            for (var i = 0; i < contents.length; i++)
+                commonParent = commonParent._4e_commonAncestor(contents[i].parent());
+
+            // We want to insert things that are in the same tree level only,
+            // so calculate the contents again
+            // by expanding the selected blocks to the same tree level.
+            for (i = 0; i < contents.length; i++) {
+                var contentNode = contents[i],
+                    parentNode;
+                while (( parentNode = contentNode.parent() )) {
+                    if (parentNode[0] === commonParent[0]) {
+                        listContents.push(contentNode);
+                        break;
+                    }
+                    contentNode = parentNode;
+                }
+            }
+
+            if (listContents.length < 1)
+                return;
+
+            // Insert the list to the DOM tree.
+            var insertAnchor = new Node(
+                listContents[ listContents.length - 1 ][0].nextSibling),
+                listNode = new Node(doc.createElement(this.type));
+
+            listsCreated.push(listNode);
+            while (listContents.length) {
+                var contentBlock = listContents.shift(),
+                    listItem = new Node(doc.createElement('li'));
+
+                // Preserve heading structure when converting to list item. (#5271)
+                if (headerTagRegex.test(contentBlock._4e_name())) {
+                    listItem[0].appendChild(contentBlock[0]);
+                } else {
+                    contentBlock._4e_copyAttributes(listItem);
+                    contentBlock._4e_moveChildren(listItem);
+                    contentBlock._4e_remove();
+                }
+                listNode[0].appendChild(listItem[0]);
+
+                // Append a bogus BR to force the LI to render at full height
+                if (!UA.ie)
+                    listItem._4e_appendBogus();
+            }
+            if (insertAnchor[0])
+                DOM.insertBefore(listNode, insertAnchor);
+            else
+                commonParent.append(listNode);
+        },
+        removeList:function(editor, groupObj, database) {
+            // This is very much like the change list type operation.
+            // Except that we're changing the selected items' indent to -1 in the list array.
+            var listArray = list.listToArray(groupObj.root, database),
+                selectedListItems = [];
+
+            for (var i = 0; i < groupObj.contents.length; i++) {
+                var itemNode = groupObj.contents[i];
+                itemNode = itemNode._4e_ascendant('li', true);
+                if (!itemNode || itemNode.data('list_item_processed'))
+                    continue;
+                selectedListItems.push(itemNode);
+                itemNode._4e_setMarker(database, 'list_item_processed', true);
+            }
+
+            var lastListIndex = null;
+            for (i = 0; i < selectedListItems.length; i++) {
+                var listIndex = selectedListItems[i].data('listarray_index');
+                listArray[listIndex].indent = -1;
+                lastListIndex = listIndex;
+            }
+
+            // After cutting parts of the list out with indent=-1, we still have to maintain the array list
+            // model's nextItem.indent <= currentItem.indent + 1 invariant. Otherwise the array model of the
+            // list cannot be converted back to a real DOM list.
+            for (i = lastListIndex + 1; i < listArray.length; i++) {
+                //if (listArray[i].indent > listArray[i - 1].indent + 1) {
+                //modified by yiminghe
+                if (listArray[i].indent > Math.max(listArray[i - 1].indent, 0)) {
+                    var indentOffset = listArray[i - 1].indent + 1 -
+                        listArray[i].indent;
+                    var oldIndent = listArray[i].indent;
+                    while (listArray[i]
+                        && listArray[i].indent >= oldIndent) {
+                        listArray[i].indent += indentOffset;
+                        i++;
+                    }
+                    i--;
+                }
+            }
+
+            var newList = list.arrayToList(listArray, database, null, "p");
+
+            // Compensate <br> before/after the list node if the surrounds are non-blocks.(#3836)
+            var docFragment = newList.listNode, boundaryNode, siblingNode;
+
+            function compensateBrs(isStart) {
+                if (( boundaryNode = new Node(docFragment[ isStart ? 'firstChild' : 'lastChild' ]) )
+                    && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
+                    boundaryNode._4e_isBlockBoundary() )
+                    && ( siblingNode = groupObj.root[ isStart ? '_4e_previous' : '_4e_next' ]
+                    (Walker.whitespaces(true)) )
+                    && !( boundaryNode[0].nodeType == KEN.NODE_ELEMENT &&
+                    siblingNode._4e_isBlockBoundary({ br : 1 }) ))
+
+                    DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
+                        boundaryNode);
+            }
+
+            compensateBrs(true);
+            compensateBrs(undefined);
+
+            DOM.insertBefore(docFragment, groupObj.root);
+            groupObj.root._4e_remove();
+        },
+
+        exec : function(editor) {
+            var //doc = editor.document,
+                selection = editor.getSelection(),
+                ranges = selection && selection.getRanges();
+
+            // There should be at least one selected range.
+            if (!ranges || ranges.length < 1)
+                return;
+
+            var bookmarks = selection.createBookmarks(true);
+
+            // Group the blocks up because there are many cases where multiple lists have to be created,
+            // or multiple lists have to be cancelled.
+            var listGroups = [],
+                database = {};
+            while (ranges.length > 0) {
+                var range = ranges.shift();
+
+                var boundaryNodes = range.getBoundaryNodes(),
+                    startNode = boundaryNodes.startNode,
+                    endNode = boundaryNodes.endNode;
+
+                if (startNode[0].nodeType == KEN.NODE_ELEMENT && startNode._4e_name() == 'td')
+                    range.setStartAt(boundaryNodes.startNode, KER.POSITION_AFTER_START);
+
+                if (endNode[0].nodeType == KEN.NODE_ELEMENT && endNode._4e_name() == 'td')
+                    range.setEndAt(boundaryNodes.endNode, KER.POSITION_BEFORE_END);
+
+                var iterator = range.createIterator(),
+                    block;
+
+                iterator.forceBrBreak = false;
+
+                while (( block = iterator.getNextParagraph() )) {
+
+                    // Avoid duplicate blocks get processed across ranges.
+                    if (block.data('list_block'))
+                        continue;
+                    else
+                        block._4e_setMarker(database, 'list_block', 1);
+
+
+                    var path = new ElementPath(block),
+                        pathElements = path.elements,
+                        pathElementsCount = pathElements.length,
+                        listNode = null,
+                        processedFlag = false,
+                        blockLimit = path.blockLimit,
+                        element;
+
+                    // First, try to group by a list ancestor.
+                    //2010-11-17 :
+                    //注意从上往下，从body开始找到最早的list祖先，从那里开始重建!!!
+                    for (var i = pathElementsCount - 1; i >= 0 &&
+                        ( element = pathElements[ i ] ); i--) {
+                        if (listNodeNames[ element._4e_name() ]
+                            && blockLimit.contains(element))     // Don't leak outside block limit (#3940).
+                        {
+                            // If we've encountered a list inside a block limit
+                            // The last group object of the block limit element should
+                            // no longer be valid. Since paragraphs after the list
+                            // should belong to a different group of paragraphs before
+                            // the list. (Bug #1309)
+                            blockLimit.removeData('list_group_object');
+
+                            var groupObj = element.data('list_group_object');
+                            if (groupObj)
+                                groupObj.contents.push(block);
+                            else {
+                                groupObj = { root : element, contents : [ block ] };
+                                listGroups.push(groupObj);
+                                element._4e_setMarker(database, 'list_group_object', groupObj);
+                            }
+                            processedFlag = true;
+                            break;
+                        }
+                    }
+
+                    if (processedFlag)
+                        continue;
+
+                    // No list ancestor? Group by block limit.
+                    var root = blockLimit || path.block;
+                    if (root.data('list_group_object'))
+                        root.data('list_group_object').contents.push(block);
+                    else {
+                        groupObj = { root : root, contents : [ block ] };
+                        root._4e_setMarker(database, 'list_group_object', groupObj);
+                        listGroups.push(groupObj);
+                    }
+                }
+            }
+
+            // Now we have two kinds of list groups, groups rooted at a list, and groups rooted at a block limit element.
+            // We either have to build lists or remove lists, for removing a list does not makes sense when we are looking
+            // at the group that's not rooted at lists. So we have three cases to handle.
+            var listsCreated = [];
+            while (listGroups.length > 0) {
+                groupObj = listGroups.shift();
+                if (this.state == "off") {
+
+                    if (listNodeNames[ groupObj.root._4e_name() ])
+                        this.changeListType(editor, groupObj, database, listsCreated);
+                    else {
+                        //2010-11-17
+                        //先将之前原来元素的 expando 去除，
+                        //防止 ie li 复制原来标签属性带来的输出代码多余
+                        KE.Utils.clearAllMarkers(database);
+                        this.createList(editor, groupObj, listsCreated);
+                    }
+                }
+                else if (this.state == "on"
+                    &&
+                    listNodeNames[ groupObj.root._4e_name() ])
+                    this.removeList(editor, groupObj, database);
+            }
+
+            // For all new lists created, merge adjacent, same type lists.
+            for (i = 0; i < listsCreated.length; i++) {
+                listNode = listsCreated[i];
+                //note by yiminghe,why not use merge sibling directly
+                //listNode._4e_mergeSiblings();
+
+                var mergeSibling, listCommand = this;
+                ( mergeSibling = function(rtl) {
+
+                    var sibling = listNode[ rtl ?
+                        '_4e_previous' : '_4e_next' ](Walker.whitespaces(true));
+                    if (sibling && sibling[0] &&
+                        sibling._4e_name() == listCommand.type) {
+                        sibling._4e_remove();
+                        // Move children order by merge direction.(#3820)
+                        sibling._4e_moveChildren(listNode, rtl ? true : false);
+                    }
+                } )();
+                mergeSibling(true);
+
+            }
+
+            // Clean up, restore selection and update toolbar button states.
+            KE.Utils.clearAllMarkers(database);
+            selection.selectBookmarks(bookmarks);
+        }
+    };
+
+    var TripleButton = KE.TripleButton;
+    var listSupport = {
+        init:function() {
+            var self = this,
+                cfg = self.cfg;
+            self.listCommand = new ListCommand(cfg.type);
+        },
+        selectionChange:function(ev) {
+            var self = this,
+                cfg = self.cfg,
+                type = cfg.type,
+                elementPath = ev.path,
+                element,
+                el = self.btn,
+                blockLimit = elementPath.blockLimit,
+                elements = elementPath.elements;
+            if (!blockLimit)return;
+            // Grouping should only happen under blockLimit.(#3940).
+            if (elements)
+                for (var i = 0; i < elements.length && ( element = elements[ i ] )
+                    && element[0] !== blockLimit[0]; i++) {
+                    var ind = S.indexOf(elements[i]._4e_name(), listNodeNames_arr);
+                    //ul,ol一个生效后，另一个就失效
+                    if (ind !== -1) {
+                        if (listNodeNames_arr[ind] === type) {
+                            el.set("state", TripleButton.ON);
+                            return;
+                        } else {
+                            break;
+                        }
+
+                    }
+                }
+            el.set("state", TripleButton.OFF);
+        },
+        offClick:function() {
+            this.call("_change");
+        },
+        onClick:function() {
+            this.call("_change");
+        },
+        _change:function() {
+            var self = this,
+                cfg = self.cfg,
+                editor = self.editor,
+                type = cfg.type,
+                el = self.btn;
+            editor.fire("save");
+            self.listCommand.state = el.get("state");
+            self.listCommand.exec(editor);
+            editor.fire("save");
+            editor.notifySelectionChange();
+        }
+    };
+    KE.ListUtils = list;
+    KE.ListSupport = listSupport
+});/**
  * localStorage support for ie<8
  * @author:yiminghe@gmail.com
  */
@@ -16235,6 +17052,26 @@ KISSY.Editor.add("localStorage", function() {
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {
+    var S = KISSY,
+        KE = S.Editor,
+        UA = S.UA,
+        MAXIMIZE_CLASS = "ke-toolbar-maximize";
+    //firefox 3.5 不支持，有bug
+    if (UA.gecko < 1.92)
+        return;
+
+    editor.ready(function() {
+        var context = editor.addButton("maximize", {
+            title:"全屏",
+            contentCls:MAXIMIZE_CLASS,
+            loading:true
+        });
+
+        KE.use("maximize/support", function() {
+            context.reload(KE.Maximize);
+        });
+    });
+});KISSY.Editor.add("maximize/support", function() {
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -16243,301 +17080,264 @@ KISSY.Editor.add("maximize", function(editor) {
         TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
-    //firefox 3.5 不支持，有bug
-    if (UA.gecko < 1.92) return;
-    if (!KE.Maximize) {
-        (function() {
-            DOM.addStyleSheet(
-                ".ke-toolbar-padding {" +
-                    "padding:5px;" +
-                    "}",
-                "ke-maximize"
-                );
-            var MAXIMIZE_CLASS = "ke-toolbar-maximize",
-                RESTORE_CLASS = "ke-toolbar-restore",
-                MAXIMIZE_TIP = "全屏",
-                MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding",
-                RESTORE_TIP = "取消全屏";
+    DOM.addStyleSheet(
+        ".ke-toolbar-padding {" +
+            "padding:5px;" +
+            "}",
+        "ke-maximize");
+    var MAXIMIZE_CLASS = "ke-toolbar-maximize",
+        RESTORE_CLASS = "ke-toolbar-restore",
+        MAXIMIZE_TIP = "全屏",
+        MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding",
+        RESTORE_TIP = "取消全屏";
 
-            function Maximize(editor) {
-                var self = this;
-                self.editor = editor;
-                self._init();
-            }
+    var Maximize = {};
+    var init = function() {
+        if (!iframe)
+            iframe = new Node("<" + "iframe " +
+                " class='ke-maximize-shim'" +
+                " style='" +
+                "position:absolute;" +
+                "top:-9999px;" +
+                "left:-9999px;" +
+                "'" +
+                " frameborder='0'>").prependTo(document.body);
+    };
+    S.mix(Maximize, {
 
-            Maximize.init = function() {
-                iframe = new Node("<" + "iframe " +
-                    " class='ke-maximize-shim'" +
-                    " style='" +
-                    "position:absolute;" +
-                    "top:-9999px;" +
-                    "left:-9999px;" +
-                    "'" +
-                    " frameborder='0'>" +
-                    "</iframe>").appendTo(document.body);
-                Maximize.init = null;
-            };
-            S.augment(Maximize, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor,
-                        el = new TripleButton({
-                            container:editor.toolBarDiv,
-                            title:"全屏",
-                            contentCls:MAXIMIZE_CLASS
-                        });
-                    self.el = el;
-                    el.on("offClick", self.maximize, self);
-                    el.on("onClick", self.restore, self);
-                    KE.Utils.lazyRun(self, "_prepare", "_real");
-                    self._toolBarDiv = editor.toolBarDiv;
-                },
+        onClick:function() {
+            var self = this,
+                doc = document,
+                editor = self.editor;
+            //body overflow 变化也会引起 resize 变化！！！！先去除
+            
+            self._resize && Event.remove(window, "resize", self._resize);
+            self.call("_saveEditorStatus");
+            self.call("_restoreState");
+            self.btn.boff();
 
-                restore:function() {
-                    var self = this,
-                        doc = document,
-                        editor = self.editor;
-                    //body overflow 变化也会引起 resize 变化！！！！先去除
-                    self._resize && Event.remove(window, "resize", self._resize);
-                    self._saveEditorStatus();
-                    self._restoreState();
-                    self.el.boff();
+            //firefox 必须timeout
+            setTimeout(function() {
+                self.call("_restoreEditorStatus");
+                editor.notifySelectionChange();
+                editor.fire("restoreWindow");
+            }, 30);
+        },
 
-                    //firefox 必须timeout
-                    setTimeout(function() {
-                        self._restoreEditorStatus();
-                        editor.notifySelectionChange();
-                        editor.fire("restoreWindow");
-                    }, 30);
-                },
-
-                /**
-                 * 从内存恢复最大化前的外围状态信息到编辑器实际动作，
-                 * 包括编辑器位置以及周围元素，浏览器窗口
-                 */
-                _restoreState:function() {
-                    var self = this,
-                        doc = document,
-                        editor = self.editor,
-                        //恢复父节点的position原状态 bugfix:最大化被父元素限制
-                        _savedParents = self._savedParents;
-                    if (_savedParents) {
-                        for (var i = 0; i < _savedParents.length; i++) {
-                            var po = _savedParents[i];
-                            po.el.css("position", po.position);
-                        }
-                        self._savedParents = null;
-                    }
-                    //如果没有失去焦点，重新获得当前选取元素
-                    //self._saveEditorStatus();
-                    editor.wrap.css({
-                        height:self.iframeHeight
-                    });
-
-                    DOM.css(doc.body, {
-                        width:"",
-                        height:"",
-                        overflow:""
-                    });
-                    //documentElement 设置宽高，ie崩溃
-                    doc.documentElement.style.overflow = "";
-
-                    editor.editorWrap.css({
-                        position:"static",
-                        width:self.editorWrapWidth
-                    });
-                    iframe.css({
-                        left:"-99999px",
-                        top:"-99999px"
-                    });
-                    window.scrollTo(self.scrollLeft, self.scrollTop);
-                    var bel = self.el.el;
-                    bel.one("span")
-                        .removeClass(RESTORE_CLASS)
-                        .addClass(MAXIMIZE_CLASS);
-                    bel.attr("title", MAXIMIZE_TIP);
-
-                    UA.ie < 8 && self._toolBarDiv.removeClass(MAXIMIZE_TOOLBAR_CLASS);
-                },
-                /**
-                 * 保存最大化前的外围状态信息到内存，
-                 * 包括编辑器位置以及周围元素，浏览器窗口
-                 */
-                _saveSate:function() {
-                    var self = this,
-                        editor = self.editor,
-                        _savedParents = [],
-                        editorWrap = editor.editorWrap;
-                    self.iframeHeight = editor.wrap._4e_style("height");
-                    self.editorWrapWidth = editorWrap._4e_style("width");
-                    //主窗口滚动条也要保存哦
-                    self.scrollLeft = DOM.scrollLeft();
-                    self.scrollTop = DOM.scrollTop();
-                    window.scrollTo(0, 0);
-
-                    //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
-                    var p = editorWrap.parent();
-
-                    while (p) {
-                        var pre = p.css("position");
-                        if (pre != "static") {
-                            _savedParents.push({
-                                el:p,
-                                position:pre
-                            });
-                            p.css("position", "static");
-                        }
-                        p = p.parent();
-                    }
-                    self._savedParents = _savedParents;
-                    var bel = self.el.el;
-                    self.el.el.one("span")
-                        .removeClass(MAXIMIZE_CLASS)
-                        .addClass(RESTORE_CLASS);
-                    bel.attr("title", RESTORE_TIP);
-                    //ie6,7 图标到了窗口边界，不可点击，给个padding
-                    UA.ie < 8 && self._toolBarDiv.addClass(MAXIMIZE_TOOLBAR_CLASS);
-                },
-
-                /**
-                 *  编辑器自身核心状态保存，每次最大化最小化都要save,restore，
-                 *  firefox修正，iframe layout变化时，range丢了
-                 */
-                _saveEditorStatus:function() {
-                    var self = this,
-                        editor = self.editor;
-                    self.savedRanges = null;
-                    if (!UA.gecko || !editor.iframeFocus) return;
-                    var sel = editor.getSelection();
-                    //firefox 光标丢失bug,位置丢失，所以这里保存下
-                    self.savedRanges = sel && sel.getRanges();
-                },
-
-                /**
-                 * 编辑器自身核心状态恢复，每次最大化最小化都要save,restore，
-                 * 维持编辑器核心状态不变
-                 */
-                _restoreEditorStatus:function() {
-                    var self = this,
-                        editor = self.editor,
-                        sel = editor.getSelection(),
-                        savedRanges = self.savedRanges;
-
-                    //firefox焦点bug
-
-                    //原来是聚焦，现在刷新designmode
-                    //firefox 先失去焦点才行
-                    editor.activateGecko();
-
-                    if (savedRanges && sel) {
-                        sel.selectRanges(savedRanges);
-                    }
-
-                    //firefox 有焦点时才重新聚焦
-                    if (editor.iframeFocus && sel) {
-                        var element = sel.getStartElement();
-                        //使用原生不行的，会使主窗口滚动
-                        //element[0] && element[0].scrollIntoView(true);
-                        element && element[0] && element._4e_scrollIntoView();
-                    }
-
-                    //datauri 清空里面的background-image，使得 expression 重新执行
-                    if (UA.ie < 8) {
-                        self.el.el.one("span").css("background-image", "");
-                    }
-
-                },
-
-                /**
-                 * 将编辑器最大化-实际动作
-                 * 必须做两次，何解？？
-                 */
-                _maximize:function(stop) {
-                    var self = this,
-                        doc = document,
-                        editor = self.editor,
-                        editorWrap = editor.editorWrap,
-                        viewportHeight = DOM.viewportHeight(),
-                        viewportWidth = DOM.viewportWidth(),
-                        statusHeight = editor.statusDiv ? editor.statusDiv[0].offsetHeight : 0,
-                        toolHeight = editor.toolBarDiv[0].offsetHeight;
-
-
-                    if (!UA.ie) {
-                        DOM.css(doc.body, {
-                            width:0,
-                            height:0,
-                            overflow:"hidden"
-                        });
-                    } else {
-                        doc.body.style.overflow = "hidden";
-                    }
-                    doc.documentElement.style.overflow = "hidden";
-
-                    editorWrap.css({
-                        position:"absolute",
-                        zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE),
-                        width:viewportWidth + "px"
-                    });
-                    iframe.css({
-                        zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE-5),
-                        height:viewportHeight + "px",
-                        width:viewportWidth + "px"
-                    });
-                    editorWrap.offset({
-                        left:0,
-                        top:0
-                    });
-                    iframe.css({
-                        left:0,
-                        top:0
-                    });
-
-                    editor.wrap.css({
-                        height:(viewportHeight - statusHeight - toolHeight ) + "px"
-                    });
-                    if (stop !== true) {
-                        arguments.callee.call(self, true);
-                    }
-                },
-                _real:function() {
-                    var self = this,
-                        editor = self.editor;
-
-                    self._saveEditorStatus();
-                    self._saveSate();
-                    self._maximize();
-                    //firefox第一次最大化bug，重做一次
-                    //if (true
-                    //|| UA.gecko
-                    //   ) {
-
-                    //}
-                    self._resize = self._resize || KE.Utils.buffer(self._maximize, self, 100);
-                    Event.on(window, "resize", self._resize);
-
-                    self.el.set("state", TripleButton.ON);
-                    setTimeout(function() {
-                        self._restoreEditorStatus();
-                        editor.notifySelectionChange();
-                        editor.fire("maximizeWindow");
-                    }, 30);
-                },
-
-                _prepare:function() {
-                    Maximize.init && Maximize.init();
-                },
-                maximize:function() {
-                    this._prepare();
+        /**
+         * 从内存恢复最大化前的外围状态信息到编辑器实际动作，
+         * 包括编辑器位置以及周围元素，浏览器窗口
+         */
+        _restoreState:function() {
+            var self = this,
+                doc = document,
+                editor = self.editor,
+                //恢复父节点的position原状态 bugfix:最大化被父元素限制
+                _savedParents = self._savedParents;
+            if (_savedParents) {
+                for (var i = 0; i < _savedParents.length; i++) {
+                    var po = _savedParents[i];
+                    po.el.css("position", po.position);
                 }
+                self._savedParents = null;
+            }
+            //如果没有失去焦点，重新获得当前选取元素
+            //self._saveEditorStatus();
+            editor.wrap.css({
+                height:self.iframeHeight
             });
 
-            KE.Maximize = Maximize;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.Maximize(editor);
+            DOM.css(doc.body, {
+                width:"",
+                height:"",
+                overflow:""
+            });
+            //documentElement 设置宽高，ie崩溃
+            doc.documentElement.style.overflow = "";
+
+            editor.editorWrap.css({
+                position:"static",
+                width:self.editorWrapWidth
+            });
+            iframe.css({
+                left:"-99999px",
+                top:"-99999px"
+            });
+            window.scrollTo(self.scrollLeft, self.scrollTop);
+            var bel = self.btn.get("el");
+            bel.one("span")
+                .removeClass(RESTORE_CLASS)
+                .addClass(MAXIMIZE_CLASS);
+            bel.attr("title", MAXIMIZE_TIP);
+
+            UA.ie < 8 && self.editor.toolBarDiv.removeClass(MAXIMIZE_TOOLBAR_CLASS);
+        },
+        /**
+         * 保存最大化前的外围状态信息到内存，
+         * 包括编辑器位置以及周围元素，浏览器窗口
+         */
+        _saveSate:function() {
+            var self = this,
+                editor = self.editor,
+                _savedParents = [],
+                editorWrap = editor.editorWrap;
+            self.iframeHeight = editor.wrap._4e_style("height");
+            self.editorWrapWidth = editorWrap._4e_style("width");
+            //主窗口滚动条也要保存哦
+            self.scrollLeft = DOM.scrollLeft();
+            self.scrollTop = DOM.scrollTop();
+            window.scrollTo(0, 0);
+
+            //将父节点的position都改成static并保存原状态 bugfix:最大化被父元素限制
+            var p = editorWrap.parent();
+
+            while (p) {
+                var pre = p.css("position");
+                if (pre != "static") {
+                    _savedParents.push({
+                        el:p,
+                        position:pre
+                    });
+                    p.css("position", "static");
+                }
+                p = p.parent();
+            }
+            self._savedParents = _savedParents;
+            var bel = self.btn.get("el");
+            bel.one("span")
+                .removeClass(MAXIMIZE_CLASS)
+                .addClass(RESTORE_CLASS);
+            bel.attr("title", RESTORE_TIP);
+            //ie6,7 图标到了窗口边界，不可点击，给个padding
+            UA.ie < 8 && self.editor.toolBarDiv.addClass(MAXIMIZE_TOOLBAR_CLASS);
+        },
+
+        /**
+         *  编辑器自身核心状态保存，每次最大化最小化都要save,restore，
+         *  firefox修正，iframe layout变化时，range丢了
+         */
+        _saveEditorStatus:function() {
+            var self = this,
+                editor = self.editor;
+            self.savedRanges = null;
+            if (!UA.gecko || !editor.iframeFocus) return;
+            var sel = editor.getSelection();
+            //firefox 光标丢失bug,位置丢失，所以这里保存下
+            self.savedRanges = sel && sel.getRanges();
+        },
+
+        /**
+         * 编辑器自身核心状态恢复，每次最大化最小化都要save,restore，
+         * 维持编辑器核心状态不变
+         */
+        _restoreEditorStatus:function() {
+            var self = this,
+                editor = self.editor,
+                sel = editor.getSelection(),
+                savedRanges = self.savedRanges;
+
+            //firefox焦点bug
+
+            //原来是聚焦，现在刷新designmode
+            //firefox 先失去焦点才行
+            editor.activateGecko();
+
+            if (savedRanges && sel) {
+                sel.selectRanges(savedRanges);
+            }
+
+            //firefox 有焦点时才重新聚焦
+            if (editor.iframeFocus && sel) {
+                var element = sel.getStartElement();
+                //使用原生不行的，会使主窗口滚动
+                //element[0] && element[0].scrollIntoView(true);
+                element && element[0] && element._4e_scrollIntoView();
+            }
+
+            //datauri 清空里面的background-image，使得 expression 重新执行
+            if (UA.ie < 8) {
+                self.btn.get("el").one("span").css("background-image", "");
+            }
+
+        },
+
+        /**
+         * 将编辑器最大化-实际动作
+         * 必须做两次，何解？？
+         */
+        _maximize:function(stop) {
+            var self = this,
+                doc = document,
+                editor = self.editor,
+                editorWrap = editor.editorWrap,
+                viewportHeight = DOM.viewportHeight(),
+                viewportWidth = DOM.viewportWidth(),
+                statusHeight = editor.statusDiv ? editor.statusDiv[0].offsetHeight : 0,
+                toolHeight = editor.toolBarDiv[0].offsetHeight;
+
+            if (!UA.ie) {
+                DOM.css(doc.body, {
+                    width:0,
+                    height:0,
+                    overflow:"hidden"
+                });
+            } else {
+                doc.body.style.overflow = "hidden";
+            }
+            doc.documentElement.style.overflow = "hidden";
+
+            editorWrap.css({
+                position:"absolute",
+                zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE),
+                width:viewportWidth + "px"
+            });
+            iframe.css({
+                zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE - 5),
+                height:viewportHeight + "px",
+                width:viewportWidth + "px"
+            });
+            editorWrap.offset({
+                left:0,
+                top:0
+            });
+            iframe.css({
+                left:0,
+                top:0
+            });
+
+            editor.wrap.css({
+                height:(viewportHeight - statusHeight - toolHeight ) + "px"
+            });
+            if (stop !== true) {
+                arguments.callee.call(self, true);
+            }
+        },
+        _real:function() {
+            var self = this,
+                editor = self.editor;
+
+            self.call("_saveEditorStatus");
+            self.call("_saveSate");
+            self.call("_maximize");
+
+            self._resize = self._resize || KE.Utils.buffer(self.cfg._maximize, self, 100);
+            Event.on(window, "resize", self._resize);
+
+            self.btn.bon();
+            setTimeout(function() {
+                self.call("_restoreEditorStatus");
+                editor.notifySelectionChange();
+                editor.fire("maximizeWindow");
+            }, 30);
+        },
+        offClick:function() {
+            var self = this;
+            init();
+            self.call("_real");
+        }
     });
+
+    KE.Maximize = Maximize;
 });/**
  * insert music for kissy editor
  * @author: yiminghe@gmail.com
@@ -16549,8 +17349,7 @@ KISSY.Editor.add("music", function(editor) {
         UA = S.UA,
         Event = S.Event,
         Flash = KE.Flash,
-        CLS_MUSIC = "ke_music",
-        TYPE_MUSIC = 'music',
+
         MUSIC_PLAYER = "niftyplayer.swf",
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter;
@@ -16560,1118 +17359,117 @@ KISSY.Editor.add("music", function(editor) {
         return src.indexOf(MUSIC_PLAYER) != -1;
     }
 
-    dataFilter && dataFilter.addRules({
-        elements : {
-            'object' : function(element) {
-                var attributes = element.attributes,i,
-                    classId = attributes['classid'] &&
-                        String(attributes['classid']).toLowerCase();
-                if (!classId) {
-                    // Look for the inner <embed>
-                    for (i = 0; i < element.children.length; i++) {
-                        if (element.children[ i ].name == 'embed') {
-                            if (!Flash.isFlashEmbed(element.children[ i ]))
-                                return null;
-                            if (music(element.children[ i ].attributes.src)) {
-                                return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
+    var CLS_MUSIC = "ke_music",
+        TYPE_MUSIC = 'music';
+
+    editor.ready(function() {
+        dataFilter && dataFilter.addRules({
+            elements : {
+                'object' : function(element) {
+                    var attributes = element.attributes,i,
+                        classId = attributes['classid'] &&
+                            String(attributes['classid']).toLowerCase();
+                    if (!classId) {
+                        // Look for the inner <embed>
+                        for (i = 0; i < element.children.length; i++) {
+                            if (element.children[ i ].name == 'embed') {
+                                if (!KE.Utils.isFlashEmbed(element.children[ i ]))
+                                    return null;
+                                if (music(element.children[ i ].attributes.src)) {
+                                    return dataProcessor.createFakeParserElement(element,
+                                        CLS_MUSIC, TYPE_MUSIC, true);
+                                }
                             }
-
+                        }
+                        return null;
+                    }
+                    for (i = 0; i < element.children.length; i++) {
+                        var c = element.children[ i ];
+                        if (c.name == 'param' && c.attributes.name == "movie") {
+                            if (music(c.attributes.value)) {
+                                return dataProcessor.createFakeParserElement(element,
+                                    CLS_MUSIC, TYPE_MUSIC, true);
+                            }
                         }
                     }
-                    return null;
-                }
 
-                for (i = 0; i < element.children.length; i++) {
-                    var c = element.children[ i ];
-                    if (c.name == 'param' && c.attributes.name == "movie") {
-                        if (music(c.attributes.value)) {
-                            return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
-                        }
+                },
+                'embed' : function(element) {
+                    if (!KE.Utils.isFlashEmbed(element))
+                        return null;
+                    if (music(element.attributes.src)) {
+                        return dataProcessor.createFakeParserElement(element,
+                            CLS_MUSIC, TYPE_MUSIC, true);
                     }
                 }
-
-            },
-
-            'embed' : function(element) {
-                if (!Flash.isFlashEmbed(element))
-                    return null;
-                if (music(element.attributes.src)) {
-                    return dataProcessor.createFakeParserElement(element, CLS_MUSIC, TYPE_MUSIC, true);
-                }
-
-            }
-            //4 比 flash 的优先级 5 高！
-        }}, 4);
-
-    //重构，和flash结合起来，抽象
-    if (!KE.MusicInserter) {
-        (function() {
-            var flashRules = ["img." + CLS_MUSIC];
-
-            function MusicInserter(editor) {
-                MusicInserter.superclass.constructor.apply(this, arguments);
-                //只能ie能用？，目前只有firefox,ie支持图片缩放
-                var disableObjectResizing = editor.cfg.disableObjectResizing;
-                if (!disableObjectResizing) {
-                    Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize', function(evt) {
-                        //console.log(evt.target);
-                        if (DOM.hasClass(evt.target, CLS_MUSIC))
-                            evt.preventDefault();
-                    });
-                }
-            }
-
-            function checkMusic(node) {
-                return node._4e_name() === 'img' && (!!node.hasClass(CLS_MUSIC)) && node;
-            }
-
-
-            S.extend(MusicInserter, Flash, {
-                _config:function() {
-                    var self = this,
-                        editor = self.editor;
-                    self._cls = CLS_MUSIC;
-                    self._type = TYPE_MUSIC;
-                    self._contentCls = "ke-toolbar-music";
-                    self._tip = "插入音乐";
-                    self._contextMenu = contextMenu;
-                    self._flashRules = flashRules;
-                }
-            });
-
-
-            Flash.registerBubble("music", "音乐网址： ", checkMusic);
-            KE.MusicInserter = MusicInserter;
-            var contextMenu = {
-                "音乐属性":function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        flash = startElement && checkMusic(startElement),
-                        flashUI = editor._toolbars[TYPE_MUSIC];
-                    if (flash) {
-                        flashUI.show(null, flash);
-                    }
-                }
-            };
-        })();
-    }
-
-
-    editor.addPlugin(function() {
-        new KE.MusicInserter(editor);
-    });
-
-});/**
- * align extension
- * @author:承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
- */
-KISSY.add("ext-align", function(S) {
-    S.namespace("Ext");
-    var DOM = S.DOM,Node = S.Node;
-
-    function AlignExt() {
-        S.log("align init");
-        var self = this;
-        self.on("bindUI", self._bindUIAlign, self);
-        self.on("renderUI", self._renderUIAlign, self);
-        self.on("syncUI", self._syncUIAlign, self);
-    }
-
-    S.mix(AlignExt, {
-        TL: 'tl',
-        TC: 'tc',
-        TR: 'tr',
-        CL: 'cl',
-        CC: 'cc',
-        CR: 'cr',
-        BL: 'bl',
-        BC: 'bc',
-        BR: 'br'
-    });
-
-
-    AlignExt.ATTRS = {
-        align:{
-            /*
-             value:{
-             node: null,         // 参考元素, falsy 值为可视区域, 'trigger' 为触发元素, 其他为指定元素
-             points: [AlignExt.CC, AlignExt.CC], // ['tr', 'tl'] 表示 overlay 的 tl 与参考节点的 tr 对齐
-             offset: [0, 0]      // 有效值为 [n, m]
-             }*/
-        }
-    };
-
-
-    /**
-     * 获取 node 上的 align 对齐点 相对于页面的坐标
-     * @param {?Element} node
-     * @param align
-     */
-    function _getAlignOffset(node, align) {
-        var V = align.charAt(0),
-            H = align.charAt(1),
-            offset, w, h, x, y;
-
-        if (node) {
-            node = S.one(node);
-            offset = node.offset();
-            w = node[0].offsetWidth;
-            h = node[0].offsetHeight;
-        } else {
-            offset = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
-            w = DOM.viewportWidth();
-            h = DOM.viewportHeight();
-        }
-
-        x = offset.left;
-        y = offset.top;
-
-        if (V === 'c') {
-            y += h / 2;
-        } else if (V === 'b') {
-            y += h;
-        }
-
-        if (H === 'c') {
-            x += w / 2;
-        } else if (H === 'r') {
-            x += w;
-        }
-
-        return { left: x, top: y };
-    }
-
-    AlignExt.prototype = {
-        _bindUIAlign:function() {
-            S.log("_bindUIAlign");
-        },
-        _renderUIAlign:function() {
-            S.log("_renderUIAlign");
-        },
-        _syncUIAlign:function() {
-            S.log("_syncUIAlign");
-        },
-        _uiSetAlign:function(v) {
-            S.log("_uiSetAlign");
-            if (S.isPlainObject(v)) {
-                this.align(v.node, v.points, v.offset);
-            }
-        },
-        /**
-         * 对齐 Overlay 到 node 的 points 点, 偏移 offset 处
-         * @param {Element=} node 参照元素, 可取配置选项中的设置, 也可是一元素
-         * @param {Array.<string>} points 对齐方式
-         * @param {Array.<number>} offset 偏移
-         */
-        align: function(node, points, offset) {
-
-            var self = this,
-                xy,
-                diff,
-                p1,
-                el = self.get("el"),
-                p2;
-            offset = offset || [0,0];
-            xy = DOM.offset(el);
-            // p1 是 node 上 points[0] 的 offset
-            // p2 是 overlay 上 points[1] 的 offset
-            p1 = _getAlignOffset(node, points[0]);
-            p2 = _getAlignOffset(el, points[1]);
-            diff = [p2.left - p1.left, p2.top - p1.top];
-            var v = [xy.left - diff[0] + (+offset[0]),
-                xy.top - diff[1] + (+offset[1])];
-            self.set("xy", v);
-        },
-
-
-
-        /**
-         * 居中显示到可视区域, 一次性居中
-         */
-        center: function(node) {
-            this.set("align", {
-                node:node,
-                points:[AlignExt.CC, AlignExt.CC],
-                offset:[0,0]
-            });
-        },
-
-        __destructor:function() {
-            S.log("align __destructor");
-        }
-    };
-
-    S.Ext.Align = AlignExt;
-
-});/**
- * basic box support for component
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-box", function(S) {
-    S.namespace("Ext");
-
-    var doc = document,Node = S.Node;
-
-    function BoxExt() {
-        S.log("box init");
-        var self = this;
-        self.on("renderUI", self._renderUIBoxExt, self);
-        self.on("syncUI", self._syncUIBoxExt, self);
-        self.on("bindUI", self._bindUIBoxExt, self);
-
-    }
-
-    BoxExt.ATTRS = {
-        el: {
-            //容器元素
-            setter:function(v) {
-                if (S.isString(v))
-                    return S.one(v);
-            }
-        },
-        elCls: {
-            // 容器的 class           
-        },
-        elStyle:{
-            //容器的行内样式
-        },
-        width: {
-            // 宽度           
-        },
-        height: {
-            // 高度
-        },
-
-        html: {
-            // 内容, 默认为 undefined, 不设置
-            value: false
-        }
-    };
-
-    BoxExt.HTML_PARSER = {
-        el:function(srcNode) {
-            return srcNode;
-        }
-    };
-
-    BoxExt.prototype = {
-        _syncUIBoxExt:function() {
-            S.log("_syncUIBoxExt");
-        },
-        _bindUIBoxExt:function() {
-            S.log("_bindUIBoxExt");
-        },
-        _renderUIBoxExt:function() {
-            S.log("_renderUIBoxExt");
-            var self = this,
-                render = self.get("render") || S.one(doc.body),
-                el = self.get("el");
-            render = new Node(render);
-            if (!el) {
-                el = new Node("<div>");
-                render.prepend(el);
-                self.set("el", el);
-            }
-        },
-
-        _uiSetElCls:function(cls) {
-            S.log("_uiSetElCls");
-            if (cls) {
-                this.get("el").addClass(cls);
-            }
-        },
-
-        _uiSetElStyle:function(style) {
-            S.log("_uiSetElStyle");
-            if (style) {
-                this.get("el").css(style);
-            }
-        },
-
-        _uiSetWidth:function(w) {
-            S.log("_uiSetWidth");
-            var self = this;
-            if (w) {
-                self.get("el").width(w);
-            }
-        },
-
-        _uiSetHeight:function(h) {
-            S.log("_uiSetHeight");
-            var self = this;
-            if (h) {
-                self.get("el").height(h);
-            }
-        },
-
-        _uiSetHtml:function(c) {
-            S.log("_uiSetHtml");
-            if (c !== false){
-                this.get("el").html(c);
-            }
-
-        },
-
-        __destructor:function() {
-            S.log("box __destructor");
-            var el = this.get("el");
-            if (el) {
-                el.detach();
-                el.remove();
-            }
-        }
-    };
-
-    S.Ext.Box = BoxExt;
-});/**
- * close extension for kissy dialog
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-overlay-close", function(S) {
-    S.namespace("Ext");
-    var CLS_PREFIX = 'ks-ext-',Node = S.Node;
-
-    function CloseExt() {
-        S.log("close init");
-        var self = this;
-        self.on("renderUI", self._rendUICloseExt, self);
-        self.on("bindUI", self._bindUICloseExt, self);
-        self.on("syncUI", self._syncUICloseExt, self);
-    }
-
-    CloseExt.ATTRS = {
-        closable: {             // 是否需要关闭按钮
-            value: true
-        },
-        closeBtn:{}
-    };
-
-    CloseExt.HTML_PARSER = {
-        closeBtn:"." + CLS_PREFIX + 'close'
-    };
-
-    CloseExt.prototype = {
-        _syncUICloseExt:function() {
-            S.log("_syncUICloseExt");
-        },
-        _uiSetClosable:function(v) {
-            S.log("_uiSetClosable");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            if (closeBtn) {
-                if (v) {
-                    closeBtn.show();
-                } else {
-                    closeBtn.hide();
-                }
-            }
-        },
-        _rendUICloseExt:function() {
-            S.log("_rendUICloseExt");
-            var self = this,
-                closeBtn = self.get("closeBtn"),
-                el = self.get("contentEl");
-
-            if (!closeBtn &&
-                el) {
-                closeBtn = new Node("<a " +
-                    "href='#' " +
-                    "class='" + CLS_PREFIX + "close" + "'>" +
-                    "<span class='" +
-                    CLS_PREFIX + "close-x" +
-                    "'>X</span>" +
-                    "</a>")
-                    .appendTo(el);
-                self.set("closeBtn", closeBtn);
-            }
-        },
-        _bindUICloseExt:function() {
-            S.log("_bindUICloseExt");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            closeBtn && closeBtn.on("click", function(ev) {
-                self.hide();
-                ev.halt();
-            });
-        },
-
-        __destructor:function() {
-            S.log("close-ext __destructor");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            closeBtn && closeBtn.detach();
-        }
-    };
-    S.Ext.Close = CloseExt;
-
-});KISSY.add("ext-constrain", function(S) {
-    S.namespace("Ext");
-
-    var DOM = S.DOM,
-        Node = S.Node;
-
-    function ConstrainExt() {
-        S.log("constrain init");
-        var self = this;
-        self.on("bindUI", self._bindUIConstrain, self);
-        self.on("renderUI", self._renderUIConstrain, self);
-        self.on("syncUI", self._syncUIConstrain, self);
-    }
-
-    ConstrainExt.ATTRS = {
-        constrain:{
-            //不限制
-            //true:viewport限制
-            //node:限制在节点范围
-            value:false
-        }
-    };
-
-    /**
-     * 获取受限区域的宽高, 位置
-     * @return {Object | undefined} {left: 0, top: 0, maxLeft: 100, maxTop: 100}
-     */
-    function _getConstrainRegion(constrain) {
-        var ret = undefined;
-        if (!constrain) return ret;
-        var el = this.get("el");
-        if (constrain !== true) {
-            constrain = S.one(constrain);
-            ret = constrain.offset();
-            S.mix(ret, {
-                maxLeft: ret.left + constrain[0].offsetWidth - el[0].offsetWidth,
-                maxTop: ret.top + constrain[0].offsetHeight - el[0].offsetHeight
-            });
-        }
-        // 没有指定 constrain, 表示受限于可视区域
-        else {
-            var vWidth = document.documentElement.clientWidth;
-            ret = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
-
-            S.mix(ret, {
-                maxLeft: ret.left + vWidth - el[0].offsetWidth,
-                maxTop: ret.top + DOM.viewportHeight() - el[0].offsetHeight
-            });
-        }
-        return ret;
-    }
-
-    ConstrainExt.prototype = {
-        _bindUIConstrain:function() {
-            S.log("_bindUIConstrain");
-
-        },
-        _renderUIConstrain:function() {
-            S.log("_renderUIConstrain");
-            var self = this,
-                attrs = self.getDefAttrs(),
-                xAttr = attrs["x"],
-                yAttr = attrs["y"],
-                oriXSetter = xAttr["setter"],
-                oriYSetter = yAttr["setter"];
-            xAttr.setter = function(v) {                
-                var r = oriXSetter && oriXSetter(v);
-                if (r === undefined) {
-                    r = v;
-                }
-                if (!self.get("constrain")) return r;
-                var _ConstrainExtRegion = _getConstrainRegion.call(
-                    self, self.get("constrain"));
-                return Math.min(Math.max(r,
-                    _ConstrainExtRegion.left),
-                    _ConstrainExtRegion.maxLeft);
-            };
-            yAttr.setter = function(v) {
-                var r = oriYSetter && oriYSetter(v);
-                if (r === undefined) {
-                    r = v;
-                }
-                if (!self.get("constrain")) return r;
-                var _ConstrainExtRegion = _getConstrainRegion.call(
-                    self, self.get("constrain"));
-                return Math.min(Math.max(r,
-                    _ConstrainExtRegion.top),
-                    _ConstrainExtRegion.maxTop);
-            };
-            self.addAttr("x", xAttr);
-            self.addAttr("y", yAttr);
-        },
-
-        _syncUIConstrain:function() {
-            S.log("_syncUIConstrain");
-        },
-        __destructor:function() {
-            S.log("constrain-ext __destructor");
-        }
-
-    };
-
-
-    S.Ext.Constrain = ConstrainExt;
-
-});/**
- * 里层包裹层定义，适合mask以及shim
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-contentbox", function(S) {
-
-    S.namespace("Ext");
-    var Node = S.Node;
-
-    function ContentBox() {
-         S.log("contentbox init");
-        var self = this;
-        self.on("renderUI", self._renderUIContentBox, self);
-        self.on("syncUI", self._syncUIContentBox, self);
-        self.on("bindUI", self._bindUIContentBox, self);
-    }
-
-    ContentBox.ATTRS = {
-        //内容容器节点
-        contentEl:{},
-        //层内容
-        content:{}
-    };
-
-
-    ContentBox.HTML_PARSER = {
-        contentEl:".ks-contentbox"
-    };
-
-    ContentBox.prototype = {
-        _syncUIContentBox:function() {
-            S.log("_syncUIContentBox");
-        },
-        _bindUIContentBox:function() {
-            S.log("_bindUIContentBox");
-        },
-        _renderUIContentBox:function() {
-            S.log("_renderUIContentBox");
-            var self = this,
-                contentEl = self.get("contentEl"),
-                el = self.get("el");
-            if (!contentEl) {
-                contentEl = new Node("<div class='ks-contentbox'>").appendTo(el);
-                self.set("contentEl", contentEl);
-            }
-        },
-
-        _uiSetContent:function(c) {
-            S.log("_uiSetContent");
-            if (c !== undefined) {
-                this.get("contentEl").html(c);
-            }
-        },
-
-        __destructor:function(){
-            S.log("contentbox __destructor");
-        }
-    };
-
-    S.Ext.ContentBox = ContentBox;
-});/**
- * drag extension for position
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-drag", function(S) {
-    S.namespace('Ext');
-    function DragExt() {
-         S.log("drag init");
-        var self = this;
-        self.on("bindUI", self._bindUIDragExt, self);
-        self.on("renderUI", self._renderUIDragExt, self);
-        self.on("syncUIUI", self._syncUIDragExt, self);
-    }
-
-    DragExt.ATTRS = {
-        handlers:{value:[]},
-        draggable:{value:true}
-    };
-
-    DragExt.prototype = {
-
-        _uiSetHandlers:function(v) {
-            S.log("_uiSetHanlders");
-            if (v && v.length > 0)
-                this.__drag.set("handlers", v);
-        },
-
-        _syncUIDragExt:function() {
-            S.log("_syncUIDragExt");
-        },
-
-        _renderUIDragExt:function() {
-            S.log("_renderUIDragExt");
-        },
-
-        _bindUIDragExt:function() {
-            S.log("_bindUIDragExt");
-            var self = this,el = self.get("el");
-            self.__drag = new S.Draggable({
-                node:el,
-                handlers:self.get("handlers")
-            });
-        },
-
-        _uiSetDraggable:function(v) {
-            S.log("_uiSetDraggable");
-            var self = this,d = self.__drag;
-            if (v) {
-                d.detach("drag");
-                d.on("drag", self._dragExtAction, self);
-            } else {
-                d.detach("drag");
-            }
-        },
-
-        _dragExtAction:function(offset) {
-            this.set("xy", [offset.left,offset.top])
-        },
-        /**
-         *
-         */
-        __destructor:function() {
-            S.log("DragExt __destructor");
-            var d = this.__drag;
-            d&&d.destroy();
-        }
-
-    };
-
-    S.Ext.Drag = DragExt;
-
-});/**
- * loading mask support for overlay
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-loading", function(S) {
-    S.namespace("Ext");
-    function LoadingExt() {
-        S.log("LoadingExt init");
-    }
-
-    LoadingExt.prototype = {
-        loading:function() {
-            var self = this;
-            if (!self._loadingExtEl) {
-                self._loadingExtEl = new S.Node("<div " +
-                    "class='ks-ext-loading'" +
-                    " style='position: absolute;" +
-                    "border: none;" +
-                    "width: 100%;" +
-                    "top: 0;" +
-                    "left: 0;" +
-                    "z-index: 99999;" +
-                    "height:100%;" +
-                    "*height: expression(this.parentNode.offsetHeight);" + "'>").appendTo(self.get("el"));
-            }
-            self._loadingExtEl.show();
-        },
-
-        unloading:function() {
-            var lel = this._loadingExtEl;
-            lel && lel.hide();
-        }
-    };
-
-    S.Ext.Loading = LoadingExt;
-
-});KISSY.add("ext-mask", function(S) {
-    S.namespace("Ext");
-    /**
-     * 多 position 共享一个遮罩
-     */
-    var mask,
-        UA = S.UA,
-        num = 0;
-
-
-    function initMask() {
-        mask = new S.Node("<div class='ks-ext-mask'>").prependTo(document.body);
-        mask.css({
-            "position":"absolute",
-            left:0,
-            top:0,
-            width:"100%",
-            "height": S.DOM.docHeight()
+                //4 比 flash 的优先级 5 高！
+            }}, 4);
+
+        KE.use("music/support", function() {
+            var MusicInserter = KE.MusicInserter;
+            new MusicInserter(editor);
         });
-        if (UA.ie == 6) {
-            mask.append("<iframe style='width:100%;" +
-                "height:expression(this.parentNode.offsetHeight);" +
-                "filter:alpha(opacity=0);" +
-                "z-index:-1;'>");
-        }
-    }
+    });
 
-    function MaskExt() {
-        S.log("mask init");
-        var self = this;
-        self.on("bindUI", self._bindUIMask, self);
-        self.on("renderUI", self._renderUIMask, self);
-        self.on("syncUI", self._syncUIMask, self);
-    }
 
-    MaskExt.ATTRS = {
-        mask:{
-            value:false
-        }
-    };
-
-    MaskExt.prototype = {
-        _bindUIMask:function() {
-            S.log("_bindUIMask");
-        },
-
-        _renderUIMask:function() {
-            S.log("_renderUIMask");
-        },
-
-        _syncUIMask:function() {
-            S.log("_syncUIMask");
-        },
-        _uiSetMask:function(v) {
-            S.log("_uiSetMask");
-            var self = this;
-            if (v) {
-                self.on("show", self._maskExtShow, self);
-                self.on("hide", self._maskExtHide, self);
-            } else {
-                self.detach("show", self._maskExtShow, self);
-                self.detach("hide", self._maskExtHide, self);
-            }
-        },
-
-        _maskExtShow:function() {
-            if (!mask) {
-                initMask();
-            }
-            mask.css({
-                "z-index":this.get("zIndex") - 1
-            });
-            num++;
-            mask.show();
-        },
-
-        _maskExtHide:function() {
-            num--;
-            if (num <= 0) num = 0;
-            if (!num)
-                mask && mask.hide();
-        },
-
-        __destructor:function() {
-            S.log("mask __destructor");
-        }
-
-    };
-
-    S.Ext.Mask = MaskExt;
-});/**
- * position and visible extension，可定位的隐藏层
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-position", function(S) {
-    S.namespace("Ext");
-
-    var doc = document ,
+});KISSY.Editor.add("music/support", function() {
+    var S = KISSY,
+        KE = S.Editor,
         Event = S.Event,
-        KEYDOWN = "keydown";
+        DOM = S.DOM,
+        Flash = KE.Flash,
+        UA = S.UA;
+    var CLS_MUSIC = "ke_music",
+        TYPE_MUSIC = 'music';
+    var flashRules = ["img." + CLS_MUSIC];
 
-    function PositionExt() {
-        S.log("position init");
-        var self = this;
-        self.on("bindUI", self._bindUIPosition, self);
-        self.on("renderUI", self._renderUIPosition, self);
-        self.on("syncUI", self._syncUIPosition, self);
-    }
-
-    PositionExt.ATTRS = {
-        x: {
-            // 水平方向绝对位置
-        },
-        y: {
-            // 垂直方向绝对位置
-        },
-        xy: {
-            // 相对 page 定位, 有效值为 [n, m], 为 null 时, 选 align 设置
-            setter: function(v) {
-                
-                var self = this,
-                    xy = S.makeArray(v);
-
-                if (xy.length) {
-                    xy[0] && self.set("x", xy[0]);
-                    xy[1] && self.set("y", xy[1]);
-                }
-                return v;
-            }
-        },
-        zIndex: {
-            value: 9999
-        },
-        visible:{
-            value:undefined
-        }
-    };
-
-
-    PositionExt.prototype = {
-        _syncUIPosition:function() {
-            S.log("_syncUIPosition");
-        },
-        _renderUIPosition:function() {
-            S.log("_renderUIPosition");
-            this.get("el").addClass("ks-ext-position");
-            this.get("el").css("display", "");
-        },
-        _bindUIPosition:function() {
-            S.log("_bindUIPosition");
-        },
-        _uiSetZIndex:function(x) {
-            S.log("_uiSetZIndex");
-            if (x !== undefined)
-                this.get("el").css("z-index", x);
-        },
-        _uiSetX:function(x) {
-            S.log("_uiSetX");
-            if (x !== undefined)
-                this.get("el").offset({
-                    left:x
+    function MusicInserter(editor) {
+        MusicInserter.superclass.constructor.apply(this, arguments);
+        //只能ie能用？，目前只有firefox,ie支持图片缩放
+        var disableObjectResizing = editor.cfg.disableObjectResizing;
+        if (!disableObjectResizing) {
+            Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
+                function(evt) {
+                    if (DOM.hasClass(evt.target, CLS_MUSIC))
+                        evt.preventDefault();
                 });
-        },
-        _uiSetY:function(y) {
-            S.log("_uiSetY");
-            if (y !== undefined)
-                this.get("el").offset({
-                    top:y
-                });
-        },
-        _uiSetVisible:function(isVisible) {
-            if (isVisible === undefined) return;
-            S.log("_uiSetVisible");
-            var self = this,
-                el = self.get("el");
-            el.css("visibility", isVisible ? "visible" : "hidden");
-            self[isVisible ? "_bindKey" : "_unbindKey" ]();
-            self.fire(isVisible ? "show" : "hide");
-        },
-        /**
-         * 显示/隐藏时绑定的事件
-         */
-        _bindKey: function() {
-            Event.on(doc, KEYDOWN, this._esc, this);
-        },
-
-        _unbindKey: function() {
-            Event.remove(doc, KEYDOWN, this._esc, this);
-        },
-
-        _esc: function(e) {
-            if (e.keyCode === 27) this.hide();
-        },
-        /**
-         * 移动到绝对位置上, move(x, y) or move(x) or move([x, y])
-         * @param {number|Array.<number>} x
-         * @param {number=} y
-         */
-        move: function(x, y) {
-            var self = this;
-            if (S.isArray(x)) {
-                y = x[1];
-                x = x[0];
-            }
-            self.set("xy", [x,y]);
-        },
-
-        /**
-         * 显示 Overlay
-         */
-        show: function() {
-            this._firstShow();
-        },
-
-        /**
-         * 第一次显示时, 需要构建 DOM, 设置位置
-         */
-        _firstShow: function() {
-            var self = this;
-            self.renderer();
-            self._realShow();
-            self._firstShow = self._realShow;
-        },
-
-
-        _realShow: function() {
-            this.set("visible", true);
-        },
-
-        /**
-         * 隐藏
-         */
-        hide: function() {
-            this.set("visible", false);
-        },
-
-        __destructor:function() {
-            S.log("position __destructor");
         }
-
-    };
-
-    S.Ext.Position = PositionExt;
-});/**
- * shim for ie6 ,require box-ext
- * @author:yiminghe@gmail.com
- */
-KISSY.add("ext-shim", function(S) {
-    S.namespace("Ext");
-    function ShimExt() {
-        S.log("shim init");
-        var self = this;
-        self.on("renderUI", self._renderUIShimExt, self);
-        self.on("bindUI", self._bindUIShimExt, self);
-        self.on("syncUI", self._syncUIShimExt, self);
     }
 
-    var Node = S.Node;
-    ShimExt.prototype = {
-        _syncUIShimExt:function() {
-            S.log("_syncUIShimExt");
-        },
-        _bindUIShimExt:function() {
-            S.log("_bindUIShimExt");
-        },
-        _renderUIShimExt:function() {
-            S.log("_renderUIShimExt");
-            var self = this,el = self.get("el");
-            var shim = new Node("<iframe style='position: absolute;" +
-                "border: none;" +
-                "width: expression(this.parentNode.offsetWidth);" +
-                "top: 0;" +
-                "opacity: 0;" +
-                "filter: alpha(opacity=0);" +
-                "left: 0;" +
-                "z-index: -1;" +
-                "height: expression(this.parentNode.offsetHeight);" + "'>");
-            el.prepend(shim);
-        },
-
-        __destructor:function() {
-            S.log("shim __destructor");
-        }
-    };
-    S.Ext.Shim = ShimExt;
-});/**
- * support standard mod for component
- * @author: yiminghe@gmail.com
- */
-KISSY.add("ext-stdmod", function(S) {
-
-    S.namespace("Ext");
-    var CLS_PREFIX = "ks-stdmod-",
-        Node = S.Node;
-
-    function StdMod() {
-        S.log("stdmod init");
-        var self = this;
-        self.on("renderUI", self._renderUIStdMod, self);
-        self.on("syncUI", self._syncUIStdMod, self);
-        self.on("bindUI", self._bindUIStdMod, self);
+    function checkMusic(node) {
+        return node._4e_name() === 'img'
+            && (!!node.hasClass(CLS_MUSIC))
+            && node;
     }
 
-    StdMod.ATTRS = {
-        header:{
-        },
-        body:{
-        },
-        footer:{
-        },
-        bodyStyle:{
-        },
-        headerContent:{
-            value:false
-        },
-        bodyContent:{
-            value:false
-        },
-        footerContent:{
-            value:false
-        }
-    };
 
-    StdMod.HTML_PARSER = {
-        header:"." + CLS_PREFIX + "header",
-        body:"." + CLS_PREFIX + "body",
-        footer:"." + CLS_PREFIX + "footer"
-    };
-
-
-    StdMod.prototype = {
-        _bindUIStdMod:function() {
-            S.log("_bindUIStdMod");
-        },
-        _syncUIStdMod:function() {
-            S.log("_syncUIStdMod");
-        },
-        _setStdModContent:function(part, v) {
-            if (v !== false) {
-                if (S.isString(v)) {
-                    this.get(part).html(v);
-                } else {
-                    this.get(part).html("");
-                    this.get(part).append(v);
-                }
-            }
-        },
-        _uiSetBodyStyle:function(v) {
-            if (v !== undefined) {
-                this.get("body").css(v);
-            }
-        },
-        _uiSetBodyContent:function(v) {
-            S.log("_uiSetBodyContent");
-            this._setStdModContent("body", v);
-        },
-        _uiSetHeaderContent:function(v) {
-            S.log("_uiSetHeaderContent");
-            this._setStdModContent("header", v);
-        },
-        _uiSetFooterContent:function(v) {
-            S.log("_uiSetFooterContent");
-            this._setStdModContent("footer", v);
-        },
-        _renderUIStdMod:function() {
-            S.log("_renderUIStdMod");
+    S.extend(MusicInserter, Flash, {
+        _config:function() {
             var self = this,
-                el = self.get("contentEl"),
-                header = self.get("header"),
-                body = self.get("body"),
-                footer = self.get("footer"),
-                headerContent = self.get("headerContent"),
-                bodyContent = self.get("bodyContent"),
-                footerContent = self.get("footerContent");
-            if (!header) {
-                header = new Node("<div class='" + CLS_PREFIX + "header'>").appendTo(el);
-                self.set("header", header);
-            }
-            if (!body) {
-                body = new Node("<div class='" + CLS_PREFIX + "body'>").appendTo(el);
-                self.set("body", body);
-            }
-            if (!footer) {
-                footer = new Node("<div class='" + CLS_PREFIX + "footer'>").appendTo(el);
-                self.set("footer", footer);
-            }
-        },
+                editor = self.editor;
+            self._cls = CLS_MUSIC;
+            self._type = TYPE_MUSIC;
+            self._contentCls = "ke-toolbar-music";
+            self._tip = "插入音乐";
+            self._contextMenu = contextMenu;
+            self._flashRules = flashRules;
+        }
+    });
 
-        __destructor:function() {
-            S.log("stdmod __destructor");
+
+    Flash.registerBubble("music", "音乐网址： ", checkMusic);
+    KE.MusicInserter = MusicInserter;
+    var contextMenu = {
+        "音乐属性":function(cmd) {
+            var editor = cmd.editor,
+                selection = editor.getSelection(),
+                startElement = selection && selection.getStartElement(),
+                flash = startElement && checkMusic(startElement);
+            if (flash) {
+                cmd.show(null, flash);
+            }
         }
     };
-
-
-    S.Ext.StdMod = StdMod;
-
 });/**
  * KISSY Overlay
  * @author 玉伯<lifesinger@gmail.com>, 承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
@@ -17723,6 +17521,10 @@ KISSY.add("overlay", function(S) {
             S.log("overlay destructor");
         }
 
+    }, {
+        ATTRS:{
+            elOrder:0
+        }
     });
     S.Overlay = Overlay;
 
@@ -17961,7 +17763,9 @@ KISSY.Editor.add("overlay", function() {
         globalMask && globalMask.hide();
     };
 });KISSY.Editor.add("pagebreak", function(editor) {
-    var S = KISSY,KE = S.Editor,
+    var S = KISSY,
+        KE = S.Editor,
+        Node = S.Node,
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         CLS = "ke_pagebreak",
@@ -17982,132 +17786,80 @@ KISSY.Editor.add("overlay", function() {
             }
         });
     }
-
-    if (!KE.PageBreak) {
-        (function() {
-            var Node = S.Node,
-                TripleButton = KE.TripleButton,
-                mark_up = '<div' +
-                    ' style="page-break-after: always; ">' +
-                    '<span style="DISPLAY:none">&nbsp;</span></div>';
-
-            function PageBreak(editor) {
-                var el = new TripleButton({
-                    container:editor.toolBarDiv,
-                    title:"分页",
-                    contentCls:"ke-toolbar-pagebreak"
-                });
-                el.on("offClick", function() {
-                    var real = new Node(mark_up, null, editor.document),
-                        substitute = editor.createFakeElement ?
-                            editor.createFakeElement(real,
-                                CLS,
-                                TYPE,
-                                true,
-                                mark_up) :
-                            real,
-
-                        insert = new Node("<div>", null, editor.document).append(substitute);
-                    editor.insertElement(insert);
-                });
-                this.el = el;
-                KE.Utils.sourceDisable(editor, this);
+    editor.ready(function() {
+        var mark_up = '<div' +
+            ' style="page-break-after: always; ">' +
+            '<span style="DISPLAY:none">&nbsp;</span></div>';
+        editor.addButton("page-break", {
+            title:"分页",
+            contentCls:"ke-toolbar-pagebreak",
+            offClick:function() {
+                var editor = this.editor,
+                    real = new Node(mark_up, null, editor.document),
+                    substitute = editor.createFakeElement ?
+                        editor.createFakeElement(real,
+                            CLS,
+                            TYPE,
+                            true,
+                            mark_up) :
+                        real,
+                    insert = new Node("<div>", null, editor.document).append(substitute);
+                editor.insertElement(insert);
             }
-
-            S.augment(PageBreak, {
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                }
-            });
-
-            KE.PageBreak = PageBreak;
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.PageBreak(editor);
+        });
     });
 });/**
  * preview for kissy editor
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("preview", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,TripleButton = KE.TripleButton;
-    if (!KE.Preview) {
-        (function() {
-            function Preview(editor) {
-                this.editor = editor;
-                this._init();
-            }
 
-            S.augment(Preview, {
-                _init:function() {
-                    var self = this,editor = self.editor;
-                    self.el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        title:"预览",
-                        contentCls:"ke-toolbar-preview"
-                        //text:"preview"
-                    });
-                    self.el.on("offClick", this._show, this);
-                },
-                _show:function() {
-                    var self = this,
-                        editor = self.editor;
-                    //try {
-                    //editor will be unvisible
-                    //  editor.focus();
-                    //} catch(e) {
-                    // }
-                    var iWidth = 640,    // 800 * 0.8,
-                        iHeight = 420,    // 600 * 0.7,
-                        iLeft = 80;	// (800 - 0.8 * 800) /2 = 800 * 0.1.
-                    try {
-                        var screen = window.screen;
-                        iWidth = Math.round(screen.width * 0.8);
-                        iHeight = Math.round(screen.height * 0.7);
-                        iLeft = Math.round(screen.width * 0.1);
-                    } catch (e) {
-                    }
-                    var sHTML = editor._prepareIFrameHtml()
-                        .replace(/<body[^>]+>.+<\/body>/,
-                        "<body>\n"
-                            + editor.getData(true)
-                            + "\n</body>")
-                        .replace(/\${title}/, "预览"),
-                        sOpenUrl = '',
-                        oWindow = window.open(sOpenUrl,
-                            //每次都弹出新窗口
-                            '',
-                            'toolbar=yes,' +
-                                'location=no,' +
-                                'status=yes,' +
-                                'menubar=yes,' +
-                                'scrollbars=yes,' +
-                                'resizable=yes,' +
-                                'width=' +
-                                iWidth +
-                                ',height='
-                                + iHeight
-                                + ',left='
-                                + iLeft);
-                    oWindow.document.open();
-                    oWindow.document.write(sHTML);
-                    oWindow.document.close();
-                    //ie 重新显示
-                    oWindow.focus();
+    editor.ready(function() {
+        editor.addButton("preview", {
+            title:"预览",
+            contentCls:"ke-toolbar-preview",
+            offClick:function() {
+                var self = this,
+                    editor = self.editor,
+                    iWidth = 640,    // 800 * 0.8,
+                    iHeight = 420,    // 600 * 0.7,
+                    iLeft = 80;	// (800 - 0.8 * 800) /2 = 800 * 0.1.
+                try {
+                    var screen = window.screen;
+                    iWidth = Math.round(screen.width * 0.8);
+                    iHeight = Math.round(screen.height * 0.7);
+                    iLeft = Math.round(screen.width * 0.1);
+                } catch (e) {
                 }
-            });
-            KE.Preview = Preview;
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.Preview(editor);
+                var sHTML = editor._prepareIFrameHtml()
+                    .replace(/<body[^>]+>.+<\/body>/,
+                    "<body>\n"
+                        + editor.getData(true)
+                        + "\n</body>")
+                    .replace(/\${title}/, "预览"),
+                    sOpenUrl = '',
+                    oWindow = window.open(sOpenUrl,
+                        //每次都弹出新窗口
+                        '',
+                        'toolbar=yes,' +
+                            'location=no,' +
+                            'status=yes,' +
+                            'menubar=yes,' +
+                            'scrollbars=yes,' +
+                            'resizable=yes,' +
+                            'width=' +
+                            iWidth +
+                            ',height='
+                            + iHeight
+                            + ',left='
+                            + iLeft),winDoc = oWindow.document;
+                winDoc.open();
+                winDoc.write(sHTML);
+                winDoc.close();
+                //ie 重新显示
+                oWindow.focus();
+            }
+        });
     });
 });
 KISSY.Editor.add("progressbar", function() {
@@ -18218,202 +17970,168 @@ KISSY.Editor.add("progressbar", function() {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("removeformat", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         KER = KE.RANGE,
         ElementPath = KE.ElementPath,
         KEN = KE.NODE,
-        TripleButton = KE.TripleButton,
         /**
-         * A comma separated list of elements to be removed when executing the "remove
-         " format" command. Note that only inline elements are allowed.
+         * A comma separated list of elements to be removed
+         * when executing the "remove format" command.
+         * Note that only inline elements are allowed.
          * @type String
          * @default 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var'
          * @example
          */
-        removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var,s',
-
+        removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,' +
+            'q,samp,small,span,strike,strong,sub,sup,tt,u,var,s',
         /**
-         * A comma separated list of elements attributes to be removed when executing
-         * the "remove format" command.
+         * A comma separated list of elements attributes to be removed
+         * when executing the "remove format" command.
          * @type String
          * @default 'class,style,lang,width,height,align,hspace,valign'
          * @example
          */
-        removeFormatAttributes = 'class,style,lang,width,height,align,hspace,valign'.split(',');
+        removeFormatAttributes = ('class,style,lang,width,height,' +
+            'align,hspace,valign').split(/,/),
+        tagsRegex = new RegExp('^(?:' +
+            removeFormatTags.replace(/,/g, '|') +
+            ')$', 'i');
 
-    removeFormatTags = new RegExp('^(?:' + removeFormatTags.replace(/,/g, '|') + ')$', 'i');
 
-    function RemoveFormat(editor) {
-        this.editor = editor;
-        this._init();
+    function removeAttrs(el, attrs) {
+        for (var i = 0; i < attrs.length; i++) {
+            el.removeAttr(attrs[i]);
+        }
     }
 
-    S.augment(RemoveFormat, {
-        _init:function() {
-            var self = this,editor = self.editor;
-            self.el = new TripleButton({
-                title:"清除格式",
-                contentCls:"ke-toolbar-removeformat",
-                container:editor.toolBarDiv
-            });
-            self.el.on("offClick", self._remove, self);
-            KE.Utils.sourceDisable(editor, self);
-        },
-        disable:function() {
-            this.el.set("state", TripleButton.DISABLED);
-        },
-        enable:function() {
-            this.el.set("state", TripleButton.OFF);
-        },
-        _remove:function() {
-            var self = this,
-                editor = self.editor,
-                tagsRegex = removeFormatTags,
-                removeAttributes = removeFormatAttributes;
+    editor.ready(function() {
+        editor.addButton("removeformat", {
+            title:"清除格式",
+            mode:KE.WYSIWYG_MODE,
+            contentCls:"ke-toolbar-removeformat",
+            offClick:function() {
+                var self = this,
+                    editor = self.editor;
+                tagsRegex.lastIndex = 0;
+                var ranges = editor.getSelection().getRanges();
+                editor.fire("save");
+                for (var i = 0, range;
+                     range = ranges[ i ];
+                     i++) {
+                    if (range.collapsed)
+                        continue;
 
-            tagsRegex.lastIndex = 0;
-            var ranges = editor.getSelection().getRanges();
-            editor.fire("save");
-            for (var i = 0, range; range = ranges[ i ]; i++) {
-                if (range.collapsed)
-                    continue;
+                    range.enlarge(KER.ENLARGE_ELEMENT);
 
-                range.enlarge(KER.ENLARGE_ELEMENT);
+                    // Bookmark the range so we can re-select it after processing.
+                    var bookmark = range.createBookmark(),
+                        // The style will be applied within the bookmark boundaries.
+                        startNode = bookmark.startNode,
+                        endNode = bookmark.endNode;
 
-                // Bookmark the range so we can re-select it after processing.
-                var bookmark = range.createBookmark();
+                    // We need to check the selection boundaries (bookmark spans) to break
+                    // the code in a way that we can properly remove partially selected nodes.
+                    // For example, removing a <b> style from
+                    //		<b>This is [some text</b> to show <b>the] problem</b>
+                    // ... where [ and ] represent the selection, must result:
+                    //		<b>This is </b>[some text to show the]<b> problem</b>
+                    // The strategy is simple, we just break the partial nodes before the
+                    // removal logic, having something that could be represented this way:
+                    //		<b>This is </b>[<b>some text</b> to show <b>the</b>]<b> problem</b>
 
-                // The style will be applied within the bookmark boundaries.
-                var startNode = bookmark.startNode;
-                var endNode = bookmark.endNode;
+                    var breakParent = function(node) {
+                        // Let's start checking the start boundary.
+                        var path = new ElementPath(node),
+                            pathElements = path.elements;
 
-                // We need to check the selection boundaries (bookmark spans) to break
-                // the code in a way that we can properly remove partially selected nodes.
-                // For example, removing a <b> style from
-                //		<b>This is [some text</b> to show <b>the] problem</b>
-                // ... where [ and ] represent the selection, must result:
-                //		<b>This is </b>[some text to show the]<b> problem</b>
-                // The strategy is simple, we just break the partial nodes before the
-                // removal logic, having something that could be represented this way:
-                //		<b>This is </b>[<b>some text</b> to show <b>the</b>]<b> problem</b>
+                        for (var i = 1, pathElement;
+                             pathElement = pathElements[ i ];
+                             i++) {
+                            if (pathElement._4e_equals(path.block)
+                                || pathElement._4e_equals(path.blockLimit))
+                                break;
 
-                var breakParent = function(node) {
-                    // Let's start checking the start boundary.
-                    var path = new ElementPath(node);
-                    var pathElements = path.elements;
+                            // If this element can be removed (even partially).
+                            if (tagsRegex.test(pathElement._4e_name()))
+                                node._4e_breakParent(pathElement);
+                        }
+                    };
 
-                    for (var i = 1, pathElement; pathElement = pathElements[ i ]; i++) {
-                        if (pathElement._4e_equals(path.block) || pathElement._4e_equals(path.blockLimit))
+                    breakParent(startNode);
+                    breakParent(endNode);
+
+                    // Navigate through all nodes between the bookmarks.
+                    var currentNode = startNode._4e_nextSourceNode(true, KEN.NODE_ELEMENT);
+
+                    while (currentNode) {
+                        // If we have reached the end of the selection, stop looping.
+                        if (currentNode._4e_equals(endNode))
                             break;
 
-                        // If this element can be removed (even partially).
-                        if (tagsRegex.test(pathElement._4e_name()))
-                            node._4e_breakParent(pathElement);
-                    }
-                };
+                        // Cache the next node to be processed. Do it now, because
+                        // currentNode may be removed.
+                        var nextNode = currentNode._4e_nextSourceNode(false,
+                            KEN.NODE_ELEMENT);
 
-                breakParent(startNode);
-                breakParent(endNode);
-
-                // Navigate through all nodes between the bookmarks.
-                var currentNode = startNode._4e_nextSourceNode(true, KEN.NODE_ELEMENT);
-
-                while (currentNode) {
-                    // If we have reached the end of the selection, stop looping.
-                    if (currentNode._4e_equals(endNode))
-                        break;
-
-                    // Cache the next node to be processed. Do it now, because
-                    // currentNode may be removed.
-                    var nextNode = currentNode._4e_nextSourceNode(false, KEN.NODE_ELEMENT);
-
-                    // This node must not be a fake element.
-                    if (!( currentNode._4e_name() == 'img'
-                        && currentNode.attr('_ke_realelement') )
-                        ) {
-                        // Remove elements nodes that match with this style rules.
-                        if (tagsRegex.test(currentNode._4e_name()))
-                            currentNode._4e_remove(true);
-                        else {
-                            removeAttrs(currentNode, removeAttributes);
+                        // This node must not be a fake element.
+                        if (!( currentNode._4e_name() == 'img'
+                            && currentNode.attr('_ke_realelement') )
+                            ) {
+                            // Remove elements nodes that match with this style rules.
+                            if (tagsRegex.test(currentNode._4e_name()))
+                                currentNode._4e_remove(true);
+                            else {
+                                removeAttrs(currentNode, removeFormatAttributes);
+                            }
                         }
+                        currentNode = nextNode;
                     }
-
-                    currentNode = nextNode;
+                    range.moveToBookmark(bookmark);
                 }
-
-                range.moveToBookmark(bookmark);
+                editor.getSelection().selectRanges(ranges);
+                editor.fire("save");
             }
-
-            editor.getSelection().selectRanges(ranges);
-            editor.fire("save");
-        }
-
-    });
-    function removeAttrs(el, attrs) {
-        for (var i = 0; i < attrs.length; i++)
-            el.removeAttr(attrs[i]);
-    }
-
-    editor.addPlugin(function() {
-        new RemoveFormat(editor);
+        });
     });
 
 });KISSY.Editor.add("resize", function(editor) {
-    var S = KISSY,KE = S.Editor,Node = S.Node;
-    if (!KE.Resizer) {
-        (function() {
-            var markup = "<div class='ke-resizer'></div>",
-                Draggable = S.Draggable;
+    var S = KISSY,
+        KE = S.Editor,
+        Node = S.Node,
+        Draggable = S.Draggable;
 
-            function Resizer(editor) {
-                this.editor = editor;
-                this._init();
-            }
+    editor.ready(function() {
+        var statusDiv = editor.statusDiv,
+            resizer = new Node("<div class='ke-resizer'>"),
+            cfg = editor.cfg["pluginConfig"]["resize"] || {};
+        cfg = cfg["direction"] || ["x","y"];
+        resizer.appendTo(statusDiv);
+        //最大化时就不能缩放了
+        editor.on("maximizeWindow", function() {
+            resizer.css("display", "none");
+        });
+        editor.on("restoreWindow", function() {
+            resizer.css("display", "");
+        });
+        var d = new Draggable({
+            node:resizer
+        }),
+            height = 0,
+            width = 0,
+            heightEl = editor.wrap,
+            widthEl = editor.editorWrap;
+        d.on("dragstart", function() {
+            height = heightEl.height();
+            width = widthEl.width();
+        });
+        d.on("drag", function(ev) {
+            var diffX = ev.pageX - this.startMousePos.left,
+                diffY = ev.pageY - this.startMousePos.top;
 
-            S.augment(Resizer, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor,
-                        statusDiv = editor.statusDiv,
-                        resizer = new Node(markup),
-                        cfg = editor.cfg["pluginConfig"]["resize"] || {};
-                    cfg = cfg["direction"] || ["x","y"];
-                    resizer.appendTo(statusDiv);
-                    //最大化时就不能缩放了
-                    editor.on("maximizeWindow", function() {
-                        resizer.css("display", "none");
-                    });
-                    editor.on("restoreWindow", function() {
-                        resizer.css("display", "");
-                    });
-                    var d = new Draggable({
-                        node:resizer,
-                        handlers:[resizer]
-                    }),height = 0,width = 0,
-                        heightEl = editor.wrap,
-                        widthEl = editor.editorWrap;
-                    d.on("dragstart", function() {
-                        height = heightEl.height();
-                        width = widthEl.width();
-                    });
-                    d.on("drag", function(ev) {
-                        var diffX = ev.pageX - this.startMousePos.left,
-                            diffY = ev.pageY - this.startMousePos.top;
-                       
-                        if (S.inArray("y", cfg)) heightEl.height(height + diffY);
-                        if (S.inArray("x", cfg)) widthEl.width(width + diffX);
-                    });
-                }
-            });
-
-            KE.Resizer = Resizer;
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.Resizer(editor);
+            if (S.inArray("y", cfg)) heightEl.height(height + diffY);
+            if (S.inArray("x", cfg)) widthEl.width(width + diffX);
+        });
     });
 });/**
  * select component for kissy editor
@@ -18812,8 +18530,9 @@ KISSY.Editor.add("select", function() {
 
     KE.Select = Select;
 });KISSY.Editor.add("separator", function(editor) {
-    editor.addPlugin(function() {
-        new KISSY.Node('<span class="ke-toolbar-separator">&nbsp;</span>').appendTo(editor.toolBarDiv);
+    editor.ready(function() {
+        new KISSY.Node('<span class="ke-toolbar-separator">&nbsp;</span>')
+            .appendTo(editor.toolBarDiv);
     });
 });/**
  * smiley icon from wangwang for kissy editor
@@ -18821,199 +18540,171 @@ KISSY.Editor.add("select", function() {
  */
 KISSY.Editor.add("smiley", function(editor) {
     var KE = KISSY.Editor,
-        S = KISSY,
-        DOM = S.DOM,
-        Event = S.Event,
-        Node = S.Node,
-        Overlay = KE.Overlay,
-        TripleButton = KE.TripleButton;
-    if (!KE.Smiley) {
-        (function() {
+        S = KISSY;
 
-            DOM.addStyleSheet('.ke-smiley-sprite {'
-                + ' background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;'
-                + ' height: 235px;'
-                + ' width: 288px;'
-                + ' margin: 5px;'
-                + 'zoom: 1;'
-                + ' overflow: hidden;'
-                + '}'
-                + '.ke-smiley-sprite a {'
-                + '   width: 24px;'
-                + 'height: 24px;'
-                + ' border: 1px solid white;'
-                + ' float: left;'
-                + '}'
-                + '.ke-smiley-sprite a:hover {'
-                + ' border: 1px solid #808080;'
-                + '}'
-                , "smiley");
+    editor.ready(function() {
+        var context = editor.addButton("smiley", {
+            contentCls:"ke-toolbar-smiley",
+            title:"插入表情",
+            loading:true
+        });
 
-            var smiley_markup = "<div class='ke-smiley-sprite'>";
-
-            for (var i = 0; i <= 98; i++) {
-                smiley_markup += "<a href='#' data-icon='http://a.tbcdn.cn/sys/wangwang/smiley/48x48/" + i + ".gif'></a>"
-            }
-
-            smiley_markup += "</div>";
-
-            function Smiley(editor) {
-                this.editor = editor;
-                this._init();
-            }
-
-            S.augment(Smiley, {
-                _init:function() {
-                    var self = this,editor = self.editor;
-                    self.el = new TripleButton({
-                        //text:"smiley",
-                        contentCls:"ke-toolbar-smiley",
-                        title:"插入表情",
-
-                        container:editor.toolBarDiv
-                    });
-                    self.el.on("offClick onClick", this._show, this);
-                    KE.Utils.lazyRun(this, "_prepare", "_real");
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _hidePanel:function(ev) {
-                    var self = this,
-                        el = self.el.el,
-                        t = ev.target,
-                        smileyWin = self.smileyWin;
-                    //当前按钮点击无效
-                    if (el._4e_equals(t) || el.contains(t)) {
-                        return;
-                    }
-                    smileyWin.hide();
-                },
-                _selectSmiley:function(ev) {
-                    ev.halt();
-                    var self = this,editor = self.editor;
-                    var t = ev.target,icon;
-                    if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
-                        var img = new Node("<img " +
-                            "class='ke_smiley'" +
-                            "alt='' src='" + icon + "'/>", null, editor.document);
-                        editor.insertElement(img);
-                        this.smileyWin.hide();
-                    }
-                },
-                _prepare:function() {
-                    var self = this,
-                        el = self.el,
-                        editor = self.editor;
-                    self.smileyWin = new Overlay({
-                        content:smiley_markup,
-                        focus4e:false,
-                        width:"297px",
-                        elCls:"ks-popup",
-                        zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
-                        mask:false
-                    });
-
-                    var smileyWin = self.smileyWin;
-                    smileyWin.renderer();
-                    self.smileyPanel = smileyWin.get("contentEl");
-                    smileyWin.on("show", el.bon, el);
-                    smileyWin.on("hide", el.boff, el);
-                    self.smileyPanel.on("click", self._selectSmiley, self);
-                    Event.on(document, "click", self._hidePanel, self);
-                    Event.on(editor.document, "click", self._hidePanel, self);
-                },
-                _real:function() {
-                    var xy = this.el.el.offset();
-                    xy.top += this.el.el.height() + 5;
-                    if (xy.left + this.smileyPanel.width() > DOM.viewportWidth() - 60) {
-                        xy.left = DOM.viewportWidth() - this.smileyPanel.width() - 60;
-                    }
-                    this.smileyWin.set("xy", [xy.left,xy.top]);
-                    this.smileyWin.show();
-                },
-                _show:function(ev) {
-                    var self = this,
-                        smileyWin = self.smileyWin;
-                    if (smileyWin && smileyWin.get("visible")) {
-                        smileyWin.hide();
-                    } else {
-                        self._prepare(ev);
-                    }
-                }
-            });
-            KE.Smiley = Smiley;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.Smiley(editor);
+        KE.use("smiley/support", function() {
+            context.reload(KE.SmileySupport);
+        });
     });
 });
-/**
+KISSY.Editor.add("smiley/support", function() {
+    var S = KISSY,
+        Event = S.Event,
+        KE = S.Editor,
+        DOM = S.DOM;
+
+    DOM.addStyleSheet('.ke-smiley-sprite {'
+        + ' background: url("http://a.tbcdn.cn/sys/wangwang/smiley/sprite.png") no-repeat scroll -1px 0 transparent;'
+        + ' height: 235px;'
+        + ' width: 288px;'
+        + ' margin: 5px;'
+        + 'zoom: 1;'
+        + ' overflow: hidden;'
+        + '}'
+        + '.ke-smiley-sprite a {'
+        + '   width: 24px;'
+        + 'height: 24px;'
+        + ' border: 1px solid white;'
+        + ' float: left;'
+        + '}'
+        + '.ke-smiley-sprite a:hover {'
+        + ' border: 1px solid #808080;'
+        + '}'
+        , "smiley");
+
+    var smiley_markup;
+
+    function initMarkup() {
+        if (smiley_markup) return smiley_markup;
+        smiley_markup = "<div class='ke-smiley-sprite'>";
+        for (var i = 0; i <= 98; i++) {
+            smiley_markup += "<a href='#' " +
+                "data-icon='http://a.tbcdn.cn/sys/wangwang/smiley/48x48/" + i + ".gif'>" +
+                "</a>"
+        }
+        smiley_markup += "</div>";
+        return smiley_markup;
+    }
+
+
+    KE.SmileySupport = {
+        _selectSmiley:function(ev) {
+            ev.halt();
+            var self = this,editor = self.editor;
+            var t = ev.target,icon;
+            if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
+                var img = new S.Node("<img " +
+                    "class='ke_smiley'" +
+                    "alt='' src='" + icon + "'/>", null, editor.document);
+                editor.insertElement(img);
+                this.smileyWin.hide();
+            }
+        },
+        _hidePanel:function(ev) {
+            var self = this,
+                el = self.btn.get("el"),
+                t = ev.target,
+                smileyWin = self.smileyWin;
+            //当前按钮点击无效
+            if (el._4e_equals(t) || el.contains(t)) {
+                return;
+            }
+            smileyWin.hide();
+        },
+        _show:function() {
+            var self = this,
+                smileyWin = self.smileyWin;
+            if (smileyWin && smileyWin.get("visible")) {
+                smileyWin.hide();
+            } else {
+                self.call("_prepare");
+            }
+        },
+        _prepare:function() {
+            var self = this,
+                cfg = self.cfg,
+                el = self.btn,
+                editor = self.editor;
+            var smiley_markup = initMarkup();
+            self.smileyWin = new KE.Overlay({
+                content:smiley_markup,
+                focus4e:false,
+                width:"297px",
+                autoRender:true,
+                elCls:"ks-popup",
+                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
+                mask:false
+            });
+            var smileyWin = self.smileyWin;
+            self.smileyPanel = smileyWin.get("contentEl");
+            smileyWin.on("show", el.bon, el);
+            smileyWin.on("hide", el.boff, el);
+            self.smileyPanel.on("click", cfg._selectSmiley, self);
+            Event.on(document, "click", cfg._hidePanel, self);
+            Event.on(editor.document, "click", cfg._hidePanel, self);
+            self.cfg._prepare = self.cfg._real;
+            self.call("_real");
+        },
+        _real:function() {
+            var self = this,
+                el = self.btn.get("el"),
+                xy = el.offset();
+            xy.top += el.height() + 5;
+            if (xy.left + self.smileyPanel.width() > DOM.viewportWidth() - 60) {
+                xy.left = DOM.viewportWidth() - self.smileyPanel.width() - 60;
+            }
+            self.smileyWin.set("xy", [xy.left,xy.top]);
+            self.smileyWin.show();
+        },
+        offClick:function() {
+            this.call("_prepare");
+        },
+        onClick:function() {
+            this.call("_prepare");
+        }
+    };
+});/**
  * source editor for kissy editor
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("sourcearea", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
-        UA = S.UA,
-        TripleButton = KE.TripleButton;
+        UA = S.UA;
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;
-    if (!KE.SourceArea) {
-        (function() {
-            var SOURCE_MODE = KE.SOURCE_MODE ,
-                WYSIWYG_MODE = KE.WYSIWYG_MODE;
 
-            function SourceArea(editor) {
-                this.editor = editor;
-                this._init();
+    editor.ready(function() {
+        var SOURCE_MODE = KE.SOURCE_MODE ,
+            WYSIWYG_MODE = KE.WYSIWYG_MODE;
+        editor.addButton("sourcearea", {
+            title:"源码",
+            contentCls:"ke-toolbar-source",
+            init:function() {
+                var self = this,
+                    btn = self.btn,
+                    editor = self.editor;
+                editor.on("wysiwygmode", btn.boff, btn);
+                editor.on("sourcemode", btn.bon, btn);
+            },
+            offClick:function() {
+                var self = this,
+                    editor = self.editor;
+                editor.execCommand("sourceAreaSupport", SOURCE_MODE);
+            },
+            onClick:function() {
+                var self = this,
+                    editor = self.editor;
+                editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
             }
-
-            S.augment(SourceArea, {
-                _init:function() {
-                    var self = this,editor = self.editor;
-                    self.el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        title:"源码",
-                        contentCls:"ke-toolbar-source"
-                    });
-                    var el = self.el;
-                    el.on("offClick", self._show, self);
-                    el.on("onClick", self._hide, self);
-                    editor.on("sourcemode", function() {
-                        el.bon();
-                    });
-                    editor.on("wysiwygmode", function() {
-                        el.boff();
-                    });
-                },
-                _show:function() {
-                    var self = this,
-                        editor = self.editor;
-                    editor.execCommand("sourceAreaSupport", SOURCE_MODE);
-                    self.el.bon();
-                },
-
-
-                _hide:function() {
-                    var self = this,
-                        editor = self.editor,
-                        el = self.el;
-                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
-                    el.boff();
-                }
-            });
-            KE.SourceArea = SourceArea;
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.SourceArea(editor);
+        });
     });
 });
 /**
@@ -19090,34 +18781,25 @@ KISSY.Editor.add("sourcearea/support", function(editor) {
             KE.SourceAreaSupport = new SourceAreaSupport();
         })();
     }
-    editor.addPlugin(function() {
-        editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
-    });
+    editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
 
 });/**
  * table edit plugin for kissy editor
  * @author: yiminghe@gmail.com
  */
-KISSY.Editor.add("table", function(editor, undefined) {
+KISSY.Editor.add("table", function(editor) {
 
     var S = KISSY,
         KE = S.Editor,
-        Node = S.Node,
-        Walker = KE.Walker,
         UA = S.UA,
-        KEN = KE.NODE,
-        TripleButton = KE.TripleButton,
-        ContextMenu = KE.ContextMenu,
-        tableRules = ["tr","th","td","tbody","table"],
         trim = S.trim;
 
     /**
      * table 编辑模式下显示虚线边框便于编辑
      */
     var showBorderClassName = 'ke_show_border',
-        cssStyleText,
         cssTemplate =
-            // TODO: For IE6, we don't have child selector support,
+            // IE6 don't have child selector support,
             // where nested table cells could be incorrect.
             ( UA.ie === 6 ?
                 [
@@ -19136,9 +18818,8 @@ KISSY.Editor.add("table", function(editor, undefined) {
                     '{',
                     'border : #d3d3d3 1px dotted',
                     '}'
-                ] ).join('');
-
-    cssStyleText = cssTemplate.replace(/%2/g, showBorderClassName);
+                ] ).join(''),
+        cssStyleText = cssTemplate.replace(/%2/g, showBorderClassName);
     var dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter,
         htmlFilter = dataProcessor && dataProcessor.htmlFilter;
@@ -19174,424 +18855,409 @@ KISSY.Editor.add("table", function(editor, undefined) {
             }
         });
     }
-    if (!KE.TableUI) {
-        (function() {
+    editor.ready(function() {
 
-            function TableUI(editor) {
-                var self = this;
-                self.editor = editor;
-                editor._toolbars = editor._toolbars || {};
-                editor._toolbars["table"] = self;
-                self._init();
-            }
-
-            TableUI.showBorderClassName = showBorderClassName;
-
-
-            S.augment(TableUI, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor,
-                        toolBarDiv = editor.toolBarDiv,
-                        myContexts = {};
-                    self.el = new TripleButton({
-                        //text:"table",
-                        contentCls:"ke-toolbar-table",
-                        title:"插入表格",
-                        container:toolBarDiv
-                    });
-                    var el = self.el;
-                    el.on("offClick", self._tableShow, self);
-
-                    for (var f in contextMenu) {
-                        (function(f) {
-                            myContexts[f] = function() {
-                                editor.fire("save");
-                                contextMenu[f](editor);
-                                editor.fire("save");
-                            }
-                        })(f);
-                    }
-                    ContextMenu.register({
-                        editor:editor,
-                        rules:tableRules,
-                        width:"120px",
-                        funcs:myContexts
-                    });
-
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.disable();
-                },
-                enable:function() {
-                    this.el.enable();
-                },
-                _tableShow:function(ev, selectedTable, td) {
-                    var editor = this.editor;
-                    editor.useDialog("table/dialog", function(dialog) {
-                        dialog.show(selectedTable, td);
-                    });
+        var context = editor.addButton("table", {
+            contentCls:"ke-toolbar-table",
+            title:"插入表格",
+            loading:true
+        });
+        KE.use("table/support", function() {
+            var tableUI = new KE.TableUI(editor);
+            context.reload({
+                offClick:function() {
+                    tableUI._tableShow();
                 }
             });
-
-
-            var cellNodeRegex = /^(?:td|th)$/;
-
-            function getSelectedCells(selection) {
-                // Walker will try to split text nodes, which will make the current selection
-                // invalid. So save bookmarks before doing anything.
-                var bookmarks = selection.createBookmarks(),
-                    ranges = selection.getRanges(),
-                    retval = [],
-                    database = {};
-
-                function moveOutOfCellGuard(node) {
-                    // Apply to the first cell only.
-                    if (retval.length > 0)
-                        return;
-
-                    // If we are exiting from the first </td>, then the td should definitely be
-                    // included.
-                    if (node[0].nodeType == KEN.NODE_ELEMENT &&
-                        cellNodeRegex.test(node._4e_name())
-                        && !node.data('selected_cell')) {
-                        node._4e_setMarker(database, 'selected_cell', true);
-                        retval.push(node);
-                    }
-                }
-
-                for (var i = 0; i < ranges.length; i++) {
-                    var range = ranges[ i ];
-
-                    if (range.collapsed) {
-                        // Walker does not handle collapsed ranges yet - fall back to old API.
-                        var startNode = range.getCommonAncestor(),
-                            nearestCell = startNode._4e_ascendant('td', true) ||
-                                startNode._4e_ascendant('th', true);
-                        if (nearestCell)
-                            retval.push(nearestCell);
-                    } else {
-                        var walker = new Walker(range),
-                            node;
-                        walker.guard = moveOutOfCellGuard;
-
-                        while (( node = walker.next() )) {
-                            // If may be possible for us to have a range like this:
-                            // <td>^1</td><td>^2</td>
-                            // The 2nd td shouldn't be included.
-                            //
-                            // So we have to take care to include a td we've entered only when we've
-                            // walked into its children.
-
-                            var parent = node.parent();
-                            if (parent && cellNodeRegex.test(parent._4e_name()) &&
-                                !parent.data('selected_cell')) {
-                                parent._4e_setMarker(database, 'selected_cell', true);
-                                retval.push(parent);
-                            }
-                        }
-                    }
-                }
-
-                KE.Utils.clearAllMarkers(database);
-                // Restore selection position.
-                selection.selectBookmarks(bookmarks);
-
-                return retval;
-            }
-
-            function clearRow($tr) {
-                // Get the array of row's cells.
-                var $cells = $tr.cells;
-                // Empty all cells.
-                for (var i = 0; i < $cells.length; i++) {
-                    $cells[ i ].innerHTML = '';
-                    if (!UA.ie)
-                        ( new Node($cells[ i ]) )._4e_appendBogus();
-                }
-            }
-
-            function insertRow(selection, insertBefore) {
-                // Get the row where the selection is placed in.
-                var row = selection.getStartElement()._4e_ascendant('tr');
-                if (!row)
-                    return;
-
-                // Create a clone of the row.
-                var newRow = row._4e_clone(true);
-                // Insert the new row before of it.
-                newRow.insertBefore(row);
-                // Clean one of the rows to produce the illusion of
-                // inserting an empty row
-                // before or after.
-                clearRow(insertBefore ? newRow[0] : row[0]);
-            }
-
-            function deleteRows(selectionOrRow) {
-                if (selectionOrRow instanceof KE.Selection) {
-                    var cells = getSelectedCells(selectionOrRow),
-                        cellsCount = cells.length,
-                        rowsToDelete = [],
-                        cursorPosition,
-                        previousRowIndex,
-                        nextRowIndex;
-
-                    // Queue up the rows - it's possible and
-                    // likely that we have duplicates.
-                    for (var i = 0; i < cellsCount; i++) {
-                        var row = cells[ i ].parent(),
-                            rowIndex = row[0].rowIndex;
-
-                        !i && ( previousRowIndex = rowIndex - 1 );
-                        rowsToDelete[ rowIndex ] = row;
-                        i == cellsCount - 1 && ( nextRowIndex = rowIndex + 1 );
-                    }
-
-                    var table = row._4e_ascendant('table'),
-                        rows = table[0].rows,
-                        rowCount = rows.length;
-
-                    // Where to put the cursor after rows been deleted?
-                    // 1. Into next sibling row if any;
-                    // 2. Into previous sibling row if any;
-                    // 3. Into table's parent element if it's the very last row.
-                    cursorPosition = new Node(
-                        nextRowIndex < rowCount && table[0].rows[ nextRowIndex ] ||
-                            previousRowIndex > 0 && table[0].rows[ previousRowIndex ] ||
-                            table[0].parentNode);
-
-                    for (i = rowsToDelete.length; i >= 0; i--) {
-                        if (rowsToDelete[ i ])
-                            deleteRows(rowsToDelete[ i ]);
-                    }
-
-                    return cursorPosition;
-                }
-                else if (selectionOrRow instanceof Node) {
-                    table = selectionOrRow._4e_ascendant('table');
-
-                    if (table[0].rows.length == 1)
-                        table._4e_remove();
-                    else
-                        selectionOrRow._4e_remove();
-                }
-
-                return 0;
-            }
-
-            function insertColumn(selection, insertBefore) {
-                // Get the cell where the selection is placed in.
-                var startElement = selection.getStartElement(),
-                    cell = startElement._4e_ascendant('td', true) ||
-                        startElement._4e_ascendant('th', true);
-                if (!cell)
-                    return;
-                // Get the cell's table.
-                var table = cell._4e_ascendant('table'),
-                    cellIndex = cell[0].cellIndex;
-                // Loop through all rows available in the table.
-                for (var i = 0; i < table[0].rows.length; i++) {
-                    var $row = table[0].rows[ i ];
-                    // If the row doesn't have enough cells, ignore it.
-                    if ($row.cells.length < ( cellIndex + 1 ))
-                        continue;
-                    cell = new Node($row.cells[ cellIndex ].cloneNode(false));
-
-                    if (!UA.ie)
-                        cell._4e_appendBogus();
-                    // Get back the currently selected cell.
-                    var baseCell = new Node($row.cells[ cellIndex ]);
-                    if (insertBefore)
-                        cell.insertBefore(baseCell);
-                    else
-                        cell.insertAfter(baseCell);
-                }
-            }
-
-            function getFocusElementAfterDelCols(cells) {
-                var cellIndexList = [],
-                    table = cells[ 0 ] && cells[ 0 ]._4e_ascendant('table'),
-                    i,length,
-                    targetIndex,targetCell;
-
-                // get the cellIndex list of delete cells
-                for (i = 0,length = cells.length; i < length; i++)
-                    cellIndexList.push(cells[i][0].cellIndex);
-
-                // get the focusable column index
-                cellIndexList.sort();
-                for (i = 1,length = cellIndexList.length;
-                     i < length; i++) {
-                    if (cellIndexList[ i ] - cellIndexList[ i - 1 ] > 1) {
-                        targetIndex = cellIndexList[ i - 1 ] + 1;
-                        break;
-                    }
-                }
-
-                if (!targetIndex)
-                    targetIndex = cellIndexList[ 0 ] > 0 ? ( cellIndexList[ 0 ] - 1 )
-                        : ( cellIndexList[ cellIndexList.length - 1 ] + 1 );
-
-                // scan row by row to get the target cell
-                var rows = table[0].rows;
-                for (i = 0,length = rows.length;
-                     i < length; i++) {
-                    targetCell = rows[ i ].cells[ targetIndex ];
-                    if (targetCell)
-                        break;
-                }
-
-                return targetCell ? new Node(targetCell) : table._4e_previous();
-            }
-
-            function deleteColumns(selectionOrCell) {
-                if (selectionOrCell instanceof KE.Selection) {
-                    var colsToDelete = getSelectedCells(selectionOrCell),
-                        elementToFocus = getFocusElementAfterDelCols(colsToDelete);
-
-                    for (var i = colsToDelete.length - 1; i >= 0; i--) {
-                        //某一列已经删除？？这一列的cell再做？ !table判断处理
-                        if (colsToDelete[ i ])
-                            deleteColumns(colsToDelete[i]);
-                    }
-
-                    return elementToFocus;
-                }
-                else if (selectionOrCell instanceof Node) {
-                    // Get the cell's table.
-                    var table = selectionOrCell._4e_ascendant('table');
-
-                    //该单元格所属的列已经被删除了
-                    if (!table)
-                        return null;
-
-                    // Get the cell index.
-                    var cellIndex = selectionOrCell[0].cellIndex;
-
-                    /*
-                     * Loop through all rows from down to up,
-                     *  coz it's possible that some rows
-                     * will be deleted.
-                     */
-                    for (i = table[0].rows.length - 1; i >= 0; i--) {
-                        // Get the row.
-                        var row = new Node(table[0].rows[ i ]);
-
-                        // If the cell to be removed is the first one and
-                        //  the row has just one cell.
-                        if (!cellIndex && row[0].cells.length == 1) {
-                            deleteRows(row);
-                            continue;
-                        }
-
-                        // Else, just delete the cell.
-                        if (row[0].cells[ cellIndex ])
-                            row[0].removeChild(row[0].cells[ cellIndex ]);
-                    }
-                }
-
-                return null;
-            }
-
-            function placeCursorInCell(cell, placeAtEnd) {
-                var range = new KE.Range(cell[0].ownerDocument);
-                if (!range['moveToElementEditablePosition'](cell,
-                    placeAtEnd ? true : undefined)) {
-                    range.selectNodeContents(cell);
-                    range.collapse(placeAtEnd ? false : true);
-                }
-                range.select(true);
-            }
-
-            var contextMenu = {
-
-                "表格属性" : function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        table = startElement && startElement._4e_ascendant('table', true);
-                    if (!table)
-                        return;
-                    var tableUI = editor._toolbars["table"],
-                        td = startElement._4e_ascendant(function(n) {
-                            var name = n._4e_name();
-                            return name == "td" || name == "th";
-                        }, true);
-                    //!TODO 修改单个 cell 的间距
-                    tableUI._tableShow(null, table, td);
-                },
-
-                "删除表格" : function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection &&
-                            selection.getStartElement(),
-                        table = startElement &&
-                            startElement._4e_ascendant('table', true);
-                    if (!table)
-                        return;
-                    // Maintain the selection point at where the table was deleted.
-                    selection.selectElement(table);
-                    var range = selection.getRanges()[0];
-                    range.collapse();
-                    selection.selectRanges([ range ]);
-
-                    // If the table's parent has only one child,
-                    // remove it,except body,as well.( #5416 )
-                    var parent = table.parent();
-                    if (parent[0].childNodes.length == 1 &&
-                        parent._4e_name() != 'body' &&
-                        parent._4e_name() != 'td')
-                        parent._4e_remove();
-                    else
-                        table._4e_remove();
-                },
-
-                '删除行 ': function(editor) {
-                    var selection = editor.getSelection();
-                    placeCursorInCell(deleteRows(selection), undefined);
-                },
-
-                '删除列 ' : function(editor) {
-                    var selection = editor.getSelection(),
-                        element = deleteColumns(selection);
-                    element && placeCursorInCell(element, true);
-                },
-
-                '在上方插入行': function(editor) {
-                    var selection = editor.getSelection();
-                    insertRow(selection, true);
-                },
-
-
-                '在下方插入行' : function(editor) {
-                    var selection = editor.getSelection();
-                    insertRow(selection, undefined);
-                },
-
-                '在左侧插入列' : function(editor) {
-                    var selection = editor.getSelection();
-                    insertColumn(selection, true);
-                },
-
-
-                '在右侧插入列' : function(editor) {
-                    var selection = editor.getSelection();
-                    insertColumn(selection, undefined);
-                }
-            };
-
-            KE.TableUI = TableUI;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.TableUI(editor);
+        });
         /**
          * 动态加入显表格border css，便于编辑
          */
         editor.addCustomStyle(cssStyleText);
     });
 });
-/**
+KISSY.Editor.add("table/support", function() {
+    var S = KISSY,
+        UA = S.UA,
+        Node = S.Node,
+        KE = S.Editor,
+        tableRules = ["tr","th","td","tbody","table"];
+
+    function TableUI(editor) {
+        var self = this,
+            myContexts = {};
+        for (var f in contextMenu) {
+            (function(f) {
+                myContexts[f] = function() {
+                    editor.fire("save");
+                    contextMenu[f](self);
+                    editor.fire("save");
+                }
+            })(f);
+        }
+        KE.ContextMenu.register({
+            editor:editor,
+            rules:tableRules,
+            width:"120px",
+            funcs:myContexts
+        });
+        self.editor = editor;
+    }
+
+    S.augment(TableUI, {
+        _tableShow:function(ev, selectedTable, td) {
+            var editor = this.editor;
+            editor.useDialog("table/dialog", function(dialog) {
+                dialog.show(selectedTable, td);
+            });
+        }
+    });
+
+
+    var cellNodeRegex = /^(?:td|th)$/;
+
+    function getSelectedCells(selection) {
+        // Walker will try to split text nodes, which will make the current selection
+        // invalid. So save bookmarks before doing anything.
+        var bookmarks = selection.createBookmarks(),
+            ranges = selection.getRanges(),
+            retval = [],
+            database = {};
+
+        function moveOutOfCellGuard(node) {
+            // Apply to the first cell only.
+            if (retval.length > 0)
+                return;
+
+            // If we are exiting from the first </td>, then the td should definitely be
+            // included.
+            if (node[0].nodeType == KEN.NODE_ELEMENT &&
+                cellNodeRegex.test(node._4e_name())
+                && !node.data('selected_cell')) {
+                node._4e_setMarker(database, 'selected_cell', true);
+                retval.push(node);
+            }
+        }
+
+        for (var i = 0; i < ranges.length; i++) {
+            var range = ranges[ i ];
+
+            if (range.collapsed) {
+                // Walker does not handle collapsed ranges yet - fall back to old API.
+                var startNode = range.getCommonAncestor(),
+                    nearestCell = startNode._4e_ascendant('td', true) ||
+                        startNode._4e_ascendant('th', true);
+                if (nearestCell)
+                    retval.push(nearestCell);
+            } else {
+                var walker = new Walker(range),
+                    node;
+                walker.guard = moveOutOfCellGuard;
+
+                while (( node = walker.next() )) {
+                    // If may be possible for us to have a range like this:
+                    // <td>^1</td><td>^2</td>
+                    // The 2nd td shouldn't be included.
+                    //
+                    // So we have to take care to include a td we've entered only when we've
+                    // walked into its children.
+
+                    var parent = node.parent();
+                    if (parent && cellNodeRegex.test(parent._4e_name()) &&
+                        !parent.data('selected_cell')) {
+                        parent._4e_setMarker(database, 'selected_cell', true);
+                        retval.push(parent);
+                    }
+                }
+            }
+        }
+
+        KE.Utils.clearAllMarkers(database);
+        // Restore selection position.
+        selection.selectBookmarks(bookmarks);
+
+        return retval;
+    }
+
+    function clearRow($tr) {
+        // Get the array of row's cells.
+        var $cells = $tr.cells;
+        // Empty all cells.
+        for (var i = 0; i < $cells.length; i++) {
+            $cells[ i ].innerHTML = '';
+            if (!UA.ie)
+                ( new Node($cells[ i ]) )._4e_appendBogus();
+        }
+    }
+
+    function insertRow(selection, insertBefore) {
+        // Get the row where the selection is placed in.
+        var row = selection.getStartElement()._4e_ascendant('tr');
+        if (!row)
+            return;
+
+        // Create a clone of the row.
+        var newRow = row._4e_clone(true);
+        // Insert the new row before of it.
+        newRow.insertBefore(row);
+        // Clean one of the rows to produce the illusion of
+        // inserting an empty row
+        // before or after.
+        clearRow(insertBefore ? newRow[0] : row[0]);
+    }
+
+    function deleteRows(selectionOrRow) {
+        if (selectionOrRow instanceof KE.Selection) {
+            var cells = getSelectedCells(selectionOrRow),
+                cellsCount = cells.length,
+                rowsToDelete = [],
+                cursorPosition,
+                previousRowIndex,
+                nextRowIndex;
+
+            // Queue up the rows - it's possible and
+            // likely that we have duplicates.
+            for (var i = 0; i < cellsCount; i++) {
+                var row = cells[ i ].parent(),
+                    rowIndex = row[0].rowIndex;
+
+                !i && ( previousRowIndex = rowIndex - 1 );
+                rowsToDelete[ rowIndex ] = row;
+                i == cellsCount - 1 && ( nextRowIndex = rowIndex + 1 );
+            }
+
+            var table = row._4e_ascendant('table'),
+                rows = table[0].rows,
+                rowCount = rows.length;
+
+            // Where to put the cursor after rows been deleted?
+            // 1. Into next sibling row if any;
+            // 2. Into previous sibling row if any;
+            // 3. Into table's parent element if it's the very last row.
+            cursorPosition = new Node(
+                nextRowIndex < rowCount && table[0].rows[ nextRowIndex ] ||
+                    previousRowIndex > 0 && table[0].rows[ previousRowIndex ] ||
+                    table[0].parentNode);
+
+            for (i = rowsToDelete.length; i >= 0; i--) {
+                if (rowsToDelete[ i ])
+                    deleteRows(rowsToDelete[ i ]);
+            }
+
+            return cursorPosition;
+        }
+        else if (selectionOrRow instanceof Node) {
+            table = selectionOrRow._4e_ascendant('table');
+
+            if (table[0].rows.length == 1)
+                table._4e_remove();
+            else
+                selectionOrRow._4e_remove();
+        }
+
+        return 0;
+    }
+
+    function insertColumn(selection, insertBefore) {
+        // Get the cell where the selection is placed in.
+        var startElement = selection.getStartElement(),
+            cell = startElement._4e_ascendant('td', true) ||
+                startElement._4e_ascendant('th', true);
+        if (!cell)
+            return;
+        // Get the cell's table.
+        var table = cell._4e_ascendant('table'),
+            cellIndex = cell[0].cellIndex;
+        // Loop through all rows available in the table.
+        for (var i = 0; i < table[0].rows.length; i++) {
+            var $row = table[0].rows[ i ];
+            // If the row doesn't have enough cells, ignore it.
+            if ($row.cells.length < ( cellIndex + 1 ))
+                continue;
+            cell = new Node($row.cells[ cellIndex ].cloneNode(false));
+
+            if (!UA.ie)
+                cell._4e_appendBogus();
+            // Get back the currently selected cell.
+            var baseCell = new Node($row.cells[ cellIndex ]);
+            if (insertBefore)
+                cell.insertBefore(baseCell);
+            else
+                cell.insertAfter(baseCell);
+        }
+    }
+
+    function getFocusElementAfterDelCols(cells) {
+        var cellIndexList = [],
+            table = cells[ 0 ] && cells[ 0 ]._4e_ascendant('table'),
+            i,length,
+            targetIndex,targetCell;
+
+        // get the cellIndex list of delete cells
+        for (i = 0,length = cells.length; i < length; i++)
+            cellIndexList.push(cells[i][0].cellIndex);
+
+        // get the focusable column index
+        cellIndexList.sort();
+        for (i = 1,length = cellIndexList.length;
+             i < length; i++) {
+            if (cellIndexList[ i ] - cellIndexList[ i - 1 ] > 1) {
+                targetIndex = cellIndexList[ i - 1 ] + 1;
+                break;
+            }
+        }
+
+        if (!targetIndex)
+            targetIndex = cellIndexList[ 0 ] > 0 ? ( cellIndexList[ 0 ] - 1 )
+                : ( cellIndexList[ cellIndexList.length - 1 ] + 1 );
+
+        // scan row by row to get the target cell
+        var rows = table[0].rows;
+        for (i = 0,length = rows.length;
+             i < length; i++) {
+            targetCell = rows[ i ].cells[ targetIndex ];
+            if (targetCell)
+                break;
+        }
+
+        return targetCell ? new Node(targetCell) : table._4e_previous();
+    }
+
+    function deleteColumns(selectionOrCell) {
+        if (selectionOrCell instanceof KE.Selection) {
+            var colsToDelete = getSelectedCells(selectionOrCell),
+                elementToFocus = getFocusElementAfterDelCols(colsToDelete);
+
+            for (var i = colsToDelete.length - 1; i >= 0; i--) {
+                //某一列已经删除？？这一列的cell再做？ !table判断处理
+                if (colsToDelete[ i ])
+                    deleteColumns(colsToDelete[i]);
+            }
+
+            return elementToFocus;
+        }
+        else if (selectionOrCell instanceof Node) {
+            // Get the cell's table.
+            var table = selectionOrCell._4e_ascendant('table');
+
+            //该单元格所属的列已经被删除了
+            if (!table)
+                return null;
+
+            // Get the cell index.
+            var cellIndex = selectionOrCell[0].cellIndex;
+
+            /*
+             * Loop through all rows from down to up,
+             *  coz it's possible that some rows
+             * will be deleted.
+             */
+            for (i = table[0].rows.length - 1; i >= 0; i--) {
+                // Get the row.
+                var row = new Node(table[0].rows[ i ]);
+
+                // If the cell to be removed is the first one and
+                //  the row has just one cell.
+                if (!cellIndex && row[0].cells.length == 1) {
+                    deleteRows(row);
+                    continue;
+                }
+
+                // Else, just delete the cell.
+                if (row[0].cells[ cellIndex ])
+                    row[0].removeChild(row[0].cells[ cellIndex ]);
+            }
+        }
+
+        return null;
+    }
+
+    function placeCursorInCell(cell, placeAtEnd) {
+        var range = new KE.Range(cell[0].ownerDocument);
+        if (!range['moveToElementEditablePosition'](cell,
+            placeAtEnd ? true : undefined)) {
+            range.selectNodeContents(cell);
+            range.collapse(placeAtEnd ? false : true);
+        }
+        range.select(true);
+    }
+
+    var contextMenu = {
+
+        "表格属性" : function(cmd) {
+            var editor = cmd.editor,
+                selection = editor.getSelection(),
+                startElement = selection && selection.getStartElement(),
+                table = startElement && startElement._4e_ascendant('table', true);
+            if (!table)
+                return;
+            var td = startElement._4e_ascendant(function(n) {
+                var name = n._4e_name();
+                return name == "td" || name == "th";
+            }, true);
+            cmd._tableShow(null, table, td);
+        },
+
+        "删除表格" : function(cmd) {
+            var editor = cmd.editor,
+                selection = editor.getSelection(),
+                startElement = selection &&
+                    selection.getStartElement(),
+                table = startElement &&
+                    startElement._4e_ascendant('table', true);
+            if (!table)
+                return;
+            // Maintain the selection point at where the table was deleted.
+            selection.selectElement(table);
+            var range = selection.getRanges()[0];
+            range.collapse();
+            selection.selectRanges([ range ]);
+
+            // If the table's parent has only one child,
+            // remove it,except body,as well.( #5416 )
+            var parent = table.parent();
+            if (parent[0].childNodes.length == 1 &&
+                parent._4e_name() != 'body' &&
+                parent._4e_name() != 'td')
+                parent._4e_remove();
+            else
+                table._4e_remove();
+        },
+
+        '删除行 ': function(cmd) {
+            var selection = cmd.editor.getSelection();
+            placeCursorInCell(deleteRows(selection), undefined);
+        },
+
+        '删除列 ' : function(cmd) {
+            var selection = cmd.editor.getSelection(),
+                element = deleteColumns(selection);
+            element && placeCursorInCell(element, true);
+        },
+
+        '在上方插入行': function(cmd) {
+            var selection = cmd.editor.getSelection();
+            insertRow(selection, true);
+        },
+
+        '在下方插入行' : function(cmd) {
+            var selection = cmd.editor.getSelection();
+            insertRow(selection, undefined);
+        },
+
+        '在左侧插入列' : function(cmd) {
+            var selection = cmd.editor.getSelection();
+            insertColumn(selection, true);
+        },
+
+        '在右侧插入列' : function(cmd) {
+            var selection = cmd.editor.getSelection();
+            insertColumn(selection, undefined);
+        }
+    };
+
+    KE.TableUI = TableUI;
+});/**
  * simple tabs ui component for kissy editor
  */
 KISSY.Editor.add("tabs", function() {
@@ -19692,112 +19358,85 @@ KISSY.Editor.add("tabs", function() {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("templates", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
-        //Event = S.Event,
-        //KEN = KE.NODE,
-        //UA = S.UA,
         DOM = S.DOM,
-        TripleButton = KE.TripleButton,
         Dialog = KE.Dialog;
 
-    if (!KE.TplUI) {
+    DOM.addStyleSheet(
+        ".ke-tpl {" +
+            "    border: 2px solid #EEEEEE;" +
+            "    width: 95%;" +
+            "    margin: 20px auto;" +
+            "}" +
 
-        (function() {
-            DOM.addStyleSheet(
-                ".ke-tpl {" +
-                    "    border: 2px solid #EEEEEE;" +
-                    "    width: 95%;" +
-                    "    margin: 20px auto;" +
-                    "}" +
+            ".ke-tpl-list {" +
+            "    border: 1px solid #EEEEEE;" +
+            "    margin: 5px;" +
+            "    padding: 7px;" +
+            "    display: block;" +
+            "    text-decoration: none;" +
+            "    zoom: 1;" +
+            "}" +
 
-                    ".ke-tpl-list {" +
-                    "    border: 1px solid #EEEEEE;" +
-                    "    margin: 5px;" +
-                    "    padding: 7px;" +
-                    "    display: block;" +
-                    "    text-decoration: none;" +
-                    "    zoom: 1;" +
-                    "}" +
+            ".ke-tpl-list:hover, .ke-tpl-selected {" +
+            "    background-color: #FFFACD;" +
+            "    text-decoration: none;" +
+            "    border: 1px solid #FF9933;" +
+            "}"
+        , "ke-templates");
 
-                    ".ke-tpl-list:hover, .ke-tpl-selected {" +
-                    "    background-color: #FFFACD;" +
-                    "    text-decoration: none;" +
-                    "    border: 1px solid #FF9933;" +
-                    "}"
-                , "ke-templates");
-
-
-            function TplUI(editor) {
-                this.editor = editor;
-                this._init();
-            }
-
-            S.augment(TplUI, {
-                _init:function() {
-                    var self = this,editor = self.editor,el = new TripleButton({
-                        container:editor.toolBarDiv,
-                        //text:"template",
-                        contentCls:"ke-toolbar-template",
-                        title:"模板"
-                    });
-                    el.on("offClick", self._show, self);
-                    KE.Utils.lazyRun(this, "_prepare", "_real");
-                    self.el = el;
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", TripleButton.OFF);
-                },
-                _prepare:function() {
-                    var self = this,editor = self.editor,templates = editor.cfg.pluginConfig.templates || [];
-                    var HTML = "<div class='ke-tpl'>";
-
-                    for (var i = 0; i < templates.length; i++) {
-                        var t = templates[i];
-                        HTML += "<a href='javascript:void(0)' class='ke-tpl-list' tabIndex='-1'>" + t.demo + "</a>";
-                    }
-                    HTML += "</div>";
-
-                    this._initDialogOk = true;
-                    var ui = new Dialog({
-                        width:500,
-                        mask:true,
-                        headerContent:"内容模板",
-                        bodyContent:HTML});
-                    ui.renderer();
-                    var list = ui.get("el").all(".ke-tpl-list");
-                    list.on("click", function(ev) {
-                        ev.halt();
-                        var t = new Node(ev.target);
-                        var index = t._4e_index();
-                        if (index != -1) {
-                            editor.insertHtml(templates[index].html);
-                        }
-                        ui.hide();
-                    });
-                    self.ui = ui;
-                },
-                _real:function() {
-                    var self = this;
-                    self.ui.show();
-                },
-                _show:function() {
-                    var self = this;
-                    self._prepare();
+    editor.ready(function() {
+        editor.addButton("templates", {
+            contentCls:"ke-toolbar-template",
+            title:"模板",
+            offClick:function() {
+                this.cfg._prepare.call(this);
+            },
+            _prepare:function() {
+                var self = this,
+                    editor = self.editor,
+                    templates = editor.cfg.pluginConfig.templates || [],
+                    HTML = "<div class='ke-tpl'>";
+                for (var i = 0; i < templates.length; i++) {
+                    var t = templates[i];
+                    HTML += "<a " +
+                        "href='javascript:void(0)' " +
+                        "class='ke-tpl-list' " +
+                        "tabIndex='-1'>" +
+                        t.demo +
+                        "</a>";
                 }
-            });
-            KE.TplUI = TplUI;
-        })();
-    }
-    editor.addPlugin(function() {
-        new KE.TplUI(editor);
+                HTML += "</div>";
 
+                var ui = new Dialog({
+                    width:500,
+                    mask:true,
+                    autoRender:true,
+                    headerContent:"内容模板",
+                    bodyContent:HTML
+                }),
+                    list = ui.get("el").all(".ke-tpl-list");
+                list.on("click", function(ev) {
+                    ev.halt();
+                    var t = new Node(ev.target);
+                    var index = t._4e_index();
+                    if (index != -1) {
+                        editor.insertHtml(templates[index].html);
+                    }
+                    ui.hide();
+                });
+                self.ui = ui;
+                self.cfg.show.call(self);
+                self.cfg._prepare = self.cfg.show;
+            },
+            show:function() {
+                this.ui.show();
+            }
+        });
     });
+
 
 });
 /**
@@ -19820,7 +19459,10 @@ KISSY.Editor.add("undo", function(editor) {
             function Snapshot(editor) {
                 var contents = editor._getRawData(),
                     self = this,
-                    selection = contents && editor.getSelection();
+                    selection;
+                if (contents) {
+                    selection = editor.getSelection();
+                }
                 //内容html
                 self.contents = contents;
                 //选择区域书签标志
@@ -19885,7 +19527,8 @@ KISSY.Editor.add("undo", function(editor) {
 
             var editingKeyCodes = { /*Backspace*/ 8:1, /*Delete*/ 46:1 },
                 modifierKeyCodes = { /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1 },
-                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },// Arrows: L, T, R, B
+                // Arrows: L, T, R, B
+                navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },
                 zKeyCode = 90,
                 yKeyCode = 89;
 
@@ -20012,108 +19655,83 @@ KISSY.Editor.add("undo", function(editor) {
                     }
                 }
             });
-
-
-            var TripleButton = KE.TripleButton,RedoMap = {
-                "redo":1,
-                "undo":-1
-            };
-
-            /**
-             * 工具栏重做与撤销的ui功能
-             * @param editor
-             * @param text
-             */
-            function RestoreUI(editor, text, title, contentCls) {
-                var self = this;
-                self.editor = editor;
-                self.title = title;
-                self.text = text;
-                self.contentCls = contentCls;
-                self._init();
-            }
-
-            S.augment(RestoreUI, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor;
-
-                    self.el = new TripleButton({
-                        contentCls:self.contentCls,
-                        title:self.title,
-                        container:editor.toolBarDiv
-                    });
-                    var el = self.el;
-                    el.set("state", TripleButton.DISABLED);
-                    /**
-                     * save,restore完，更新工具栏状态
-                     */
-                    editor.on("afterSave afterRestore", self._respond, self);
-
-                    /**
-                     * 触发重做或撤销动作，都是restore，方向不同
-                     */
-                    el.on("offClick", function() {
-                        editor.fire("restore", {
-                            d:RedoMap[self.text]
-                        });
-                    });
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this._saveState = this.el.get("state");
-                    this.el.set("state", TripleButton.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", this._saveState);
-                },
-
-                _respond:function(ev) {
-                    this.updateUI(ev.history, ev.index);
-                },
-
-                updateUI:function(history, index) {
-                    var self = this,
-                        el = self.el,
-                        text = self.text;
-                    if (text == "undo") {
-                        //有状态可退
-                        if (index > 0) {
-                            el.set("state", TripleButton.OFF);
-                        } else {
-                            el.set("state", TripleButton.DISABLED);
-                        }
-                    } else if (text == "redo") {
-                        //有状态可前进
-                        if (index < history.length - 1) {
-                            el.set("state", TripleButton.OFF);
-                        } else {
-                            el.set("state", TripleButton.DISABLED);
-                        }
-                    }
-                }
-            });
             KE.UndoManager = UndoManager;
-            KE.RestoreUI = RestoreUI;
         })();
     }
 
-    editor.addPlugin(function() {
 
+    editor.ready(function() {
         /**
          * 编辑器历史中央管理
          */
         new KE.UndoManager(editor);
+        var RedoMap = {
+            "redo":1,
+            "undo":-1
+        },
+            tplCfg = {
+                mode:KE.WYSIWYG_MODE,
+                init:function() {
+                    var self = this,
+                        editor = self.editor;
+                    /**
+                     * save,restore完，更新工具栏状态
+                     */
+                    editor.on("afterSave afterRestore",
+                        self.cfg._respond,
+                        self);
+                    self.btn.disable();
+                },
+                offClick:function() {
+                    var self = this;
+                    self.editor.fire("restore", {
+                        d:RedoMap[self.cfg.flag]
+                    });
+                }
+            },
+            undoCfg = S.mix({
+                title:"撤销",
+                flag:"undo",
+                contentCls:"ke-toolbar-undo",
+                _respond:function(ev) {
+                    var self = this,
+                        index = ev.index,
+                        btn = self.btn;
+
+                    //有状态可退
+                    if (index > 0) {
+                        btn.boff();
+                    } else {
+                        btn.disable();
+                    }
+                }
+            }, tplCfg, false),
+            redoCfg = S.mix({
+                title:"重做",
+                flag:"redo",
+                contentCls:"ke-toolbar-redo",
+                _respond:function(ev) {
+                    var self = this,
+                        history = ev.history,
+                        index = ev.index,
+                        btn = self.btn;
+                    //有状态可前进
+                    if (index < history.length - 1) {
+                        btn.boff();
+                    } else {
+                        btn.disable();
+                    }
+                }
+            }, tplCfg, false);
 
         /**
          * 撤销工具栏按钮
          */
-        new KE.RestoreUI(editor, "undo", "撤销", "ke-toolbar-undo");
+        editor.addButton("undo", undoCfg);
+
         /**
          * 重做工具栏按钮
          */
-        new KE.RestoreUI(editor, "redo", "重做", "ke-toolbar-redo");
+        editor.addButton("undo", redoCfg);
     });
-
-
 });

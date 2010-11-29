@@ -120,7 +120,7 @@ KISSY.Editor.add("format", function(editor) {
         })();
     }
 
-    editor.addPlugin(function() {
+    editor.ready(function() {
         new KE.Format({
             editor:editor,
             html:FORMAT_SELECTION_ITEMS,

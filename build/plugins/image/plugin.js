@@ -3,183 +3,122 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("image", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
-        //DOM = S.DOM,
+    var S = KISSY,
+        KE = S.Editor,
         UA = S.UA,
-        //JSON = S.JSON,
         Node = S.Node,
         Event = S.Event,
-        TYPE_IMG = 'image',
         BubbleView = KE.BubbleView;
 
+    var checkImg = function (node) {
+        return node._4e_name() === 'img' &&
+            (!/(^|\s+)ke_/.test(node[0].className)) &&
+            node;
+    };
 
+    var tipHtml = ' '
+        + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+        + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+        + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+        + '';
     //重新采用form提交，不采用flash，国产浏览器很多问题
 
-    if (!KE.ImageInserter) {
-        (function() {
 
-            var checkImg = function (node) {
-                return node._4e_name() === 'img' &&
-                    (!/(^|\s+)ke_/.test(node[0].className)) &&
-                    node;
-            };
-
-            function ImageInserter(cfg) {
-                ImageInserter.superclass.constructor.call(this, cfg);
-                this._init();
+    editor.ready(function() {
+        var context = editor.addButton("image", {
+            contentCls:"ke-toolbar-image",
+            title:"插入图片",
+            offClick:function() {
+                this.call("show");
+            },
+            _updateTip:function(tipurl, img) {
+                var src = img.attr("src");
+                tipurl.html(src);
+                tipurl.attr("href", src);
+            },
+            show:function(ev, _selectedEl) {
+                var editor = this.editor;
+                editor.useDialog("image/dialog", function(dialog) {
+                    dialog.show(_selectedEl);
+                });
             }
-
-            var TripleButton = KE.TripleButton;
-
-
-            ImageInserter.ATTRS = {
-                editor:{}
-            };
-
-            var contextMenu = {
+        }),
+            contextMenu = {
                 "图片属性":function(editor) {
                     var selection = editor.getSelection(),
                         startElement = selection && selection.getStartElement(),
-                        flash = checkImg(startElement),
-                        flashUI = editor._toolbars[TYPE_IMG];
+                        flash = checkImg(startElement);
                     if (flash) {
-                        flashUI.show(null, flash);
+                        context.call("show", null, flash);
                     }
                 }
             };
 
-            S.extend(ImageInserter, S.Base, {
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        toolBarDiv = editor.toolBarDiv,
-                        myContexts = {};
-                    self.editor = editor;
-                    self.el = new TripleButton({
-                        contentCls:"ke-toolbar-image",
-                        title:"插入图片",
-                        container:toolBarDiv
-                    });
-                    self.el.on("offClick", self.show, self);
-                    Event.on(editor.document, "dblclick", self._dblclick, self);
-                    KE.Utils.lazyRun(self, "_prepare", "_real");
-                    editor._toolbars = editor._toolbars || {};
-                    editor._toolbars[TYPE_IMG] = self;
+        var myContexts = {};
 
-                    if (contextMenu) {
-                        for (var f in contextMenu) {
-                            (function(f) {
-                                myContexts[f] = function() {
-                                    contextMenu[f](editor);
-                                }
-                            })(f);
-                        }
-                        KE.ContextMenu.register({
-                            editor:editor,
-                            rules:[checkImg],
-                            width:"120px",
-                            funcs:myContexts
-                        });
-                    }
-
-
-                    BubbleView.attach({
-                        pluginName:TYPE_IMG,
-                        pluginInstance:self
-                    });
-
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.disable();
-                },
-                enable:function() {
-                    this.el.boff();
-                },
-                _dblclick:function(ev) {
-                    var self = this,
-                        t = new Node(ev.target);
-                    if (checkImg(t)) {
-                        setTimeout(function() {
-                            self.show(null, t);
-                        }, 1000);
-                        ev.halt();
-                    }
-                },
-
-                _updateTip:function(tipurl, img) {
-                    var src = img.attr("src");
-                    tipurl.html(src);
-                    tipurl.attr("href", src);
-                },
-
-
-
-                show:function(ev, _selectedEl) {
-                    var editor = this.get("editor");
-                    editor.useDialog("image/dialog", function(dialog) {
-                        dialog.show(_selectedEl);
-                    });
+        for (var f in contextMenu) {
+            (function(f) {
+                myContexts[f] = function() {
+                    contextMenu[f](editor);
                 }
-            });
+            })(f);
+        }
+        KE.ContextMenu.register({
+            editor:editor,
+            rules:[checkImg],
+            width:"120px",
+            funcs:myContexts
+        });
 
-            KE.ImageInserter = ImageInserter;
+        Event.on(editor.document, "dblclick", function(ev) {
+            var t = new Node(ev.target);
+            ev.halt();
+            if (checkImg(t)) {
+                //setTimeout(function() {
+                context.call("show", null, t);
+                //}, 30);
+            }
+        });
 
-            var tipHtml = ' '
-                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
-                + '';
-
-            (function(pluginName, label, checkFlash) {
-
-                BubbleView.register({
-                    pluginName:pluginName,
-                    func:checkFlash,
-                    init:function() {
-                        var bubble = this,
-                            el = bubble.get("contentEl");
-                        el.html(label + tipHtml);
-                        var tipurl = el.one(".ke-bubbleview-url"),
-                            tipchange = el.one(".ke-bubbleview-change"),
-                            tipremove = el.one(".ke-bubbleview-remove");
-                        //ie focus not lose
-                        KE.Utils.preventFocus(el);
-
-                        tipchange.on("click", function(ev) {
-                            bubble._plugin.show(null, bubble._selectedEl);
-                            ev.halt();
-                        });
-                        tipremove.on("click", function(ev) {
-                            var flash = bubble._plugin;
-                            if (UA.webkit) {
-                                var r = flash.editor.getSelection().getRanges();
-                                r && r[0] && (r[0].collapse(true) || true) && r[0].select();
-                            }
-                            bubble._selectedEl._4e_remove();
-                            bubble.hide();
-                            flash.editor.notifySelectionChange();
-                            ev.halt();
-                        });
-                        /*
-                         位置变化
-                         */
-                        bubble.on("show", function(ev) {
-                            var a = bubble._selectedEl,
-                                b = bubble._plugin;
-                            if (!a)return;
-                            b._updateTip(tipurl, a);
-                        });
-                    }
+        BubbleView.register({
+            pluginName:'image',
+            pluginContext:context,
+            editor:editor,
+            func:checkImg,
+            init:function() {
+                var bubble = this,
+                    el = bubble.get("contentEl");
+                el.html("图片网址： " + tipHtml);
+                var tipurl = el.one(".ke-bubbleview-url"),
+                    tipchange = el.one(".ke-bubbleview-change"),
+                    tipremove = el.one(".ke-bubbleview-remove");
+                //ie focus not lose
+                KE.Utils.preventFocus(el);
+                tipchange.on("click", function(ev) {
+                    bubble._plugin.call("show", null, bubble._selectedEl);
+                    ev.halt();
                 });
-            })(TYPE_IMG, "图片网址： ", checkImg);
-        })();
-    }
-
-    editor.addPlugin(function() {
-        new KE.ImageInserter({
-            editor:editor
+                tipremove.on("click", function(ev) {
+                    var flash = bubble._plugin;
+                    if (UA.webkit) {
+                        var r = flash.editor.getSelection().getRanges();
+                        r && r[0] && (r[0].collapse(true) || true) && r[0].select();
+                    }
+                    bubble._selectedEl._4e_remove();
+                    bubble.hide();
+                    flash.editor.notifySelectionChange();
+                    ev.halt();
+                });
+                /*
+                 位置变化
+                 */
+                bubble.on("show", function() {
+                    var a = bubble._selectedEl,
+                        b = bubble._plugin;
+                    if (!a)return;
+                    b.call("_updateTip", tipurl, a);
+                });
+            }
         });
     });
 });
