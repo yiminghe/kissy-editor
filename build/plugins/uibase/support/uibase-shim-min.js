@@ -1,0 +1,2 @@
+KISSY.add("uibase-shim",function(a){function b(){a.log("shim init")}a.namespace("UIBase");var c=a.Node;b.prototype={__syncUI:function(){a.log("_syncUIShimExt")},__bindUI:function(){a.log("_bindUIShimExt")},__renderUI:function(){a.log("_renderUIShimExt");var d=this.get("el"),e=new c("<iframe style='position: absolute;border: none;width: expression(this.parentNode.offsetWidth);top: 0;opacity: 0;filter: alpha(opacity=0);left: 0;z-index: -1;height: expression(this.parentNode.offsetHeight);'>");d.prepend(e)},
+__destructor:function(){a.log("shim __destructor")}};a.UIBase.Shim=b});
