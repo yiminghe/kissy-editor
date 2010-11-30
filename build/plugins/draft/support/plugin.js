@@ -181,8 +181,8 @@ KISSY.Editor.add("draft/support", function() {
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
             Event.on([document,editor.document], "click", function(ev) {
-                var t = ev.target;
-                if (t == helpBtn[0] || helpBtn.contains(t))
+                var t = new Node(ev.target);
+                if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
                 self._help.hide();
             })

@@ -245,9 +245,9 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
             });
             body.on("click", function(ev) {
                 ev.halt();
-                var t = ev.target;
-                if (DOM._4e_name(t) == "a") {
-                    var c = Hex(DOM.css(t, "background-color"));
+                var t = new S.Node(ev.target);
+                if (t._4e_name() == "a") {
+                    var c = Hex(t.css( "background-color"));
                     if (left.contains(t))self._detailColor(c);
                     indicatorValue.val(c);
                     indicator.css("background-color", c);

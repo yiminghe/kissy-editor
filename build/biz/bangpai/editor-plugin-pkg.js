@@ -93,7 +93,8 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
                 function(evt) {
-                    if (DOM.hasClass(evt.target, CLS_XIAMI))
+                    var t=new S.Node(evt.target);
+                    if (t.hasClass(CLS_XIAMI))
                         evt.preventDefault();
                 });
         }

@@ -3236,7 +3236,8 @@ KISSY.Editor.add("definition", function(KE) {
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                if (evt.target == htmlElement[0]) {
+                var t = new Node(evt.target);
+                if (t[0] == htmlElement[0]) {
                     //S.log("click");
                     //self.focus();
                     //return;
@@ -3367,10 +3368,11 @@ KISSY.Editor.add("definition", function(KE) {
                     // For browsers which don't support the above methods,
                     // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
+                        var t=new Node(evt.target);
                         if (
                             disableObjectResizing ||
                                 (
-                                    DOM._4e_name(evt.target) === 'table'
+                                    t._4e_name() === 'table'
                                         &&
                                         disableInlineTableEditing )
                             )
@@ -3438,7 +3440,7 @@ KISSY.Editor.add("definition", function(KE) {
         "addCustomStyle":KEP.addCustomStyle,
         "addCommand":KEP.addCommand,
         "hasCommand":KEP.hasCommand,
-        "execCommand":KEP.execCommand,      
+        "execCommand":KEP.execCommand,
         "useDialog":KEP.useDialog,
         "addDialog":KEP.addDialog,
         "getDialog":KEP.getDialog,
@@ -7183,8 +7185,10 @@ KISSY.Editor.add("selection", function(KE) {
                 // scrollbars, so we can use it to check whether
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
-                    if (DOM._4e_name(evt.target) === "html")
-                        editor.getSelection().getRanges()[ 0 ].select();
+                    var t=new Node(evt.target);
+                    if (t._4e_name() === "html")
+                        editor.getSelection()
+                            .getRanges()[ 0 ].select();
                 });
             }
 
@@ -7233,10 +7237,11 @@ KISSY.Editor.add("selection", function(KE) {
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
+                var t=new Node(evt.target);
                 //S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
-                if (DOM._4e_name(evt.target) != 'body')
+                if (t._4e_name() != 'body')
                     return;
 
                 //console.log("body focusin :" + restoreEnabled);
@@ -11268,7 +11273,7 @@ KISSY.Editor.add("colorsupport", function() {
         _hidePanel : function(ev) {
             var self = this,
                 el = self.btn.get("el"),
-                t = ev.target,
+                t = new Node(ev.target),
                 colorWin = self.colorWin;
             //当前按钮点击无效
             if (el._4e_equals(t)
@@ -12050,8 +12055,8 @@ KISSY.Editor.add("draft", function(editor) {
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
             Event.on([document,editor.document], "click", function(ev) {
-                var t = ev.target;
-                if (t == helpBtn[0] || helpBtn.contains(t))
+                var t = new Node(ev.target);
+                if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
                 self._help.hide();
             })
@@ -16382,7 +16387,8 @@ KISSY.Editor.add("music", function(editor) {
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
                 function(evt) {
-                    if (DOM.hasClass(evt.target, CLS_MUSIC))
+                    var t=new S.Node(evt.target);
+                    if (t.hasClass(CLS_MUSIC))
                         evt.preventDefault();
                 });
         }
@@ -17528,11 +17534,14 @@ KISSY.Editor.add("smiley/support", function() {
         _selectSmiley:function(ev) {
             ev.halt();
             var self = this,editor = self.editor;
-            var t = ev.target,icon;
-            if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
+            var t = new S.Node(ev.target),
+                icon;
+            if (t._4e_name() == "a"
+                && (icon = t.attr("data-icon"))) {
                 var img = new S.Node("<img " +
                     "class='ke_smiley'" +
-                    "alt='' src='" + icon + "'/>", null, editor.document);
+                    "alt='' src='" + icon + "'/>", null,
+                    editor.document);
                 editor.insertElement(img);
                 this.smileyWin.hide();
             }
@@ -17540,7 +17549,7 @@ KISSY.Editor.add("smiley/support", function() {
         _hidePanel:function(ev) {
             var self = this,
                 el = self.btn.get("el"),
-                t = ev.target,
+                t = new S.Node(ev.target),
                 smileyWin = self.smileyWin;
             //当前按钮点击无效
             if (el._4e_equals(t) || el.contains(t)) {

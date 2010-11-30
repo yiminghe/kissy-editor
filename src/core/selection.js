@@ -791,8 +791,10 @@ KISSY.Editor.add("selection", function(KE) {
                 // scrollbars, so we can use it to check whether
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
-                    if (DOM._4e_name(evt.target) === "html")
-                        editor.getSelection().getRanges()[ 0 ].select();
+                    var t=new Node(evt.target);
+                    if (t._4e_name() === "html")
+                        editor.getSelection()
+                            .getRanges()[ 0 ].select();
                 });
             }
 
@@ -841,10 +843,11 @@ KISSY.Editor.add("selection", function(KE) {
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
+                var t=new Node(evt.target);
                 //S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
-                if (DOM._4e_name(evt.target) != 'body')
+                if (t._4e_name() != 'body')
                     return;
 
                 //console.log("body focusin :" + restoreEnabled);

@@ -16,7 +16,8 @@ KISSY.Editor.add("music/support", function() {
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
                 function(evt) {
-                    if (DOM.hasClass(evt.target, CLS_MUSIC))
+                    var t=new S.Node(evt.target);
+                    if (t.hasClass(CLS_MUSIC))
                         evt.preventDefault();
                 });
         }

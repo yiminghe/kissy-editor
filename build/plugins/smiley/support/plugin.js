@@ -42,11 +42,14 @@ KISSY.Editor.add("smiley/support", function() {
         _selectSmiley:function(ev) {
             ev.halt();
             var self = this,editor = self.editor;
-            var t = ev.target,icon;
-            if (DOM._4e_name(t) == "a" && (icon = DOM.attr(t, "data-icon"))) {
+            var t = new S.Node(ev.target),
+                icon;
+            if (t._4e_name() == "a"
+                && (icon = t.attr("data-icon"))) {
                 var img = new S.Node("<img " +
                     "class='ke_smiley'" +
-                    "alt='' src='" + icon + "'/>", null, editor.document);
+                    "alt='' src='" + icon + "'/>", null,
+                    editor.document);
                 editor.insertElement(img);
                 this.smileyWin.hide();
             }
@@ -54,7 +57,7 @@ KISSY.Editor.add("smiley/support", function() {
         _hidePanel:function(ev) {
             var self = this,
                 el = self.btn.get("el"),
-                t = ev.target,
+                t = new S.Node(ev.target),
                 smileyWin = self.smileyWin;
             //当前按钮点击无效
             if (el._4e_equals(t) || el.contains(t)) {

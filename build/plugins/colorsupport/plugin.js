@@ -168,7 +168,7 @@ KISSY.Editor.add("colorsupport", function() {
         _hidePanel : function(ev) {
             var self = this,
                 el = self.btn.get("el"),
-                t = ev.target,
+                t = new Node(ev.target),
                 colorWin = self.colorWin;
             //当前按钮点击无效
             if (el._4e_equals(t)

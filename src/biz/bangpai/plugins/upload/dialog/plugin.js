@@ -352,9 +352,10 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                         var currentFid = 0;
                         listWrap.on("mouseover", function(ev) {
-                            var t = ev.target,td = DOM.parent(t, ".ke-upload-filename");
+                            var t = new Node(ev.target),
+                                td = t.parent(".ke-upload-filename");
                             if (td) {
-                                var tr = DOM._4e_ascendant(td, "tr");
+                                var tr = td._4e_ascendant("tr");
                                 if (tr.hasClass("ke-upload-complete")) {
                                     var url = tr.attr("url"),
                                         fid = tr.attr("fid");

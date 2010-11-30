@@ -922,7 +922,8 @@ KISSY.Editor.add("definition", function(KE) {
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                if (evt.target == htmlElement[0]) {
+                var t = new Node(evt.target);
+                if (t[0] == htmlElement[0]) {
                     //S.log("click");
                     //self.focus();
                     //return;
@@ -1053,10 +1054,11 @@ KISSY.Editor.add("definition", function(KE) {
                     // For browsers which don't support the above methods,
                     // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
+                        var t=new Node(evt.target);
                         if (
                             disableObjectResizing ||
                                 (
-                                    DOM._4e_name(evt.target) === 'table'
+                                    t._4e_name() === 'table'
                                         &&
                                         disableInlineTableEditing )
                             )
@@ -1124,7 +1126,7 @@ KISSY.Editor.add("definition", function(KE) {
         "addCustomStyle":KEP.addCustomStyle,
         "addCommand":KEP.addCommand,
         "hasCommand":KEP.hasCommand,
-        "execCommand":KEP.execCommand,      
+        "execCommand":KEP.execCommand,
         "useDialog":KEP.useDialog,
         "addDialog":KEP.addDialog,
         "getDialog":KEP.getDialog,
