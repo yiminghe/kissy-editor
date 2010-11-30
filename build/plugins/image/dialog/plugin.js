@@ -33,7 +33,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "</span>" +
         "<input " +
         " data-verify='^(https?:/)?/[^\\s]+$' " +
-        " data-warning='网址格式为：http://' " +
+        " data-warning='网址格式为：http:// 或 /' " +
         "class='ke-img-url ke-input' " +
         "style='width:390px;' " +
         "/>" +
