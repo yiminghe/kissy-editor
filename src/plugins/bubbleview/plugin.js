@@ -11,11 +11,9 @@ KISSY.Editor.add("bubbleview", function() {
 
     if (KE.BubbleView) return;
 
-    var BubbleView = S.Base.create(KE.Overlay, [], {
-        init:function() {
-            this.on("renderUI", this._renderUIBubbleView, this);
-        },
-        _renderUIBubbleView:function() {
+    var BubbleView = S.UIBase.create(KE.Overlay, [], {
+
+        renderUI:function() {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
         },
@@ -42,8 +40,9 @@ KISSY.Editor.add("bubbleview", function() {
     function getInstance(pluginName) {
         var h = holder[pluginName];
         if (!h.bubble) {
-            h.bubble = new BubbleView();
-            h.bubble.renderer();
+            h.bubble = new BubbleView({
+                autoRender:true
+            });
             h.cfg.init && h.cfg.init.call(h.bubble);
         }
         return h.bubble;

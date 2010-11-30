@@ -163,13 +163,13 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     var self = this,
                         editor = self.editor,
                         d = new Dialog({
+                            autoRender:true,
                             width:"500px",
                             mask:true,
                             headerContent:"表格",//属性",
                             bodyContent:TABLE_HTML,
                             footerContent:footHtml
                         });
-                    d.renderer();
                     var dbody = d.get("body"),foot = d.get("footer");
                     d.twidth = dbody.one(".ke-table-width");
                     d.theight = dbody.one(".ke-table-height");

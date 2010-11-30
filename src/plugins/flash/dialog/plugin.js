@@ -93,13 +93,13 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                 _prepareShow:function() {
                     var self = this,
                         d = new Dialog({
+                            autoRender:true,
                             headerContent:self._title,
                             bodyContent:self._bodyHtml,
                             footerContent:self._footHtml,
                             width:self._config_dwidth || "500px",
                             mask:true
                         });
-                    d.renderer();
                     self.d = d;
                     self._initD();
                 },

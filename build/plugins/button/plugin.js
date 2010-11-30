@@ -17,14 +17,8 @@ KISSY.Editor.add("button", function() {
 
     if (KE.TripleButton) return;
 
-    var TripleButton = Base.create([S.Ext.Box], {
-        init:function() {
-            var self = this;
-            self.on("bindUI", self._bindUIButton, self);
-        },
-
-
-        _bindUIButton:function() {
+    var TripleButton = S.UIBase.create([S.UIBase.Box], {
+        bindUI:function() {
             var self = this,el = self.get("el");
             el.on("click", self._action, self);
             //添加鼠标点击视觉效果

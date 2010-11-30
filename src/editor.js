@@ -173,7 +173,7 @@ KISSY.add("editor", function(S, undefined) {
             "draft",
             {
                 "name":"draft/support",
-                "requires":["localStorage"]
+                "requires":["localstorage"]
             },
             {
                 "name":"flash",
@@ -254,21 +254,21 @@ KISSY.add("editor", function(S, undefined) {
         ],
 
         mis_mods = [
-            "ext",
+            "uibase",
             {
-                "name":"localStorage",
+                "name":"localstorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
             {
                 "name":"button",
-                "requires":["ext"]
+                "requires":["uibase"]
             },
             "dd",
             "progressbar",
             {
                 "name":"overlay",
-                "requires":["dd","ext"]
+                "requires":["dd","uibase"]
             },
             {
                 "name": "contextmenu",

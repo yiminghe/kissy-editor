@@ -87,11 +87,11 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     self.dialog = new Dialog({
                         headerContent:"批量上传",
                         mask:false,
+                        autoRender:true,
                         focus4e:false,
                         width:"600px"
                     });
                     var d = self.dialog;
-                    d.renderer();
                     d.set("handlers", [d.get("el")]);
                     var bangpaiUploaderHolder = d.get("body"),
                         btnHolder = new Node(
@@ -343,10 +343,10 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                         var previewWin = new S.Overlay({
                             mask:false,
+                            autoRender:true,
                             width:previewWidth,
                             render:listWrap
                         });
-                        previewWin.renderer();
                         var preview = previewWin.get("contentEl");
                         preview.css("border", "none");
 

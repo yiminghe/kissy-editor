@@ -2,7 +2,7 @@
  * localStorage support for ie<8
  * @author:yiminghe@gmail.com
  */
-KISSY.Editor.add("localStorage", function() {
+KISSY.Editor.add("localstorage", function() {
     var S = KISSY,
         KE = S.Editor,STORE;
     STORE = KE.STORE = "localStorage";
@@ -34,7 +34,7 @@ KISSY.Editor.add("localStorage", function() {
 
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE.Config.base +
-        KE.Utils.debugUrl("plugins/localStorage/swfstore.swf?rand=" +
+        KE.Utils.debugUrl("plugins/localstorage/swfstore.swf?rand=" +
             (+new Date()));
 
 

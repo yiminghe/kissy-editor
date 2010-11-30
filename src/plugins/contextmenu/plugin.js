@@ -130,10 +130,10 @@ KISSY.Editor.add("contextmenu", function() {
             //使它具备 overlay 的能力，其实这里并不是实体化
             self.el = new Overlay({
                 content:HTML,
+                autoRender:true,
                 width:cfg.width,
                 elCls:"ke-menu"
             });
-            self.el.renderer();
             self.elDom = self.el.get("contentEl").one("div");
             var el = self.elDom;
             for (var f in funcs) {

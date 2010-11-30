@@ -3,14 +3,10 @@ KISSY.Editor.add("ext-focus", function() {
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
-    KE.namespace("Ext");
+    KE.namespace("UIBase");
 
     function FocusExt() {
         S.log("FocusExt init");
-        var self = this;
-        self.on("renderUI", self._renderUIFocusExt, self);
-        self.on("bindUI", self._bindUIFocusExt, self);
-        self.on("syncUI", self._syncUIFocusExt, self);
     }
 
     FocusExt.ATTRS = {
@@ -30,13 +26,13 @@ KISSY.Editor.add("ext-focus", function() {
                 self.detach("hide", self._hide4FocusExt, self);
             }
         },
-        _syncUIFocusExt:function() {
+        __syncUI:function() {
             S.log("_syncUIFocusExt");
         },
-        _renderUIFocusExt:function() {
+        __renderUI:function() {
             S.log("_renderUIFocusExt");
         },
-        _bindUIFocusExt:function() {
+        __bindUI:function() {
             var self = this;
             self._focus4e = new S.Node("<a " +
                 "href='#' " +
@@ -95,7 +91,7 @@ KISSY.Editor.add("ext-focus", function() {
             editor && editor.focus();
         }
     };
-    KE.Ext.Focus = FocusExt;
+    KE.UIBase.Focus = FocusExt;
 
 }, {
     host:"overlay"

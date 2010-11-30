@@ -192,6 +192,7 @@ KISSY.Editor.add("select", function() {
                 menuNode;
             //要在适当位置插入 !!!
             var menu = new KE.Overlay({
+                autoRender:true,
                 render:self.get("menuContainer"),
                 content:menu_markup,
                 focus4e:false,
@@ -201,7 +202,6 @@ KISSY.Editor.add("select", function() {
                 focusMgr:false
             }),
                 items = self.get("items");
-            menu.renderer();
             menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随

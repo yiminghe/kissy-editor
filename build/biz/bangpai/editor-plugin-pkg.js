@@ -242,7 +242,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
         });
     }
     editor.ready(function() {
-        KE.use("button localStorage", function() {
+        KE.use("button localstorage", function() {
             editor.addButton("bangpai-upload", {
                 contentCls:"ke-toolbar-mul-image",
                 title:"批量插图",

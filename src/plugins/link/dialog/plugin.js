@@ -60,13 +60,13 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 _prepareShow:function() {
                     var self = this,
                         d = new Dialog({
+                            autoRender:true,
                             width:500,
                             headerContent:"链接",//属性",
                             bodyContent:bodyHtml,
                             footerContent:footHtml,
                             mask:true
                         });
-                    d.renderer();
                     self.dialog = d;
                     var body = d.get("body"),
                         foot = d.get("footer");

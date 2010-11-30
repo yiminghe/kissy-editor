@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.0
- * @buildtime: 2010-11-29 19:04:14
+ * @buildtime: 2010-11-30 14:09:47
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-29 19:04:14");
+        re += "t=" + encodeURIComponent("2010-11-30 14:09:47");
         return  re;
     }
 
@@ -173,7 +173,7 @@ KISSY.add("editor", function(S, undefined) {
             "draft",
             {
                 "name":"draft/support",
-                "requires":["localStorage"]
+                "requires":["localstorage"]
             },
             {
                 "name":"flash",
@@ -254,21 +254,21 @@ KISSY.add("editor", function(S, undefined) {
         ],
 
         mis_mods = [
-            "ext",
+            "uibase",
             {
-                "name":"localStorage",
+                "name":"localstorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
             {
                 "name":"button",
-                "requires":["ext"]
+                "requires":["uibase"]
             },
             "dd",
             "progressbar",
             {
                 "name":"overlay",
-                "requires":["dd","ext"]
+                "requires":["dd","uibase"]
             },
             {
                 "name": "contextmenu",

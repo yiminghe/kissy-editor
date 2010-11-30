@@ -10,14 +10,11 @@ KISSY.Editor.add("overlay", function() {
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = S.Base.create(S.Overlay, [KE.Ext.Focus], {
+    var Overlay4E = S.UIBase.create(S.Overlay, [KE.UIBase.Focus], {
         init:function() {
             S.log("Overlay4E init");
-            var self = this;
-            //必须等 sync ，等所有状态都同步好再进行 preventFocus
-            self.on("syncUI", self._syncUIOverlay4E, self);
         },
-        _syncUIOverlay4E:function() {
+        syncUI:function() {
             S.log("_syncUIOverlay4E");
             var self = this;
             //编辑器 overlay 中的全部点击都不会使得失去焦点
@@ -29,7 +26,7 @@ KISSY.Editor.add("overlay", function() {
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }
     });
-    var Dialog4E = S.Base.create(S.Dialog, [KE.Ext.Focus], {
+    var Dialog4E = S.UIBase.create(S.Dialog, [KE.UIBase.Focus], {
         show:function() {
             //在 show 之前调用
             this.center();
@@ -60,7 +57,7 @@ KISSY.Editor.add("overlay", function() {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:"100%",
+                width:S.UA.ie==6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

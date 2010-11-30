@@ -1,36 +1,32 @@
 /**
  * KISSY Overlay
- * @author 玉伯<lifesinger@gmail.com>, 承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
+ * @author: 玉伯<lifesinger@gmail.com>, 承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
  */
 KISSY.add("overlay", function(S) {
 
-    var Base = S.Base,
+    var UIBase = S.UIBase,
         UA = S.UA;
 
 
-    var Overlay = Base.create([S.Ext.Box,
-        S.Ext.ContentBox,
-        S.Ext.Position,
-        S.Ext.Loading,
+    S.Overlay = UIBase.create([S.UIBase.Box,
+        S.UIBase.ContentBox,
+        S.UIBase.Position,
+        S.UIBase.Loading,
         //ie6 支持,select bug
-        UA.ie == 6 ? S.Ext.Shim : null,
-        S.Ext.Align,
-        S.Ext.Mask], {
+        UA.ie == 6 ? S.UIBase.Shim : null,
+        S.UIBase.Align,
+        S.UIBase.Mask], {
 
-        init:function() {
+        initializer:function() {
             S.log("Overlay init");
-            var self = this;
-            self.on("bindUI", self._bindUIOverlay, self);
-            self.on("renderUI", self._renderUIOverlay, self);
-            self.on("syncUI", self._syncUIOverlay, self);
         },
 
-        _renderUIOverlay:function() {
+        renderUI:function() {
             S.log("_renderUIOverlay");
             this.get("el").addClass("ks-overlay");
         },
 
-        _syncUIOverlay:function() {
+        syncUI:function() {
             S.log("_syncUIOverlay");
         },
         /**
@@ -38,7 +34,7 @@ KISSY.add("overlay", function(S) {
          * 注册dom事件以及属性事件
          * @override
          */
-        _bindUIOverlay: function() {
+        bindUI: function() {
             S.log("_bindUIOverlay");
         },
 
@@ -49,53 +45,42 @@ KISSY.add("overlay", function(S) {
             S.log("overlay destructor");
         }
 
-    }, {
-        ATTRS:{
-            elOrder:0
-        }
     });
-    S.Overlay = Overlay;
-
 }, {
     requires: ["core"]
 });
 
 /**
  * 2010-11-09 2010-11-10 承玉<yiminghe@gmail.com>重构，attribute-base-Overlay ，采用 Base.create
- *
- * TODO:
- *  - effect
  */
 /**
  * KISSY.Dialog
- * @creator  承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
+ * @author: 承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
  */
 KISSY.add('dialog', function(S) {
 
-    S.Dialog = S.Base.create(S.Overlay,
-        [S.Ext.StdMod,
-            S.Ext.Close,
-            S.Ext.Drag,
-            S.Ext.Constrain], {
-        init:function() {
+    S.Dialog = S.UIBase.create(S.Overlay,
+        [
+            S.UIBase.StdMod,
+            S.UIBase.Close,
+            S.UIBase.Drag,
+            S.UIBase.Constrain
+        ], {
+        initializer:function() {
             S.log("dialog init");
-            var self = this;
-            self.on("renderUI", self._rendUIDialog, self);
-            self.on("bindUI", self._bindUIDialog, self);
-            self.on("syncUI", self._syncUIDialog, self);
         },
 
-        _rendUIDialog:function() {
-            S.log("_rendUIDialog");
+        renderUI:function() {
+            S.log("_renderUIDialog");
             var self = this;
             self.get("el").addClass("ks-dialog");
             //设置值，drag-ext 绑定时用到
             self.set("handlers", [self.get("header")]);
         },
-        _bindUIDialog:function() {
+        bindUI:function() {
             S.log("_bindUIDialog");
         },
-        _syncUIDialog:function() {
+        syncUI:function() {
             S.log("_syncUIDialog");
         },
         destructor:function() {
@@ -117,14 +102,10 @@ KISSY.Editor.add("ext-focus", function() {
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
-    KE.namespace("Ext");
+    KE.namespace("UIBase");
 
     function FocusExt() {
         S.log("FocusExt init");
-        var self = this;
-        self.on("renderUI", self._renderUIFocusExt, self);
-        self.on("bindUI", self._bindUIFocusExt, self);
-        self.on("syncUI", self._syncUIFocusExt, self);
     }
 
     FocusExt.ATTRS = {
@@ -144,13 +125,13 @@ KISSY.Editor.add("ext-focus", function() {
                 self.detach("hide", self._hide4FocusExt, self);
             }
         },
-        _syncUIFocusExt:function() {
+        __syncUI:function() {
             S.log("_syncUIFocusExt");
         },
-        _renderUIFocusExt:function() {
+        __renderUI:function() {
             S.log("_renderUIFocusExt");
         },
-        _bindUIFocusExt:function() {
+        __bindUI:function() {
             var self = this;
             self._focus4e = new S.Node("<a " +
                 "href='#' " +
@@ -209,7 +190,7 @@ KISSY.Editor.add("ext-focus", function() {
             editor && editor.focus();
         }
     };
-    KE.Ext.Focus = FocusExt;
+    KE.UIBase.Focus = FocusExt;
 
 }, {
     host:"overlay"
@@ -225,14 +206,11 @@ KISSY.Editor.add("overlay", function() {
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = S.Base.create(S.Overlay, [KE.Ext.Focus], {
+    var Overlay4E = S.UIBase.create(S.Overlay, [KE.UIBase.Focus], {
         init:function() {
             S.log("Overlay4E init");
-            var self = this;
-            //必须等 sync ，等所有状态都同步好再进行 preventFocus
-            self.on("syncUI", self._syncUIOverlay4E, self);
         },
-        _syncUIOverlay4E:function() {
+        syncUI:function() {
             S.log("_syncUIOverlay4E");
             var self = this;
             //编辑器 overlay 中的全部点击都不会使得失去焦点
@@ -244,7 +222,7 @@ KISSY.Editor.add("overlay", function() {
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }
     });
-    var Dialog4E = S.Base.create(S.Dialog, [KE.Ext.Focus], {
+    var Dialog4E = S.UIBase.create(S.Dialog, [KE.UIBase.Focus], {
         show:function() {
             //在 show 之前调用
             this.center();
@@ -275,7 +253,7 @@ KISSY.Editor.add("overlay", function() {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:"100%",
+                width:S.UA.ie==6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

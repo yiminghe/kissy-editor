@@ -32,7 +32,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "图片地址： " +
         "</span>" +
         "<input " +
-        " data-verify='^https?://[^\\s]+$' " +
+        " data-verify='^(https?:/)?/[^\\s]+$' " +
         " data-warning='网址格式为：http://' " +
         "class='ke-img-url ke-input' " +
         "style='width:390px;' " +
@@ -150,13 +150,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
     function prepare() {
 
         d = new Dialog({
+            autoRender:true,
             width:500,
             headerContent:"图片",//属性",
             bodyContent:bodyHtml,
             footerContent:footHtml,
             mask:true
         });
-        d.renderer();
         var content = d.get("el"),
             cancel = content.one(".ke-img-cancel"),
             ok = content.one(".ke-img-insert"),

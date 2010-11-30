@@ -77,14 +77,18 @@ build file for kissy editor
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
 
-        <concat destfile="${src.dir}/plugins/ext/plugin.js"
+        <concat destfile="${src.dir}/plugins/uibase/plugin.js"
                 encoding="${charset}"
                 outputencoding="${charset}"
                 >
-            <fileset dir="${src.dir}/plugins/ext/support/"
-                     includes="*.js"
+            <fileset dir="${src.dir}/plugins/uibase/support/"
+                     includes="uibase.js"
                     ></fileset>
-            <filelist dir="${src.dir}/plugins/ext/editor/"
+            <fileset dir="${src.dir}/plugins/uibase/support/"
+                     includes="*.js"
+                     excludes="uibase.js"
+                    ></fileset>
+            <filelist dir="${src.dir}/plugins/uibase/editor/"
                       files="import.js"
                     ></filelist>
         </concat>
