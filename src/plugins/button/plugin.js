@@ -147,6 +147,7 @@ KISSY.Editor.add("button", function() {
                     S.mix(btnCfg, cfg);
                     b.enable();
                     self.on("selectionChange", function() {
+                        if (self.getMode() == KE.SOURCE_MODE) return;
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
                     b.on("click", function(ev) {

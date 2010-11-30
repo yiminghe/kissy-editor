@@ -2918,6 +2918,7 @@ KISSY.Editor.add("definition", function(KE) {
         notifySelectionChange:function() {
             var self = this;
             self.previousPath = NULL;
+            //S.log("notifySelectionChange");
             self._monitor();
         }
         ,
@@ -3368,7 +3369,7 @@ KISSY.Editor.add("definition", function(KE) {
                     // For browsers which don't support the above methods,
                     // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
-                        var t=new Node(evt.target);
+                        var t = new Node(evt.target);
                         if (
                             disableObjectResizing ||
                                 (

@@ -28,6 +28,7 @@ KISSY.Editor.add("image", function(editor) {
         var context = editor.addButton("image", {
             contentCls:"ke-toolbar-image",
             title:"插入图片",
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.call("show");
             },

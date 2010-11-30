@@ -50,6 +50,7 @@ KISSY.Editor.add("flash/support", function() {
             var context = editor.addButton("flash", {
                 contentCls:self._contentCls,
                 title:self._tip ,
+                mode:KE.WYSIWYG_MODE,
                 offClick:function() {
                     self.show();
                 }

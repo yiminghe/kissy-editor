@@ -28,6 +28,7 @@ KISSY.Editor.add("pagebreak", function(editor) {
             '<span style="DISPLAY:none">&nbsp;</span></div>';
         editor.addButton("page-break", {
             title:"分页",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-pagebreak",
             offClick:function() {
                 var editor = this.editor,

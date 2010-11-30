@@ -20,6 +20,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             editor.addButton("bangpai-upload", {
                 contentCls:"ke-toolbar-mul-image",
                 title:"批量插图",
+                mode:KE.WYSIWYG_MODE,
                 offClick:function() {
                     var editor = this.editor;
                     editor.useDialog("bangpai-upload/dialog", function(dialog) {

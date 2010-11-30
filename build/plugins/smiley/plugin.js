@@ -10,6 +10,7 @@ KISSY.Editor.add("smiley", function(editor) {
         var context = editor.addButton("smiley", {
             contentCls:"ke-toolbar-smiley",
             title:"插入表情",
+            mode:KE.WYSIWYG_MODE,
             loading:true
         });
 

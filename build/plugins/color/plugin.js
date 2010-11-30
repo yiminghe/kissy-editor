@@ -15,6 +15,7 @@ KISSY.Editor.add("color", function(editor) {
                 },
                     context = editor.addButton("color", {
                         styles:COLOR_STYLES,
+                        mode:KE.WYSIWYG_MODE,
                         title:"文本颜色",
                         loading:true,
                         contentCls:"ke-toolbar-color"
@@ -36,6 +37,7 @@ KISSY.Editor.add("color", function(editor) {
                 var context = editor.addButton("color", {
                     styles:colorButton_backStyle,
                     title:"背景颜色",
+                    mode:KE.WYSIWYG_MODE,
                     loading:true,
                     contentCls:"ke-toolbar-bgcolor"
                 });

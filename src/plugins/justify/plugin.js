@@ -11,6 +11,7 @@ KISSY.Editor.add("justify", function(editor) {
 
     editor.ready(function() {
         var JustifyTpl = {
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.call("_change");
             },
@@ -32,7 +33,9 @@ KISSY.Editor.add("justify", function(editor) {
                     iterator,
                     block;
                 editor.fire("save");
-                for (var i = ranges.length - 1; i >= 0; i--) {
+                for (var i = ranges.length - 1;
+                     i >= 0;
+                     i--) {
                     iterator = ranges[ i ].createIterator();
                     iterator.enlargeBr = true;
                     while (( block = iterator.getNextParagraph() )) {
@@ -61,7 +64,7 @@ KISSY.Editor.add("justify", function(editor) {
                 // </ul>
                 // </body>
                 //gecko ctrl-a 为直接得到 container : body
-                //其他浏览器 ctrl-a 得到 container : li
+                //其他浏览器 ctrl-a 得到 container : li               
                 if (!block || block._4e_name() === "body") {
                     el.boff();
                     return;
@@ -70,6 +73,7 @@ KISSY.Editor.add("justify", function(editor) {
                     .replace(alignRemoveRegex, "")
                     //默认值，没有设置
                     || default_align;
+               
                 if (align == self.cfg.v) {
                     el.bon();
                 } else {

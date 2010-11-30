@@ -7,12 +7,14 @@ KISSY.Editor.add("list", function(editor) {
     editor.ready(function() {
         var context = editor.addButton("ul", {
             title:"项目列表",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-ul",
             loading:true,
             type:"ul"
         });
         var contextOl = editor.addButton("ol", {
             title:"编号列表",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-ol",
             loading:true,
             type:"ol"

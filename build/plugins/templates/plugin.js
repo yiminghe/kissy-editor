@@ -36,6 +36,7 @@ KISSY.Editor.add("templates", function(editor) {
         editor.addButton("templates", {
             contentCls:"ke-toolbar-template",
             title:"模板",
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.cfg._prepare.call(this);
             },

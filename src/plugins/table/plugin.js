@@ -74,6 +74,7 @@ KISSY.Editor.add("table", function(editor) {
 
         var context = editor.addButton("table", {
             contentCls:"ke-toolbar-table",
+            mode:KE.WYSIWYG_MODE,
             title:"插入表格",
             loading:true
         });

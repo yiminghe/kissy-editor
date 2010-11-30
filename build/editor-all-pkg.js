@@ -2918,6 +2918,7 @@ KISSY.Editor.add("definition", function(KE) {
         notifySelectionChange:function() {
             var self = this;
             self.previousPath = NULL;
+            //S.log("notifySelectionChange");
             self._monitor();
         }
         ,
@@ -3368,7 +3369,7 @@ KISSY.Editor.add("definition", function(KE) {
                     // For browsers which don't support the above methods,
                     // we can use the the resize event or resizestart for IE (#4208)
                     Event.on(body, UA.ie ? 'resizestart' : 'resize', function(evt) {
-                        var t=new Node(evt.target);
+                        var t = new Node(evt.target);
                         if (
                             disableObjectResizing ||
                                 (
@@ -10733,6 +10734,7 @@ KISSY.Editor.add("button", function() {
                     S.mix(btnCfg, cfg);
                     b.enable();
                     self.on("selectionChange", function() {
+                        if (self.getMode() == KE.SOURCE_MODE) return;
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
                     b.on("click", function(ev) {
@@ -11071,6 +11073,7 @@ KISSY.Editor.add("color", function(editor) {
                 },
                     context = editor.addButton("color", {
                         styles:COLOR_STYLES,
+                        mode:KE.WYSIWYG_MODE,
                         title:"文本颜色",
                         loading:true,
                         contentCls:"ke-toolbar-color"
@@ -11092,6 +11095,7 @@ KISSY.Editor.add("color", function(editor) {
                 var context = editor.addButton("color", {
                     styles:colorButton_backStyle,
                     title:"背景颜色",
+                    mode:KE.WYSIWYG_MODE,
                     loading:true,
                     contentCls:"ke-toolbar-bgcolor"
                 });
@@ -12707,6 +12711,7 @@ KISSY.Editor.add("flash/support", function() {
             var context = editor.addButton("flash", {
                 contentCls:self._contentCls,
                 title:self._tip ,
+                mode:KE.WYSIWYG_MODE,
                 offClick:function() {
                     self.show();
                 }
@@ -13720,9 +13725,9 @@ KISSY.Editor.add("format", function(editor) {
         (function() {
 
             function Format(cfg) {
-                Format.superclass.constructor.call(this, cfg);
                 var self = this;
-                this._init();
+                Format.superclass.constructor.call(self, cfg);
+                self._init();
             }
 
             Format.ATTRS = {
@@ -13784,7 +13789,7 @@ KISSY.Editor.add("format", function(editor) {
                         }
                     }
 
-                    self.el.reset("value");
+                    //self.el.reset("value");
                 }
             });
             KE.Format = Format;
@@ -14652,6 +14657,7 @@ KISSY.Editor.add("image", function(editor) {
         var context = editor.addButton("image", {
             contentCls:"ke-toolbar-image",
             title:"插入图片",
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.call("show");
             },
@@ -14755,6 +14761,7 @@ KISSY.Editor.add("indent", function(editor) {
     editor.ready(function() {
         var outdent = editor.addButton("outdent", {
             title:"减少缩进量 ",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-outdent",
             type:"outdent",
             loading:true
@@ -14762,6 +14769,7 @@ KISSY.Editor.add("indent", function(editor) {
 
         var indent = editor.addButton("indent", {
             title:"增加缩进量 ",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-indent",
             type:"indent",
             loading:true
@@ -15090,6 +15098,7 @@ KISSY.Editor.add("justify", function(editor) {
 
     editor.ready(function() {
         var JustifyTpl = {
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.call("_change");
             },
@@ -15111,7 +15120,9 @@ KISSY.Editor.add("justify", function(editor) {
                     iterator,
                     block;
                 editor.fire("save");
-                for (var i = ranges.length - 1; i >= 0; i--) {
+                for (var i = ranges.length - 1;
+                     i >= 0;
+                     i--) {
                     iterator = ranges[ i ].createIterator();
                     iterator.enlargeBr = true;
                     while (( block = iterator.getNextParagraph() )) {
@@ -15140,7 +15151,7 @@ KISSY.Editor.add("justify", function(editor) {
                 // </ul>
                 // </body>
                 //gecko ctrl-a 为直接得到 container : body
-                //其他浏览器 ctrl-a 得到 container : li
+                //其他浏览器 ctrl-a 得到 container : li               
                 if (!block || block._4e_name() === "body") {
                     el.boff();
                     return;
@@ -15149,6 +15160,7 @@ KISSY.Editor.add("justify", function(editor) {
                     .replace(alignRemoveRegex, "")
                     //默认值，没有设置
                     || default_align;
+               
                 if (align == self.cfg.v) {
                     el.bon();
                 } else {
@@ -15356,12 +15368,14 @@ KISSY.Editor.add("list", function(editor) {
     editor.ready(function() {
         var context = editor.addButton("ul", {
             title:"项目列表",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-ul",
             loading:true,
             type:"ul"
         });
         var contextOl = editor.addButton("ol", {
             title:"编号列表",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-ol",
             loading:true,
             type:"ol"
@@ -15909,14 +15923,16 @@ KISSY.Editor.add("list/support", function() {
                 elements = elementPath.elements;
             if (!blockLimit)return;
             // Grouping should only happen under blockLimit.(#3940).
-            if (elements)
-                for (var i = 0; i < elements.length && ( element = elements[ i ] )
-                    && element[0] !== blockLimit[0]; i++) {
-                    var ind = S.indexOf(elements[i]._4e_name(), listNodeNames_arr);
+            if (elements) {
+                for (var i = 0;
+                     i < elements.length && ( element = elements[ i ] )
+                         && element[0] !== blockLimit[0]; i++) {
+                    var ind = S.indexOf(elements[i]._4e_name(),
+                        listNodeNames_arr);
                     //ul,ol一个生效后，另一个就失效
                     if (ind !== -1) {
                         if (listNodeNames_arr[ind] === type) {
-                            el.set("state", TripleButton.ON);
+                            el.bon();
                             return;
                         } else {
                             break;
@@ -15924,7 +15940,8 @@ KISSY.Editor.add("list/support", function() {
 
                     }
                 }
-            el.set("state", TripleButton.OFF);
+            }
+            el.boff();
         },
         offClick:function() {
             this.call("_change");
@@ -16728,6 +16745,7 @@ KISSY.Editor.add("overlay", function() {
             '<span style="DISPLAY:none">&nbsp;</span></div>';
         editor.addButton("page-break", {
             title:"分页",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-pagebreak",
             offClick:function() {
                 var editor = this.editor,
@@ -17482,6 +17500,7 @@ KISSY.Editor.add("smiley", function(editor) {
         var context = editor.addButton("smiley", {
             contentCls:"ke-toolbar-smiley",
             title:"插入表情",
+            mode:KE.WYSIWYG_MODE,
             loading:true
         });
 
@@ -17798,6 +17817,7 @@ KISSY.Editor.add("table", function(editor) {
 
         var context = editor.addButton("table", {
             contentCls:"ke-toolbar-table",
+            mode:KE.WYSIWYG_MODE,
             title:"插入表格",
             loading:true
         });
@@ -18330,6 +18350,7 @@ KISSY.Editor.add("templates", function(editor) {
         editor.addButton("templates", {
             contentCls:"ke-toolbar-template",
             title:"模板",
+            mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 this.cfg._prepare.call(this);
             },

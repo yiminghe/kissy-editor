@@ -49,9 +49,9 @@ KISSY.Editor.add("format", function(editor) {
         (function() {
 
             function Format(cfg) {
-                Format.superclass.constructor.call(this, cfg);
                 var self = this;
-                this._init();
+                Format.superclass.constructor.call(self, cfg);
+                self._init();
             }
 
             Format.ATTRS = {
@@ -113,7 +113,7 @@ KISSY.Editor.add("format", function(editor) {
                         }
                     }
 
-                    self.el.reset("value");
+                    //self.el.reset("value");
                 }
             });
             KE.Format = Format;

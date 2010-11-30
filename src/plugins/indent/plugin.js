@@ -8,6 +8,7 @@ KISSY.Editor.add("indent", function(editor) {
     editor.ready(function() {
         var outdent = editor.addButton("outdent", {
             title:"减少缩进量 ",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-outdent",
             type:"outdent",
             loading:true
@@ -15,6 +16,7 @@ KISSY.Editor.add("indent", function(editor) {
 
         var indent = editor.addButton("indent", {
             title:"增加缩进量 ",
+            mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-indent",
             type:"indent",
             loading:true

@@ -535,14 +535,16 @@ KISSY.Editor.add("list/support", function() {
                 elements = elementPath.elements;
             if (!blockLimit)return;
             // Grouping should only happen under blockLimit.(#3940).
-            if (elements)
-                for (var i = 0; i < elements.length && ( element = elements[ i ] )
-                    && element[0] !== blockLimit[0]; i++) {
-                    var ind = S.indexOf(elements[i]._4e_name(), listNodeNames_arr);
+            if (elements) {
+                for (var i = 0;
+                     i < elements.length && ( element = elements[ i ] )
+                         && element[0] !== blockLimit[0]; i++) {
+                    var ind = S.indexOf(elements[i]._4e_name(),
+                        listNodeNames_arr);
                     //ul,ol一个生效后，另一个就失效
                     if (ind !== -1) {
                         if (listNodeNames_arr[ind] === type) {
-                            el.set("state", TripleButton.ON);
+                            el.bon();
                             return;
                         } else {
                             break;
@@ -550,7 +552,8 @@ KISSY.Editor.add("list/support", function() {
 
                     }
                 }
-            el.set("state", TripleButton.OFF);
+            }
+            el.boff();
         },
         offClick:function() {
             this.call("_change");
