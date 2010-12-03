@@ -2,7 +2,7 @@
  * @preserve Constructor for kissy editor and module dependency definition
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
- * @version: 2.0
+ * @version: 2.1
  * @buildtime: @TIMESTAMP@
  */
 KISSY.add("editor", function(S, undefined) {
@@ -155,8 +155,7 @@ KISSY.add("editor", function(S, undefined) {
             "clipboard",
             "colorsupport/dialog/colorpicker",
             {
-                "name": "colorsupport",
-                "requires":["overlay"]
+                "name": "colorsupport"
             },
             "color/dialog",
             "color",
@@ -227,8 +226,7 @@ KISSY.add("editor", function(S, undefined) {
             "removeformat",
             "smiley",
             {
-                name:"smiley/support",
-                requires:["overlay"]
+                name:"smiley/support"
             },
             {
                 "name":"sourcearea",
@@ -243,44 +241,33 @@ KISSY.add("editor", function(S, undefined) {
             },
             "table/dialog",
             {
-                "name": "templates",
-                "requires": ["overlay"]
+                "name": "templates"
             },
             "undo",
             {
-                "name":"resize",
-                "requires":["dd"]
+                "name":"resize"
             }
         ],
 
         mis_mods = [
-            "uibase",
             {
                 "name":"localstorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
             {
-                "name":"button",
-                "requires":["uibase"]
+                "name":"button"
             },
-            "dd",
             "progressbar",
+
             {
-                "name":"overlay",
-                "requires":["dd","uibase"]
+                "name": "contextmenu"
             },
             {
-                "name": "contextmenu",
-                "requires": ["overlay"]
+                "name": "bubbleview"
             },
             {
-                "name": "bubbleview",
-                "requires": ["overlay"]
-            },
-            {
-                "name": "select",
-                "requires": ["overlay"]
+                "name": "select"
             }
         ],
         i,len,
@@ -299,9 +286,7 @@ KISSY.add("editor", function(S, undefined) {
         }
         requires = mod["requires"] || [];
         var basicMod = ["button"];
-        if (mod["name"].indexOf("/dialog") != -1) {
-            basicMod.push("overlay");
-        }
+
         mod["requires"] = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);

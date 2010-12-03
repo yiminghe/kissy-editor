@@ -2,8 +2,8 @@
  * @preserve Constructor for kissy editor and module dependency definition
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
- * @version: 2.0
- * @buildtime: 2010-11-30 14:09:47
+ * @version: 2.1
+ * @buildtime: 2010-12-03 15:06:45
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-30 14:09:47");
+        re += "t=" + encodeURIComponent("2010-12-03 15:06:45");
         return  re;
     }
 
@@ -155,8 +155,7 @@ KISSY.add("editor", function(S, undefined) {
             "clipboard",
             "colorsupport/dialog/colorpicker",
             {
-                "name": "colorsupport",
-                "requires":["overlay"]
+                "name": "colorsupport"
             },
             "color/dialog",
             "color",
@@ -227,8 +226,7 @@ KISSY.add("editor", function(S, undefined) {
             "removeformat",
             "smiley",
             {
-                name:"smiley/support",
-                requires:["overlay"]
+                name:"smiley/support"
             },
             {
                 "name":"sourcearea",
@@ -243,44 +241,33 @@ KISSY.add("editor", function(S, undefined) {
             },
             "table/dialog",
             {
-                "name": "templates",
-                "requires": ["overlay"]
+                "name": "templates"
             },
             "undo",
             {
-                "name":"resize",
-                "requires":["dd"]
+                "name":"resize"
             }
         ],
 
         mis_mods = [
-            "uibase",
             {
                 "name":"localstorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
             {
-                "name":"button",
-                "requires":["uibase"]
+                "name":"button"
             },
-            "dd",
             "progressbar",
+
             {
-                "name":"overlay",
-                "requires":["dd","uibase"]
+                "name": "contextmenu"
             },
             {
-                "name": "contextmenu",
-                "requires": ["overlay"]
+                "name": "bubbleview"
             },
             {
-                "name": "bubbleview",
-                "requires": ["overlay"]
-            },
-            {
-                "name": "select",
-                "requires": ["overlay"]
+                "name": "select"
             }
         ],
         i,len,
@@ -299,9 +286,7 @@ KISSY.add("editor", function(S, undefined) {
         }
         requires = mod["requires"] || [];
         var basicMod = ["button"];
-        if (mod["name"].indexOf("/dialog") != -1) {
-            basicMod.push("overlay");
-        }
+
         mod["requires"] = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
@@ -363,7 +348,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-30 14:09:47");
+                re += "t=" + encodeURIComponent("2010-12-03 15:02:53");
                 return  re;
             },
             /**
@@ -2896,7 +2881,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (self._monitorId) {
                 clearTimeout(self._monitorId);
             }
-            //console.log("selectionChange");
+
             self._monitorId = setTimeout(function() {
                 var selection = self.getSelection();
                 if (selection && !selection.isInvalid) {
@@ -2904,7 +2889,7 @@ KISSY.Editor.add("definition", function(KE) {
                         currentPath = new KE.ElementPath(startElement);
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
-                        //console.log("selectionChange");
+
                         self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
@@ -3179,7 +3164,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //异步引起时序问题，尽可能小间隔
                     setTimeout(function () {
                         doc.designMode = 'off';
-                        //console.log("path1");
+
                         body.focus();
                         // Try it again once..
                         if (!arguments.callee.retry) {
@@ -3198,7 +3183,7 @@ KISSY.Editor.add("definition", function(KE) {
                     DOM.attr(body, 'contentEditable', TRUE);
                     // Try it again once..
                     !retry && blinkCursor(1);
-                    //console.log("path2");
+
                 });
         }
 
@@ -3257,7 +3242,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 
         Event.on(win, 'focus', function() {
-            //console.log(" i am  focus inner");
+
             /**
              * yiminghe特别注意：firefox光标丢失bug
              * blink后光标出现在最后，这就需要实现保存range
@@ -3279,7 +3264,7 @@ KISSY.Editor.add("definition", function(KE) {
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
-                    //console.log("i am fixed");
+                    
                     blinkCursor(FALSE);
                 }
             });
@@ -6581,8 +6566,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                         for (var i = 0; i < siblings.length; i++) {
                             var child = siblings[ i ];
-                            //console.log("child:" + child.nodeType == KEN.NODE_ELEMENT ?
-                            //    ("el: " + child.innerHTML) : ("text:" + child.nodeValue));
+
                             if (child.nodeType == KEN.NODE_ELEMENT) {
                                 testRange = range.duplicate();
 
@@ -7213,12 +7197,12 @@ KISSY.Editor.add("selection", function(KE) {
                 // new selection. (#5735)
                 //点击时不要恢复了，点击就意味着原来的选择区域作废
                 restoreEnabled = 0;
-                //console.log("html mousedown");
+
             });
 
             html.on('mouseup', function () {
                 restoreEnabled = 1;
-                //console.log("html mouseup");
+               
             });
             //事件顺序
             // 1.body mousedown
@@ -7245,7 +7229,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (t._4e_name() != 'body')
                     return;
 
-                //console.log("body focusin :" + restoreEnabled);
+
                 // If we have saved a range, restore it at this
                 // point.
                 if (savedRange) {
@@ -7272,7 +7256,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // internal editable control type elements, e.g. layouted paragraph. (#4682)
                 if (evt.relatedTarget)
                     return;
-                //console.log("body beforedeactivate");
+
                 // Disable selections from being saved.
                 saveEnabled = FALSE;
                 restoreEnabled = 1;
@@ -7282,37 +7266,37 @@ KISSY.Editor.add("selection", function(KE) {
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
-                //console.log("win blur");
+
                 //把选择区域与光标清除                               
                 doc && doc.selection.empty();
             });
             /*
              Event.on(body, 'blur', function() {
-
+             S.log("body blur");
              });
 
              Event.on(DOM._4e_getWin(doc), 'focus', function() {
-
+             S.log("win focus");
              });
              Event.on(doc, 'click', function() {
-
+             S.log("doc click");
              });
              body.on('click', function() {
-
+             S.log("body click");
              });
              html.on('click', function() {
-
+             S.log("html click");
              });*/
             //}
 
             // IE fires the "selectionchange" event when clicking
             // inside a selection. We don't want to capture that.
             body.on('mousedown', function() {
-                //console.log("body mousedown");
+                //S.log("body mousedown");
                 disableSave();
             });
             body.on('mouseup', function() {
-                //console.log("body mouseup");
+                //S.log("body mouseup");
                 saveEnabled = TRUE;
                 setTimeout(function() {
                     saveSelection(TRUE);
@@ -7320,7 +7304,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
             function disableSave() {
                 saveEnabled = FALSE;
-                //console.log("disableSave");
+                //S.log("disableSave");
             }
 
             /**
@@ -7328,7 +7312,7 @@ KISSY.Editor.add("selection", function(KE) {
              * @param {boolean=} testIt
              */
             function saveSelection(testIt) {
-                //console.log("saveSelection");
+                //S.log("saveSelection");
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
@@ -7351,7 +7335,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // IE to put things in order for us.
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
-                                //console.log("retry");
+                                //S.log("retry");
                                 saveSelection(TRUE);
                             }, 50);
                             return;
@@ -7366,7 +7350,7 @@ KISSY.Editor.add("selection", function(KE) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
-                    //console.log("save range : " + savedRange.collapsed);
+                    //S.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }
@@ -10852,7 +10836,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                             && (bogusSpan.hasClass('Apple-style-span') ) ?
                             bogusSpan : pastebin );
                         sel.selectBookmarks(bms);
-                        //console.log(pastebin.html());
+
                         editor.insertHtml(pastebin.html());
                         self._running = false;
                     }, 0);
@@ -11396,7 +11380,7 @@ KISSY.Editor.add("contextmenu", function() {
                                 //异步右键操作
                                 //qc #3764,#3767
                                 setTimeout(function() {
-                                    //console.log("show");
+
                                     instance.show(KE.Utils.getXY(ev.pageX,
                                         ev.pageY, doc,
                                         document));
@@ -11465,7 +11449,7 @@ KISSY.Editor.add("contextmenu", function() {
                     a.on("click", function(ev) {
                         //先 hide 还原编辑器内焦点
                         self.hide();
-                        //console.log("contextmenu hide");
+
                         ev.halt();
                         //给 ie 一点 hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操作
                         setTimeout(func, 30);
@@ -11498,372 +11482,6 @@ KISSY.Editor.add("contextmenu", function() {
     KE.ContextMenu = ContextMenu;
 });
 /**
- * dd support for kissy
- * @author: yiminghe@gmail.com
- */
-KISSY.add('dd', function(S) {
-
-    var Event = S.Event,
-        DOM = S.DOM,
-        Node = S.Node,
-        SHIM_ZINDEX = 999999;
-
-    S.DD = { };
-
-    function DDM() {
-        DDM.superclass.constructor.apply(this, arguments);
-        this._init();
-    }
-
-    DDM.ATTRS = {
-        /**
-         * mousedown 后 buffer 触发时间  timeThred
-         */
-        bufferTime: { value: 200 },
-
-        /**
-         * 当前激活的拖动对象，在同一时间只有一个值，所以不是数组
-         */
-        activeDrag: { }
-    };
-
-    /*
-     负责拖动涉及的全局事件：
-     1.全局统一的鼠标移动监控
-     2.全局统一的鼠标弹起监控，用来通知当前拖动对象停止
-     3.为了跨越 iframe 而统一在底下的遮罩层
-     */
-    S.extend(DDM, S.Base, {
-
-        _init: function() {
-            var self = this;
-            self._showShimMove = throttle(self._move, self, 30);
-        },
-
-        /*
-         全局鼠标移动事件通知当前拖动对象正在移动
-         注意：chrome8: click 时 mousedown-mousemove-mouseup-click 也会触发 mousemove
-         */
-        _move: function(ev) {
-            var activeDrag = this.get('activeDrag');
-            S.log("move");
-            if (!activeDrag) return;
-            //防止 ie 选择到字
-            ev.preventDefault();
-            this._clearSelection();
-            activeDrag._move(ev);
-        },
-
-        /**
-         * 当前拖动对象通知全局：我要开始啦
-         * 全局设置当前拖动对象，
-         * 还要根据配置进行 buffer 处理
-         * @param drag
-         */
-        _start: function(drag) {
-            var self = this,
-                bufferTime = self.get("bufferTime") || 0;
-
-            //事件先要注册好，防止点击，导致 mouseup 时还没注册事件
-            self._registerEvent();
-
-            //是否中央管理，强制限制拖放延迟
-            if (bufferTime) {
-                self._bufferTimer = setTimeout(function() {
-                    self._bufferStart(drag);
-                }, bufferTime);
-            } else {
-                self._bufferStart(drag);
-            }
-        },
-
-        _bufferStart: function(drag) {
-            var self = this;
-            self.set('activeDrag', drag);
-
-            //真正开始移动了才激活垫片
-            self._activeShim();
-            drag._start();
-        },
-
-        /**
-         * 全局通知当前拖动对象：你结束拖动了！
-         * @param ev
-         */
-        _end: function(ev) {
-            var self = this,
-                activeDrag = self.get("activeDrag");
-            self._unregisterEvent();
-            if (self._bufferTimer) {
-                clearTimeout(self._bufferTimer);
-                self._bufferTimer = null;
-            }
-            self._shim && self._shim.css({
-                display:"none"
-            });
-
-            if (!activeDrag) return;
-            activeDrag._end(ev);
-            self.set("activeDrag", null);
-        },
-
-        /**
-         * 垫片只需创建一次
-         */
-        _activeShim: function() {
-            var self = this,doc = document;
-            //创造垫片，防止进入iframe，外面document监听不到 mousedown/up/move
-            self._shim = new Node("<div " +
-                "style='" +
-                //red for debug
-                "background-color:red;" +
-                "position:absolute;" +
-                "left:0;" +
-                "width:100%;" +
-                "top:0;" +
-                "z-index:" +
-                //覆盖iframe上面即可
-                SHIM_ZINDEX
-                + ";" +
-                "'></div>").appendTo(doc.body);
-            //0.5 for debug
-            self._shim.css("opacity", 0);
-            self._activeShim = self._showShim;
-            self._showShim();
-        },
-
-        _showShim: function() {
-            var self = this;
-            self._shim.css({
-                display: "",
-                height: DOM.docHeight()
-            });
-            self._clearSelection();
-        },
-        _clearSelection:function() {
-            S.log("_clearSelection");
-            //清除由于浏览器导致的选择文字
-            if (window.getSelection) {
-                window.getSelection().removeAllRanges();
-            }
-            //防止 ie 莫名选择文字
-            else if (document.selection) {
-                try {
-                    document.selection.empty();
-                }
-                catch(e) {
-                }
-            }
-        },
-
-        /**
-         * 开始时注册全局监听事件
-         */
-        _registerEvent: function() {
-            var self = this,doc = document;
-            S.log("_registerEvent");
-            Event.on(doc, "mouseup", self._end, self);
-            Event.on(doc, "mousemove", self._showShimMove, self);
-        },
-
-        /**
-         * 结束时需要取消掉，防止平时无谓的监听
-         */
-        _unregisterEvent: function() {
-            var self = this,doc = document;
-            S.log("_unregisterEvent");
-            Event.remove(doc, "mousemove", self._showShimMove, self);
-            Event.remove(doc, "mouseup", self._end, self);
-        }
-    });
-
-    S.DD.DDM = new DDM();
-
-    /**
-     * Throttles a call to a method based on the time between calls. from YUI
-     * @method throttle
-     * @for KISSY
-     * @param fn {function} The function call to throttle.
-     * @param ms {int} The number of milliseconds to throttle the method call. Defaults to 150
-     * @return {function} Returns a wrapped function that calls fn throttled.
-     * ! Based on work by Simon Willison: http://gist.github.com/292562
-     */
-    function throttle(fn, scope, ms) {
-        ms = ms || 150;
-
-        if (ms === -1) {
-            return (function() {
-                fn.apply(scope, arguments);
-            });
-        }
-
-        var last = S.now();
-        return (function() {
-            var now = S.now();
-            if (now - last > ms) {
-                last = now;
-                fn.apply(scope, arguments);
-            }
-        });
-    }
-});
-/**
- * dd support for kissy, drag for dd
- * @author: yiminghe@gmail.com
- */
-KISSY.add('dd-draggable', function(S) {
-
-    var UA = S.UA,Node = S.Node;
-
-    /*
-     拖放纯功能类
-     */
-    function Draggable() {
-        Draggable.superclass.constructor.apply(this, arguments);
-        this._init();
-    }
-
-    Draggable.ATTRS = {
-        /**
-         * 拖放节点
-         */
-        node: {
-            setter:function(v) {
-                return S.one(v);
-            }
-        },
-
-        /**
-         * handler 数组，注意暂时必须在 node 里面
-         */
-        handlers:{
-            value:[],
-            setter:function(vs) {
-                if (vs) {
-                    for (var i = 0; i < vs.length; i++) {
-                        vs[i] = S.one(vs[i]);
-                    }
-                }
-            }
-        }
-    };
-
-    S.extend(Draggable, S.Base, {
-
-        _init: function() {
-            var self = this,
-                node = self.get('node'),
-                handlers = self.get('handlers');
-
-            if (handlers.length == 0) {
-                handlers[0] = node;
-            }
-
-            for (var i = 0; i < handlers.length; i++) {
-                var hl = handlers[i],
-                    ori = hl.css('cursor');
-                if (hl[0] != node[0]) {
-                    if (!ori || ori === 'auto')
-                        hl.css('cursor', 'move');
-                }
-            }
-
-            node.on('mousedown', self._handleMouseDown, self);
-        },
-
-        destroy:function() {
-            var self = this,
-                node = self.get('node'),
-                handlers = self.get('handlers');
-            for (var i = 0; i < handlers.length; i++) {
-                var hl = handlers[i];
-                if (hl.css("cursor") == "move") {
-                    hl.css("cursor", "auto");
-                }
-            }
-            node.detach('mousedown', self._handleMouseDown, self);
-        },
-
-        _check: function(t) {
-            var handlers = this.get('handlers');
-
-            for (var i = 0; i < handlers.length; i++) {
-                var hl = handlers[i];
-                if (hl.contains(t)
-                    ||
-                    //子区域内点击也可以启动
-                    hl[0] == t[0]) return true;
-            }
-            return false;
-        },
-
-        /**
-         * 鼠标按下时，查看触发源是否是属于 handler 集合，
-         * 保存当前状态
-         * 通知全局管理器开始作用
-         * @param ev
-         */
-        _handleMouseDown: function(ev) {
-            var self = this,
-                t = new S.Node(ev.target);
-            
-            if (!self._check(t)) return;
-            //chrome 阻止了 flash 点击？？
-            if (!UA.webkit) {
-                //firefox 默认会拖动对象地址
-                ev.preventDefault();
-            }
-
-            S.DD.DDM._start(self);
-
-            var node = self.get("node"),
-                mx = ev.pageX,
-                my = ev.pageY,
-                nxy = node.offset();
-            self.startMousePos = {
-                left:mx,
-                top:my
-            };
-            self.startNodePos = nxy;
-            self._diff = {
-                left:mx - nxy.left,
-                top:my - nxy.top
-            };
-            self.set("diff", self._diff);
-
-        },
-
-        _move: function(ev) {
-            var self = this,
-                diff = self.get("diff"),
-                left = ev.pageX - diff.left,
-                top = ev.pageY - diff.top;
-            S.mix(ev, {
-                left:left,
-                top:top
-            });
-            this.fire("drag", ev);
-        },
-
-        _end: function() {
-            this.fire("dragend");
-        },
-
-        _start: function() {
-            this.fire("dragstart");
-        }
-
-    });
-
-    S.Draggable = Draggable;
-
-}, { host: 'dd' });
-/**
- * dumb ,告诉 editor ，其dd已经loaded，否则会动态请求
- * 桥 kissy dd ->  editor dd
- */
-KISSY.Editor.add("dd", function() {
-});/**
  * draft support for kissy editor
  * @author:yiminghe@gmail.com
  */
@@ -12190,7 +11808,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     this.holder.css("visibility", "");
                 },
                 _selectionChange:function(ev) {
-                    //console.log(ev);
+
                     var self = this,
                         cfg = self.cfg,
                         editor = cfg.editor,
@@ -12997,7 +12615,7 @@ KISSY.Editor.add("flashbridge", function() {
         _eventHandler:function(event) {
             var self = this,
                 type = event.type;
-            //console.log(self.id + " : " + type);
+
             if (type === 'log') {
                 S.log(event.message);
             } else if (type) {
@@ -16445,106 +16063,7 @@ KISSY.Editor.add("music", function(editor) {
             }
         }
     };
-});/**
- * KISSY Overlay
- * @author: 玉伯<lifesinger@gmail.com>, 承玉<yiminghe@gmail.com>,乔花<qiaohua@taobao.com>
- */
-KISSY.add("overlay", function(S) {
-
-    var UIBase = S.UIBase,
-        UA = S.UA;
-
-
-    S.Overlay = UIBase.create([S.UIBase.Box,
-        S.UIBase.ContentBox,
-        S.UIBase.Position,
-        S.UIBase.Loading,
-        //ie6 支持,select bug
-        UA.ie == 6 ? S.UIBase.Shim : null,
-        S.UIBase.Align,
-        S.UIBase.Mask], {
-
-        initializer:function() {
-            S.log("Overlay init");
-        },
-
-        renderUI:function() {
-            S.log("_renderUIOverlay");
-            this.get("el").addClass("ks-overlay");
-        },
-
-        syncUI:function() {
-            S.log("_syncUIOverlay");
-        },
-        /**
-         * bindUI
-         * 注册dom事件以及属性事件
-         * @override
-         */
-        bindUI: function() {
-            S.log("_bindUIOverlay");
-        },
-
-        /**
-         * 删除自己, mask 删不了
-         */
-        destructor: function() {
-            S.log("overlay destructor");
-        }
-
-    });
-}, {
-    requires: ["core"]
-});
-
-/**
- * 2010-11-09 2010-11-10 承玉<yiminghe@gmail.com>重构，attribute-base-Overlay ，采用 Base.create
- */
-/**
- * KISSY.Dialog
- * @author: 承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
- */
-KISSY.add('dialog', function(S) {
-
-    S.Dialog = S.UIBase.create(S.Overlay,
-        [
-            S.UIBase.StdMod,
-            S.UIBase.Close,
-            S.UIBase.Drag,
-            S.UIBase.Constrain
-        ], {
-        initializer:function() {
-            S.log("dialog init");
-        },
-
-        renderUI:function() {
-            S.log("_renderUIDialog");
-            var self = this;
-            self.get("el").addClass("ks-dialog");
-            //设置值，drag-ext 绑定时用到
-            self.set("handlers", [self.get("header")]);
-        },
-        bindUI:function() {
-            S.log("_bindUIDialog");
-        },
-        syncUI:function() {
-            S.log("_syncUIDialog");
-        },
-        destructor:function() {
-            S.log("Dialog destructor");
-        }
-    });
-
-
-}, { host: 'overlay' });
-
-/**
- * 2010-11-10 承玉<yiminghe@gmail.com>重构，使用扩展类
- */
-
-
-
-KISSY.Editor.add("ext-focus", function() {
+});KISSY.Editor.add("ext-focus", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
@@ -17052,39 +16571,40 @@ KISSY.Editor.add("removeformat", function(editor) {
 });KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
         KE = S.Editor,
-        Node = S.Node,
-        Draggable = S.Draggable;
+        Node = S.Node;
 
     editor.ready(function() {
-        var statusDiv = editor.statusDiv,
-            resizer = new Node("<div class='ke-resizer'>"),
-            cfg = editor.cfg["pluginConfig"]["resize"] || {};
-        cfg = cfg["direction"] || ["x","y"];
-        resizer.appendTo(statusDiv);
-        //最大化时就不能缩放了
-        editor.on("maximizeWindow", function() {
-            resizer.css("display", "none");
-        });
-        editor.on("restoreWindow", function() {
-            resizer.css("display", "");
-        });
-        var d = new Draggable({
-            node:resizer
-        }),
-            height = 0,
-            width = 0,
-            heightEl = editor.wrap,
-            widthEl = editor.editorWrap;
-        d.on("dragstart", function() {
-            height = heightEl.height();
-            width = widthEl.width();
-        });
-        d.on("drag", function(ev) {
-            var diffX = ev.pageX - this.startMousePos.left,
-                diffY = ev.pageY - this.startMousePos.top;
-
-            if (S.inArray("y", cfg)) heightEl.height(height + diffY);
-            if (S.inArray("x", cfg)) widthEl.width(width + diffX);
+        S.use("dd", function() {
+            var Draggable = S.Draggable;
+            var statusDiv = editor.statusDiv,
+                resizer = new Node("<div class='ke-resizer'>"),
+                cfg = editor.cfg["pluginConfig"]["resize"] || {};
+            cfg = cfg["direction"] || ["x","y"];
+            resizer.appendTo(statusDiv);
+            //最大化时就不能缩放了
+            editor.on("maximizeWindow", function() {
+                resizer.css("display", "none");
+            });
+            editor.on("restoreWindow", function() {
+                resizer.css("display", "");
+            });
+            var d = new Draggable({
+                node:resizer
+            }),
+                height = 0,
+                width = 0,
+                heightEl = editor.wrap,
+                widthEl = editor.editorWrap;
+            d.on("dragstart", function() {
+                height = heightEl.height();
+                width = widthEl.width();
+            });
+            d.on("drag", function(ev) {
+                var diffX = ev.left - this.startNodePos.left,
+                    diffY = ev.top - this.startNodePos.top;
+                if (S.inArray("y", cfg)) heightEl.height(height + diffY);
+                if (S.inArray("x", cfg)) widthEl.width(width + diffX);
+            });
         });
     });
 });/**
@@ -18400,1287 +17920,6 @@ KISSY.Editor.add("templates", function(editor) {
 
 });
 /**
- * @module  UIBase
- * @author  lifesinger@gmail.com, 承玉<yiminghe@gmail.com>
- */
-KISSY.add('uibase', function (S) {
-
-    var UI_SET = '_uiSet', SRC_NODE = 'srcNode',
-        ATTRS = 'ATTRS', HTML_PARSER = 'HTML_PARSER',
-        Attribute = S.Attribute, Base = S.Base,
-        capitalFirst = Attribute.__capitalFirst,
-        noop = function() {
-        };
-
-    /*
-     * UIBase for class-based component
-     */
-    function UIBase(config) {
-        Base.apply(this, arguments);
-        initHierarchy(this, config);
-        config && config.autoRender && this.render();
-    }
-
-    /**
-     * 模拟多继承
-     * init attr using constructors ATTRS meta info
-     */
-    function initHierarchy(host, config) {
-
-        var c = host.constructor;
-
-        while (c) {
-
-            // 从 markup 生成相应的属性项
-            if (config &&
-                config[SRC_NODE] &&
-                c.HTML_PARSER) {
-                if ((config[SRC_NODE] = S.one(config[SRC_NODE])))
-                    applyParser.call(host, config[SRC_NODE], c.HTML_PARSER);
-            }
-
-            c = c.superclass && c.superclass.constructor;
-        }
-
-        callMethodByHierarchy(host, "initializer", "constructor");
-
-    }
-
-    function callMethodByHierarchy(host, mainMethod, extMethod) {
-        var c = host.constructor,
-            extChains = [],
-            ext,
-            main,
-            exts,
-            t;
-
-        // define
-        while (c) {
-
-            // 收集扩展类
-            t = [];
-            if ((exts = c.__ks_exts)) {
-                for (var i = 0; i < exts.length; i++) {
-                    ext = exts[i];
-                    if (ext) {
-                        if (extMethod != "constructor") {
-                            ext = exts[i].prototype[extMethod];
-                        }
-                        ext && t.push(ext);
-                    }
-                }
-            }
-
-            // 收集主类
-            if ((main = c.prototype[mainMethod])) {
-                t.push(main);
-            }
-
-            // 原地 reverse
-            if (t.length) {
-                extChains.push.apply(extChains, t.reverse());
-            }
-
-            c = c.superclass && c.superclass.constructor;
-        }
-
-        // 初始化函数
-        // 顺序：父类的所有扩展类函数 -> 父类对应函数 -> 子类的所有扩展函数 -> 子类对应函数
-        for (i = extChains.length - 1; i >= 0; i--) {
-            extChains[i] && extChains[i].call(host);
-        }
-    }
-
-    /**
-     * 销毁组件
-     * 顺序：子类扩展 destructor -> 子类 destructor -> 父类扩展 destructor -> 父类 destructor
-     */
-    function destroyHierarchy(host) {
-        var c = host.constructor,
-            exts,
-            d,
-            i;
-
-        while (c) {
-            (d = c.prototype.destructor) && d.apply(host);
-
-            if ((exts = c.__ks_exts)) {
-                for (i = exts.length - 1; i >= 0; i--) {
-                    d = exts[i] && exts[i].prototype.__destructor;
-                    d && d.apply(host);
-                }
-            }
-
-            c = c.superclass && c.superclass.constructor;
-        }
-    }
-
-    function applyParser(srcNode, parser) {
-        var host = this, p, v;
-
-        // 从 parser 中，默默设置属性，不触发事件
-        for (p in parser) {
-            if (parser.hasOwnProperty(p)) {
-                v = parser[p];
-
-                // 函数
-                if (S.isFunction(v)) {
-                    host.__set(p, v.call(host, srcNode));
-                }
-                // 单选选择器
-                else if (S.isString(v)) {
-                    host.__set(p, srcNode.one(v));
-                }
-                // 多选选择器
-                else if (S.isArray(v) && v[0]) {
-                    host.__set(p, srcNode.all(v[0]))
-                }
-            }
-        }
-    }
-
-    UIBase.HTML_PARSER = {};
-    UIBase.ATTRS = {
-        //渲染容器
-        render:{
-            valueFn:function() {
-                return document.body;
-            }
-        },
-        //是否已经渲染过
-        rendered:{value:false}
-    };
-
-    S.extend(UIBase, Base, {
-
-        render: function() {
-            var self = this;
-            if (!self.get("rendered")) {
-                self._renderUI();
-                self.fire('renderUI');
-                callMethodByHierarchy(self, "renderUI", "__renderUI");
-
-                self._bindUI();
-                self.fire('bindUI');
-                callMethodByHierarchy(self, "bindUI", "__bindUI");
-
-                self._syncUI();
-                self.fire('syncUI');
-                callMethodByHierarchy(self, "syncUI", "__syncUI");
-                self.set("rendered", true);
-            }
-        },
-
-        /**
-         * 根据属性添加 DOM 节点
-         */
-        _renderUI: noop,
-        renderUI: noop,
-
-        /**
-         * 根据属性变化设置 UI
-         */
-        _bindUI: function() {
-            var self = this,
-                attrs = self.__getDefAttrs(),
-                attr, m;
-
-            for (attr in attrs) {
-                if (attrs.hasOwnProperty(attr)) {
-                    m = UI_SET + capitalFirst(attr);
-                    if (self[m]) {
-                        // 自动绑定事件到对应函数
-                        (function(attr, m) {
-                            self.on('after' + capitalFirst(attr) + 'Change', function(ev) {
-                                self[m](ev.newVal, ev);
-                            });
-                        })(attr, m);
-                    }
-                }
-            }
-        },
-        bindUI: noop,
-
-        /**
-         * 根据当前（初始化）状态来设置 UI
-         */
-        _syncUI: function() {
-            var self = this,
-                attrs = self.__getDefAttrs();
-            for (var a in attrs) {
-                if (attrs.hasOwnProperty(a)) {
-                    var m = UI_SET + capitalFirst(a);
-                    if (self[m]) {
-                        self[m](self.get(a));
-                    }
-                }
-            }
-        },
-        syncUI: noop,
-
-        destroy: function() {
-            destroyHierarchy(this);
-            this.fire('destroy');
-            this.detach();
-        }
-    });
-
-    /**
-     * 根据基类以及扩展类得到新类
-     * @param {function} base 基类
-     * @param {Array.<function>} exts 扩展类
-     * @param {Object} px 原型 mix 对象
-     * @param {Object} sx 静态 mix 对象
-     */
-    UIBase.create = function(base, exts, px, sx) {
-        if (S.isArray(base)) {
-            sx = px;
-            px = exts;
-            exts = base;
-            base = UIBase;
-        }
-        base = base || UIBase;
-
-        function C() {
-            UIBase.apply(this, arguments);
-        }
-
-        S.extend(C, base, px, sx);
-
-        if (exts) {
-            C.__ks_exts = exts;
-
-            S.each(exts, function(ext) {
-                if (!ext)return;
-                // 合并 ATTRS/HTML_PARSER 到主类
-                S.each([ATTRS, HTML_PARSER], function(K) {
-                    if (ext[K]) {
-                        C[K] = C[K] || {};
-                        // 不覆盖主类上的定义
-                        S.mix(C[K], ext[K], false);
-                    }
-                });
-
-                // 合并功能代码到主类，不覆盖
-                S.augment(C, ext, false);
-            });
-        }
-
-        return C;
-    };
-
-    S.UIBase = UIBase;
-});
-/**
- * UIBase.Align
- * @author: 承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
- */
-KISSY.add('uibase-align', function(S) {
-
-    var DOM = S.DOM;
-
-    function Align() {
-    }
-
-    S.mix(Align, {
-        TL: 'tl',
-        TC: 'tc',
-        TR: 'tr',
-        CL: 'cl',
-        CC: 'cc',
-        CR: 'cr',
-        BL: 'bl',
-        BC: 'bc',
-        BR: 'br'
-    });
-
-    Align.ATTRS = {
-        align: {
-            /*
-             value:{
-             node: null,         // 参考元素, falsy 值为可视区域, 'trigger' 为触发元素, 其他为指定元素
-             points: [AlignExt.CC, AlignExt.CC], // ['tr', 'tl'] 表示 overlay 的 tl 与参考节点的 tr 对齐
-             offset: [0, 0]      // 有效值为 [n, m]
-             }*/
-        }
-    };
-
-    /**
-     * 获取 node 上的 align 对齐点 相对于页面的坐标
-     * @param {?Element} node
-     * @param align
-     */
-    function getAlignOffset(node, align) {
-        var V = align.charAt(0),
-            H = align.charAt(1),
-            offset, w, h, x, y;
-
-        if (node) {
-            node = S.one(node);
-            offset = node.offset();
-            w = node[0].offsetWidth;
-            h = node[0].offsetHeight;
-        } else {
-            offset = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
-            w = DOM.viewportWidth();
-            h = DOM.viewportHeight();
-        }
-
-        x = offset.left;
-        y = offset.top;
-
-        if (V === 'c') {
-            y += h / 2;
-        } else if (V === 'b') {
-            y += h;
-        }
-
-        if (H === 'c') {
-            x += w / 2;
-        } else if (H === 'r') {
-            x += w;
-        }
-
-        return { left: x, top: y };
-    }
-
-    Align.prototype = {
-
-        _uiSetAlign: function(v) {
-            
-            if (S.isPlainObject(v)) {
-                this.align(v.node, v.points, v.offset);
-            }
-        },
-
-        /**
-         * 对齐 Overlay 到 node 的 points 点, 偏移 offset 处
-         * @param {Element=} node 参照元素, 可取配置选项中的设置, 也可是一元素
-         * @param {Array.<string>} points 对齐方式
-         * @param {Array.<number>} offset 偏移
-         */
-        align: function(node, points, offset) {
-            var self = this,
-                xy,
-                diff,
-                p1,
-                el = self.get('el'),
-                p2;
-
-            offset = offset || [0,0];
-            xy = DOM.offset(el);
-
-            // p1 是 node 上 points[0] 的 offset
-            // p2 是 overlay 上 points[1] 的 offset
-            p1 = getAlignOffset(node, points[0]);
-            p2 = getAlignOffset(el, points[1]);
-
-            diff = [p2.left - p1.left, p2.top - p1.top];
-
-            self.set('xy', [
-                xy.left - diff[0] + (+offset[0]),
-                xy.top - diff[1] + (+offset[1])
-            ]);
-        },
-
-        /**
-         * 居中显示到可视区域, 一次性居中
-         */
-        center: function(node) {
-            this.set('align', {
-                node: node,
-                points: [Align.CC, Align.CC],
-                offset: [0, 0]
-            });
-        }
-    };
-
-    S.UIBase.Align = Align;
-});
-/**
- * UIBase.Box
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add('uibase-box', function(S) {
-    S.namespace("UIBase");
-    var doc = document,
-        Node = S.Node;
-
-    function Box() {
-        S.log("box init");
-    }
-
-    S.mix(Box, {
-        APPEND:1,
-        INSERT:0
-    });
-
-    Box.ATTRS = {
-        el: {
-            //容器元素
-            setter:function(v) {
-                if (S.isString(v))
-                    return S.one(v);
-            }
-        },
-        elCls: {
-            // 容器的 class
-        },
-        elStyle:{
-            //容器的行内样式
-        },
-        width: {
-            // 宽度
-        },
-        height: {
-            // 高度
-        },
-        elTagName:{
-            //生成标签名字
-            value:"div"
-        },
-        elAttrs:{
-            //其他属性
-        },
-        elOrder:{
-            //插入容器位置
-            //0 : prepend
-            //1 : append
-            value:1
-        },
-        html: {
-            // 内容, 默认为 undefined, 不设置
-            value: false
-        }
-    };
-
-    Box.HTML_PARSER = {
-        el:function(srcNode) {
-            return srcNode;
-        }
-    };
-
-    Box.prototype = {
-        __syncUI:function() {
-            S.log("_syncUIBoxExt");
-        },
-        __bindUI:function() {
-            S.log("_bindUIBoxExt");
-        },
-        __renderUI:function() {
-            S.log("_renderUIBoxExt");
-            var self = this,
-                render = self.get("render"),
-                el = self.get("el");
-            render = new Node(render);
-            if (!el) {
-                el = new Node("<" + self.get("elTagName") + ">");
-                if (self.get("elOrder")) {
-                    render.append(el);
-                } else {
-                    render.prepend(el);
-                }
-                self.set("el", el);
-            }
-        },
-        _uiSetElAttrs:function(attrs) {
-            S.log("_uiSetElAttrs");
-            if (attrs) {
-                this.get("el").attr(attrs);
-            }
-        },
-        _uiSetElCls:function(cls) {
-            if (cls) {
-                this.get("el").addClass(cls);
-            }
-        },
-
-        _uiSetElStyle:function(style) {
-            S.log("_uiSetElStyle");
-            if (style) {
-                this.get("el").css(style);
-            }
-        },
-
-        _uiSetWidth:function(w) {
-            S.log("_uiSetWidth");
-            var self = this;
-            if (w) {
-                self.get("el").width(w);
-            }
-        },
-
-        _uiSetHeight:function(h) {
-            S.log("_uiSetHeight");
-            var self = this;
-            if (h) {
-                self.get("el").height(h);
-            }
-        },
-
-        _uiSetHtml:function(c) {
-            S.log("_uiSetHtml");
-            if (c !== false) {
-                this.get("el").html(c);
-            }
-
-        },
-
-        __destructor:function() {
-            S.log("box __destructor");
-            var el = this.get("el");
-            if (el) {
-                el.detach();
-                el.remove();
-            }
-        }
-    };
-
-    S.UIBase.Box = Box;
-});
-/**
- * close extension for kissy dialog
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-close", function(S) {
-    S.namespace("UIBase");
-    var CLS_PREFIX = 'ks-ext-',Node = S.Node;
-
-    function Close() {
-        S.log("close init");
-    }
-
-    Close.ATTRS = {
-        closable: {             // 是否需要关闭按钮
-            value: true
-        },
-        closeBtn:{}
-    };
-
-    Close.HTML_PARSER = {
-        closeBtn:"." + CLS_PREFIX + 'close'
-    };
-
-    Close.prototype = {
-        __syncUI:function() {
-            S.log("_syncUICloseExt");
-        },
-        _uiSetClosable:function(v) {
-            S.log("_uiSetClosable");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            if (closeBtn) {
-                if (v) {
-                    closeBtn.show();
-                } else {
-                    closeBtn.hide();
-                }
-            }
-        },
-        __renderUI:function() {
-            S.log("_renderUICloseExt");
-            var self = this,
-                closeBtn = self.get("closeBtn"),
-                el = self.get("contentEl");
-
-            if (!closeBtn &&
-                el) {
-                closeBtn = new Node("<a " +
-                    "href='#' " +
-                    "class='" + CLS_PREFIX + "close" + "'>" +
-                    "<span class='" +
-                    CLS_PREFIX + "close-x" +
-                    "'>X</span>" +
-                    "</a>")
-                    .appendTo(el);
-                self.set("closeBtn", closeBtn);
-            }
-        },
-        __bindUI:function() {
-            S.log("_bindUICloseExt");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            closeBtn && closeBtn.on("click", function(ev) {
-                self.hide();
-                ev.halt();
-            });
-        },
-
-        __destructor:function() {
-            S.log("close-ext __destructor");
-            var self = this,
-                closeBtn = self.get("closeBtn");
-            closeBtn && closeBtn.detach();
-        }
-    };
-    S.UIBase.Close = Close;
-
-});/**
- * constrain extension for kissy
- * @author: 承玉<yiminghe@gmail.com>, 乔花<qiaohua@taobao.com>
- */
-KISSY.add("uibase-constrain", function(S) {
-    S.namespace("UIBase");
-
-    var DOM = S.DOM;
-
-    function Constrain() {
-        S.log("constrain init");
-    }
-
-    Constrain.ATTRS = {
-        constrain:{
-            //不限制
-            //true:viewport限制
-            //node:限制在节点范围
-            value:false
-        }
-    };
-
-    /**
-     * 获取受限区域的宽高, 位置
-     * @return {Object | undefined} {left: 0, top: 0, maxLeft: 100, maxTop: 100}
-     */
-    function _getConstrainRegion(constrain) {
-        var ret;
-        if (!constrain) return ret;
-        var el = this.get("el");
-        if (constrain !== true) {
-            constrain = S.one(constrain);
-            ret = constrain.offset();
-            S.mix(ret, {
-                maxLeft: ret.left + constrain[0].offsetWidth - el[0].offsetWidth,
-                maxTop: ret.top + constrain[0].offsetHeight - el[0].offsetHeight
-            });
-        }
-        // 没有指定 constrain, 表示受限于可视区域
-        else {
-            //不要使用 viewportWidth()
-            //The innerWidth attribute, on getting,
-            //must return the viewport width including the size of a rendered scroll bar (if any).
-            //On getting, the clientWidth attribute returns the viewport width
-            //excluding the size of a rendered scroll bar (if any)
-            //  if the element is the root element 
-            var vWidth = document.documentElement.clientWidth;
-            ret = { left: DOM.scrollLeft(), top: DOM.scrollTop() };
-            S.mix(ret, {
-                maxLeft: ret.left + vWidth - el[0].offsetWidth,
-                maxTop: ret.top + DOM.viewportHeight() - el[0].offsetHeight
-            });
-        }
-
-        return ret;
-    }
-
-    Constrain.prototype = {
-        __bindUI:function() {
-            S.log("_bindUIConstrain");
-
-        },
-        __renderUI:function() {
-            S.log("_renderUIConstrain");
-            var self = this,
-                attrs = self.__getDefAttrs(),
-                xAttr = attrs["x"],
-                yAttr = attrs["y"],
-                oriXSetter = xAttr["setter"],
-                oriYSetter = yAttr["setter"];
-            xAttr.setter = function(v) {
-                var r = oriXSetter && oriXSetter(v);
-                if (r === undefined) {
-                    r = v;
-                }
-                if (!self.get("constrain")) return r;
-                var _ConstrainExtRegion = _getConstrainRegion.call(
-                    self, self.get("constrain"));
-                return Math.min(Math.max(r,
-                    _ConstrainExtRegion.left),
-                    _ConstrainExtRegion.maxLeft);
-            };
-            yAttr.setter = function(v) {
-                var r = oriYSetter && oriYSetter(v);
-                if (r === undefined) {
-                    r = v;
-                }
-                if (!self.get("constrain")) return r;
-                var _ConstrainExtRegion = _getConstrainRegion.call(
-                    self, self.get("constrain"));
-                return Math.min(Math.max(r,
-                    _ConstrainExtRegion.top),
-                    _ConstrainExtRegion.maxTop);
-            };
-            self.addAttr("x", xAttr);
-            self.addAttr("y", yAttr);
-        },
-
-        __syncUI:function() {
-            S.log("_syncUIConstrain");
-        },
-        __destructor:function() {
-            S.log("constrain-ext __destructor");
-        }
-
-    };
-
-
-    S.UIBase.Constrain = Constrain;
-
-});/**
- * 里层包裹层定义，适合mask以及shim
- * @author:yiminghe@gmail.com
- */
-KISSY.add("uibase-contentbox", function(S) {
-
-    S.namespace("UIBase");
-    var Node = S.Node;
-
-    function ContentBox() {
-        S.log("contentbox init");
-    }
-
-    ContentBox.ATTRS = {
-        //内容容器节点
-        contentEl:{},
-        contentElAttrs:{},
-        contentTagName:{value:"div"},
-        //层内容
-        content:{}
-    };
-
-
-    ContentBox.HTML_PARSER = {
-        contentEl:".ks-contentbox"
-    };
-
-    ContentBox.prototype = {
-        __syncUI:function() {
-            S.log("_syncUIContentBox");
-        },
-        __bindUI:function() {
-            S.log("_bindUIContentBox");
-        },
-        __renderUI:function() {
-            S.log("_renderUIContentBox");
-            var self = this,
-                contentEl = self.get("contentEl"),
-                el = self.get("el");
-            if (!contentEl) {
-                contentEl = new Node("<" +
-                    self.get("contentTagName") +
-                    " class='ks-contentbox'>").appendTo(el);
-                self.set("contentEl", contentEl);
-            }
-        },
-        _uiSetContentElAttrs:function(attrs) {
-            S.log("_uiSetContentElAttrs");
-            if (attrs) {
-                this.get("contentEl").attr(attrs);
-            }
-        },
-        _uiSetContent:function(c) {
-            S.log("_uiSetContent");
-            if (c !== undefined) {
-                this.get("contentEl").html(c);
-            }
-        },
-
-        __destructor:function() {
-            S.log("contentbox __destructor");
-        }
-    };
-
-    S.UIBase.ContentBox = ContentBox;
-});/**
- * drag extension for position
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-drag", function(S) {
-    S.namespace('UIBase');
-    function Drag() {
-         S.log("drag init");
-    }
-
-    Drag.ATTRS = {
-        handlers:{value:[]},
-        draggable:{value:true}
-    };
-
-    Drag.prototype = {
-
-        _uiSetHandlers:function(v) {
-            S.log("_uiSetHanlders");
-            if (v && v.length > 0)
-                this.__drag.set("handlers", v);
-        },
-
-        __syncUI:function() {
-            S.log("_syncUIDragExt");
-        },
-
-        __renderUI:function() {
-            S.log("_renderUIDragExt");
-        },
-
-        __bindUI:function() {
-            S.log("_bindUIDragExt");
-            var self = this,el = self.get("el");
-            self.__drag = new S.Draggable({
-                node:el,
-                handlers:self.get("handlers")
-            });
-        },
-
-        _uiSetDraggable:function(v) {
-            S.log("_uiSetDraggable");
-            var self = this,d = self.__drag;
-            if (v) {
-                d.detach("drag");
-                d.on("drag", self._dragExtAction, self);
-            } else {
-                d.detach("drag");
-            }
-        },
-
-        _dragExtAction:function(offset) {
-            this.set("xy", [offset.left,offset.top])
-        },
-        /**
-         *
-         */
-        __destructor:function() {
-            S.log("DragExt __destructor");
-            var d = this.__drag;
-            d&&d.destroy();
-        }
-
-    };
-
-    S.UIBase.Drag = Drag;
-
-});/**
- * loading mask support for overlay
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-loading", function(S) {
-    S.namespace("UIBase");
-    function Loading() {
-        S.log("LoadingExt init");
-    }
-
-    Loading.prototype = {
-        loading:function() {
-            var self = this;
-            if (!self._loadingExtEl) {
-                self._loadingExtEl = new S.Node("<div " +
-                    "class='ks-ext-loading'" +
-                    " style='position: absolute;" +
-                    "border: none;" +
-                    "width: 100%;" +
-                    "top: 0;" +
-                    "left: 0;" +
-                    "z-index: 99999;" +
-                    "height:100%;" +
-                    "*height: expression(this.parentNode.offsetHeight);" + "'>")
-                    .appendTo(self.get("el"));
-            }
-            self._loadingExtEl.show();
-        },
-
-        unloading:function() {
-            var lel = this._loadingExtEl;
-            lel && lel.hide();
-        }
-    };
-
-    S.UIBase.Loading = Loading;
-
-});/**
- * mask extension for kissy
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-mask", function(S) {
-    S.namespace("UIBase");
-    /**
-     * 多 position 共享一个遮罩
-     */
-    var mask,
-        UA = S.UA,
-        num = 0;
-
-
-    function initMask() {
-        mask = new S.Node("<div class='ks-ext-mask'>").prependTo(document.body);
-        mask.css({
-            "position":"absolute",
-            left:0,
-            top:0,
-            width:UA.ie6 ? S.DOM.docWidth() : "100%",
-            "height": S.DOM.docHeight()
-        });
-        if (UA.ie == 6) {
-            mask.append("<" + "iframe style='width:100%;" +
-                "height:expression(this.parentNode.offsetHeight);" +
-                "filter:alpha(opacity=0);" +
-                "z-index:-1;'>");
-        }
-    }
-
-    function Mask() {
-        S.log("mask init");
-    }
-
-    Mask.ATTRS = {
-        mask:{
-            value:false
-        }
-    };
-
-    Mask.prototype = {
-        __bindUI:function() {
-            S.log("_bindUIMask");
-        },
-
-        __renderUI:function() {
-            S.log("_renderUIMask");
-        },
-
-        __syncUI:function() {
-            S.log("_syncUIMask");
-        },
-        _uiSetMask:function(v) {
-            S.log("_uiSetMask");
-            var self = this;
-            if (v) {
-                self.on("show", self._maskExtShow);
-                self.on("hide", self._maskExtHide);
-            } else {
-                self.detach("show", self._maskExtShow);
-                self.detach("hide", self._maskExtHide);
-            }
-        },
-
-        _maskExtShow:function() {
-            if (!mask) {
-                initMask();
-            }
-            mask.css({
-                "z-index":this.get("zIndex") - 1
-            });
-            num++;
-            mask.show();
-        },
-
-        _maskExtHide:function() {
-            num--;
-            if (num <= 0) num = 0;
-            if (!num)
-                mask && mask.hide();
-        },
-
-        __destructor:function() {
-            S.log("mask __destructor");
-        }
-
-    };
-
-    S.UIBase.Mask = Mask;
-});/**
- * position and visible extension，可定位的隐藏层
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-position", function(S) {
-    S.namespace("UIBase");
-
-    var doc = document ,
-        Event = S.Event,
-        KEYDOWN = "keydown";
-
-    function Position() {
-        S.log("position init");
-    }
-
-    Position.ATTRS = {
-        x: {
-            // 水平方向绝对位置
-        },
-        y: {
-            // 垂直方向绝对位置
-        },
-        xy: {
-            // 相对 page 定位, 有效值为 [n, m], 为 null 时, 选 align 设置
-            setter: function(v) {
-                
-                var self = this,
-                    xy = S.makeArray(v);
-
-                if (xy.length) {
-                    xy[0] && self.set("x", xy[0]);
-                    xy[1] && self.set("y", xy[1]);
-                }
-                return v;
-            }
-        },
-        zIndex: {
-            value: 9999
-        },
-        visible:{
-            value:undefined
-        }
-    };
-
-
-    Position.prototype = {
-        __syncUI:function() {
-            S.log("_syncUIPosition");
-        },
-        __renderUI:function() {
-            S.log("_renderUIPosition");
-            var el=this.get("el");
-            el.addClass("ks-ext-position");
-            el.css("display", "");
-        },
-        __bindUI:function() {
-            S.log("_bindUIPosition");
-        },
-        _uiSetZIndex:function(x) {
-            S.log("_uiSetZIndex");
-            if (x !== undefined)
-                this.get("el").css("z-index", x);
-        },
-        _uiSetX:function(x) {
-            S.log("_uiSetX");
-            if (x !== undefined)
-                this.get("el").offset({
-                    left:x
-                });
-        },
-        _uiSetY:function(y) {
-            S.log("_uiSetY");
-            if (y !== undefined)
-                this.get("el").offset({
-                    top:y
-                });
-        },
-        _uiSetVisible:function(isVisible) {
-            if (isVisible === undefined) return;
-            S.log("_uiSetVisible");
-            var self = this,
-                el = self.get("el");
-            el.css("visibility", isVisible ? "visible" : "hidden");
-            self[isVisible ? "_bindKey" : "_unbindKey" ]();
-            self.fire(isVisible ? "show" : "hide");
-        },
-        /**
-         * 显示/隐藏时绑定的事件
-         */
-        _bindKey: function() {
-            Event.on(doc, KEYDOWN, this._esc, this);
-        },
-
-        _unbindKey: function() {
-            Event.remove(doc, KEYDOWN, this._esc, this);
-        },
-
-        _esc: function(e) {
-            if (e.keyCode === 27) this.hide();
-        },
-        /**
-         * 移动到绝对位置上, move(x, y) or move(x) or move([x, y])
-         * @param {number|Array.<number>} x
-         * @param {number=} y
-         */
-        move: function(x, y) {
-            var self = this;
-            if (S.isArray(x)) {
-                y = x[1];
-                x = x[0];
-            }
-            self.set("xy", [x,y]);
-        },
-
-        /**
-         * 显示 Overlay
-         */
-        show: function() {
-            this._firstShow();
-        },
-
-        /**
-         * 第一次显示时, 需要构建 DOM, 设置位置
-         */
-        _firstShow: function() {
-            var self = this;
-            self.render();
-            self._realShow();
-            self._firstShow = self._realShow;
-        },
-
-
-        _realShow: function() {
-            this.set("visible", true);
-        },
-
-        /**
-         * 隐藏
-         */
-        hide: function() {
-            this.set("visible", false);
-        },
-
-        __destructor:function() {
-            S.log("position __destructor");
-        }
-
-    };
-
-    S.UIBase.Position = Position;
-});/**
- * shim for ie6 ,require box-ext
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-shim", function(S) {
-    S.namespace("UIBase");
-    function Shim() {
-        S.log("shim init");
-    }
-
-    var Node = S.Node;
-    Shim.prototype = {
-        __syncUI:function() {
-            S.log("_syncUIShimExt");
-        },
-        __bindUI:function() {
-            S.log("_bindUIShimExt");
-        },
-        __renderUI:function() {
-            S.log("_renderUIShimExt");
-            var self = this,el = self.get("el");
-            var shim = new Node("<"+"iframe style='position: absolute;" +
-                "border: none;" +
-                "width: expression(this.parentNode.offsetWidth);" +
-                "top: 0;" +
-                "opacity: 0;" +
-                "filter: alpha(opacity=0);" +
-                "left: 0;" +
-                "z-index: -1;" +
-                "height: expression(this.parentNode.offsetHeight);" + "'>");
-            el.prepend(shim);
-        },
-
-        __destructor:function() {
-            S.log("shim __destructor");
-        }
-    };
-    S.UIBase.Shim = Shim;
-});/**
- * support standard mod for component
- * @author: 承玉<yiminghe@gmail.com>
- */
-KISSY.add("uibase-stdmod", function(S) {
-
-    S.namespace("UIBase");
-    var CLS_PREFIX = "ks-stdmod-",
-        Node = S.Node;
-
-    function StdMod() {
-        S.log("stdmod init");
-    }
-
-    StdMod.ATTRS = {
-        header:{
-        },
-        body:{
-        },
-        footer:{
-        },
-        bodyStyle:{
-        },
-        headerContent:{
-            value:false
-        },
-        bodyContent:{
-            value:false
-        },
-        footerContent:{
-            value:false
-        }
-    };
-
-    StdMod.HTML_PARSER = {
-        header:"." + CLS_PREFIX + "header",
-        body:"." + CLS_PREFIX + "body",
-        footer:"." + CLS_PREFIX + "footer"
-    };
-
-
-    StdMod.prototype = {
-        __bindUI:function() {
-            S.log("_bindUIStdMod");
-        },
-        __syncUI:function() {
-            S.log("_syncUIStdMod");
-        },
-        _setStdModContent:function(part, v) {
-            if (v !== false) {
-                if (S.isString(v)) {
-                    this.get(part).html(v);
-                } else {
-                    this.get(part).html("");
-                    this.get(part).append(v);
-                }
-            }
-        },
-        _uiSetBodyStyle:function(v) {
-            if (v !== undefined) {
-                this.get("body").css(v);
-            }
-        },
-        _uiSetBodyContent:function(v) {
-            S.log("_uiSetBodyContent");
-            this._setStdModContent("body", v);
-        },
-        _uiSetHeaderContent:function(v) {
-            S.log("_uiSetHeaderContent");
-            this._setStdModContent("header", v);
-        },
-        _uiSetFooterContent:function(v) {
-            S.log("_uiSetFooterContent");
-            this._setStdModContent("footer", v);
-        },
-        __renderUI:function() {
-            S.log("_renderUIStdMod");
-            var self = this,
-                el = self.get("contentEl"),
-                header = self.get("header"),
-                body = self.get("body"),
-                footer = self.get("footer"),
-                headerContent = self.get("headerContent"),
-                bodyContent = self.get("bodyContent"),
-                footerContent = self.get("footerContent");
-            if (!header) {
-                header = new Node("<div class='" + CLS_PREFIX + "header'>").appendTo(el);
-                self.set("header", header);
-            }
-            if (!body) {
-                body = new Node("<div class='" + CLS_PREFIX + "body'>").appendTo(el);
-                self.set("body", body);
-            }
-            if (!footer) {
-                footer = new Node("<div class='" + CLS_PREFIX + "footer'>").appendTo(el);
-                self.set("footer", footer);
-            }
-        },
-
-        __destructor:function() {
-            S.log("stdmod __destructor");
-        }
-    };
-
-
-    S.UIBase.StdMod = StdMod;
-
-});KISSY.Editor.add("uibase", function() {
-});/**
  * undo,redo manager for kissy editor
  * @author: yiminghe@gmail.com
  */

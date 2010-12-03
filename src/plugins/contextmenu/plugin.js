@@ -75,7 +75,7 @@ KISSY.Editor.add("contextmenu", function() {
                                 //异步右键操作
                                 //qc #3764,#3767
                                 setTimeout(function() {
-                                    //console.log("show");
+
                                     instance.show(KE.Utils.getXY(ev.pageX,
                                         ev.pageY, doc,
                                         document));
@@ -144,7 +144,7 @@ KISSY.Editor.add("contextmenu", function() {
                     a.on("click", function(ev) {
                         //先 hide 还原编辑器内焦点
                         self.hide();
-                        //console.log("contextmenu hide");
+
                         ev.halt();
                         //给 ie 一点 hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操作
                         setTimeout(func, 30);

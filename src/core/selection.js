@@ -186,8 +186,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                         for (var i = 0; i < siblings.length; i++) {
                             var child = siblings[ i ];
-                            //console.log("child:" + child.nodeType == KEN.NODE_ELEMENT ?
-                            //    ("el: " + child.innerHTML) : ("text:" + child.nodeValue));
+
                             if (child.nodeType == KEN.NODE_ELEMENT) {
                                 testRange = range.duplicate();
 
@@ -818,12 +817,12 @@ KISSY.Editor.add("selection", function(KE) {
                 // new selection. (#5735)
                 //点击时不要恢复了，点击就意味着原来的选择区域作废
                 restoreEnabled = 0;
-                //console.log("html mousedown");
+
             });
 
             html.on('mouseup', function () {
                 restoreEnabled = 1;
-                //console.log("html mouseup");
+               
             });
             //事件顺序
             // 1.body mousedown
@@ -850,7 +849,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (t._4e_name() != 'body')
                     return;
 
-                //console.log("body focusin :" + restoreEnabled);
+
                 // If we have saved a range, restore it at this
                 // point.
                 if (savedRange) {
@@ -877,7 +876,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // internal editable control type elements, e.g. layouted paragraph. (#4682)
                 if (evt.relatedTarget)
                     return;
-                //console.log("body beforedeactivate");
+
                 // Disable selections from being saved.
                 saveEnabled = FALSE;
                 restoreEnabled = 1;
@@ -887,37 +886,37 @@ KISSY.Editor.add("selection", function(KE) {
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
-                //console.log("win blur");
+
                 //把选择区域与光标清除                               
                 doc && doc.selection.empty();
             });
             /*
              Event.on(body, 'blur', function() {
-             console.log("body blur");
+             S.log("body blur");
              });
 
              Event.on(DOM._4e_getWin(doc), 'focus', function() {
-             console.log("win focus");
+             S.log("win focus");
              });
              Event.on(doc, 'click', function() {
-             console.log("doc click");
+             S.log("doc click");
              });
              body.on('click', function() {
-             console.log("body click");
+             S.log("body click");
              });
              html.on('click', function() {
-             console.log("html click");
+             S.log("html click");
              });*/
             //}
 
             // IE fires the "selectionchange" event when clicking
             // inside a selection. We don't want to capture that.
             body.on('mousedown', function() {
-                //console.log("body mousedown");
+                //S.log("body mousedown");
                 disableSave();
             });
             body.on('mouseup', function() {
-                //console.log("body mouseup");
+                //S.log("body mouseup");
                 saveEnabled = TRUE;
                 setTimeout(function() {
                     saveSelection(TRUE);
@@ -925,7 +924,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
             function disableSave() {
                 saveEnabled = FALSE;
-                //console.log("disableSave");
+                //S.log("disableSave");
             }
 
             /**
@@ -933,7 +932,7 @@ KISSY.Editor.add("selection", function(KE) {
              * @param {boolean=} testIt
              */
             function saveSelection(testIt) {
-                //console.log("saveSelection");
+                //S.log("saveSelection");
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
@@ -956,7 +955,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // IE to put things in order for us.
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
-                                //console.log("retry");
+                                //S.log("retry");
                                 saveSelection(TRUE);
                             }, 50);
                             return;
@@ -971,7 +970,7 @@ KISSY.Editor.add("selection", function(KE) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
-                    //console.log("save range : " + savedRange.collapsed);
+                    //S.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }

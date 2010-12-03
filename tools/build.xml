@@ -77,21 +77,6 @@ build file for kissy editor
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
 
-        <concat destfile="${src.dir}/plugins/uibase/plugin.js"
-                encoding="${charset}"
-                outputencoding="${charset}"
-                >
-            <fileset dir="${src.dir}/plugins/uibase/support/"
-                     includes="uibase.js"
-                    ></fileset>
-            <fileset dir="${src.dir}/plugins/uibase/support/"
-                     includes="*.js"
-                     excludes="uibase.js"
-                    ></fileset>
-            <filelist dir="${src.dir}/plugins/uibase/editor/"
-                      files="import.js"
-                    ></filelist>
-        </concat>
         <!--
         引入kissy overlay 到 editor
         -->
@@ -100,25 +85,11 @@ build file for kissy editor
                 outputencoding="${charset}"
                 >
 
-            <filelist dir="${src.dir}/plugins/overlay/support/overlay/"
-                      files="overlay.js,dialog.js"></filelist>
             <filelist dir="${src.dir}/plugins/overlay/support/editor/"
                       files="focus_4e-ext.js,overlay.js"
                     ></filelist>
         </concat>
 
-
-        <!--
-        引入kissy dd 到 editor
-        -->
-        <concat destfile="${src.dir}/plugins/dd/plugin.js"
-                encoding="${charset}"
-                outputencoding="${charset}"
-                >
-            <filelist dir="${src.dir}/plugins/dd/support/"
-                      files="ddm.js,draggable.js,editor/dd.js"
-                    ></filelist>
-        </concat>
 
         <copy todir="${build.dir}"
               encoding="${charset}"
@@ -126,18 +97,6 @@ build file for kissy editor
             <fileset dir="${src.dir}"
                      includes="**/*"/>
         </copy>
-
-        <!--
-        remove accidental debug info
-        -->
-        <replaceregexp match="^\s*console\.log\(.+$"
-                       replace=""
-                       flags="g"
-                       byline="true"
-                       encoding="${charset}">
-            <fileset dir="${build.dir}"
-                     includes="**/*.js"/>
-        </replaceregexp>
 
         <replaceregexp match="@TIMESTAMP@"
                        replace="${timestamp.isoformat}"

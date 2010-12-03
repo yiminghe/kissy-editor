@@ -582,7 +582,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (self._monitorId) {
                 clearTimeout(self._monitorId);
             }
-            //console.log("selectionChange");
+
             self._monitorId = setTimeout(function() {
                 var selection = self.getSelection();
                 if (selection && !selection.isInvalid) {
@@ -590,7 +590,7 @@ KISSY.Editor.add("definition", function(KE) {
                         currentPath = new KE.ElementPath(startElement);
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
-                        //console.log("selectionChange");
+
                         self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
@@ -865,7 +865,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //异步引起时序问题，尽可能小间隔
                     setTimeout(function () {
                         doc.designMode = 'off';
-                        //console.log("path1");
+
                         body.focus();
                         // Try it again once..
                         if (!arguments.callee.retry) {
@@ -884,7 +884,7 @@ KISSY.Editor.add("definition", function(KE) {
                     DOM.attr(body, 'contentEditable', TRUE);
                     // Try it again once..
                     !retry && blinkCursor(1);
-                    //console.log("path2");
+
                 });
         }
 
@@ -943,7 +943,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 
         Event.on(win, 'focus', function() {
-            //console.log(" i am  focus inner");
+
             /**
              * yiminghe特别注意：firefox光标丢失bug
              * blink后光标出现在最后，这就需要实现保存range
@@ -965,7 +965,7 @@ KISSY.Editor.add("definition", function(KE) {
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
-                    //console.log("i am fixed");
+                    
                     blinkCursor(FALSE);
                 }
             });

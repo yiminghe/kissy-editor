@@ -92,7 +92,9 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                         width:"600px"
                     });
                     var d = self.dialog;
-                    d.set("handlers", [d.get("el")]);
+                    //webkit 一旦整个可被选择就会导致点击事件没有
+                    //因为拖放要求mousedown被阻止
+                    if (!UA.webkit)d.set("handlers", [d.get("el")]);
                     var bangpaiUploaderHolder = d.get("body"),
                         btnHolder = new Node(
                             "<div class='ke-upload-btn-wrap'>" +
@@ -450,7 +452,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
                     tr[0].className = "ke-upload-uploading";
                 },
                 _onComplete:function() {
-                    //console.log("_onComplete", ev);
+
                 },
                 _onUploadCompleteData:function(ev) {
                     var self = this,
@@ -483,7 +485,7 @@ KISSY.Editor.add("bangpai-upload/dialog", function(editor) {
 
                 },
                 _onProgress:function(ev) {
-                    //console.log("_onProgress", ev);
+                    
                     var fid = ev.file.id,
                         progess = Math.floor(ev.bytesLoaded * 100 / ev.bytesTotal),
                         bar = progressBars[fid];

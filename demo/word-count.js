@@ -29,7 +29,7 @@
         editor.ready(function() {
             _change(wordsizenode, editor.getData().length);
             editor.on('save restore', function(ev) {
-                //console.log(ev);
+               
                 if (ev.buffer) {
                     timer && clearTimeout(timer);
                     timer = setTimeout(function() {

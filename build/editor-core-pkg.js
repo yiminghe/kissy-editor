@@ -2,8 +2,8 @@
  * @preserve Constructor for kissy editor and module dependency definition
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
- * @version: 2.0
- * @buildtime: 2010-11-30 14:09:47
+ * @version: 2.1
+ * @buildtime: 2010-12-03 15:06:45
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-11-30 14:09:47");
+        re += "t=" + encodeURIComponent("2010-12-03 15:06:45");
         return  re;
     }
 
@@ -155,8 +155,7 @@ KISSY.add("editor", function(S, undefined) {
             "clipboard",
             "colorsupport/dialog/colorpicker",
             {
-                "name": "colorsupport",
-                "requires":["overlay"]
+                "name": "colorsupport"
             },
             "color/dialog",
             "color",
@@ -227,8 +226,7 @@ KISSY.add("editor", function(S, undefined) {
             "removeformat",
             "smiley",
             {
-                name:"smiley/support",
-                requires:["overlay"]
+                name:"smiley/support"
             },
             {
                 "name":"sourcearea",
@@ -243,44 +241,33 @@ KISSY.add("editor", function(S, undefined) {
             },
             "table/dialog",
             {
-                "name": "templates",
-                "requires": ["overlay"]
+                "name": "templates"
             },
             "undo",
             {
-                "name":"resize",
-                "requires":["dd"]
+                "name":"resize"
             }
         ],
 
         mis_mods = [
-            "uibase",
             {
                 "name":"localstorage",
                 "requires":["flashutils",
                     "flashbridge"]
             },
             {
-                "name":"button",
-                "requires":["uibase"]
+                "name":"button"
             },
-            "dd",
             "progressbar",
+
             {
-                "name":"overlay",
-                "requires":["dd","uibase"]
+                "name": "contextmenu"
             },
             {
-                "name": "contextmenu",
-                "requires": ["overlay"]
+                "name": "bubbleview"
             },
             {
-                "name": "bubbleview",
-                "requires": ["overlay"]
-            },
-            {
-                "name": "select",
-                "requires": ["overlay"]
+                "name": "select"
             }
         ],
         i,len,
@@ -299,9 +286,7 @@ KISSY.add("editor", function(S, undefined) {
         }
         requires = mod["requires"] || [];
         var basicMod = ["button"];
-        if (mod["name"].indexOf("/dialog") != -1) {
-            basicMod.push("overlay");
-        }
+
         mod["requires"] = requires.concat(basicMod);
     }
     plugin_mods = mis_mods.concat(plugin_mods);
@@ -363,7 +348,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-11-30 14:09:47");
+                re += "t=" + encodeURIComponent("2010-12-03 15:02:53");
                 return  re;
             },
             /**
@@ -2896,7 +2881,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (self._monitorId) {
                 clearTimeout(self._monitorId);
             }
-            //console.log("selectionChange");
+
             self._monitorId = setTimeout(function() {
                 var selection = self.getSelection();
                 if (selection && !selection.isInvalid) {
@@ -2904,7 +2889,7 @@ KISSY.Editor.add("definition", function(KE) {
                         currentPath = new KE.ElementPath(startElement);
                     if (!self.previousPath || !self.previousPath.compare(currentPath)) {
                         self.previousPath = currentPath;
-                        //console.log("selectionChange");
+
                         self.fire("selectionChange", { selection : selection, path : currentPath, element : startElement });
                     }
                 }
@@ -3179,7 +3164,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //异步引起时序问题，尽可能小间隔
                     setTimeout(function () {
                         doc.designMode = 'off';
-                        //console.log("path1");
+
                         body.focus();
                         // Try it again once..
                         if (!arguments.callee.retry) {
@@ -3198,7 +3183,7 @@ KISSY.Editor.add("definition", function(KE) {
                     DOM.attr(body, 'contentEditable', TRUE);
                     // Try it again once..
                     !retry && blinkCursor(1);
-                    //console.log("path2");
+
                 });
         }
 
@@ -3257,7 +3242,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 
         Event.on(win, 'focus', function() {
-            //console.log(" i am  focus inner");
+
             /**
              * yiminghe特别注意：firefox光标丢失bug
              * blink后光标出现在最后，这就需要实现保存range
@@ -3279,7 +3264,7 @@ KISSY.Editor.add("definition", function(KE) {
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
-                    //console.log("i am fixed");
+                    
                     blinkCursor(FALSE);
                 }
             });
@@ -6581,8 +6566,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                         for (var i = 0; i < siblings.length; i++) {
                             var child = siblings[ i ];
-                            //console.log("child:" + child.nodeType == KEN.NODE_ELEMENT ?
-                            //    ("el: " + child.innerHTML) : ("text:" + child.nodeValue));
+
                             if (child.nodeType == KEN.NODE_ELEMENT) {
                                 testRange = range.duplicate();
 
@@ -7213,12 +7197,12 @@ KISSY.Editor.add("selection", function(KE) {
                 // new selection. (#5735)
                 //点击时不要恢复了，点击就意味着原来的选择区域作废
                 restoreEnabled = 0;
-                //console.log("html mousedown");
+
             });
 
             html.on('mouseup', function () {
                 restoreEnabled = 1;
-                //console.log("html mouseup");
+               
             });
             //事件顺序
             // 1.body mousedown
@@ -7245,7 +7229,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (t._4e_name() != 'body')
                     return;
 
-                //console.log("body focusin :" + restoreEnabled);
+
                 // If we have saved a range, restore it at this
                 // point.
                 if (savedRange) {
@@ -7272,7 +7256,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // internal editable control type elements, e.g. layouted paragraph. (#4682)
                 if (evt.relatedTarget)
                     return;
-                //console.log("body beforedeactivate");
+
                 // Disable selections from being saved.
                 saveEnabled = FALSE;
                 restoreEnabled = 1;
@@ -7282,37 +7266,37 @@ KISSY.Editor.add("selection", function(KE) {
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
-                //console.log("win blur");
+
                 //把选择区域与光标清除                               
                 doc && doc.selection.empty();
             });
             /*
              Event.on(body, 'blur', function() {
-
+             S.log("body blur");
              });
 
              Event.on(DOM._4e_getWin(doc), 'focus', function() {
-
+             S.log("win focus");
              });
              Event.on(doc, 'click', function() {
-
+             S.log("doc click");
              });
              body.on('click', function() {
-
+             S.log("body click");
              });
              html.on('click', function() {
-
+             S.log("html click");
              });*/
             //}
 
             // IE fires the "selectionchange" event when clicking
             // inside a selection. We don't want to capture that.
             body.on('mousedown', function() {
-                //console.log("body mousedown");
+                //S.log("body mousedown");
                 disableSave();
             });
             body.on('mouseup', function() {
-                //console.log("body mouseup");
+                //S.log("body mouseup");
                 saveEnabled = TRUE;
                 setTimeout(function() {
                     saveSelection(TRUE);
@@ -7320,7 +7304,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
             function disableSave() {
                 saveEnabled = FALSE;
-                //console.log("disableSave");
+                //S.log("disableSave");
             }
 
             /**
@@ -7328,7 +7312,7 @@ KISSY.Editor.add("selection", function(KE) {
              * @param {boolean=} testIt
              */
             function saveSelection(testIt) {
-                //console.log("saveSelection");
+                //S.log("saveSelection");
                 if (saveEnabled) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
@@ -7351,7 +7335,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // IE to put things in order for us.
                         if (!doc.queryCommandEnabled('InsertImage')) {
                             setTimeout(function() {
-                                //console.log("retry");
+                                //S.log("retry");
                                 saveSelection(TRUE);
                             }, 50);
                             return;
@@ -7366,7 +7350,7 @@ KISSY.Editor.add("selection", function(KE) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
-                    //console.log("save range : " + savedRange.collapsed);
+                    //S.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }

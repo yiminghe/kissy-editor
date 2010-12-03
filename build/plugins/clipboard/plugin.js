@@ -93,7 +93,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                             && (bogusSpan.hasClass('Apple-style-span') ) ?
                             bogusSpan : pastebin );
                         sel.selectBookmarks(bms);
-                        //console.log(pastebin.html());
+
                         editor.insertHtml(pastebin.html());
                         self._running = false;
                     }, 0);

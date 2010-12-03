@@ -39,7 +39,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
                     this.holder.css("visibility", "");
                 },
                 _selectionChange:function(ev) {
-                    //console.log(ev);
+
                     var self = this,
                         cfg = self.cfg,
                         editor = cfg.editor,

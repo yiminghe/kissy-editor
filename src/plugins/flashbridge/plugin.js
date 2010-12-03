@@ -94,7 +94,7 @@ KISSY.Editor.add("flashbridge", function() {
         _eventHandler:function(event) {
             var self = this,
                 type = event.type;
-            //console.log(self.id + " : " + type);
+
             if (type === 'log') {
                 S.log(event.message);
             } else if (type) {
