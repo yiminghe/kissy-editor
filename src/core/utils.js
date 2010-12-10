@@ -581,6 +581,7 @@ KISSY.Editor.add("utils", function(KE) {
      * export for closure compiler
      */
     KE["Utils"] = Utils;
+    UA.ieEngine = Utils.ieEngine;
     Utils.extern(Utils, {
         "debugUrl": Utils.debugUrl,
         "lazyRun": Utils.lazyRun,

@@ -350,7 +350,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-12-10 20:36:53");
+                re += "t=" + encodeURIComponent("2010-12-10 20:54:45");
                 return  re;
             },
             /**
@@ -899,6 +899,7 @@ KISSY.Editor.add("utils", function(KE) {
      * export for closure compiler
      */
     KE["Utils"] = Utils;
+    UA.ieEngine = Utils.ieEngine;
     Utils.extern(Utils, {
         "debugUrl": Utils.debugUrl,
         "lazyRun": Utils.lazyRun,
