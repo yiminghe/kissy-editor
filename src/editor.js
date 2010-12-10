@@ -274,6 +274,7 @@ KISSY.add("editor", function(S, undefined) {
 
         mod,
         name,requires,mods = {};
+    
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -294,7 +295,7 @@ KISSY.add("editor", function(S, undefined) {
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod["name"];
+        name = mod["name"]||mod;
         mods[name] = {
             "attach": FALSE,
             "charset":"utf-8",
@@ -303,6 +304,7 @@ KISSY.add("editor", function(S, undefined) {
             "path": debugUrl("plugins/" + name + "/plugin.js")
         };
     }
+    
     Editor.add(mods);
     /**
      * @constructor

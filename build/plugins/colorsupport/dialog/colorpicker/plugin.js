@@ -228,7 +228,9 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 }
                 //先隐藏窗口，使得编辑器恢复焦点，恢复原先range
                 self.hide();
-                cmd.cfg._applyColor.call(cmd, indicatorValue.val());
+                setTimeout(function() {
+                    cmd.cfg._applyColor.call(cmd, indicatorValue.val());
+                }, 0);
             });
 
             indicatorValue.on("change", function() {
@@ -247,7 +249,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 ev.halt();
                 var t = new S.Node(ev.target);
                 if (t._4e_name() == "a") {
-                    var c = Hex(t.css( "background-color"));
+                    var c = Hex(t.css("background-color"));
                     if (left.contains(t))self._detailColor(c);
                     indicatorValue.val(c);
                     indicator.css("background-color", c);

@@ -564,7 +564,7 @@ KISSY.Editor.add("utils", function(KE) {
                     el.attr("onmousedown", "return false;");
                 }
             },
-            
+
             isFlashEmbed:function(element) {
                 var attributes = element.attributes;
                 return (

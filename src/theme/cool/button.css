@@ -38,6 +38,10 @@ link
     cursor: default;
 }
 
+.ke-ie9 .ke-triplebutton-disabled{
+    filter:none;
+}
+
 /**
 focus
 **/
@@ -116,7 +120,7 @@ active
     border-color:rgb(193, 200, 209);
 }
 /*ie6 没有多类选择器，只生效最后一个class*/
-.ie6 .ke-button:hover{
+.ke-ie6 .ke-button:hover{
     /*background-image: url("ke-button-bg-active.png");没用了，行内css expression已经设了*/
     border-color: rgb(232, 204, 160);
 }

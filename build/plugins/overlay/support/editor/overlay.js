@@ -12,10 +12,10 @@ KISSY.Editor.add("overlay", function() {
      */
     var Overlay4E = S.UIBase.create(S.Overlay, [KE.UIBase.Focus], {
         init:function() {
-            S.log("Overlay4E init");
+            //S.log("Overlay4E init");
         },
         syncUI:function() {
-            S.log("_syncUIOverlay4E");
+            //S.log("_syncUIOverlay4E");
             var self = this;
             //编辑器 overlay 中的全部点击都不会使得失去焦点
             KE.Utils.preventFocus(self.get("contentEl"));

@@ -5,6 +5,7 @@
 KISSY.Editor.add("link", function(editor) {
     var S = KISSY,
         KE = S.Editor,
+        Node = S.Node,
         KEStyle = KE.Style,
         _ke_saved_href = "_ke_saved_href",
         BubbleView = KE.BubbleView,
@@ -112,11 +113,13 @@ KISSY.Editor.add("link", function(editor) {
                         range = sel && sel.getRanges()[0];
                     //编辑器没有焦点或没有选择区域时直接插入链接地址
                     if (!range || range.collapsed) {
-                        a = new Node("<a>" + url + "</a>",
+
+                        var a = new Node("<a>" + attr.href + "</a>",
                             attr, editor.document);
                         editor.insertElement(a);
                     } else {
                         editor.fire("save");
+                        
                         var linkStyle = new KEStyle(link_Style, attr);
                         linkStyle.apply(editor.document);
                         editor.fire("save");
@@ -152,7 +155,7 @@ KISSY.Editor.add("link", function(editor) {
                     ev.halt();
                 });
                 tipremove.on("click", function(ev) {
-                    var link = bubble._plugin
+                    var link = bubble._plugin;
                     link.call("_removeLink", bubble._selectedEl);
                     ev.halt();
                 });

@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-12-03 15:02:53");
+                re += "t=" + encodeURIComponent("2010-12-10 20:36:53");
                 return  re;
             },
             /**
@@ -564,7 +564,7 @@ KISSY.Editor.add("utils", function(KE) {
                     el.attr("onmousedown", "return false;");
                 }
             },
-            
+
             isFlashEmbed:function(element) {
                 var attributes = element.attributes;
                 return (

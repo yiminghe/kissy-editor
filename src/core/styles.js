@@ -111,6 +111,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
+        
         var selection = new KESelection(document);
         // Bookmark the range so we can re-select it after processing.
         var ranges = selection.getRanges();

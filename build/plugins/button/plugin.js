@@ -22,7 +22,7 @@ KISSY.Editor.add("button", function() {
             var self = this,el = self.get("el");
             el.on("click", self._action, self);
             //添加鼠标点击视觉效果
-            el.on("mousedown", function() {
+            el.on("mousedown", function(ev) {
                 if (self.get("state") == OFF) {
                     el.addClass(ACTIVE_CLASS);
                 }
@@ -101,7 +101,11 @@ KISSY.Editor.add("button", function() {
             state: {value:OFF},
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
             elAttrs:{
-                href:{value:"#"}
+                value:{
+                    //href:"#",
+                    hideFocus:true,
+                    tabIndex:-1
+                }
             },
             elTagName:{value:"a"},
             title:{},

@@ -2,7 +2,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
     var S = KISSY,KE = S.Editor;
     KE.namespace("Link");
-    var Link=KE.Link;
+    var Link = KE.Link;
     if (!Link.Dialog) {
         (function() {
             var Node = S.Node,
@@ -96,7 +96,10 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         target:d.targetEl[0].checked ? "_blank" : "_self",
                         title:S.trim(d.urlTitle.val())
                     };
-                    action._link.call(cmd, attr);
+                    //ie9 focus 不同步，hide后等会才能恢复焦点
+                    setTimeout(function() {
+                        action._link.call(cmd, attr);
+                    }, 0);
                 },
 
 
@@ -110,7 +113,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                         d = self.dialog;
                     //是修改行为
                     if (link) {
-                        KE.Utils.valInput(d.urlEl,url);
+                        KE.Utils.valInput(d.urlEl, url);
                         d.urlTitle.val(link.attr("title") || "");
                         d.targetEl[0].checked = (link.attr("target") == "_blank");
                     } else {

@@ -1,12 +1,13 @@
 KISSY.Editor.add("ext-focus", function() {
     var S = KISSY,
         UA = S.UA,
+        OLD_IE = !window.getSelection,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
 
     function FocusExt() {
-        S.log("FocusExt init");
+        //S.log("FocusExt init");
     }
 
     FocusExt.ATTRS = {
@@ -27,10 +28,10 @@ KISSY.Editor.add("ext-focus", function() {
             }
         },
         __syncUI:function() {
-            S.log("_syncUIFocusExt");
+            //S.log("_syncUIFocusExt");
         },
         __renderUI:function() {
-            S.log("_renderUIFocusExt");
+            //S.log("_renderUIFocusExt");
         },
         __bindUI:function() {
             var self = this;
@@ -64,14 +65,15 @@ KISSY.Editor.add("ext-focus", function() {
 
             //firefox 需要下面一句
             self._focus4e[0].focus();
-
+            //ie9 图片resize框，仍然会突出
             if (UA.ie && editor) {
                 var $selection = editor.document.selection,
                     $range = $selection.createRange();
                 if ($range) {
                     if (
                     //修改ckeditor，如果单纯选择文字就不用管了
-                    //$range.parentElement && $range.parentElement().ownerDocument == editor.document
+                    //$range.parentElement &&
+                    //$range.parentElement().ownerDocument == editor.document
                     //||
                     //缩放图片那个框在ie下会突出浮动层来
                         $range.item
@@ -88,7 +90,7 @@ KISSY.Editor.add("ext-focus", function() {
         },
         _hide4FocusExt:function() {
             var editor = this._focusEditor;
-            editor && editor.focus();
+            editor && editor.focus();           
         }
     };
     KE.UIBase.Focus = FocusExt;

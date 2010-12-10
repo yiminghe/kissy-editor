@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1
- * @buildtime: 2010-12-03 15:06:45
+ * @buildtime: 2010-12-10 14:14:07
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-12-03 15:06:45");
+        re += "t=" + encodeURIComponent("2010-12-10 14:14:07");
         return  re;
     }
 
@@ -274,6 +274,7 @@ KISSY.add("editor", function(S, undefined) {
 
         mod,
         name,requires,mods = {};
+    
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -294,7 +295,7 @@ KISSY.add("editor", function(S, undefined) {
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod["name"];
+        name = mod["name"]||mod;
         mods[name] = {
             "attach": FALSE,
             "charset":"utf-8",
@@ -303,6 +304,7 @@ KISSY.add("editor", function(S, undefined) {
             "path": debugUrl("plugins/" + name + "/plugin.js")
         };
     }
+    
     Editor.add(mods);
     /**
      * @constructor

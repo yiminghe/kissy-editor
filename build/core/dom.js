@@ -379,7 +379,8 @@ KISSY.Editor.add("dom", function(KE) {
                                 e,
                                 i = 0;
 
-                            el.unselectable = 'on';
+                            //el.unselectable='on';
+                            el.setAttribute("unselectable", 'on');
                             var els=el.getElementsByTagName("*");
                             while (( e = els[ i++ ] )) {
                                 switch (e.tagName.toLowerCase()) {
@@ -390,7 +391,9 @@ KISSY.Editor.add("dom", function(KE) {
                                         /* Ignore the above tags */
                                         break;
                                     default :
-                                        e.unselectable = 'on';
+                                        //e.unselectable='on';
+                                        //ie9 使用 setAttribute才可以
+                                        e.setAttribute("unselectable", 'on');
                                 }
                             }
                         }

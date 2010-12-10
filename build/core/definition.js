@@ -128,7 +128,8 @@ KISSY.Editor.add("definition", function(KE) {
         editorHtml = "<div " +
             " class='ke-editor-wrap' " +
             " > " +
-            "<div class='" + ke_editor_tools.substring(1) + "'></div>" +
+            "<div class='" + ke_editor_tools.substring(1) + "'" +
+            " ></div>" +
             "<div class='" + ke_textarea_wrap.substring(1) + "'><" + "iframe " +
             ' style="' + WIDTH + ':100%;' + HEIGHT + ':100%;border:none;" ' +
             ' ' + WIDTH + '="100%" ' +
@@ -159,9 +160,9 @@ KISSY.Editor.add("definition", function(KE) {
          * @param textarea {KISSY.Node}
          */
         init:function(textarea) {
-            if (UA.ie)DOM.addClass(DOC.body, "ie" + UA.ie);
-            else if (UA.gecko) DOM.addClass(DOC.body, "gecko");
-            else if (UA.webkit) DOM.addClass(DOC.body, "webkit");
+            if (UA.ie)DOM.addClass(DOC.body, "ke-ie" + UA.ie);
+            else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
+            else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
             var self = this,
                 editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
                     textarea.attr("tabIndex")));
@@ -448,7 +449,7 @@ KISSY.Editor.add("definition", function(KE) {
                 win = DOM._4e_getWin(doc);
             UA.webkit && win && win.parent && win.parent.focus();
             //yiminghe note:webkit need win.focus
-            win && win.focus();
+            UA.webkit && win && win.focus();
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
@@ -965,7 +966,7 @@ KISSY.Editor.add("definition", function(KE) {
              */
             Event.on(self.document, "mousedown", function() {
                 if (!self.iframeFocus) {
-                    
+
                     blinkCursor(FALSE);
                 }
             });

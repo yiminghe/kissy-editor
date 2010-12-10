@@ -30,6 +30,7 @@ KISSY.Editor.add("selection", function(KE) {
         KES = KE.SELECTION,
         KER = KE.RANGE,
         KEN = KE.NODE,
+        OLD_IE = !window.getSelection,
         //EventTarget = S.EventTarget,
         Walker = KE.Walker,
         //ElementPath = KE.ElementPath,
@@ -50,7 +51,7 @@ KISSY.Editor.add("selection", function(KE) {
          * IE BUG: The selection's document may be a different document than the
          * editor document. Return NULL if that's the case.
          */
-        if (UA.ie) {
+        if (OLD_IE) {
             var range = self.getNative().createRange();
             if (!range
                 || ( range.item && range.item(0).ownerDocument != document )
@@ -75,17 +76,18 @@ KISSY.Editor.add("selection", function(KE) {
          * var selection = editor.getSelection().<b>getNative()</b>;
          */
         getNative :
-            UA.ie ?
-                function() {
-                    var self = this,cache = self._.cache;
-                    return cache.nativeSel || ( cache.nativeSel = self.document.selection );
-                }
-                :
+            !OLD_IE ?
                 function() {
                     var self = this,
                         cache = self._.cache;
                     return cache.nativeSel || ( cache.nativeSel = DOM._4e_getWin(self.document).getSelection() );
-                },
+                }
+                :
+                function() {
+                    var self = this,cache = self._.cache;
+                    return cache.nativeSel || ( cache.nativeSel = self.document.selection );
+                }
+        ,
 
         /**
          * Gets the type of the current selection. The following values are
@@ -105,7 +107,34 @@ KISSY.Editor.add("selection", function(KE) {
          *     alert( 'Text is selected' );
          */
         getType :
-            UA.ie ?
+            !OLD_IE ?
+                function() {
+                    var self = this,cache = self._.cache;
+                    if (cache.type)
+                        return cache.type;
+
+                    var type = KES.SELECTION_TEXT,
+                        sel = self.getNative();
+
+                    if (!sel)
+                        type = KES.SELECTION_NONE;
+                    else if (sel.rangeCount == 1) {
+                        // Check if the actual selection is a control (IMG,
+                        // TABLE, HR, etc...).
+
+                        var range = sel.getRangeAt(0),
+                            startContainer = range.startContainer;
+
+                        if (startContainer == range.endContainer
+                            && startContainer.nodeType == KEN.NODE_ELEMENT
+                            && ( range.endOffset - range.startOffset ) === 1
+                            && styleObjectElements[ startContainer.childNodes[ range.startOffset ].nodeName.toLowerCase() ]) {
+                            type = KES.SELECTION_ELEMENT;
+                        }
+                    }
+
+                    return ( cache.type = type );
+                } :
                 function() {
                     var self = this,cache = self._.cache;
                     if (cache.type)
@@ -135,38 +164,10 @@ KISSY.Editor.add("selection", function(KE) {
                     }
 
                     return ( cache.type = type );
-                }
-                :
-                function() {
-                    var self = this,cache = self._.cache;
-                    if (cache.type)
-                        return cache.type;
-
-                    var type = KES.SELECTION_TEXT,
-                        sel = self.getNative();
-
-                    if (!sel)
-                        type = KES.SELECTION_NONE;
-                    else if (sel.rangeCount == 1) {
-                        // Check if the actual selection is a control (IMG,
-                        // TABLE, HR, etc...).
-
-                        var range = sel.getRangeAt(0),
-                            startContainer = range.startContainer;
-
-                        if (startContainer == range.endContainer
-                            && startContainer.nodeType == KEN.NODE_ELEMENT
-                            && ( range.endOffset - range.startOffset ) === 1
-                            && styleObjectElements[ startContainer.childNodes[ range.startOffset ].nodeName.toLowerCase() ]) {
-                            type = KES.SELECTION_ELEMENT;
-                        }
-                    }
-
-                    return ( cache.type = type );
                 },
 
         getRanges :
-            UA.ie ?
+            OLD_IE ?
                 ( function() {
                     // Finds the container and offset for a specific boundary
                     // of an IE range.
@@ -385,7 +386,7 @@ KISSY.Editor.add("selection", function(KE) {
                         }
                     }
 
-                    if (UA.ie) {
+                    if (OLD_IE) {
                         range = sel.createRange();
                         range.collapse(TRUE);
                         node = range.parentElement();
@@ -419,7 +420,7 @@ KISSY.Editor.add("selection", function(KE) {
 
             // Is it native IE control type selection?
 
-            if (UA.ie) {
+            if (OLD_IE) {
                 var range = self.getNative().createRange();
                 node = range.item && range.item(0);
 
@@ -464,7 +465,7 @@ KISSY.Editor.add("selection", function(KE) {
 
         selectElement : function(element) {
             var range,self = this;
-            if (UA.ie) {
+            if (OLD_IE) {
                 //do not use empty()，编辑器内滚动条重置了
                 //选择的 img 内容前后莫名被清除
                 //self.getNative().empty();
@@ -496,8 +497,7 @@ KISSY.Editor.add("selection", function(KE) {
 
         selectRanges : function(ranges) {
             var self = this;
-            if (UA.ie) {
-
+            if (OLD_IE) {
                 if (ranges.length > 1) {
                     // IE doesn't accept multiple ranges selection, so we join all into one.
                     var last = ranges[ ranges.length - 1 ];
@@ -603,10 +603,10 @@ KISSY.Editor.add("selection", function(KE) {
         },
         removeAllRanges:function() {
             var sel = this.getNative();
-            if (UA.ie) {
-                sel && sel.clear();
-            } else {
+            if (!OLD_IE) {
                 sel && sel.removeAllRanges();
+            } else {
+                sel && sel.clear();
             }
         }
     });
@@ -614,7 +614,38 @@ KISSY.Editor.add("selection", function(KE) {
 
     var nonCells = { "table":1,"tbody":1,"tr":1 }, notWhitespaces = Walker.whitespaces(TRUE),
         fillerTextRegex = /\ufeff|\u00a0/;
-    KERange.prototype["select"] = KERange.prototype.select = UA.ie ?
+    KERange.prototype["select"] = KERange.prototype.select = !OLD_IE ?
+        function() {
+            var self = this,startContainer = self.startContainer;
+
+            // If we have a collapsed range, inside an empty element, we must add
+            // something to it, otherwise the caret will not be visible.
+            if (self.collapsed && startContainer[0].nodeType == KEN.NODE_ELEMENT && !startContainer[0].childNodes.length)
+                startContainer[0].appendChild(self.document.createTextNode(""));
+
+            var nativeRange = self.document.createRange();
+            nativeRange.setStart(startContainer[0], self.startOffset);
+
+            try {
+                nativeRange.setEnd(self.endContainer[0], self.endOffset);
+            } catch (e) {
+                // There is a bug in Firefox implementation (it would be too easy
+                // otherwise). The new start can't be after the end (W3C says it can).
+                // So, let's create a new range and collapse it to the desired point.
+                if (e.toString().indexOf('NS_ERROR_ILLEGAL_VALUE') >= 0) {
+                    self.collapse(TRUE);
+                    nativeRange.setEnd(self.endContainer[0], self.endOffset);
+                }
+                else
+                    throw( e );
+            }
+
+            var selection = getSelection(self.document).getNative();
+            selection.removeAllRanges();
+            selection.addRange(nativeRange);
+        }
+        :
+
         // V2
         function(forceExpand) {
 
@@ -729,35 +760,7 @@ KISSY.Editor.add("selection", function(KE) {
                 ieRange.select();
             }
             // this.document.fire('selectionchange');
-        } : function() {
-        var self = this,startContainer = self.startContainer;
-
-        // If we have a collapsed range, inside an empty element, we must add
-        // something to it, otherwise the caret will not be visible.
-        if (self.collapsed && startContainer[0].nodeType == KEN.NODE_ELEMENT && !startContainer[0].childNodes.length)
-            startContainer[0].appendChild(self.document.createTextNode(""));
-
-        var nativeRange = self.document.createRange();
-        nativeRange.setStart(startContainer[0], self.startOffset);
-
-        try {
-            nativeRange.setEnd(self.endContainer[0], self.endOffset);
-        } catch (e) {
-            // There is a bug in Firefox implementation (it would be too easy
-            // otherwise). The new start can't be after the end (W3C says it can).
-            // So, let's create a new range and collapse it to the desired point.
-            if (e.toString().indexOf('NS_ERROR_ILLEGAL_VALUE') >= 0) {
-                self.collapse(TRUE);
-                nativeRange.setEnd(self.endContainer[0], self.endOffset);
-            }
-            else
-                throw( e );
-        }
-
-        var selection = getSelection(self.document).getNative();
-        selection.removeAllRanges();
-        selection.addRange(nativeRange);
-    };
+        };
 
 
     function getSelection(doc) {
@@ -777,7 +780,7 @@ KISSY.Editor.add("selection", function(KE) {
             html = new Node(doc.documentElement);
 
         if (UA.ie) {
-            //ie 焦点管理不行 ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
+            //ie 焦点管理不行 (ie9 也不行) ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
             //ie中事件都是同步，focus();xx(); 会立即触发事件处理函数，然后再运行xx();
 
             // In IE6/7 the blinking cursor appears, but contents are
@@ -790,7 +793,7 @@ KISSY.Editor.add("selection", function(KE) {
                 // scrollbars, so we can use it to check whether
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
-                    var t=new Node(evt.target);
+                    var t = new Node(evt.target);
                     if (t._4e_name() === "html")
                         editor.getSelection()
                             .getRanges()[ 0 ].select();
@@ -822,7 +825,7 @@ KISSY.Editor.add("selection", function(KE) {
 
             html.on('mouseup', function () {
                 restoreEnabled = 1;
-               
+
             });
             //事件顺序
             // 1.body mousedown
@@ -842,7 +845,7 @@ KISSY.Editor.add("selection", function(KE) {
             // possible to restore the selection before click
             // events get executed.
             body.on('focusin', function(evt) {
-                var t=new Node(evt.target);
+                var t = new Node(evt.target);
                 //S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
@@ -855,6 +858,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (savedRange) {
                     // Well not break because of this.
                     try {
+                        //S.log("body focusin");
                         restoreEnabled && savedRange.select();
                     }
                     catch (e) {
@@ -886,7 +890,6 @@ KISSY.Editor.add("selection", function(KE) {
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
-
                 //把选择区域与光标清除                               
                 doc && doc.selection.empty();
             });
@@ -964,13 +967,13 @@ KISSY.Editor.add("selection", function(KE) {
 
                     // Avoid saving selection from within text input. (#5747)
                     var parentTag;
-                    if (nativeSel && type == KES.SELECTION_TEXT
-                        && ( parentTag = DOM._4e_name(nativeSel.createRange().parentElement()))
+                    if (nativeSel
+                        && type == KES.SELECTION_TEXT
+                        && ( parentTag = DOM._4e_name(sel.getStartElement()))
                         && parentTag in { "input": 1, "textarea": 1 }) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
-                    //S.log("save range : " + savedRange.collapsed);
                     editor._monitor();
                 }
             }
@@ -1017,7 +1020,7 @@ KISSY.Editor.add("selection", function(KE) {
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
-           
+
             if (
                 !range
                     || !range.collapsed
@@ -1048,7 +1051,7 @@ KISSY.Editor.add("selection", function(KE) {
                     }
                 }
                 range.select();
-                if (!UA.ie) {
+                if (!OLD_IE) {
                     //选择区域变了，通知其他插件更新状态
                     editor.notifySelectionChange();
                 }

@@ -293,6 +293,10 @@ link
     cursor: default;
 }
 
+.ke-ie9 .ke-triplebutton-disabled{
+    filter:none;
+}
+
 /**
 focus
 **/
@@ -371,7 +375,7 @@ active
     border-color:rgb(193, 200, 209);
 }
 /*ie6 没有多类选择器，只生效最后一个class*/
-.ie6 .ke-button:hover{
+.ke-ie6 .ke-button:hover{
     /*background-image: url("ke-button-bg-active.png");没用了，行内css expression已经设了*/
     border-color: rgb(232, 204, 160);
 }.ke-draft {
@@ -846,6 +850,10 @@ select style for kissy editor
     border-color: rgb(193, 200, 209);
 }
 
+.ke-ie9 .ke-select-disabled .ke-select {
+    filter:none;
+}
+
 .ke-menu .ke-select-menu-item {
     padding-left: 12px;
     padding-right: 20px;
@@ -868,15 +876,15 @@ select style for kissy editor
     line-height: 24px;
 }
 
-.ie8 .ke-combox .ke-select-text {
+.ke-ie8 .ke-combox .ke-select-text {
     top: -2px;
 }
 
-.ie7 .ke-combox .ke-select-text {
+.ke-ie7 .ke-combox .ke-select-text {
     top: -3px;
 }
 
-.ie6 .ke-combox .ke-select-text {
+.ke-ie6 .ke-combox .ke-select-text {
 /*odd ie ,字错位*/
     position: static;
     /*
@@ -889,7 +897,7 @@ select style for kissy editor
     padding-right: 4px;
 }
 
-.ie6 .ke-combox .ke-select-drop-wrap {
+.ke-ie6 .ke-combox .ke-select-drop-wrap {
     position: relative;
     top: -2px;
     vertical-align: middle;
@@ -906,7 +914,7 @@ select style for kissy editor
     padding-top: 1px;
 }
 
-.ie8 .ke-combox .ke-select-drop-wrap {
+.ke-ie8 .ke-combox .ke-select-drop-wrap {
     top: 0;
 }
 
