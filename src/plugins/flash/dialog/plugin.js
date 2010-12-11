@@ -91,16 +91,15 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                 },
                 //建立弹出窗口
                 _prepareShow:function() {
-                    var self = this,
-                        d = new Dialog({
-                            autoRender:true,
-                            headerContent:self._title,
-                            bodyContent:self._bodyHtml,
-                            footerContent:self._footHtml,
-                            width:self._config_dwidth || "500px",
-                            mask:true
-                        });
-                    self.d = d;
+                    var self = this;
+                    self.d = new Dialog({
+                        autoRender:true,
+                        headerContent:self._title,
+                        bodyContent:self._bodyHtml,
+                        footerContent:self._footHtml,
+                        width:self._config_dwidth || "500px",
+                        mask:true
+                    });
                     self._initD();
                 },
                 _realShow:function() {
@@ -157,7 +156,6 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                  */
                 _initD:function() {
                     var self = this,
-                        editor = self.editor,
                         d = self.d,
                         el = d.get("el");
                     self.dHeight = el.one(".ke-flash-height");
@@ -206,14 +204,18 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                     if (!dinfo) return;
                     var re = KE.Utils.verifyInputs(self.d.get("el").all("input"));
                     if (!re) return;
-
-                    var substitute = editor.execCommand("insertFlash", url, attrs, self._cls, self._type);
-
-                    //如果是修改，就再选中
-                    if (self.selectedFlash) {
-                        editor.getSelection().selectElement(substitute);
-                    }
                     self.d.hide();
+
+                    setTimeout(function() {
+                        var substitute = editor.execCommand("insertFlash",
+                            url, attrs, self._cls, self._type);
+                        //如果是修改，就再选中
+                        if (self.selectedFlash) {
+                            editor.getSelection().selectElement(substitute);
+                        }
+                        editor.notifySelectionChange();
+                    }, 0);
+
                 }
             });
         })();

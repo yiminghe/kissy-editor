@@ -201,7 +201,7 @@ KISSY.Editor.add("dom", function(KE) {
                 var nodeName = thisElement.nodeName.toLowerCase();
                 //note by yiminghe:http://msdn.microsoft.com/en-us/library/ms534388(VS.85).aspx
                 if (UA.ie) {
-                    var scopeName = thisElement.scopeName;
+                    var scopeName = thisElement['scopeName'];
                     if (scopeName && scopeName != 'HTML')
                         nodeName = scopeName.toLowerCase() + ':' + nodeName;
                 }
@@ -362,42 +362,42 @@ KISSY.Editor.add("dom", function(KE) {
              */
             _4e_unselectable :
                 UA.gecko ?
-                    function(el) {
-                        el = normalElDom(el);
-                        el.style.MozUserSelect = 'none';
-                    }
+                function(el) {
+                    el = normalElDom(el);
+                    el.style.MozUserSelect = 'none';
+                }
                     : UA.webkit ?
-                    function(el) {
-                        el = normalElDom(el);
-                        el.style.KhtmlUserSelect = 'none';
-                    }
+                      function(el) {
+                          el = normalElDom(el);
+                          el.style.KhtmlUserSelect = 'none';
+                      }
                     :
-                    function(el) {
-                        el = normalElDom(el);
-                        if (UA.ie || UA.opera) {
-                            var
-                                e,
-                                i = 0;
+                      function(el) {
+                          el = normalElDom(el);
+                          if (UA.ie || UA.opera) {
+                              var
+                                  e,
+                                  i = 0;
 
-                            //el.unselectable='on';
-                            el.setAttribute("unselectable", 'on');
-                            var els=el.getElementsByTagName("*");
-                            while (( e = els[ i++ ] )) {
-                                switch (e.tagName.toLowerCase()) {
-                                    case 'iframe' :
-                                    case 'textarea' :
-                                    case 'input' :
-                                    case 'select' :
-                                        /* Ignore the above tags */
-                                        break;
-                                    default :
-                                        //e.unselectable='on';
-                                        //ie9 使用 setAttribute才可以
-                                        e.setAttribute("unselectable", 'on');
-                                }
-                            }
-                        }
-                    },
+                              //el.unselectable='on';
+                              el.setAttribute("unselectable", 'on');
+                              var els = el.getElementsByTagName("*");
+                              while (( e = els[ i++ ] )) {
+                                  switch (e.tagName.toLowerCase()) {
+                                      case 'iframe' :
+                                      case 'textarea' :
+                                      case 'input' :
+                                      case 'select' :
+                                          /* Ignore the above tags */
+                                          break;
+                                      default :
+                                          //e.unselectable='on';
+                                          //ie9 使用 setAttribute才可以
+                                          e.setAttribute("unselectable", 'on');
+                                  }
+                              }
+                          }
+                      },
 
             /**
              *
@@ -425,7 +425,7 @@ KISSY.Editor.add("dom", function(KE) {
                         var refWindow = refDocument.defaultView || refDocument.parentWindow;
                         if (currentWindow != refWindow && currentWindow['frameElement']) {
                             //note:when iframe is static ,still some mistake
-                            var iframePosition = editorDom._4e_getOffset(currentWindow.frameElement, refDocument);
+                            var iframePosition = editorDom._4e_getOffset(currentWindow['frameElement'], refDocument);
                             x += iframePosition.left;
                             y += iframePosition.top;
                         }
@@ -501,7 +501,7 @@ KISSY.Editor.add("dom", function(KE) {
                 //alert("ua:"+UA.ie);
                 //alert("mode:"+doc.documentMode);
                 //ie8 浏览器有问题，而不在于是否哪个模式
-                if (!!doc.documentMode) {
+                if (!!doc['documentMode']) {
                     var workaround = doc.createTextNode("");
                     DOM.insertAfter(workaround, retval[0]);
                     DOM._4e_remove(workaround);
@@ -705,58 +705,58 @@ KISSY.Editor.add("dom", function(KE) {
              * @param name {string}
              */
             _4e_hasAttribute : Utils.ieEngine < 9 ?
-                function(el, name) {
-                    el = normalElDom(el);
-                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
-                    // IE5-7 doesn't return the value of a style attribute.
-                    var $attr = el.attributes[name];
-                    return !!( $attr && $attr.specified );
-                }
+                               function(el, name) {
+                                   el = normalElDom(el);
+                                   // from ppk :http://www.quirksmode.org/dom/w3c_core.html
+                                   // IE5-7 doesn't return the value of a style attribute.
+                                   var $attr = el.attributes[name];
+                                   return !!( $attr && $attr.specified );
+                               }
                 :
-                function(el, name) {
-                    el = normalElDom(el);
-                    //使用原生实现
-                    return el.hasAttribute(name);
-                },
+                               function(el, name) {
+                                   el = normalElDom(el);
+                                   //使用原生实现
+                                   return el.hasAttribute(name);
+                               },
             /**
              * 统一的属性处理方式
              * @param el {(Node)}
              * @param otherNode {(Node)}
              */
             _4e_hasAttributes: Utils.ieEngine < 9 ?
-                function(el) {
-                    el = normalElDom(el);
-                    var attributes = el.attributes;
-                    for (var i = 0; i < attributes.length; i++) {
-                        var attribute = attributes[i];
-                        switch (attribute.name) {
-                            case 'class' :
-                                // IE has a strange bug. If calling removeAttribute('className'),
-                                // the attributes collection will still contain the "class"
-                                // attribute, which will be marked as "specified", even if the
-                                // outerHTML of the element is not displaying the class attribute.
-                                // Note : I was not able to reproduce it outside the editor,
-                                // but I've faced it while working on the TC of #1391.
-                                if (el.getAttribute('class'))
-                                    return TRUE;
-                                break;
-                            /*jsl:fallthru*/
-                            default :
-                                if (attribute.specified)
-                                    return TRUE;
-                        }
-                    }
-                    return FALSE;
-                }
+                               function(el) {
+                                   el = normalElDom(el);
+                                   var attributes = el.attributes;
+                                   for (var i = 0; i < attributes.length; i++) {
+                                       var attribute = attributes[i];
+                                       switch (attribute.name) {
+                                           case 'class' :
+                                               // IE has a strange bug. If calling removeAttribute('className'),
+                                               // the attributes collection will still contain the "class"
+                                               // attribute, which will be marked as "specified", even if the
+                                               // outerHTML of the element is not displaying the class attribute.
+                                               // Note : I was not able to reproduce it outside the editor,
+                                               // but I've faced it while working on the TC of #1391.
+                                               if (el.getAttribute('class'))
+                                                   return TRUE;
+                                               break;
+                                           /*jsl:fallthru*/
+                                           default :
+                                               if (attribute.specified)
+                                                   return TRUE;
+                                       }
+                                   }
+                                   return FALSE;
+                               }
                 :
-                function(el) {
-                    el = normalElDom(el);
-                    //删除firefox自己添加的标志
-                    UA.gecko && el.removeAttribute("_moz_dirty");
-                    //使用原生
-                    //ie8 莫名其妙多个shape？？specified为false
-                    return el.hasAttributes();
-                },
+                               function(el) {
+                                   el = normalElDom(el);
+                                   //删除firefox自己添加的标志
+                                   UA.gecko && el.removeAttribute("_moz_dirty");
+                                   //使用原生
+                                   //ie8 莫名其妙多个shape？？specified为false
+                                   return el.hasAttributes();
+                               },
 
             /**
              *

@@ -4,7 +4,7 @@
  */
 KISSY.Editor.add("select", function() {
     var S = KISSY,
-        UA = S.UA,
+        //UA = S.UA,
         Node = S.Node,
         Event = S.Event,
         DOM = S.DOM,
@@ -19,12 +19,12 @@ KISSY.Editor.add("select", function() {
             "<span class='ke-select-drop'></span>" +
             "</span>" +
             "</a></span>",
-        menu_markup = "<div>" ;
+        menu_markup = "<div>";
 
     if (KE.Select) return;
     function Select(cfg) {
         var self = this;
-        Select.superclass.constructor.call(self, cfg);
+        Select['superclass'].constructor.call(self, cfg);
         self._init();
     }
 
@@ -224,10 +224,16 @@ KISSY.Editor.add("select", function() {
             menu.on("hide", function() {
                 focusA.removeClass(ke_select_active);
             });
-            Event.on([document,self.get("doc")], "click", function(ev) {
-                if (el.contains(ev.target)) return;
+            function deactivate(ev) {
+                var t = new Node(ev.target);
+                if (el.contains(t) || el._4e_equals(t)) return;
                 menu.hide();
-            });
+            }
+
+            Event.on(document, "click", deactivate);
+            if (self.get("doc"))
+                Event.on(self.get("doc"), "click", deactivate);
+
             menuNode.on("click", self._select, self);
             self.as = self._selectList.all("a");
 

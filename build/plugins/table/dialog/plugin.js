@@ -6,7 +6,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
         UA = S.UA,
         trim = S.trim,
         TableUI = KE.TableUI,
-        showBorderClassName = TableUI.showBorderClassName,
+        showBorderClassName = TableUI['showBorderClassName'],
         Dialog = KE.Dialog,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
@@ -161,7 +161,6 @@ KISSY.Editor.add("table/dialog", function(editor) {
             S.augment(TableUIDialog, {
                 _tableInit:function() {
                     var self = this,
-                        editor = self.editor,
                         d = new Dialog({
                             autoRender:true,
                             width:"500px",
@@ -186,10 +185,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
                     self.tableDialog = d;
                     tok.on("click", self._tableOk, self);
-                    d.on("hide", function() {
-                        //清空
-                        self.selectedTable = null;
-                    });
+
                     tclose.on("click", function() {
                         d.hide();
                     });
@@ -213,13 +209,14 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     }
                     var re = KE.Utils.verifyInputs(inputs);
                     if (!re) return;
-
-
-                    if (!self.selectedTable) {
-                        self._genTable();
-                    } else {
-                        self._modifyTable();
-                    }
+                    self.tableDialog.hide();
+                    setTimeout(function() {
+                        if (!self.selectedTable) {
+                            self._genTable();
+                        } else {
+                            self._modifyTable();
+                        }
+                    }, 0);
                 },
                 _modifyTable:function() {
                     var self = this,
@@ -275,7 +272,7 @@ KISSY.Editor.add("table/dialog", function(editor) {
                     } else if (caption) {
                         caption._4e_remove();
                     }
-                    d.hide();
+
                 },
                 _genTable:function() {
                     var self = this,
@@ -307,7 +304,8 @@ KISSY.Editor.add("table/dialog", function(editor) {
                         }
                         html += "' "
                     }
-                    if (!valid(d.tborder.val()) || trim(d.tborder.val()) == "0") {
+                    if (!valid(d.tborder.val())
+                        || trim(d.tborder.val()) === "0") {
                         html += "class='" + showBorderClassName + "' "
                     }
 
@@ -339,8 +337,6 @@ KISSY.Editor.add("table/dialog", function(editor) {
 
                     var table = new Node(html, null, editor.document);
                     editor.insertElement(table);
-                    d.hide();
-
                 },
                 _fillTableDialog:function() {
                     var self = this,

@@ -91,7 +91,8 @@ select style for kissy editor
     line-height: 24px;
 }
 
-.ke-ie8 .ke-combox .ke-select-text {
+.ke-ie8 .ke-combox .ke-select-text,
+.ke-ie9 .ke-combox .ke-select-text {
     top: -2px;
 }
 
@@ -129,7 +130,8 @@ select style for kissy editor
     padding-top: 1px;
 }
 
-.ke-ie8 .ke-combox .ke-select-drop-wrap {
+.ke-ie8 .ke-combox .ke-select-drop-wrap,
+.ke-ie9 .ke-combox .ke-select-drop-wrap{
     top: 0;
 }
 

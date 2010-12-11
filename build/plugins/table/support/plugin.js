@@ -3,6 +3,7 @@ KISSY.Editor.add("table/support", function() {
         UA = S.UA,
         Node = S.Node,
         KE = S.Editor,
+        KEN = KE.NODE,
         tableRules = ["tr","th","td","tbody","table"];
 
     function TableUI(editor) {

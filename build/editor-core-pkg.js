@@ -1134,7 +1134,7 @@ KISSY.Editor.add("dom", function(KE) {
                 var nodeName = thisElement.nodeName.toLowerCase();
                 //note by yiminghe:http://msdn.microsoft.com/en-us/library/ms534388(VS.85).aspx
                 if (UA.ie) {
-                    var scopeName = thisElement.scopeName;
+                    var scopeName = thisElement['scopeName'];
                     if (scopeName && scopeName != 'HTML')
                         nodeName = scopeName.toLowerCase() + ':' + nodeName;
                 }
@@ -1295,42 +1295,42 @@ KISSY.Editor.add("dom", function(KE) {
              */
             _4e_unselectable :
                 UA.gecko ?
-                    function(el) {
-                        el = normalElDom(el);
-                        el.style.MozUserSelect = 'none';
-                    }
+                function(el) {
+                    el = normalElDom(el);
+                    el.style.MozUserSelect = 'none';
+                }
                     : UA.webkit ?
-                    function(el) {
-                        el = normalElDom(el);
-                        el.style.KhtmlUserSelect = 'none';
-                    }
+                      function(el) {
+                          el = normalElDom(el);
+                          el.style.KhtmlUserSelect = 'none';
+                      }
                     :
-                    function(el) {
-                        el = normalElDom(el);
-                        if (UA.ie || UA.opera) {
-                            var
-                                e,
-                                i = 0;
+                      function(el) {
+                          el = normalElDom(el);
+                          if (UA.ie || UA.opera) {
+                              var
+                                  e,
+                                  i = 0;
 
-                            //el.unselectable='on';
-                            el.setAttribute("unselectable", 'on');
-                            var els=el.getElementsByTagName("*");
-                            while (( e = els[ i++ ] )) {
-                                switch (e.tagName.toLowerCase()) {
-                                    case 'iframe' :
-                                    case 'textarea' :
-                                    case 'input' :
-                                    case 'select' :
-                                        /* Ignore the above tags */
-                                        break;
-                                    default :
-                                        //e.unselectable='on';
-                                        //ie9 使用 setAttribute才可以
-                                        e.setAttribute("unselectable", 'on');
-                                }
-                            }
-                        }
-                    },
+                              //el.unselectable='on';
+                              el.setAttribute("unselectable", 'on');
+                              var els = el.getElementsByTagName("*");
+                              while (( e = els[ i++ ] )) {
+                                  switch (e.tagName.toLowerCase()) {
+                                      case 'iframe' :
+                                      case 'textarea' :
+                                      case 'input' :
+                                      case 'select' :
+                                          /* Ignore the above tags */
+                                          break;
+                                      default :
+                                          //e.unselectable='on';
+                                          //ie9 使用 setAttribute才可以
+                                          e.setAttribute("unselectable", 'on');
+                                  }
+                              }
+                          }
+                      },
 
             /**
              *
@@ -1358,7 +1358,7 @@ KISSY.Editor.add("dom", function(KE) {
                         var refWindow = refDocument.defaultView || refDocument.parentWindow;
                         if (currentWindow != refWindow && currentWindow['frameElement']) {
                             //note:when iframe is static ,still some mistake
-                            var iframePosition = editorDom._4e_getOffset(currentWindow.frameElement, refDocument);
+                            var iframePosition = editorDom._4e_getOffset(currentWindow['frameElement'], refDocument);
                             x += iframePosition.left;
                             y += iframePosition.top;
                         }
@@ -1434,7 +1434,7 @@ KISSY.Editor.add("dom", function(KE) {
                 //alert("ua:"+UA.ie);
                 //alert("mode:"+doc.documentMode);
                 //ie8 浏览器有问题，而不在于是否哪个模式
-                if (!!doc.documentMode) {
+                if (!!doc['documentMode']) {
                     var workaround = doc.createTextNode("");
                     DOM.insertAfter(workaround, retval[0]);
                     DOM._4e_remove(workaround);
@@ -1638,58 +1638,58 @@ KISSY.Editor.add("dom", function(KE) {
              * @param name {string}
              */
             _4e_hasAttribute : Utils.ieEngine < 9 ?
-                function(el, name) {
-                    el = normalElDom(el);
-                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
-                    // IE5-7 doesn't return the value of a style attribute.
-                    var $attr = el.attributes[name];
-                    return !!( $attr && $attr.specified );
-                }
+                               function(el, name) {
+                                   el = normalElDom(el);
+                                   // from ppk :http://www.quirksmode.org/dom/w3c_core.html
+                                   // IE5-7 doesn't return the value of a style attribute.
+                                   var $attr = el.attributes[name];
+                                   return !!( $attr && $attr.specified );
+                               }
                 :
-                function(el, name) {
-                    el = normalElDom(el);
-                    //使用原生实现
-                    return el.hasAttribute(name);
-                },
+                               function(el, name) {
+                                   el = normalElDom(el);
+                                   //使用原生实现
+                                   return el.hasAttribute(name);
+                               },
             /**
              * 统一的属性处理方式
              * @param el {(Node)}
              * @param otherNode {(Node)}
              */
             _4e_hasAttributes: Utils.ieEngine < 9 ?
-                function(el) {
-                    el = normalElDom(el);
-                    var attributes = el.attributes;
-                    for (var i = 0; i < attributes.length; i++) {
-                        var attribute = attributes[i];
-                        switch (attribute.name) {
-                            case 'class' :
-                                // IE has a strange bug. If calling removeAttribute('className'),
-                                // the attributes collection will still contain the "class"
-                                // attribute, which will be marked as "specified", even if the
-                                // outerHTML of the element is not displaying the class attribute.
-                                // Note : I was not able to reproduce it outside the editor,
-                                // but I've faced it while working on the TC of #1391.
-                                if (el.getAttribute('class'))
-                                    return TRUE;
-                                break;
-                            /*jsl:fallthru*/
-                            default :
-                                if (attribute.specified)
-                                    return TRUE;
-                        }
-                    }
-                    return FALSE;
-                }
+                               function(el) {
+                                   el = normalElDom(el);
+                                   var attributes = el.attributes;
+                                   for (var i = 0; i < attributes.length; i++) {
+                                       var attribute = attributes[i];
+                                       switch (attribute.name) {
+                                           case 'class' :
+                                               // IE has a strange bug. If calling removeAttribute('className'),
+                                               // the attributes collection will still contain the "class"
+                                               // attribute, which will be marked as "specified", even if the
+                                               // outerHTML of the element is not displaying the class attribute.
+                                               // Note : I was not able to reproduce it outside the editor,
+                                               // but I've faced it while working on the TC of #1391.
+                                               if (el.getAttribute('class'))
+                                                   return TRUE;
+                                               break;
+                                           /*jsl:fallthru*/
+                                           default :
+                                               if (attribute.specified)
+                                                   return TRUE;
+                                       }
+                                   }
+                                   return FALSE;
+                               }
                 :
-                function(el) {
-                    el = normalElDom(el);
-                    //删除firefox自己添加的标志
-                    UA.gecko && el.removeAttribute("_moz_dirty");
-                    //使用原生
-                    //ie8 莫名其妙多个shape？？specified为false
-                    return el.hasAttributes();
-                },
+                               function(el) {
+                                   el = normalElDom(el);
+                                   //删除firefox自己添加的标志
+                                   UA.gecko && el.removeAttribute("_moz_dirty");
+                                   //使用原生
+                                   //ie8 莫名其妙多个shape？？specified为false
+                                   return el.hasAttributes();
+                               },
 
             /**
              *
@@ -2384,7 +2384,8 @@ KISSY.Editor.add("definition", function(KE) {
         var links = "";
         if (customLink) {
             for (var i = 0; i < customLink.length; i++) {
-                links += '<link href="' +
+                links += '<link ' +
+                    'href="' +
                     customLink[i]
                     + '" rel="stylesheet"/>';
             }
@@ -2393,7 +2394,8 @@ KISSY.Editor.add("definition", function(KE) {
             + "<html>"
             + "<head>"
             + "<title>${title}</title>"
-            + "<link href='"
+            + "<link "
+            + "href='"
             + KE["Config"]["base"]
             + CSS_FILE
             + "'" +
@@ -2548,7 +2550,7 @@ KISSY.Editor.add("definition", function(KE) {
                 //webkit(chrome) load等不来！
                 self._setUpIFrame();
             }
-            if (self.cfg.attachForm && textarea[0].form)
+            if (self.cfg['attachForm'] && textarea[0].form)
                 self._attachForm();
         },
         /**
@@ -2828,10 +2830,9 @@ KISSY.Editor.add("definition", function(KE) {
         _setUpIFrame:function() {
             var self = this,
                 iframe = self.iframe,
-                KES = KE.SELECTION,
-                textarea = self.textarea[0],
-                cfg = self.cfg,
-
+                //KES = KE.SELECTION,
+                //textarea = self.textarea[0],
+                //cfg = self.cfg,
                 data = self._prepareIFrameHtml(self._UUID),
                 win = iframe[0].contentWindow,doc;
 
@@ -2921,107 +2922,107 @@ KISSY.Editor.add("definition", function(KE) {
          * @param init {function()}
          */
         insertElement:function(element, init) {
-            var self = this;
+            var self = this,clone;
             self.focus();
-
-            var elementName = element._4e_name(),
-                xhtml_dtd = KE.XHTML_DTD,
-                KER = KE.RANGE,
-                KEN = KE.NODE,
-                isBlock = xhtml_dtd.$block[ elementName ],
-                selection = self.getSelection(),
-                ranges = selection && selection.getRanges(),
-                range,
-                clone,
-                lastElement,
-                current, dtd;
-            //give sometime to breath
-            if (!ranges
-                ||
-                ranges.length == 0) {
-                var args = arguments,fn = args.callee;
-                setTimeout(function() {
-                    fn.apply(self, args);
-                }, 30);
-                return;
-            }
-
-            self.fire("save");
-            for (var i = ranges.length - 1; i >= 0; i--) {
-                range = ranges[ i ];
-                // Remove the original contents.
-                range.deleteContents();
-                clone = !i && element || element._4e_clone(TRUE);
-                init && init(clone);
-                // If we're inserting a block at dtd-violated position, split
-                // the parent blocks until we reach blockLimit.
-                if (isBlock) {
-                    while (( current = range.getCommonAncestor(FALSE, TRUE) )
-                        && ( dtd = xhtml_dtd[ current._4e_name() ] )
-                        && !( dtd && dtd [ elementName ] )) {
-                        // Split up inline elements.
-                        if (current._4e_name() in xhtml_dtd["span"])
-                            range.splitElement(current);
-                        // If we're in an empty block which indicate a new paragraph,
-                        // simply replace it with the inserting block.(#3664)
-                        else if (range.checkStartOfBlock()
-                            && range.checkEndOfBlock()) {
-                            range.setStartBefore(current);
-                            range.collapse(TRUE);
-                            current._4e_remove();
-                        }
-                        else
-                            range.splitBlock();
-                    }
-                }
-
-                // Insert the new node.
-                range.insertNode(clone);
-                // Save the last element reference so we can make the
-                // selection later.
-                if (!lastElement)
-                    lastElement = clone;
-            }
-            if (!lastElement) return;
-
-            var next = lastElement._4e_nextSourceNode(TRUE),p,
-                doc = self.document;
-            dtd = KE.XHTML_DTD;
-
-            //行内元素不用加换行
-            if (!dtd.$inline[clone._4e_name()]) {
-                //末尾时 ie 不会自动产生br，手动产生
-                if (!next) {
-                    p = new Node("<p>&nbsp;</p>", NULL, doc);
-                    p.insertAfter(lastElement);
-                    next = p;
-                }
-                //firefox,replace br with p，和编辑器整体换行保持一致
-                else if (next._4e_name() == "br"
-                    &&
-                    //必须符合嵌套规则
-                    dtd[next.parent()._4e_name()]["p"]
-                    ) {
-                    p = new Node("<p>&nbsp;</p>", NULL, doc);
-                    next[0].parentNode.replaceChild(p[0], next[0]);
-                    next = p;
-                }
-            } else {
-                //qc #3803 ，插入行内后给个位置放置光标
-                next = new Node(doc.createTextNode(" "));
-                next.insertAfter(lastElement);
-            }
-            range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
-            if (next && next[0].nodeType == KEN.NODE_ELEMENT)
-                range.moveToElementEditablePosition(next);
-
-            selection.selectRanges([ range ]);
-            self.focus();
-            //http://code.google.com/p/kissy/issues/detail?can=1&start=100&id=121
-            clone && clone._4e_scrollIntoView();
             setTimeout(function() {
+                var elementName = element._4e_name(),
+                    xhtml_dtd = KE.XHTML_DTD,
+                    KER = KE.RANGE,
+                    KEN = KE.NODE,
+                    isBlock = xhtml_dtd.$block[ elementName ],
+                    selection = self.getSelection(),
+                    ranges = selection && selection.getRanges(),
+                    range,
+                    lastElement,
+                    current, dtd;
+                //give sometime to breath
+                if (!ranges
+                    ||
+                    ranges.length == 0) {
+                    var args = arguments,fn = args.callee;
+                    setTimeout(function() {
+                        fn.apply(self, args);
+                    }, 30);
+                    return;
+                }
+
                 self.fire("save");
-            }, 10);
+                for (var i = ranges.length - 1; i >= 0; i--) {
+                    range = ranges[ i ];
+                    // Remove the original contents.
+                    range.deleteContents();
+                    clone = !i && element || element._4e_clone(TRUE);
+                    init && init(clone);
+                    // If we're inserting a block at dtd-violated position, split
+                    // the parent blocks until we reach blockLimit.
+                    if (isBlock) {
+                        while (( current = range.getCommonAncestor(FALSE, TRUE) )
+                            && ( dtd = xhtml_dtd[ current._4e_name() ] )
+                            && !( dtd && dtd [ elementName ] )) {
+                            // Split up inline elements.
+                            if (current._4e_name() in xhtml_dtd["span"])
+                                range.splitElement(current);
+                            // If we're in an empty block which indicate a new paragraph,
+                            // simply replace it with the inserting block.(#3664)
+                            else if (range.checkStartOfBlock()
+                                && range.checkEndOfBlock()) {
+                                range.setStartBefore(current);
+                                range.collapse(TRUE);
+                                current._4e_remove();
+                            }
+                            else
+                                range.splitBlock();
+                        }
+                    }
+
+                    // Insert the new node.
+                    range.insertNode(clone);
+                    // Save the last element reference so we can make the
+                    // selection later.
+                    if (!lastElement)
+                        lastElement = clone;
+                }
+                if (!lastElement) return;
+
+                var next = lastElement._4e_nextSourceNode(TRUE),p,
+                    doc = self.document;
+                dtd = KE.XHTML_DTD;
+
+                //行内元素不用加换行
+                if (!dtd.$inline[clone._4e_name()]) {
+                    //末尾时 ie 不会自动产生br，手动产生
+                    if (!next) {
+                        p = new Node("<p>&nbsp;</p>", NULL, doc);
+                        p.insertAfter(lastElement);
+                        next = p;
+                    }
+                    //firefox,replace br with p，和编辑器整体换行保持一致
+                    else if (next._4e_name() == "br"
+                        &&
+                        //必须符合嵌套规则
+                        dtd[next.parent()._4e_name()]["p"]
+                        ) {
+                        p = new Node("<p>&nbsp;</p>", NULL, doc);
+                        next[0].parentNode.replaceChild(p[0], next[0]);
+                        next = p;
+                    }
+                } else {
+                    //qc #3803 ，插入行内后给个位置放置光标
+                    next = new Node(doc.createTextNode(" "));
+                    next.insertAfter(lastElement);
+                }
+                range.moveToPosition(lastElement, KER.POSITION_AFTER_END);
+                if (next && next[0].nodeType == KEN.NODE_ELEMENT)
+                    range.moveToElementEditablePosition(next);
+
+                selection.selectRanges([ range ]);
+                self.focus();
+                //http://code.google.com/p/kissy/issues/detail?can=1&start=100&id=121
+                clone && clone._4e_scrollIntoView();
+                setTimeout(function() {
+                    self.fire("save");
+                }, 10);
+            }, 0);
             return clone;
         }
         ,
@@ -3047,34 +3048,36 @@ KISSY.Editor.add("definition", function(KE) {
             }
             self.focus();
 
-            var selection = self.getSelection(),
-                ranges = selection && selection.getRanges();
-
-            //give sometime to breath
-            if (!ranges
-                ||
-                ranges.length == 0) {
-                var args = arguments,fn = args.callee;
-                setTimeout(function() {
-                    fn.apply(self, args);
-                }, 30);
-                return;
-            }
-
-            self.fire("save");
-            if (UA.ie) {
-                var $sel = selection.getNative();
-                if ($sel.type == 'Control')
-                    $sel.clear();
-                $sel.createRange().pasteHTML(data);
-            } else {
-                self.document.execCommand('inserthtml', FALSE, data);
-            }
-
-            self.focus();
             setTimeout(function() {
+                var selection = self.getSelection(),
+                    ranges = selection && selection.getRanges();
+
+                //give sometime to breath
+                if (!ranges
+                    ||
+                    ranges.length == 0) {
+                    var args = arguments,fn = args.callee;
+                    setTimeout(function() {
+                        fn.apply(self, args);
+                    }, 30);
+                    return;
+                }
+
                 self.fire("save");
-            }, 10);
+                if (UA.ie) {
+                    var $sel = selection.getNative();
+                    if ($sel.type == 'Control')
+                        $sel.clear();
+                    $sel.createRange().pasteHTML(data);
+                } else {
+                    self.document.execCommand('inserthtml', FALSE, data);
+                }
+
+                self.focus();
+                setTimeout(function() {
+                    self.fire("save");
+                }, 10);
+            }, 0);
         }
     })
         ;
@@ -3166,32 +3169,32 @@ KISSY.Editor.add("definition", function(KE) {
 
         function blinkCursor(retry) {
             tryThese(
-                function() {
-                    doc.designMode = 'on';
-                    //异步引起时序问题，尽可能小间隔
-                    setTimeout(function () {
+                    function() {
+                        doc.designMode = 'on';
+                        //异步引起时序问题，尽可能小间隔
+                        setTimeout(function () {
+                            doc.designMode = 'off';
+
+                            body.focus();
+                            // Try it again once..
+                            if (!arguments.callee.retry) {
+                                arguments.callee.retry = TRUE;
+                                //arguments.callee();
+                            }
+                        }, 50);
+                    },
+                    function() {
+                        // The above call is known to fail when parent DOM
+                        // tree layout changes may break design mode. (#5782)
+                        // Refresh the 'contentEditable' is a cue to this.
                         doc.designMode = 'off';
 
-                        body.focus();
+                        DOM.attr(body, 'contentEditable', FALSE);
+                        DOM.attr(body, 'contentEditable', TRUE);
                         // Try it again once..
-                        if (!arguments.callee.retry) {
-                            arguments.callee.retry = TRUE;
-                            //arguments.callee();
-                        }
-                    }, 50);
-                },
-                function() {
-                    // The above call is known to fail when parent DOM
-                    // tree layout changes may break design mode. (#5782)
-                    // Refresh the 'contentEditable' is a cue to this.
-                    doc.designMode = 'off';
+                        !retry && blinkCursor(1);
 
-                    DOM.attr(body, 'contentEditable', FALSE);
-                    DOM.attr(body, 'contentEditable', TRUE);
-                    // Try it again once..
-                    !retry && blinkCursor(1);
-
-                });
+                    });
         }
 
         // Create an invisible element to grab focus.
@@ -3348,8 +3351,8 @@ KISSY.Editor.add("definition", function(KE) {
             /*
              some break for firefox ，不能立即设置
              */
-            var disableObjectResizing = cfg.disableObjectResizing,
-                disableInlineTableEditing = cfg.disableInlineTableEditing;
+            var disableObjectResizing = cfg['disableObjectResizing'],
+                disableInlineTableEditing = cfg['disableInlineTableEditing'];
             if (disableObjectResizing || disableInlineTableEditing) {
                 // IE, Opera and Safari may not support it and throw errors.
                 try {
@@ -4336,7 +4339,7 @@ KISSY.Editor.add("range", function(KE) {
     var TRUE = true,
         FALSE = false,
         NULL = null,
-        OLD_IE = !window.getSelection,
+        //OLD_IE = !window.getSelection,
         S = KISSY,
         KEN = KE.NODE,
         KER = KE.RANGE,

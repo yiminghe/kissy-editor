@@ -6,12 +6,11 @@ KISSY.Editor.add("bubbleview", function() {
     var KE = KISSY.Editor,
         S = KISSY,
         Event = S.Event,
-        DOM = S.DOM,
-        Node = S.Node;
+        DOM = S.DOM;
 
     if (KE.BubbleView) return;
 
-    var BubbleView = S.UIBase.create(KE.Overlay, [], {
+    var BubbleView = S['UIBase'].create(KE.Overlay, [], {
 
         renderUI:function() {
             var el = this.get("el");
@@ -22,7 +21,7 @@ KISSY.Editor.add("bubbleview", function() {
                 a = self._selectedEl,
                 xy = a._4e_getOffset(document);
             xy.top += a.height() + 5;
-            BubbleView.superclass.show.call(self);
+            BubbleView['superclass'].show.call(self);
             self.set("xy", [xy.left,xy.top]);
         }
     }, {

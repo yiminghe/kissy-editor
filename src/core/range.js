@@ -31,7 +31,7 @@ KISSY.Editor.add("range", function(KE) {
     var TRUE = true,
         FALSE = false,
         NULL = null,
-        OLD_IE = !window.getSelection,
+        //OLD_IE = !window.getSelection,
         S = KISSY,
         KEN = KE.NODE,
         KER = KE.RANGE,

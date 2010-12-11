@@ -365,17 +365,22 @@ KISSY.Editor.add("image/dialog", function(editor) {
             url +
             "' alt='' />", null, editor.document);
         d.hide();
-        img = editor.insertElement(img, function(el) {
-            el.on("abort error", function() {
-                el.detach();
-                //ie6 手动设置，才会出现红叉
-                el[0].src = url;
+
+
+        setTimeout(function() {
+            img = editor.insertElement(img, function(el) {
+                el.on("abort error", function() {
+                    el.detach();
+                    //ie6 手动设置，才会出现红叉
+                    el[0].src = url;
+                });
             });
-        });
-        if (selectedEl) {
-            editor.getSelection().selectElement(img);
-        }
-        editor.notifySelectionChange();
+            if (selectedEl) {
+                editor.getSelection().selectElement(img);
+            }
+            editor.notifySelectionChange();
+        }, 0);
+
     }
 
     function update(_selectedEl) {

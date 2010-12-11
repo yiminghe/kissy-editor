@@ -13,11 +13,17 @@ KISSY.Editor.add("pagebreak", function(editor) {
                 div : function(element) {
                     var attributes = element.attributes,
                         style = attributes && attributes.style,
-                        child = style && element.children.length == 1 && element.children[ 0 ],
-                        childStyle = child && ( child.name == 'span' ) && child.attributes.style;
+                        child = style && element.children.length == 1
+                            && element.children[ 0 ],
+                        childStyle = child && ( child.name == 'span' )
+                            && child.attributes.style;
 
-                    if (childStyle && ( /page-break-after\s*:\s*always/i ).test(style) && ( /display\s*:\s*none/i ).test(childStyle))
-                        return dataProcessor.createFakeParserElement(element, CLS, TYPE);
+                    if (childStyle
+                        && ( /page-break-after\s*:\s*always/i ).test(style)
+                        && ( /display\s*:\s*none/i ).test(childStyle))
+                        return dataProcessor.createFakeParserElement(element,
+                            CLS,
+                            TYPE);
                 }
             }
         });
@@ -37,11 +43,23 @@ KISSY.Editor.add("pagebreak", function(editor) {
                         editor.createFakeElement(real,
                             CLS,
                             TYPE,
-                            true,
+                            //不可缩放，也不用
+                            false,
                             mark_up) :
-                        real,
-                    insert = new Node("<div>", null, editor.document).append(substitute);
-                editor.insertElement(insert);
+                        real;
+                var sel = editor.getSelection(),
+                    range = sel && sel.getRanges()[0];
+                if (!range) return;
+                editor.fire("save");
+                var start = range.startContainer,pre = start;
+                while (start._4e_name() !== "body") {
+                    pre = start;
+                    start = start.parent();
+                }
+                range.collapse(true);
+                range.splitElement(pre);
+                substitute.insertAfter(pre);
+                editor.fire("save");
             }
         });
     });
