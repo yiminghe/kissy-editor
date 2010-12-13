@@ -38,7 +38,7 @@ KISSY.Editor.add("sourcearea/support", function(editor) {
                     textarea.css("display", "");
                     iframe.css("display", "none");
                     //ie textarea height:100%不起作用
-                    if (UA.ie < 8) {
+                    if (UA.ieEngine < 8) {
                         textarea.css("height", editor.wrap.css("height"));
                     }
                     //ie6 光标透出

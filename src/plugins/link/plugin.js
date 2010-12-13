@@ -102,6 +102,7 @@ KISSY.Editor.add("link", function(editor) {
                     cfg = self.cfg,
                     editor = self.editor,
                     link = cfg._getSelectedLink.call(self);
+                //注意同步，取的话要从 _ke_saved_href 取原始值的
                 attr["_ke_saved_href"] = attr.href;
                 //是修改行为
                 if (link) {
