@@ -6,7 +6,7 @@ KISSY.Editor.add("bangpai-video/support", function() {
     var flashRules = ["img." + CLS_VIDEO];
 
     function BangPaiVideo(editor) {
-        BangPaiVideo.superclass.constructor.apply(this, arguments);
+        BangPaiVideo['superclass'].constructor.apply(this, arguments);
     }
 
     BangPaiVideo.CLS_VIDEO = CLS_VIDEO;
@@ -14,9 +14,7 @@ KISSY.Editor.add("bangpai-video/support", function() {
 
     S.extend(BangPaiVideo, Flash, {
         _config:function() {
-            var self = this,
-                editor = self.editor,
-                cfg = editor.cfg.pluginConfig;
+            var self = this;
             self._cls = CLS_VIDEO;
             self._type = TYPE_VIDEO;
             self._contentCls = "ke-toolbar-video";

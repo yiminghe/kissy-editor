@@ -5,7 +5,7 @@
 KISSY.Editor.add("indent", function(editor) {
     var KE = KISSY.Editor;
 
-    editor.ready(function() {
+
         var outdent = editor.addButton("outdent", {
             title:"减少缩进量 ",
             mode:KE.WYSIWYG_MODE,
@@ -38,5 +38,4 @@ KISSY.Editor.add("indent", function(editor) {
                 outdent.call("offClick");
             }
         });
-    });
 });

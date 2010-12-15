@@ -2,7 +2,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     var S = KISSY,
         KE = S.Editor;
 
-    if (!KE.Env.mods["bangpai-upload/dialog"]) {
+    if (!KE['Env']['mods']["bangpai-upload/dialog"]) {
         KE.add({
             "bangpai-upload/dialog":{
                 attach: false,

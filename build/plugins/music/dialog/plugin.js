@@ -14,8 +14,7 @@ KISSY.Editor.add("music/dialog", function(editor) {
         (function() {
             var music_reg = /#\(music\)/g,
                 MIDDLE = "vertical-align:middle",
-                MUSIC_PLAYER_CODE = KE.Config.base
-                    + 'plugins/music/niftyplayer.swf?file=#(music)',
+
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
                     "<label>" +
@@ -56,7 +55,7 @@ KISSY.Editor.add("music/dialog", function(editor) {
             }
 
             function MusicDialog(editor) {
-                MusicDialog.superclass.constructor.apply(this, arguments);
+                MusicDialog['superclass'].constructor.apply(this, arguments);
             }
 
             KE.MusicInserter.Dialog = MusicDialog;
@@ -64,8 +63,7 @@ KISSY.Editor.add("music/dialog", function(editor) {
 
             S.extend(MusicDialog, KE.Flash.FlashDialog, {
                 _config:function() {
-                    var self = this,
-                        editor = self.editor;
+                    var self = this;
                     self._cls = CLS_MUSIC;
                     self._type = TYPE_MUSIC;
                     self._title = "音乐";//属性";
@@ -76,7 +74,6 @@ KISSY.Editor.add("music/dialog", function(editor) {
                 },
                 _initD:function() {
                     var self = this,
-                        editor = self.editor,
                         d = self.d,
                         el = d.get("el");
                     self.dUrl = el.one(".ke-music-url");
@@ -92,7 +89,11 @@ KISSY.Editor.add("music/dialog", function(editor) {
                 },
 
                 _getDInfo:function() {
-                    var self = this;
+                    var self = this,
+                        editor = self.editor,
+                        cfg = editor.cfg.pluginConfig["music"] || {},
+                        MUSIC_PLAYER = cfg['musicPlayer'] || "niftyplayer.swf",
+                        MUSIC_PLAYER_CODE =MUSIC_PLAYER+'?file=#(music)';
 
                     return {
                         url: MUSIC_PLAYER_CODE.replace(music_reg, self.dUrl.val()),
@@ -107,7 +108,8 @@ KISSY.Editor.add("music/dialog", function(editor) {
                 },
 
                 _getFlashUrl:function(r) {
-                    return   getMusicUrl(MusicDialog.superclass._getFlashUrl.call(this, r));
+                    return   getMusicUrl(MusicDialog['superclass']
+                        ._getFlashUrl.call(this, r));
                 },
                 _updateD:function() {
                     var self = this,

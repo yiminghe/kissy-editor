@@ -3,19 +3,19 @@
  * @author:yiminghe@gmail.com
  */
 KISSY.Editor.add("flash/support", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         UA = S.UA,
         Event = S.Event,
         ContextMenu = KE.ContextMenu,
         Node = S.Node,
         BubbleView = KE.BubbleView,
-        TripleButton = KE.TripleButton,
         CLS_FLASH = 'ke_flash',
         TYPE_FLASH = 'flash',
         flashUtils = KE.Utils.flash;
 
     /**
+     * 写成类的形式而不是一个简单的button命令配置，为了可以override
      * 所有基于 flash 的插件基类，使用 template 模式抽象
      * @param editor
      */
@@ -35,8 +35,6 @@ KISSY.Editor.add("flash/support", function() {
             var self = this;
             self._cls = CLS_FLASH;
             self._type = TYPE_FLASH;
-            self._contentCls = "ke-toolbar-flash";
-            self._tip = "插入Flash";
             self._contextMenu = contextMenu;
             self._flashRules = ["img." + CLS_FLASH];
         },
@@ -46,16 +44,6 @@ KISSY.Editor.add("flash/support", function() {
                 editor = self.editor,
                 myContexts = {},
                 contextMenu = self._contextMenu;
-
-            var context = editor.addButton("flash", {
-                contentCls:self._contentCls,
-                title:self._tip ,
-                mode:KE.WYSIWYG_MODE,
-                offClick:function() {
-                    self.show();
-                }
-            });
-
             //右键功能关联到编辑器实例
             if (contextMenu) {
                 for (var f in contextMenu) {
@@ -144,8 +132,8 @@ KISSY.Editor.add("flash/support", function() {
      */
     function checkFlash(node) {
         return node._4e_name() === 'img' &&
-            (!!node.hasClass(CLS_FLASH)) &&
-            node;
+            (!!node.hasClass(CLS_FLASH))&&
+                node;
     }
 
     /**
@@ -192,6 +180,7 @@ KISSY.Editor.add("flash/support", function() {
                  位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                  */
                 bubble.on("show", function() {
+
                     var a = bubble._selectedEl,
                         flash = bubble._plugin;
                     if (!a)return;
@@ -221,7 +210,7 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src, attrs, _cls, _type) {
+    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -234,8 +223,7 @@ KISSY.Editor.add("flash/support", function() {
                     nodeInfo.html,
                     attrs) :
                 real;
-        substitute = editor.insertElement(substitute);
-        return substitute;
+        editor.insertElement(substitute, null, callback);
     };
 
     KE.Flash = Flash;

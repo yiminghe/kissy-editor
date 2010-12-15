@@ -8,9 +8,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 KISSY.Editor.add("htmlparser-basicwriter", function() {
     var S = KISSY,KE = S.Editor,Utils = KE.Utils,
-        TRUE = true,
-        FALSE = false,
-        NULL = null;
+        FALSE = false;
 
     /**
      * @constructor
@@ -31,7 +29,7 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName, attributes) {
+        openTag : function(tagName/*, attributes*/) {
             this._.output.push('<', tagName);
         },
 

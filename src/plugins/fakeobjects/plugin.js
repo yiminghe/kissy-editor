@@ -7,7 +7,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         S = KISSY,
         Node = S.Node,
         KEN = KE.NODE,
-    SPACER_GIF= KE.Config.base + 'theme/spacer.gif',
+        SPACER_GIF = KE['Config'].base + 'theme/spacer.gif',
         HtmlParser = KE.HtmlParser,
         Editor = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
@@ -139,9 +139,10 @@ KISSY.Editor.add("fakeobjects", function(editor) {
             var temp = new Node('<div>', null, this.document);
             temp.html(html);
             // When returning the node, remove it from its parent to detach it.
-            return temp._4e_first(function(n) {
-                return n[0].nodeType == KEN.NODE_ELEMENT;
-            })._4e_remove();
+            return temp._4e_first(
+                                 function(n) {
+                                     return n[0].nodeType == KEN.NODE_ELEMENT;
+                                 })._4e_remove();
         }
     });
 

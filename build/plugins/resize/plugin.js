@@ -1,11 +1,10 @@
 KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
-        KE = S.Editor,
         Node = S.Node;
 
     editor.ready(function() {
         S.use("dd", function() {
-            var Draggable = S.Draggable;
+            var Draggable = S['Draggable'];
             var statusDiv = editor.statusDiv,
                 resizer = new Node("<div class='ke-resizer'>"),
                 cfg = editor.cfg["pluginConfig"]["resize"] || {};
@@ -30,8 +29,8 @@ KISSY.Editor.add("resize", function(editor) {
                 width = widthEl.width();
             });
             d.on("drag", function(ev) {
-                var diffX = ev.left - this.startNodePos.left,
-                    diffY = ev.top - this.startNodePos.top;
+                var diffX = ev.left - this['startNodePos'].left,
+                    diffY = ev.top - this['startNodePos'].top;
                 if (S.inArray("y", cfg)) heightEl.height(height + diffY);
                 if (S.inArray("x", cfg)) widthEl.width(width + diffX);
             });

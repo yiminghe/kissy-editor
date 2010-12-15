@@ -205,14 +205,14 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 pendingInline.push(element);
                 return;
             }
-            else if (tagName == 'pre')
+            else if (tagName === 'pre')
                 inPre = TRUE;
-            else if (tagName == 'br' && inPre) {
+            else if (tagName === 'br' && inPre) {
                 currentNode.add(new KE.HtmlParser.Text('\n'));
                 return;
             }
 
-            if (tagName == 'br') {
+            if (tagName === 'br') {
                 pendingBRs.push(element);
                 return;
             }

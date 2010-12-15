@@ -3,8 +3,8 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("enterkey", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         //DOM = S.DOM,
         UA = S.UA,
         headerTagRegex = /^h[1-6]$/,
@@ -46,7 +46,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                             editor.fire("save");
                             editor.execCommand('outdent');
                             editor.fire("save");
-                            return;
+                            return true;
                         } else {
                             return false;
                         }
@@ -60,7 +60,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                 var splitInfo = range.splitBlock(blockTag);
 
                 if (!splitInfo)
-                    return;
+                    return true;
 
                 // Get the current blocks.
                 var previousBlock = splitInfo.previousBlock,
@@ -179,6 +179,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                     }
                 }
                 range.select();
+                return true;
             }
 
             function EnterKey(editor) {

@@ -74,9 +74,8 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                     "<a class='ke-video-cancel ke-button'>取消</a></div>";
 
             function BangPaiVideoDialog() {
-                BangPaiVideoDialog.superclass.constructor.apply(this, arguments);
+                BangPaiVideoDialog['superclass'].constructor.apply(this, arguments);
             }
-
 
             S.extend(BangPaiVideoDialog, KE.Flash.FlashDialog, {
                 _config:function() {
@@ -94,7 +93,6 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                 },
                 _initD:function() {
                     var self = this,
-                        editor = self.editor,
                         d = self.d,
                         el = d.get("el");
                     self.dUrl = el.one(".ke-video-url");
@@ -173,14 +171,14 @@ KISSY.Editor.add("bangpai-video/dialog", function(editor) {
                             }
                         }
                     }
-                    BangPaiVideoDialog.superclass._gen.call(self);
+                    BangPaiVideoDialog['superclass']._gen.call(self);
                 },
 
                 _dynamicUrlPrepare:function(re) {
                     var self = this;
                     self.dUrl.val(re);
                     self.d.unloading();
-                    BangPaiVideoDialog.superclass._gen.call(self);
+                    BangPaiVideoDialog['superclass']._gen.call(self);
                 },
 
                 _updateD:function() {

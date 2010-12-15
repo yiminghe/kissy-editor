@@ -22,41 +22,47 @@ KISSY.Editor.add("image", function(editor) {
         + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
         + '';
     //重新采用form提交，不采用flash，国产浏览器很多问题
+    var context = editor.addButton("image", {
+        contentCls:"ke-toolbar-image",
+        title:"插入图片",
+        mode:KE.WYSIWYG_MODE,
+        offClick:function() {
+            this.call("show");
+        },
+        _updateTip:function(tipurl, img) {
+            var src = img.attr("src");
+            tipurl.html(src);
+            tipurl.attr("href", src);
+        },
+        show:function(ev, _selectedEl) {
+            var editor = this.editor;
+            editor.useDialog("image/dialog", function(dialog) {
+                dialog.show(_selectedEl);
+            });
+        }
+    });
 
-
-    editor.ready(function() {
-        var context = editor.addButton("image", {
-            contentCls:"ke-toolbar-image",
-            title:"插入图片",
-            mode:KE.WYSIWYG_MODE,
-            offClick:function() {
-                this.call("show");
-            },
-            _updateTip:function(tipurl, img) {
-                var src = img.attr("src");
-                tipurl.html(src);
-                tipurl.attr("href", src);
-            },
-            show:function(ev, _selectedEl) {
-                var editor = this.editor;
-                editor.useDialog("image/dialog", function(dialog) {
-                    dialog.show(_selectedEl);
-                });
-            }
-        }),
-            contextMenu = {
-                "图片属性":function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        flash = checkImg(startElement);
-                    if (flash) {
-                        context.call("show", null, flash);
-                    }
+    KE.use("contextmenu", function() {
+        var contextMenu = {
+            "图片属性":function(editor) {
+                var selection = editor.getSelection(),
+                    startElement = selection && selection.getStartElement(),
+                    flash = checkImg(startElement);
+                if (flash) {
+                    context.call("show", null, flash);
                 }
-            };
-
+            }
+        };
+        Event.on(editor.document,
+            "dblclick",
+                function(ev) {
+                    var t = new Node(ev.target);
+                    ev.halt();
+                    if (checkImg(t)) {
+                        context.call("show", null, t);
+                    }
+                });
         var myContexts = {};
-
         for (var f in contextMenu) {
             (function(f) {
                 myContexts[f] = function() {
@@ -70,17 +76,9 @@ KISSY.Editor.add("image", function(editor) {
             width:"120px",
             funcs:myContexts
         });
+    });
 
-        Event.on(editor.document, "dblclick", function(ev) {
-            var t = new Node(ev.target);
-            ev.halt();
-            if (checkImg(t)) {
-                //setTimeout(function() {
-                context.call("show", null, t);
-                //}, 30);
-            }
-        });
-
+    KE.use("bubbleview", function() {
         BubbleView.register({
             pluginName:'image',
             pluginContext:context,
@@ -122,4 +120,5 @@ KISSY.Editor.add("image", function(editor) {
             }
         });
     });
+
 });

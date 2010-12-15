@@ -124,7 +124,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 if (document.defaultView) {
                     ret = GetData(document.defaultView.getComputedStyle(frag, null).color);
                 } else {
-                    color = frag.createTextRange().queryCommandValue("ForeColor");
+                    color = frag.createTextRange()['queryCommandValue']("ForeColor");
                     ret = [ color & 0x0000ff, (color & 0x00ff00) >>> 8, (color & 0xff0000) >>> 16 ];
                 }
             }

@@ -3,8 +3,7 @@
  * @author:yiminghe@gmail.com
  */
 KISSY.Editor.add("localstorage", function() {
-    var S = KISSY,
-        KE = S.Editor,STORE;
+    var S = KISSY, KE = S.Editor,STORE;
     STORE = KE.STORE = "localStorage";
     if (!KE.storeReady) {
         KE.storeReady = function(run) {
@@ -33,7 +32,7 @@ KISSY.Editor.add("localstorage", function() {
     }
 
     //国产浏览器用随机数/时间戳试试 ! 是可以的
-    var movie = KE.Config.base +
+    var movie = KE['Config'].base +
         KE.Utils.debugUrl("plugins/localstorage/swfstore.swf?rand=" +
             (+new Date()));
 
@@ -46,7 +45,7 @@ KISSY.Editor.add("localstorage", function() {
     S.mix(window[STORE], {
         _ke:1,
         getItem:function(key) {
-            return this.getValueOf(key);
+            return this['getValueOf'](key);
         }
     });
 

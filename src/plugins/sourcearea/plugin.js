@@ -9,7 +9,7 @@ KISSY.Editor.add("sourcearea", function(editor) {
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;
 
-    editor.ready(function() {
+
         var SOURCE_MODE = KE.SOURCE_MODE ,
             WYSIWYG_MODE = KE.WYSIWYG_MODE;
         editor.addButton("sourcearea", {
@@ -33,5 +33,4 @@ KISSY.Editor.add("sourcearea", function(editor) {
                 editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
             }
         });
-    });
 });

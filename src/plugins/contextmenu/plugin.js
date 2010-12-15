@@ -9,7 +9,10 @@ KISSY.Editor.add("contextmenu", function() {
         DOM = S.DOM,
         Event = S.Event,
         HTML = "<div>";
-    if (KE.ContextMenu) return;
+    if (KE.ContextMenu) {
+        S.log("attach ContextMenu twice", "warn");
+        return;
+    }
 
     /**
      * 组合使用 overlay

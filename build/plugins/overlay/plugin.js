@@ -1,7 +1,6 @@
 KISSY.Editor.add("ext-focus", function() {
     var S = KISSY,
         UA = S.UA,
-        OLD_IE = !window.getSelection,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
@@ -57,16 +56,18 @@ KISSY.Editor.add("ext-focus", function() {
              * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
              * then IE would still leave the caret inside the editing area.
              */
-            //聚焦到当前窗口
-            //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
-            //chrome 需要下面两句
-            window.focus();
-            document.body.focus();
-
-            //firefox 需要下面一句
-            self._focus4e[0].focus();
             //ie9 图片resize框，仍然会突出
             if (UA.ie && editor) {
+
+                //聚焦到当前窗口
+                //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
+                //chrome 需要下面两句
+                window['focus']();
+                document.body.focus();
+
+                //firefox 需要下面一句
+                self._focus4e[0].focus();
+
                 var $selection = editor.document.selection,
                     $range = $selection.createRange();
                 if ($range) {
@@ -90,10 +91,10 @@ KISSY.Editor.add("ext-focus", function() {
         },
         _hide4FocusExt:function() {
             var editor = this._focusEditor;
-            editor && editor.focus();           
+            editor && editor.focus();
         }
     };
-    KE.UIBase.Focus = FocusExt;
+    KE['UIBase'].Focus = FocusExt;
 
 }, {
     host:"overlay"
@@ -104,12 +105,13 @@ KISSY.Editor.add("ext-focus", function() {
 KISSY.Editor.add("overlay", function() {
 
     var S = KISSY,
+        UIBase = S['UIBase'],
         KE = S.Editor;
     if (KE.Overlay) return;
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = S.UIBase.create(S.Overlay, [KE.UIBase.Focus], {
+    var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
         init:function() {
             //S.log("Overlay4E init");
         },
@@ -125,7 +127,8 @@ KISSY.Editor.add("overlay", function() {
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }
     });
-    var Dialog4E = S.UIBase.create(S.Dialog, [KE.UIBase.Focus], {
+
+    var Dialog4E = UIBase.create(S.Dialog, [KE['UIBase'].Focus], {
         show:function() {
             //在 show 之前调用
             this.center();
@@ -135,7 +138,7 @@ KISSY.Editor.add("overlay", function() {
                 y = S.DOM.scrollTop() + 200;
                 this.set("y", y);
             }
-            Dialog4E.superclass.show.call(this);
+            Dialog4E['superclass'].show.call(this);
         }
     }, {
         ATTRS:{
@@ -156,7 +159,7 @@ KISSY.Editor.add("overlay", function() {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:S.UA.ie==6 ? S.DOM.docWidth() : "100%",
+                width:S.UA.ie == 6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

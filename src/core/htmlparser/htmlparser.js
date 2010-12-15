@@ -10,10 +10,7 @@ KISSY.Editor.add("htmlparser", function(
     // editor
     ) {
 
-    var S = KISSY
-        ,
-        TRUE = true,
-        FALSE = false,
+    var S = KISSY,
         NULL = null,
         emptyFunc = function() {
         },

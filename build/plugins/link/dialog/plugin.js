@@ -2,12 +2,10 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
     var S = KISSY,KE = S.Editor;
     KE.namespace("Link");
-    var Link = KE.Link;
+    var Link = KE['Link'];
     if (!Link.Dialog) {
         (function() {
-            var Node = S.Node,
-                KERange = KE.Range,
-                Dialog = KE.Dialog,
+            var Dialog = KE.Dialog,
                 MIDDLE = "vertical-align:middle;",
                 bodyHtml = "<div style='padding:20px 20px 0 20px'>" +
                     "<p>" +
@@ -82,7 +80,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
 
                 _link:function() {
-                    var self = this,range,
+                    var self = this,
                         cmd = self.cmd,
                         action = cmd.cfg,
                         d = self.dialog,

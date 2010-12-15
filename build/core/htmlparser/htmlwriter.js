@@ -8,8 +8,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         KE = S.Editor,
         Utils = KE.Utils,
         TRUE = true,
-        FALSE = false,
-        NULL = null;
+        FALSE = false;
 
     /**
      * @constructor
@@ -17,7 +16,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
     function HtmlWriter() {
         // Call the base contructor.
 
-        HtmlWriter.superclass.constructor.call(this);
+        HtmlWriter['superclass'].constructor.call(this);
 
         /**
          * The characters to be used for each identation step.
@@ -101,13 +100,13 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
         /**
          * Writes the tag opening part for a opener tag.
          * @param {String} tagName The element name for this tag.
-         * @param {Object} attributes The attributes defined for this tag. The
+         * param {Object} attributes The attributes defined for this tag. The
          *        attributes could be used to inspect the tag.
          * @example
          * // Writes "&lt;p".
          * writer.openTag( 'p', { class : 'MyClass', id : 'MyId' } );
          */
-        openTag : function(tagName, attributes) {
+        openTag : function(tagName/*, attributes*/) {
             var rules = this._.rules[ tagName ];
 
             if (this._.indent)

@@ -1,7 +1,6 @@
 KISSY.Editor.add("ext-focus", function() {
     var S = KISSY,
         UA = S.UA,
-        OLD_IE = !window.getSelection,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
@@ -57,16 +56,18 @@ KISSY.Editor.add("ext-focus", function() {
              * IE BUG: If the initial focus went into a non-text element (e.g. button,image),
              * then IE would still leave the caret inside the editing area.
              */
-            //聚焦到当前窗口
-            //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
-            //chrome 需要下面两句
-            window.focus();
-            document.body.focus();
-
-            //firefox 需要下面一句
-            self._focus4e[0].focus();
             //ie9 图片resize框，仍然会突出
             if (UA.ie && editor) {
+
+                //聚焦到当前窗口
+                //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
+                //chrome 需要下面两句
+                window['focus']();
+                document.body.focus();
+
+                //firefox 需要下面一句
+                self._focus4e[0].focus();
+
                 var $selection = editor.document.selection,
                     $range = $selection.createRange();
                 if ($range) {
@@ -90,10 +91,10 @@ KISSY.Editor.add("ext-focus", function() {
         },
         _hide4FocusExt:function() {
             var editor = this._focusEditor;
-            editor && editor.focus();           
+            editor && editor.focus();
         }
     };
-    KE.UIBase.Focus = FocusExt;
+    KE['UIBase'].Focus = FocusExt;
 
 }, {
     host:"overlay"

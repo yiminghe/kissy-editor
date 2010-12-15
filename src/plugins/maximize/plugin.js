@@ -12,7 +12,7 @@ KISSY.Editor.add("maximize", function(editor) {
     if (UA.gecko < 1.92)
         return;
 
-    editor.ready(function() {
+
         var context = editor.addButton("maximize", {
             title:"全屏",
             contentCls:MAXIMIZE_CLASS,
@@ -22,5 +22,4 @@ KISSY.Editor.add("maximize", function(editor) {
         KE.use("maximize/support", function() {
             context.reload(KE.Maximize);
         });
-    });
 });

@@ -22,7 +22,6 @@ KISSY.Editor.add("justify", function(editor) {
                 var self = this,
                     editor = self.editor,
                     selection = editor.getSelection(),
-                    enterMode = "p",
                     state = self.btn.get("state");
 
                 if (!selection)

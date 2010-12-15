@@ -4,7 +4,7 @@
  */
 KISSY.Editor.add("list", function(editor) {
     var KE = KISSY.Editor;
-    editor.ready(function() {
+
         var context = editor.addButton("ul", {
             title:"项目列表",
             mode:KE.WYSIWYG_MODE,
@@ -23,5 +23,4 @@ KISSY.Editor.add("list", function(editor) {
             context.reload(KE.ListSupport);
             contextOl.reload(KE.ListSupport);
         });
-    });
 });

@@ -205,17 +205,14 @@ KISSY.Editor.add("flash/dialog", function(editor) {
                     var re = KE.Utils.verifyInputs(self.d.get("el").all("input"));
                     if (!re) return;
                     self.d.hide();
-
-                    setTimeout(function() {
-                        var substitute = editor.execCommand("insertFlash",
-                            url, attrs, self._cls, self._type);
+                    editor.execCommand("insertFlash",
+                        url, attrs, self._cls, self._type, function(substitute) {
                         //如果是修改，就再选中
                         if (self.selectedFlash) {
                             editor.getSelection().selectElement(substitute);
                         }
                         editor.notifySelectionChange();
-                    }, 0);
-
+                    });
                 }
             });
         })();

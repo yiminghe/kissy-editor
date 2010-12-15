@@ -6,7 +6,7 @@ KISSY.Editor.add("bangpai-video/support", function() {
     var flashRules = ["img." + CLS_VIDEO];
 
     function BangPaiVideo(editor) {
-        BangPaiVideo.superclass.constructor.apply(this, arguments);
+        BangPaiVideo['superclass'].constructor.apply(this, arguments);
     }
 
     BangPaiVideo.CLS_VIDEO = CLS_VIDEO;
@@ -14,13 +14,9 @@ KISSY.Editor.add("bangpai-video/support", function() {
 
     S.extend(BangPaiVideo, Flash, {
         _config:function() {
-            var self = this,
-                editor = self.editor,
-                cfg = editor.cfg.pluginConfig;
+            var self = this;
             self._cls = CLS_VIDEO;
             self._type = TYPE_VIDEO;
-            self._contentCls = "ke-toolbar-video";
-            self._tip = "插入视频";
             self._contextMenu = contextMenu;
             self._flashRules = flashRules;
         }
@@ -48,10 +44,19 @@ KISSY.Editor.add("bangpai-video/support", function() {
         "bangpai-video/dialog":{
             attach: false,
             charset:"utf-8",
-            requires:["flash/dialog"],
             path:KE.Utils.debugUrl(
                 "biz/bangpai/plugins/video/" +
                     "dialog/plugin.js")
+        }
+    });
+
+    KE.add({
+        "bangpai-video/dialog/support":{
+            attach: false,
+            charset:"utf-8",
+            requires:["flash/dialog/support"],
+            path:KE.Utils.debugUrl("biz/bangpai/plugins/video/" +
+                "dialog/support/plugin.js")
         }
     });
 

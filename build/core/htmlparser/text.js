@@ -6,9 +6,7 @@ KISSY.Editor.add("htmlparser-text", function() {
     var S = KISSY,
         KE = S.Editor,
         KEN = KE.NODE,
-        TRUE = true,
-        FALSE = false,
-        NULL = null;
+        FALSE = false;
 
     /**
      * A lightweight representation of HTML text.

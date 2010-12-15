@@ -66,8 +66,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         var cfg = editor.cfg.pluginConfig;
         cfg["bangpai-video"] = cfg["bangpai-video"] || {};
         var videoCfg = cfg["bangpai-video"];
-        if (videoCfg.providers) {
-            provider.push.apply(provider, videoCfg.providers);
+        if (videoCfg['providers']) {
+            provider.push.apply(provider, videoCfg['providers']);
         }
         videoCfg.getProvider = getProvider;
         var CLS_VIDEO = "ke_video",
@@ -118,9 +118,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             }}, 4);
 
         KE.use("bangpai-video/support", function() {
-            var Flash = KE.Flash,
-                BangPaiVideo = KE.BangPaiVideo;
-
+            var BangPaiVideo = KE.BangPaiVideo;
             new BangPaiVideo(editor);
         });
 

@@ -84,7 +84,7 @@ KISSY.Editor.add("undo", function(editor) {
                 self._init();
             }
 
-            var editingKeyCodes = { /*Backspace*/ 8:1, /*Delete*/ 46:1 },
+            var //editingKeyCodes = { /*Backspace*/ 8:1, /*Delete*/ 46:1 },
                 modifierKeyCodes = { /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1 },
                 // Arrows: L, T, R, B
                 navigationKeyCodes = { 37:1, 38:1, 39:1, 40:1,33:1,34:1 },
@@ -218,79 +218,76 @@ KISSY.Editor.add("undo", function(editor) {
         })();
     }
 
-
-    editor.ready(function() {
-        /**
-         * 编辑器历史中央管理
-         */
-        new KE.UndoManager(editor);
-        var RedoMap = {
-            "redo":1,
-            "undo":-1
-        },
-            tplCfg = {
-                mode:KE.WYSIWYG_MODE,
-                init:function() {
-                    var self = this,
-                        editor = self.editor;
-                    /**
-                     * save,restore完，更新工具栏状态
-                     */
-                    editor.on("afterSave afterRestore",
-                        self.cfg._respond,
-                        self);
-                    self.btn.disable();
-                },
-                offClick:function() {
-                    var self = this;
-                    self.editor.fire("restore", {
-                        d:RedoMap[self.cfg.flag]
-                    });
-                }
+    /**
+     * 编辑器历史中央管理
+     */
+    new KE.UndoManager(editor);
+    var RedoMap = {
+        "redo":1,
+        "undo":-1
+    },
+        tplCfg = {
+            mode:KE.WYSIWYG_MODE,
+            init:function() {
+                var self = this,
+                    editor = self.editor;
+                /**
+                 * save,restore完，更新工具栏状态
+                 */
+                editor.on("afterSave afterRestore",
+                    self.cfg._respond,
+                    self);
+                self.btn.disable();
             },
-            undoCfg = S.mix({
-                title:"撤销",
-                flag:"undo",
-                contentCls:"ke-toolbar-undo",
-                _respond:function(ev) {
-                    var self = this,
-                        index = ev.index,
-                        btn = self.btn;
+            offClick:function() {
+                var self = this;
+                self.editor.fire("restore", {
+                    d:RedoMap[self.cfg.flag]
+                });
+            }
+        },
+        undoCfg = S.mix({
+            title:"撤销",
+            flag:"undo",
+            contentCls:"ke-toolbar-undo",
+            _respond:function(ev) {
+                var self = this,
+                    index = ev.index,
+                    btn = self.btn;
 
-                    //有状态可退
-                    if (index > 0) {
-                        btn.boff();
-                    } else {
-                        btn.disable();
-                    }
+                //有状态可退
+                if (index > 0) {
+                    btn.boff();
+                } else {
+                    btn.disable();
                 }
-            }, tplCfg, false),
-            redoCfg = S.mix({
-                title:"重做",
-                flag:"redo",
-                contentCls:"ke-toolbar-redo",
-                _respond:function(ev) {
-                    var self = this,
-                        history = ev.history,
-                        index = ev.index,
-                        btn = self.btn;
-                    //有状态可前进
-                    if (index < history.length - 1) {
-                        btn.boff();
-                    } else {
-                        btn.disable();
-                    }
+            }
+        }, tplCfg, false),
+        redoCfg = S.mix({
+            title:"重做",
+            flag:"redo",
+            contentCls:"ke-toolbar-redo",
+            _respond:function(ev) {
+                var self = this,
+                    history = ev.history,
+                    index = ev.index,
+                    btn = self.btn;
+                //有状态可前进
+                if (index < history.length - 1) {
+                    btn.boff();
+                } else {
+                    btn.disable();
                 }
-            }, tplCfg, false);
+            }
+        }, tplCfg, false);
 
-        /**
-         * 撤销工具栏按钮
-         */
-        editor.addButton("undo", undoCfg);
+    /**
+     * 撤销工具栏按钮
+     */
+    editor.addButton("undo", undoCfg);
 
-        /**
-         * 重做工具栏按钮
-         */
-        editor.addButton("undo", redoCfg);
-    });
+    /**
+     * 重做工具栏按钮
+     */
+    editor.addButton("undo", redoCfg);
 });

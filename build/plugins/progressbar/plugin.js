@@ -45,7 +45,7 @@ KISSY.Editor.add("progressbar", function() {
         "}" +
         "", "ke_progressbar");
     function ProgressBar() {
-        ProgressBar.superclass.constructor.apply(this, arguments);
+        ProgressBar['superclass'].constructor.apply(this, arguments);
         this._init();
     }
 

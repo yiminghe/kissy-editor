@@ -32,7 +32,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-12-10 20:54:45");
+                re += "t=" + encodeURIComponent("2010-12-15 15:11:30");
                 return  re;
             },
             /**
@@ -67,9 +67,10 @@ KISSY.Editor.add("utils", function(KE) {
                 y -= DOM.scrollTop(currentWindow);
                 if (destDoc) {
                     var refWindow = destDoc.defaultView || destDoc.parentWindow;
-                    if (currentWindow != refWindow && currentWindow.frameElement) {
+                    if (currentWindow != refWindow && currentWindow['frameElement']) {
                         //note:when iframe is static ,still some mistake
-                        var iframePosition = DOM._4e_getOffset(currentWindow.frameElement, destDoc);
+                        var iframePosition = DOM._4e_getOffset(currentWindow['frameElement'],
+                            destDoc);
                         x += iframePosition.left;
                         y += iframePosition.top;
                     }
@@ -440,7 +441,7 @@ KISSY.Editor.add("utils", function(KE) {
                 document.body.appendChild(frame);
 
                 if (UA.ie) {
-                    document.frames[id].name = id;
+                    document['frames'][id].name = id;
                 }
 
                 var form = DOM._4e_unwrap(o.form),
@@ -493,8 +494,8 @@ KISSY.Editor.add("utils", function(KE) {
                         if (doc && doc.body) {
                             r.responseText = doc.body.innerHTML;
                         }
-                        if (doc && doc.XMLDocument) {
-                            r.responseXML = doc.XMLDocument;
+                        if (doc && doc['XMLDocument']) {
+                            r.responseXML = doc['XMLDocument'];
                         } else {
                             r.responseXML = doc;
                         }
@@ -549,7 +550,7 @@ KISSY.Editor.add("utils", function(KE) {
             //直接判断引擎，防止兼容性模式影响
             ieEngine:(function() {
                 if (!UA.ie) return;
-                return document.documentMode || UA.ie;
+                return document['documentMode'] || UA.ie;
             })(),
 
             /**

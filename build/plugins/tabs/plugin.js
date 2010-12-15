@@ -70,7 +70,6 @@ KISSY.Editor.add("tabs", function() {
             var self = this,
                 cfg = self.cfg,
                 tabs = cfg.tabs,
-                contents = cfg.contents, divs = contents.children(DIV),
                 lis = tabs.children(LI);
             for (var i = 0; i < lis.length; i++) {
                 var li = new Node(lis[i]);

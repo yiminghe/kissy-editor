@@ -5,7 +5,6 @@
 KISSY.Editor.add("button", function() {
     var S = KISSY,
         KE = S.Editor,
-        Base = S.Base,
         ON = "on",
         OFF = "off",
         DISABLED = "disabled",
@@ -17,12 +16,12 @@ KISSY.Editor.add("button", function() {
 
     if (KE.TripleButton) return;
 
-    var TripleButton = S.UIBase.create([S.UIBase.Box], {
+    var TripleButton = S['UIBase'].create([S['UIBase']['Box']], {
         bindUI:function() {
             var self = this,el = self.get("el");
             el.on("click", self._action, self);
             //添加鼠标点击视觉效果
-            el.on("mousedown", function(ev) {
+            el.on("mousedown", function() {
                 if (self.get("state") == OFF) {
                     el.addClass(ACTIVE_CLASS);
                 }
@@ -123,7 +122,12 @@ KISSY.Editor.add("button", function() {
 
 
     KE.TripleButton = TripleButton;
-
+    /**
+     * 将button ui 和点击功能分离
+     * 按钮必须立刻显示出来，功能可以慢慢加载
+     * @param name
+     * @param btnCfg
+     */
     KE.prototype.addButton = function(name, btnCfg) {
         var self = this,
             editor = self,
@@ -169,7 +173,7 @@ KISSY.Editor.add("button", function() {
             b.disable();
         } else {
             //否则立即初始化，开始作用
-            context.reload();
+            context.reload(undefined);
         }
         return context;
     };

@@ -130,19 +130,19 @@ KISSY.Editor.add("clipboard", function(editor) {
             // Attempts to execute the Cut and Copy operations.
             var tryToCutCopy =
                 UA.ie ?
-                    function(editor, type) {
-                        return execIECommand(editor, type);
-                    }
+                function(editor, type) {
+                    return execIECommand(editor, type);
+                }
                     : // !IE.
-                    function(editor, type) {
-                        try {
-                            // Other browsers throw an error if the command is disabled.
-                            return editor.document.execCommand(type);
-                        }
-                        catch(e) {
-                            return false;
-                        }
-                    };
+                function(editor, type) {
+                    try {
+                        // Other browsers throw an error if the command is disabled.
+                        return editor.document.execCommand(type);
+                    }
+                    catch(e) {
+                        return false;
+                    }
+                };
 
             var error_types = {
                 "cut":"您的浏览器安全设置不允许编辑器自动执行剪切操作，请使用键盘快捷键(Ctrl/Cmd+X)来完成",
@@ -169,38 +169,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                     return success;
                 }
             };
-
-            // Paste command.
-            var pasteCmd =
-            {
-                canUndo : false,
-
-                exec :
-                    UA.ie ?
-                        function(editor) {
-                            // Prevent IE from pasting at the begining of the document.
-                            editor.focus();
-
-                            if (!execIECommand(editor, 'paste')) {
-                                alert(error_types["paste"]);
-                                return false;
-                            }
-                        }
-                        :
-                        function(editor) {
-                            try {
-                                if (!editor.document.$.execCommand('Paste', false, null)) {
-                                    throw 0;
-                                }
-                            }
-                            catch (e) {
-                                alert(error_types["paste"]);
-                                return false;
-                            }
-                        }
-            };
-
-
             var KES = KE.Selection;
             // Cutting off control type element in IE standards breaks the selection entirely. (#4881)
             function fixCut(editor) {
@@ -240,11 +208,10 @@ KISSY.Editor.add("clipboard", function(editor) {
                 // guard to distinguish from the ordinary sources( either
                 // keyboard paste or execCommand ) (#4874).
                 //UA.ie && ( depressBeforeEvent = 1 );
-                var retval = doc.queryCommandEnabled(command) ?
+                return doc['queryCommandEnabled'](command) ?
                     true :
                     false;
                 //depressBeforeEvent = 0;
-                return retval;
             }
 
             /**

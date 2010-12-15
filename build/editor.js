@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1
- * @buildtime: 2010-12-10 14:14:07
+ * @buildtime: 2010-12-15 15:11:30
  */
 KISSY.add("editor", function(S, undefined) {
     var DOM = S.DOM,
@@ -90,9 +90,9 @@ KISSY.add("editor", function(S, undefined) {
                     }
                 }
             }
-            S.use.call(self, mods.join(","), function() {
-
-                self.ready(function() {
+            //编辑器实例 use 时会进行编辑器 ui 操作而不单单是功能定义，必须 ready
+            self.ready(function() {
+                S.use.call(self, mods.join(","), function() {
                     callback && callback.call(self);
                     //也用在窗口按需加载，只有在初始化时才进行内容设置
                     if (!initial) {
@@ -109,9 +109,9 @@ KISSY.add("editor", function(S, undefined) {
                         self.fire("save");
                         initial = TRUE;
                     }
-                });
+                }, { "order":  TRUE, "global":  Editor });
+            });
 
-            }, { "order":  TRUE, "global":  Editor });
             return self;
         };
         self["use"] = self.use;
@@ -140,7 +140,7 @@ KISSY.add("editor", function(S, undefined) {
         } else {
             re += "?";
         }
-        re += "t=" + encodeURIComponent("2010-12-10 14:14:07");
+        re += "t=" + encodeURIComponent("2010-12-15 15:11:30");
         return  re;
     }
 
@@ -259,22 +259,26 @@ KISSY.add("editor", function(S, undefined) {
                 "name":"button"
             },
             "progressbar",
-
+            //编辑器自己的 overlay，需要use
+            "overlay",
             {
-                "name": "contextmenu"
+                "name": "contextmenu",
+                requires:["overlay"]
             },
             {
-                "name": "bubbleview"
+                "name": "bubbleview",
+                requires:["overlay"]
             },
             {
-                "name": "select"
+                "name": "select",
+                requires:["overlay"]
             }
         ],
         i,len,
 
         mod,
         name,requires,mods = {};
-    
+
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -295,16 +299,16 @@ KISSY.add("editor", function(S, undefined) {
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod["name"]||mod;
+        name = mod["name"] || mod;
         mods[name] = {
             "attach": FALSE,
             "charset":"utf-8",
             "requires": mod["requires"],
-            "csspath": (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
+            "csspath": (mod['useCss'] ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
             "path": debugUrl("plugins/" + name + "/plugin.js")
         };
     }
-    
+
     Editor.add(mods);
     /**
      * @constructor
@@ -316,3 +320,6 @@ KISSY.add("editor", function(S, undefined) {
     S["Editor"] = Editor;
     //S.log(core_mods);
 });
+/**
+ * 目标：分离，解耦，模块化，去除重复代码
+ */

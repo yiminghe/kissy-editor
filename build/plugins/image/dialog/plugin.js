@@ -3,7 +3,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         KE = S.Editor,
         DOM = S.DOM,
         UA = S.UA,
-        JSON = S.JSON,
+        JSON = S['JSON'],
         Node = S.Node,
         Event = S.Event,
         Dialog = KE.Dialog,
@@ -13,10 +13,12 @@ KISSY.Editor.add("image/dialog", function(editor) {
 
     var bodyHtml = "<div class='ke-image-wrap'>" +
         "<ul class='ke-tabs ks-clear'>" +
-        "<li rel='remote'>" +
+        "<li " +
+        "rel='remote'>" +
         "网络图片" +
         "</li>" +
-        "<li rel='local'>" +
+        "<li " +
+        "rel='local'>" +
         "本地上传" +
         "</li>" +
         "</ul>" +
@@ -271,10 +273,10 @@ KISSY.Editor.add("image/dialog", function(editor) {
                             alert(data.error);
                             return;
                         }
-                        imgUrl.val(data.imgUrl);
+                        imgUrl.val(data['imgUrl']);
                         insert();
                     }
-                }, cfg.serverParams, cfg.serverUrl);
+                }, cfg['serverParams'], cfg['serverUrl']);
 
                 var loadingMaskEl = d.get("el"),
                     offset = loadingMaskEl.offset(),
@@ -292,12 +294,12 @@ KISSY.Editor.add("image/dialog", function(editor) {
         });
 
         if (cfg) {
-            if (cfg.extraHtml) {
+            if (cfg['extraHtml']) {
                 content.one(".ke-img-up-extraHtml")
-                    .html(cfg.extraHtml);
+                    .html(cfg['extraHtml']);
             }
             var ke_image_up = content.one(".ke-image-up"),
-                sizeLimit = cfg && cfg.sizeLimit;
+                sizeLimit = cfg && cfg['sizeLimit'];
 
             fileInput = new Node("<input " +
                 "type='file' " +
@@ -310,7 +312,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 "top:0px;" +
                 "height:26px;' " +
                 "size='1' " +
-                "name='" + (cfg.fileInput || "Filedata") + "'/>")
+                "name='" + (cfg['fileInput'] || "Filedata") + "'/>")
                 .insertAfter(imgLocalUrl);
             if (sizeLimit)
                 warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
@@ -365,22 +367,18 @@ KISSY.Editor.add("image/dialog", function(editor) {
             url +
             "' alt='' />", null, editor.document);
         d.hide();
-
-
-        setTimeout(function() {
-            img = editor.insertElement(img, function(el) {
-                el.on("abort error", function() {
-                    el.detach();
-                    //ie6 手动设置，才会出现红叉
-                    el[0].src = url;
-                });
+        editor.insertElement(img, function(el) {
+            el.on("abort error", function() {
+                el.detach();
+                //ie6 手动设置，才会出现红叉
+                el[0].src = url;
             });
+        }, function(img) {
             if (selectedEl) {
                 editor.getSelection().selectElement(img);
             }
             editor.notifySelectionChange();
-        }, 0);
-
+        });
     }
 
     function update(_selectedEl) {

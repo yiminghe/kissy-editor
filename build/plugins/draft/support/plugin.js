@@ -5,8 +5,7 @@ KISSY.Editor.add("draft/support", function() {
         LIMIT = 5,
         Event = S.Event,
         INTERVAL = 5,
-        UA = S.UA,
-        JSON = S.JSON,
+        JSON = S['JSON'],
         DRAFT_SAVE = "ke-draft-save",
         localStorage = window[KE.STORE];
 
@@ -52,7 +51,6 @@ KISSY.Editor.add("draft/support", function() {
         _init:function() {
             var self = this,
                 editor = self.editor,
-                toolbar = editor.toolBarDiv,
                 statusbar = editor.statusDiv,
                 cfg = editor.cfg.pluginConfig;
             cfg.draft = cfg.draft || {};
@@ -93,7 +91,7 @@ KISSY.Editor.add("draft/support", function() {
                     title:"恢复编辑历史"
                 }),
                 str = localStorage.getItem(DRAFT_SAVE),
-                drafts = [],date;
+                drafts = [];
             self.versions = versions;
             if (str) {
                 drafts = S.isString(str) ?
@@ -125,7 +123,7 @@ KISSY.Editor.add("draft/support", function() {
             versions.on("click", self.recover, self);
             self.holder = holder;
             //KE.Utils.sourceDisable(editor, self);
-            if (cfg.draft.helpHtml) {
+            if (cfg.draft['helpHtml']) {
                 var help = new KE.TripleButton({
                     cls:"ke-draft-help",
                     title:"帮助",
@@ -147,7 +145,7 @@ KISSY.Editor.add("draft/support", function() {
                 cfg = editor.cfg.pluginConfig,
                 draftCfg = cfg.draft,
                 helpBtn = self.helpBtn,
-                help = new Node(draftCfg.helpHtml || "");
+                help = new Node(draftCfg['helpHtml'] || "");
             var arrowCss = "height:0;" +
                 "position:absolute;" +
                 "font-size:0;" +

@@ -4,13 +4,12 @@ KISSY.Editor.add("bangpai-music/support", function() {
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "bangpai-music",
         Event = S.Event,
-        KE = S.Editor,
-        DOM = S.DOM;
+        KE = S.Editor;
 
     function BangPaiMusic(editor) {
-        BangPaiMusic.superclass.constructor.apply(this, arguments);
+        BangPaiMusic['superclass'].constructor.apply(this, arguments);
         //只能ie能用？，目前只有firefox,ie支持图片缩放
-        var disableObjectResizing = editor.cfg.disableObjectResizing;
+        var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
                 function(evt) {

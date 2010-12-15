@@ -70,7 +70,7 @@ KISSY.Editor.add("table", function(editor) {
             }
         });
     }
-    editor.ready(function() {
+
 
         var context = editor.addButton("table", {
             contentCls:"ke-toolbar-table",
@@ -90,5 +90,4 @@ KISSY.Editor.add("table", function(editor) {
          * 动态加入显表格border css，便于编辑
          */
         editor.addCustomStyle(cssStyleText);
-    });
 });

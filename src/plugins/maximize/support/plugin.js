@@ -4,7 +4,6 @@ KISSY.Editor.add("maximize/support", function() {
         UA = S.UA,
         Node = S.Node,
         Event = S.Event,
-        TripleButton = KE.TripleButton,
         DOM = S.DOM,
         iframe;
     DOM.addStyleSheet(
@@ -34,7 +33,6 @@ KISSY.Editor.add("maximize/support", function() {
 
         onClick:function() {
             var self = this,
-                doc = document,
                 editor = self.editor;
             //body overflow 变化也会引起 resize 变化！！！！先去除
             

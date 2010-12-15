@@ -50,7 +50,7 @@ KISSY.Editor.add("format", function(editor) {
 
             function Format(cfg) {
                 var self = this;
-                Format.superclass.constructor.call(self, cfg);
+                Format['superclass'].constructor.call(self, cfg);
                 self._init();
             }
 

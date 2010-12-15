@@ -133,7 +133,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
      * 2。处理 word 复制过来的列表
      */
     (function() {
-        var equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
+        var //equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
             filterStyle = stylesFilter([
                 //word 自有属性名去除
                 [/mso/i],

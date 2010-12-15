@@ -90,9 +90,9 @@ KISSY.add("editor", function(S, undefined) {
                     }
                 }
             }
-            S.use.call(self, mods.join(","), function() {
-
-                self.ready(function() {
+            //编辑器实例 use 时会进行编辑器 ui 操作而不单单是功能定义，必须 ready
+            self.ready(function() {
+                S.use.call(self, mods.join(","), function() {
                     callback && callback.call(self);
                     //也用在窗口按需加载，只有在初始化时才进行内容设置
                     if (!initial) {
@@ -109,9 +109,9 @@ KISSY.add("editor", function(S, undefined) {
                         self.fire("save");
                         initial = TRUE;
                     }
-                });
+                }, { "order":  TRUE, "global":  Editor });
+            });
 
-            }, { "order":  TRUE, "global":  Editor });
             return self;
         };
         self["use"] = self.use;
@@ -144,6 +144,10 @@ KISSY.add("editor", function(S, undefined) {
         return  re;
     }
 
+    //实例与实例模块间的依赖
+    //类与类模块间的依赖
+    //统一在这里
+    //实例引入类模块，程序里分别写
     var debug = S["Config"]["debug"],
 
         plugin_mods = [
@@ -179,6 +183,7 @@ KISSY.add("editor", function(S, undefined) {
                 "requires":["fakeobjects"]
             },
             "flash/dialog",
+            "flash/dialog/support",
             {
                 "name": "flash/support",
                 "requires": ["flashutils","contextmenu",
@@ -191,8 +196,7 @@ KISSY.add("editor", function(S, undefined) {
             "format",
             "htmldataprocessor",
             {
-                "name": "image",
-                "requires": ["contextmenu","bubbleview"]
+                "name": "image"
             },
             {
                 "name":"image/dialog",
@@ -202,8 +206,7 @@ KISSY.add("editor", function(S, undefined) {
             "indent/support",
             "justify",
             {
-                "name":"link",
-                "requires": ["bubbleview"]
+                "name":"link"
             },
             "link/dialog",
             "list/support",
@@ -218,9 +221,10 @@ KISSY.add("editor", function(S, undefined) {
                 "name":"music",
                 "requires":["fakeobjects"]
             },
+            "music/dialog",
             {
-                "name":"music/dialog",
-                "requires":["flash/dialog"]
+                "name":"music/dialog/support",
+                "requires":["flash/dialog/support"]
             },
             "preview",
             "removeformat",
@@ -259,22 +263,26 @@ KISSY.add("editor", function(S, undefined) {
                 "name":"button"
             },
             "progressbar",
-
+            //编辑器自己的 overlay，需要use
+            "overlay",
             {
-                "name": "contextmenu"
+                "name": "contextmenu",
+                requires:["overlay"]
             },
             {
-                "name": "bubbleview"
+                "name": "bubbleview",
+                requires:["overlay"]
             },
             {
-                "name": "select"
+                "name": "select",
+                requires:["overlay"]
             }
         ],
         i,len,
 
         mod,
         name,requires,mods = {};
-    
+
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
         if (S.isString(mod)) {
@@ -295,16 +303,16 @@ KISSY.add("editor", function(S, undefined) {
     // plugins modules
     for (i = 0,len = plugin_mods.length; i < len; i++) {
         mod = plugin_mods[i];
-        name = mod["name"]||mod;
+        name = mod["name"] || mod;
         mods[name] = {
             "attach": FALSE,
             "charset":"utf-8",
             "requires": mod["requires"],
-            "csspath": (mod.useCss ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
+            "csspath": (mod['useCss'] ? debugUrl("plugins/" + name + "/plugin.css") : undefined),
             "path": debugUrl("plugins/" + name + "/plugin.js")
         };
     }
-    
+
     Editor.add(mods);
     /**
      * @constructor
@@ -316,3 +324,10 @@ KISSY.add("editor", function(S, undefined) {
     S["Editor"] = Editor;
     //S.log(core_mods);
 });
+/**
+ * 目标：分离，解耦，模块化，去除重复代码
+ * 分裂为三个部分
+ * 1.纯粹 UI 模块 ：overlay,bubbleview
+ * 2.编辑器功能模块 : TableUI
+ * 3.编辑器attach功能模块 : table
+ */

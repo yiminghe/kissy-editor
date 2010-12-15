@@ -5,12 +5,13 @@
 KISSY.Editor.add("overlay", function() {
 
     var S = KISSY,
+        UIBase = S['UIBase'],
         KE = S.Editor;
     if (KE.Overlay) return;
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = S.UIBase.create(S.Overlay, [KE.UIBase.Focus], {
+    var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
         init:function() {
             //S.log("Overlay4E init");
         },
@@ -26,7 +27,8 @@ KISSY.Editor.add("overlay", function() {
             "zIndex":{value:KE.baseZIndex(KE.zIndexManager.OVERLAY)}
         }
     });
-    var Dialog4E = S.UIBase.create(S.Dialog, [KE.UIBase.Focus], {
+
+    var Dialog4E = UIBase.create(S.Dialog, [KE['UIBase'].Focus], {
         show:function() {
             //在 show 之前调用
             this.center();
@@ -36,7 +38,7 @@ KISSY.Editor.add("overlay", function() {
                 y = S.DOM.scrollTop() + 200;
                 this.set("y", y);
             }
-            Dialog4E.superclass.show.call(this);
+            Dialog4E['superclass'].show.call(this);
         }
     }, {
         ATTRS:{
@@ -57,7 +59,7 @@ KISSY.Editor.add("overlay", function() {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:S.UA.ie==6 ? S.DOM.docWidth() : "100%",
+                width:S.UA.ie == 6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

@@ -209,7 +209,8 @@ KISSY.Editor.add("list/support", function() {
             // 2. Change the list type by modifying the array.
             // 3. Recreate the whole list by converting the array to a list.
             // 4. Replace the original list with the recreated list.
-            var listArray = list.listToArray(groupObj.root, database),
+            var listArray = list.listToArray(groupObj.root, database,
+                undefined,undefined,undefined),
                 selectedListItems = [];
 
             for (var i = 0; i < groupObj.contents.length; i++) {
@@ -309,7 +310,8 @@ KISSY.Editor.add("list/support", function() {
         removeList:function(editor, groupObj, database) {
             // This is very much like the change list type operation.
             // Except that we're changing the selected items' indent to -1 in the list array.
-            var listArray = list.listToArray(groupObj.root, database),
+            var listArray = list.listToArray(groupObj.root, database,
+                undefined,undefined,undefined),
                 selectedListItems = [];
 
             for (var i = 0; i < groupObj.contents.length; i++) {
@@ -517,7 +519,7 @@ KISSY.Editor.add("list/support", function() {
         }
     };
 
-    var TripleButton = KE.TripleButton;
+
     var listSupport = {
         init:function() {
             var self = this,
@@ -563,9 +565,7 @@ KISSY.Editor.add("list/support", function() {
         },
         _change:function() {
             var self = this,
-                cfg = self.cfg,
                 editor = self.editor,
-                type = cfg.type,
                 el = self.btn;
             editor.fire("save");
             self.listCommand.state = el.get("state");

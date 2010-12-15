@@ -143,7 +143,7 @@ KISSY.Editor.add("font", function(editor) {
 
             function Font(cfg) {
                 var self = this;
-                Font.superclass.constructor.call(self, cfg);
+                Font['superclass'].constructor.call(self, cfg);
                 self._init();
             }
 

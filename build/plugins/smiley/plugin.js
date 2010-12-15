@@ -3,8 +3,7 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("smiley", function(editor) {
-    var KE = KISSY.Editor,
-        S = KISSY;
+    var KE = KISSY.Editor;
 
     editor.ready(function() {
         var context = editor.addButton("smiley", {

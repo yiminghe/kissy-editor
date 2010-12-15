@@ -138,7 +138,7 @@ KISSY.Editor.add("flashbridge", function() {
 
         // for NPAPI see: http://en.wikipedia.org/wiki/NPAPI
         if (navigator.plugins && navigator.mimeTypes.length) {
-            ver = (navigator.plugins['Shockwave Flash'] || 0).description;
+            ver = (navigator.plugins['Shockwave Flash'] || {})['description'];
         }
         // for ActiveX see:	http://en.wikipedia.org/wiki/ActiveX
         else if (window.ActiveXObject) {
@@ -151,7 +151,7 @@ KISSY.Editor.add("flashbridge", function() {
         }
 
         // 插件没安装或有问题时，ver 为 undefined
-        if (!ver) return;
+        if (!ver) return undefined;
 
         // 插件安装正常时，ver 为 "Shockwave Flash 10.1 r53" or "WIN 10,1,53,64"
         return arrify(ver);
@@ -219,20 +219,20 @@ KISSY.Editor.add("flashbridge", function() {
     };
 
     /*
-    if (!UA.fpvGEQ("11.0.0")) {
+     if (!UA.fpvGEQ("11.0.0")) {
 
-        var alertWin = new KE.SimpleOverlay({
-            focusMgr:false,
-            mask:true,
-            title:"Flash 警告"
-        });
+     var alertWin = new KE.SimpleOverlay({
+     focusMgr:false,
+     mask:true,
+     title:"Flash 警告"
+     });
 
-        alertWin.body.html("您的Flash插件版本过低，" +
-            "可能不能支持上传功能，" +
-            "<a href='http://get.adobe.com/cn/flashplayer/' " +
-            "target='_blank'>请点击此处更新</a>");
+     alertWin.body.html("您的Flash插件版本过低，" +
+     "可能不能支持上传功能，" +
+     "<a href='http://get.adobe.com/cn/flashplayer/' " +
+     "target='_blank'>请点击此处更新</a>");
 
-    }
-    */
+     }
+     */
 
 });

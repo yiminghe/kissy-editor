@@ -247,10 +247,6 @@ KISSY.Editor.add("indent/support", function() {
         }
     });
 
-
-    var TripleButton = KE.TripleButton;
-
-
     KE.IndentSupport = {
         init:function() {
             var self = this,
@@ -259,8 +255,7 @@ KISSY.Editor.add("indent/support", function() {
         },
         offClick:function() {
             var self = this,
-                editor = self.editor,
-                el = self.btn;
+                editor = self.editor;
             //ie要等会才能获得焦点窗口的选择区域
             editor.fire("save");
             setTimeout(function() {

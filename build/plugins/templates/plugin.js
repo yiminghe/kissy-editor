@@ -6,8 +6,7 @@ KISSY.Editor.add("templates", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
-        DOM = S.DOM,
-        Dialog = KE.Dialog;
+        DOM = S.DOM;
 
     DOM.addStyleSheet(
         ".ke-tpl {" +
@@ -43,7 +42,7 @@ KISSY.Editor.add("templates", function(editor) {
             _prepare:function() {
                 var self = this,
                     editor = self.editor,
-                    templates = editor.cfg.pluginConfig.templates || [],
+                    templates = editor.cfg.pluginConfig['templates'] || [],
                     HTML = "<div class='ke-tpl'>";
                 for (var i = 0; i < templates.length; i++) {
                     var t = templates[i];
@@ -51,12 +50,12 @@ KISSY.Editor.add("templates", function(editor) {
                         "href='javascript:void(0)' " +
                         "class='ke-tpl-list' " +
                         "tabIndex='-1'>" +
-                        t.demo +
+                        t['demo'] +
                         "</a>";
                 }
                 HTML += "</div>";
 
-                var ui = new Dialog({
+                var ui = new KE.Dialog({
                     width:500,
                     mask:true,
                     autoRender:true,

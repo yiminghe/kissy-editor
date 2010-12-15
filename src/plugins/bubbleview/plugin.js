@@ -3,12 +3,15 @@
  * @author:yiminghe@gmail.com
  */
 KISSY.Editor.add("bubbleview", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         Event = S.Event,
         DOM = S.DOM;
 
-    if (KE.BubbleView) return;
+    if (KE.BubbleView) {
+        S.log("attach bubbleview more", "warn");
+        return;
+    }
 
     var BubbleView = S['UIBase'].create(KE.Overlay, [], {
 
@@ -57,6 +60,7 @@ KISSY.Editor.add("bubbleview", function() {
             bubble = cfg.bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {
+
             var elementPath = ev.path,
                 elements = elementPath.elements,
                 a,
@@ -70,6 +74,7 @@ KISSY.Editor.add("bubbleview", function() {
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
                     bubble.hide();
+
                     bubble.show();
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;

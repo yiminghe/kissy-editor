@@ -9,7 +9,7 @@ KISSY.Editor.add("justify", function(editor) {
     var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
         default_align = "left";
 
-    editor.ready(function() {
+
         var JustifyTpl = {
             mode:KE.WYSIWYG_MODE,
             offClick:function() {
@@ -22,7 +22,6 @@ KISSY.Editor.add("justify", function(editor) {
                 var self = this,
                     editor = self.editor,
                     selection = editor.getSelection(),
-                    enterMode = "p",
                     state = self.btn.get("state");
 
                 if (!selection)
@@ -99,5 +98,4 @@ KISSY.Editor.add("justify", function(editor) {
             v:"right"
         }, JustifyTpl));
 
-    });
 });

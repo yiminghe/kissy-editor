@@ -83,13 +83,12 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "bangpai-music",
         Event = S.Event,
-        KE = S.Editor,
-        DOM = S.DOM;
+        KE = S.Editor;
 
     function BangPaiMusic(editor) {
-        BangPaiMusic.superclass.constructor.apply(this, arguments);
+        BangPaiMusic['superclass'].constructor.apply(this, arguments);
         //只能ie能用？，目前只有firefox,ie支持图片缩放
-        var disableObjectResizing = editor.cfg.disableObjectResizing;
+        var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
                 function(evt) {
@@ -161,8 +160,7 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
     var KE = KISSY.Editor,
         S = KISSY,
         Node = S.Node,
-        UA = S.UA,
-        TripleButton = KE.TripleButton;
+        UA = S.UA;
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;
     if (!KE.BangPaiSourceArea) {
@@ -229,7 +227,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     var S = KISSY,
         KE = S.Editor;
 
-    if (!KE.Env.mods["bangpai-upload/dialog"]) {
+    if (!KE['Env']['mods']["bangpai-upload/dialog"]) {
         KE.add({
             "bangpai-upload/dialog":{
                 attach: false,
@@ -327,8 +325,8 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         var cfg = editor.cfg.pluginConfig;
         cfg["bangpai-video"] = cfg["bangpai-video"] || {};
         var videoCfg = cfg["bangpai-video"];
-        if (videoCfg.providers) {
-            provider.push.apply(provider, videoCfg.providers);
+        if (videoCfg['providers']) {
+            provider.push.apply(provider, videoCfg['providers']);
         }
         videoCfg.getProvider = getProvider;
         var CLS_VIDEO = "ke_video",
@@ -379,9 +377,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             }}, 4);
 
         KE.use("bangpai-video/support", function() {
-            var Flash = KE.Flash,
-                BangPaiVideo = KE.BangPaiVideo;
-
+            var BangPaiVideo = KE.BangPaiVideo;
             new BangPaiVideo(editor);
         });
 
@@ -397,7 +393,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
     var flashRules = ["img." + CLS_VIDEO];
 
     function BangPaiVideo(editor) {
-        BangPaiVideo.superclass.constructor.apply(this, arguments);
+        BangPaiVideo['superclass'].constructor.apply(this, arguments);
     }
 
     BangPaiVideo.CLS_VIDEO = CLS_VIDEO;
@@ -405,9 +401,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
 
     S.extend(BangPaiVideo, Flash, {
         _config:function() {
-            var self = this,
-                editor = self.editor,
-                cfg = editor.cfg.pluginConfig;
+            var self = this;
             self._cls = CLS_VIDEO;
             self._type = TYPE_VIDEO;
             self._contentCls = "ke-toolbar-video";

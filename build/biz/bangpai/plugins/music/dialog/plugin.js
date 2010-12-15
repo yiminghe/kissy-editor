@@ -5,7 +5,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
         KE = S.Editor,
         DOM = S.DOM,
         Node = S.Node,
-        loading = KE.Config.base + "theme/loading.gif",
+        loading = KE['Config'].base + "theme/loading.gif",
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "bangpai-music",
         BTIP = "搜 索",
@@ -128,7 +128,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                     "<a class='ke-xiami-cancel ke-button'>取&nbsp;消</a></div>";
 
             function BangPaiMusicDialog(editor) {
-                BangPaiMusicDialog.superclass.constructor.apply(this, arguments);
+                BangPaiMusicDialog['superclass'].constructor.apply(this, arguments);
             }
 
             KE.BangPaiMusic.Dialog = BangPaiMusicDialog;
@@ -148,7 +148,6 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         d = self.d,
                         del = d.get("el"),
                         dfoot = d.get("footer"),
-                        action = del.one(".ke-xiami-form"),
                         input = del.one(".ke-xiami-url");
                     self.dAlign = KE.Select.decorate(del.one(".ke-xiami-align"));
                     self._xiami_input = input;
@@ -204,7 +203,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         var params = {
                             key:encodeURIComponent(input.val()),
                             page:page,
-                            random:(new Date().valueOf())
+                            random:(new Date().getTime())
                         };
                         var req = getXiamiUrl(params);
                         bangpai_xiami.instance = self;
@@ -223,7 +222,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                             },
                             error:function() {
                                 node.src = '';
-                                self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                                self._xiami_submit.removeClass("ke-triplebutton-disabled");
                                 //self._xiami_submit.enable();
                                 var html = "<p style='text-align:center;margin:10px 0;'>" +
                                     "不好意思，超时了，请重试！" +
@@ -270,11 +269,11 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                 _listSearch:function(data) {
                     var self = this,
                         i,
-                        re = data.results,
+                        re = data['results'],
                         html = "";
                     //xiami 返回结果自动trim了
                     if (data.key == S.trim(self._xiami_input.val())) {
-                        self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                        self._xiami_submit.removeClass("ke-triplebutton-disabled");
                         //self._xiami_submit.enable();
                         if (re && re.length) {
                             html = "<ul>";
@@ -292,9 +291,9 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                                     "title='" + d + "' " +
                                     "class='ke-xiami-add' data-value='" +
                                     (
-                                        r.album_id
+                                        r['album_id']
                                             + "_"
-                                            + r.song_id
+                                            + r['song_id']
                                         )
                                     + "'>添加</a>" +
                                     "</li>"
@@ -302,7 +301,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                             html += "</ul>";
 
                             var page = data.page,
-                                totalpage = Math.floor(data.total / 8),
+                                totalpage = Math.floor(data['total'] / 8),
                                 start = page - 1,
                                 end = page + 1;
 
@@ -324,7 +323,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                                     html += "<span class='ke-xiami-page-more'>...</span>";
                                 }
                                 for (i = start; i <= end; i++) {
-                                    html += getXiamiPaging(page, i);
+                                    html += getXiamiPaging(page, i,undefined);
                                 }
                                 if (end != totalpage) {
                                     if (end != totalpage - 1) {
@@ -365,7 +364,7 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
                         self._xiami_url_wrap.show();
                         self.d.get("footer").hide();
                         self._xiamia_title.hide();
-                        self._xiami_submit.removeClass("ke-triplebutton-disabled")
+                        self._xiami_submit.removeClass("ke-triplebutton-disabled");
                         //self._xiami_submit.enable();
                     }
                     self._xiamia_list.hide();
@@ -391,7 +390,9 @@ KISSY.Editor.add("bangpai-music/dialog", function(editor) {
             }
 
             function getDisplayName(r) {
-                return decodeURIComponent(r.song_name) + " - " + decodeURIComponent(r.artist_name);
+                return decodeURIComponent(r['song_name'])
+                    + " - "
+                    + decodeURIComponent(r['artist_name']);
             }
 
             KE.BangPaiMusic.bangpai_xiami = function(data) {

@@ -38,7 +38,7 @@ KISSY.Editor.add("removeformat", function(editor) {
         }
     }
 
-    editor.ready(function() {
+
         editor.addButton("removeformat", {
             title:"清除格式",
             mode:KE.WYSIWYG_MODE,
@@ -126,6 +126,5 @@ KISSY.Editor.add("removeformat", function(editor) {
                 editor.fire("save");
             }
         });
-    });
 
 });

@@ -3,9 +3,9 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("dtd", function(KE) {
     /**
      * Holds and object representation of the HTML DTD to be used by the editor in
@@ -254,7 +254,9 @@ KISSY.Editor.add("dtd", function(KE) {
             "dl": {"dt":1,"dd":1},
             "del": L,
             "isindex": {},
-            "fieldset": X({"legend":1}, K),
+            "fieldset": X({
+                legend:1
+            }, K),
             "thead": M,
             "ul": Q,
             "acronym": L,

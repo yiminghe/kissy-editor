@@ -616,11 +616,12 @@ KISSY.Editor.add("definition", function(KE) {
          * @param element {KISSY.Node}
          * @param init {function()}
          */
-        insertElement:function(element, init) {
-            var self = this,clone;
+        insertElement:function(element, init, callback) {
+            var self = this;
             self.focus();
             setTimeout(function() {
-                var elementName = element._4e_name(),
+                var clone,
+                    elementName = element._4e_name(),
                     xhtml_dtd = KE.XHTML_DTD,
                     KER = KE.RANGE,
                     KEN = KE.NODE,
@@ -717,10 +718,9 @@ KISSY.Editor.add("definition", function(KE) {
                 setTimeout(function() {
                     self.fire("save");
                 }, 10);
+                callback && callback(clone);
             }, 0);
-            return clone;
-        }
-        ,
+        },
 
         /**
          *@this {KISSY.Editor}
@@ -734,7 +734,7 @@ KISSY.Editor.add("definition", function(KE) {
              * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
              */
             if (UA.webkit) {
-                var nodes = DOM.create(data, NULL, this.document);
+                var nodes = DOM.create(data, NULL, self.document);
                 if (nodes.nodeType == 11) nodes = S.makeArray(nodes.childNodes);
                 else nodes = [nodes];
                 for (var i = 0; i < nodes.length; i++)
@@ -744,6 +744,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.focus();
 
             setTimeout(function() {
+
                 var selection = self.getSelection(),
                     ranges = selection && selection.getRanges();
 
@@ -757,7 +758,6 @@ KISSY.Editor.add("definition", function(KE) {
                     }, 30);
                     return;
                 }
-
                 self.fire("save");
                 if (UA.ie) {
                     var $sel = selection.getNative();
@@ -768,14 +768,12 @@ KISSY.Editor.add("definition", function(KE) {
                     self.document.execCommand('inserthtml', FALSE, data);
                 }
 
-                self.focus();
                 setTimeout(function() {
                     self.fire("save");
                 }, 10);
             }, 0);
         }
-    })
-        ;
+    });
     /**
      * 初始化iframe内容以及浏览器间兼容性处理，
      * 必须等待iframe内的脚本向父窗口通知

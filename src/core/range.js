@@ -1492,7 +1492,7 @@ KISSY.Editor.add("range", function(KE) {
                 isEndOfBlock = endBlock && self.checkEndOfBlock();
 
             // Delete the current contents.
-            // TODO: Why is 2.x doing CheckIsEmpty()?
+            // Why is 2.x doing CheckIsEmpty()?
             self.deleteContents();
 
             if (startBlock && DOM._4e_equals(startBlock, endBlock)) {

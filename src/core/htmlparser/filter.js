@@ -4,8 +4,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 KISSY.Editor.add("htmlparser-filter", function(
     ) {
-    var S = KISSY,KE = S.Editor,KEN = KE.NODE,
-        TRUE = true,
+    var S = KISSY,
+        KE = S.Editor,
+        KEN = KE.NODE,
         FALSE = false,
         NULL = null;
 

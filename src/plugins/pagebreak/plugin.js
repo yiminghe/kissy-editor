@@ -28,7 +28,7 @@ KISSY.Editor.add("pagebreak", function(editor) {
             }
         });
     }
-    editor.ready(function() {
+
         var mark_up = '<div' +
             ' style="page-break-after: always; ">' +
             '<span style="DISPLAY:none">&nbsp;</span></div>';
@@ -62,5 +62,4 @@ KISSY.Editor.add("pagebreak", function(editor) {
                 editor.fire("save");
             }
         });
-    });
 });
