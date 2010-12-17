@@ -21,9 +21,8 @@ KISSY.Editor.add("utils", function(KE) {
              */
             debugUrl:function (url) {
                 var debug = S["Config"]["debug"],re;
-                if (!debug) re = url.replace(/\.(js|css)/i, "-min.$1");
-                else if (debug === "dev") {
-                    re = "../src/" + url;
+                if (!debug) {
+                    re = url.replace(/\.(js|css)/i, "-min.$1");
                 } else {
                     re = url
                 }
@@ -32,7 +31,7 @@ KISSY.Editor.add("utils", function(KE) {
                 } else {
                     re += "?";
                 }
-                re += "t=" + encodeURIComponent("2010-12-15 15:11:30");
+                re += "t=" + encodeURIComponent("2010-12-17 16:59:33");
                 return  re;
             },
             /**

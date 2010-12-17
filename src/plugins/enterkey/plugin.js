@@ -203,11 +203,13 @@ KISSY.Editor.add("enterkey", function(editor) {
             KE.EnterKey = EnterKey;
         })();
     }
+    
 
         editor.addCommand("enterBlock", {
             exec:KE.EnterKey.enterBlock
         });
         KE.EnterKey(editor);
 
-
+},{
+    attach:false
 });

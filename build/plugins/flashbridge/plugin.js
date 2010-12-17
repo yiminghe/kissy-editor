@@ -4,7 +4,10 @@
  */
 KISSY.Editor.add("flashbridge", function() {
     var S = KISSY,KE = S.Editor;
-    if (KE.FlashBridge) return;
+    if (KE.FlashBridge) {
+        S.log("KE.FlashBridge attach more","warn");
+        return;
+    }
 
     var instances = {};
 

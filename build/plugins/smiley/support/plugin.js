@@ -71,7 +71,9 @@ KISSY.Editor.add("smiley/support", function() {
             if (smileyWin && smileyWin.get("visible")) {
                 smileyWin.hide();
             } else {
-                self.call("_prepare");
+                KE.use("overlay", function() {
+                    self.call("_prepare");
+                });
             }
         },
         _prepare:function() {
@@ -86,7 +88,7 @@ KISSY.Editor.add("smiley/support", function() {
                 width:"297px",
                 autoRender:true,
                 elCls:"ks-popup",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU),
+                zIndex:KE.baseZIndex(KE.zIndexManager.POPUP_MENU),
                 mask:false
             });
             var smileyWin = self.smileyWin;
@@ -111,10 +113,16 @@ KISSY.Editor.add("smiley/support", function() {
             self.smileyWin.show();
         },
         offClick:function() {
-            this.call("_prepare");
+            var self = this;
+            KE.use("overlay", function() {
+                self.call("_prepare");
+            });
         },
         onClick:function() {
-            this.call("_prepare");
+            var self = this;
+            KE.use("overlay", function() {
+                self.call("_prepare");
+            });
         }
     };
 });

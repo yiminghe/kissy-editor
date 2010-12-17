@@ -84,4 +84,6 @@ KISSY.Editor.add("elementpaths", function(editor) {
         new KE.ElementPaths({
             editor:editor
         });
+},{
+    attach:false
 });

@@ -3,9 +3,9 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("indent", function(editor) {
-    var KE = KISSY.Editor;
+    editor.addPlugin("indent", function() {
+        var KE = KISSY.Editor;
 
-    editor.ready(function() {
         var outdent = editor.addButton("outdent", {
             title:"减少缩进量 ",
             mode:KE.WYSIWYG_MODE,
@@ -32,11 +32,13 @@ KISSY.Editor.add("indent", function(editor) {
                 indent.call("offClick");
             }
         });
-        
+
         editor.addCommand("outdent", {
             exec:function() {
                 outdent.call("offClick");
             }
         });
     });
+},{
+    attach:false
 });

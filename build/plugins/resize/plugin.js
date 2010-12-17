@@ -2,7 +2,7 @@ KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
         Node = S.Node;
 
-    editor.ready(function() {
+
         S.use("dd", function() {
             var Draggable = S['Draggable'];
             var statusDiv = editor.statusDiv,
@@ -35,5 +35,6 @@ KISSY.Editor.add("resize", function(editor) {
                 if (S.inArray("x", cfg)) widthEl.width(width + diffX);
             });
         });
-    });
+},{
+    attach:false
 });

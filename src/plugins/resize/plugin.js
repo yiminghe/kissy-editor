@@ -35,4 +35,6 @@ KISSY.Editor.add("resize", function(editor) {
                 if (S.inArray("x", cfg)) widthEl.width(width + diffX);
             });
         });
+},{
+    attach:false
 });

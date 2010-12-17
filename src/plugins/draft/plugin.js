@@ -10,4 +10,6 @@ KISSY.Editor.add("draft", function(editor) {
                 new KE.Draft(editor);
             });
         });
+},{
+    attach:false
 });

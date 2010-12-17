@@ -3,12 +3,13 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("justify", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        TripleButton = KE.TripleButton;
-    var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
-        default_align = "left";
 
+    editor.addPlugin("justify", function() {
+        var S = KISSY,
+            KE = S.Editor,
+            TripleButton = KE.TripleButton;
+        var alignRemoveRegex = /(-moz-|-webkit-|start|auto)/gi,
+            default_align = "left";
 
         var JustifyTpl = {
             mode:KE.WYSIWYG_MODE,
@@ -63,7 +64,7 @@ KISSY.Editor.add("justify", function(editor) {
                 // </ul>
                 // </body>
                 //gecko ctrl-a 为直接得到 container : body
-                //其他浏览器 ctrl-a 得到 container : li               
+                //其他浏览器 ctrl-a 得到 container : li
                 if (!block || block._4e_name() === "body") {
                     el.boff();
                     return;
@@ -72,7 +73,7 @@ KISSY.Editor.add("justify", function(editor) {
                     .replace(alignRemoveRegex, "")
                     //默认值，没有设置
                     || default_align;
-               
+
                 if (align == self.cfg.v) {
                     el.bon();
                 } else {
@@ -97,5 +98,8 @@ KISSY.Editor.add("justify", function(editor) {
             title:"右对齐",
             v:"right"
         }, JustifyTpl));
+    });
 
+},{
+    attach:false
 });

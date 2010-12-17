@@ -7,14 +7,15 @@ KISSY.Editor.add("overlay", function() {
     var S = KISSY,
         UIBase = S['UIBase'],
         KE = S.Editor;
-    if (KE.Overlay) return;
+    if (KE.Overlay) {
+        S.log("ke overlay attach more");
+        return;
+    }
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
     var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
-        init:function() {
-            //S.log("Overlay4E init");
-        },
+
         syncUI:function() {
             //S.log("_syncUIOverlay4E");
             var self = this;

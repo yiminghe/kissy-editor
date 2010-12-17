@@ -138,7 +138,6 @@ KISSY.Editor.add("contextmenu", function() {
             var self = this,
                 cfg = self.cfg,
                 funcs = cfg.funcs;
-            //使它具备 overlay 的能力，其实这里并不是实体化
             self.el = new Overlay({
                 content:HTML,
                 autoRender:true,
@@ -186,4 +185,7 @@ KISSY.Editor.add("contextmenu", function() {
     });
 
     KE.ContextMenu = ContextMenu;
+}, {
+    attach:false,
+    requires:["overlay"]
 });

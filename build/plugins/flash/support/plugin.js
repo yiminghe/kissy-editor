@@ -132,8 +132,8 @@ KISSY.Editor.add("flash/support", function() {
      */
     function checkFlash(node) {
         return node._4e_name() === 'img' &&
-            (!!node.hasClass(CLS_FLASH)) &&
-            node;
+            (!!node.hasClass(CLS_FLASH))&&
+                node;
     }
 
     /**
@@ -180,6 +180,7 @@ KISSY.Editor.add("flash/support", function() {
                  位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                  */
                 bubble.on("show", function() {
+
                     var a = bubble._selectedEl,
                         flash = bubble._plugin;
                     if (!a)return;
@@ -209,7 +210,9 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
+    Flash.Insert = function(editor, src,
+                            attrs, _cls,
+                            _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -227,4 +230,6 @@ KISSY.Editor.add("flash/support", function() {
 
     KE.Flash = Flash;
 
+},{
+    requires:["bubbleview","contextmenu","flashutils"]
 });

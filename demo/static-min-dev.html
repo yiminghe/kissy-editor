@@ -186,12 +186,12 @@
         S.use('editor', function() {
 
             var KE = S.Editor;
-            KE.Config.base = base + "build/";
-
+            KE.Config.base = base + "build/plugins/";
+            //编辑器内弹窗 z-index 底限，防止互相覆盖
+            KE.Config.baseZIndex = 10000;
+            //if(false)
             window.editor = KE("#editor", {
                 attachForm:true,
-                //编辑器内弹窗z-index底线，防止互相覆盖
-                baseZIndex:10000,
                 pluginConfig: {
                     "image":{
                         upload:{
@@ -209,6 +209,10 @@
                             sizeLimit:1000,//k
                             extraHtml:"<p style='margin-top:5px;'><input type='checkbox' id='ke_img_up_watermark_1'> 图片加水印，防止别人盗用</p>"
                         }
+                    },
+                    music:{
+                        //必须和网址url同域而不是类库同域
+                        musicPlayer:KE.Config.base + "music/niftyplayer.swf"
                     },
                     "templates": [
                         {
@@ -308,13 +312,12 @@
                     "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
                     );
 
-
+ //if(false)
             KE("#editor2", {
                 disableObjectResizing:true,
                 disableInlineTableEditing:true
             }).use("undo,font,image,music");
-        })
-                ;
+        });
     });
 
 </script>

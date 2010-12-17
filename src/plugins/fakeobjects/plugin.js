@@ -7,7 +7,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         S = KISSY,
         Node = S.Node,
         KEN = KE.NODE,
-        SPACER_GIF = KE['Config'].base + 'theme/spacer.gif',
+        SPACER_GIF = KE['Config'].base + '../theme/spacer.gif',
         HtmlParser = KE.HtmlParser,
         Editor = S.Editor,
         dataProcessor = editor.htmlDataProcessor,
@@ -100,50 +100,53 @@ KISSY.Editor.add("fakeobjects", function(editor) {
             }
         });
     }
+    if (!editor.createFakeElement) {
+        S.augment(Editor, {
+            //ie6 ,object outHTML error
+            createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML, attrs) {
+                var style = realElement.attr("style") || '';
+                if (realElement.attr("width")) {
+                    style = "width:" + realElement.attr("width") + "px;" + style;
+                }
+                if (realElement.attr("height")) {
+                    style = "height:" + realElement.attr("height") + "px;" + style;
+                }
+                var self = this,attributes = {
+                    'class' : className,
+                    src : SPACER_GIF,
+                    _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
+                    _ke_real_node_type : realElement[0].nodeType,
+                    //align : realElement.attr("align") || '',
+                    style:style
+                };
+                attrs && delete attrs.width;
+                attrs && delete attrs.height;
 
-    S.augment(Editor, {
-        //ie6 ,object outHTML error
-        createFakeElement:function(realElement, className, realElementType, isResizable, outerHTML, attrs) {
-            var style = realElement.attr("style") || '';
-            if (realElement.attr("width")) {
-                style = "width:" + realElement.attr("width") + "px;" + style;
+                attrs && S.mix(attributes, attrs, false);
+                if (realElementType)
+                    attributes._ke_real_element_type = realElementType;
+
+                if (isResizable)
+                    attributes._ke_resizable = isResizable;
+                return new Node("<img/>", attributes, self.document);
+            },
+
+            restoreRealElement:function(fakeElement) {
+                if (fakeElement.attr('_ke_real_node_type') != KEN.NODE_ELEMENT)
+                    return null;
+                var html = (decodeURIComponent(fakeElement.attr('_ke_realelement')));
+
+                var temp = new Node('<div>', null, this.document);
+                temp.html(html);
+                // When returning the node, remove it from its parent to detach it.
+                return temp._4e_first(
+                                     function(n) {
+                                         return n[0].nodeType == KEN.NODE_ELEMENT;
+                                     })._4e_remove();
             }
-            if (realElement.attr("height")) {
-                style = "height:" + realElement.attr("height") + "px;" + style;
-            }
-            var self = this,attributes = {
-                'class' : className,
-                src : SPACER_GIF,
-                _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
-                _ke_real_node_type : realElement[0].nodeType,
-                //align : realElement.attr("align") || '',
-                style:style
-            };
-            attrs && delete attrs.width;
-            attrs && delete attrs.height;
+        });
+    }
 
-            attrs && S.mix(attributes, attrs, false);
-            if (realElementType)
-                attributes._ke_real_element_type = realElementType;
-
-            if (isResizable)
-                attributes._ke_resizable = isResizable;
-            return new Node("<img/>", attributes, self.document);
-        },
-
-        restoreRealElement:function(fakeElement) {
-            if (fakeElement.attr('_ke_real_node_type') != KEN.NODE_ELEMENT)
-                return null;
-            var html = (decodeURIComponent(fakeElement.attr('_ke_realelement')));
-
-            var temp = new Node('<div>', null, this.document);
-            temp.html(html);
-            // When returning the node, remove it from its parent to detach it.
-            return temp._4e_first(
-                                 function(n) {
-                                     return n[0].nodeType == KEN.NODE_ELEMENT;
-                                 })._4e_remove();
-        }
-    });
-
+},{
+    attach:false
 });

@@ -21,7 +21,10 @@ KISSY.Editor.add("select", function() {
             "</a></span>",
         menu_markup = "<div>";
 
-    if (KE.Select) return;
+    if (KE.Select) {
+        S.log("ke select attach more");
+        return;
+    }
     function Select(cfg) {
         var self = this;
         Select['superclass'].constructor.call(self, cfg);
@@ -368,6 +371,7 @@ KISSY.Editor.add("select", function() {
             self.menu.show();
         },
         _click:function(ev) {
+            if (this.loading) return;
             ev.preventDefault();
 
             var self = this,
@@ -379,25 +383,86 @@ KISSY.Editor.add("select", function() {
             }
 
             if (self._focusA.hasClass(ke_select_active)) {
-                self.menu.hide();
+                self.menu && self.menu.hide();
                 return;
             }
 
-            self._prepare();
+            self.loading = true;
+            KE.use("overlay", function() {
+                self.loading = false;
+                self._prepare();
 
-            //可能的话当显示层时，高亮当前值对应option
-            if (v && self.menu) {
-                var as = self.as;
-                as.each(function(a) {
-                    if (a.attr("data-value") == v) {
-                        a.addClass(ke_menu_selected);
-                    } else {
-                        a.removeClass(ke_menu_selected);
-                    }
-                });
-            }
+                //可能的话当显示层时，高亮当前值对应option
+                if (v && self.menu) {
+                    var as = self.as;
+                    as.each(function(a) {
+                        if (a.attr("data-value") == v) {
+                            a.addClass(ke_menu_selected);
+                        } else {
+                            a.removeClass(ke_menu_selected);
+                        }
+                    });
+                }
+            });
         }
     });
 
     KE.Select = Select;
+
+
+    /**
+     * 将button ui 和点击功能分离
+     * 按钮必须立刻显示出来，功能可以慢慢加载
+     * @param name
+     * @param btnCfg
+     */
+    KE.prototype.addSelect = function(name, btnCfg) {
+        var self = this,
+            editor = self;
+        btnCfg = S.mix({
+            container:self.toolBarDiv,
+            doc:editor.document,
+            menuContainer:new Node(document.body)
+        }, btnCfg);
+
+        var b = new Select(btnCfg),
+            context = {
+                btn:b,
+                editor:self,
+                cfg:btnCfg,
+                call:function() {
+                    var args = S.makeArray(arguments),
+                        method = args.shift();
+                    return btnCfg[method].apply(context, args);
+                },
+                /**
+                 * 依赖于其他模块，先出来占位！
+                 * @param cfg
+                 */
+                reload:function(cfg) {
+                    S.mix(btnCfg, cfg);
+                    b.enable();
+                    self.on("selectionChange", function() {
+                        if (self.getMode() == KE.SOURCE_MODE) return;
+                        btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
+                    });
+                    b.on("click", function(ev) {
+                        var t = ev.type;
+                        if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                    });
+                    if (btnCfg.mode == KE.WYSIWYG_MODE) {
+                        editor.on("wysiwygmode", b.enable, b);
+                        editor.on("sourcemode", b.disable, b);
+                    }
+                    btnCfg.init && btnCfg.init.call(context);
+                }
+            };
+        if (btnCfg.loading) {
+            b.disable();
+        } else {
+            //否则立即初始化，开始作用
+            context.reload(undefined);
+        }
+        return context;
+    };
 });

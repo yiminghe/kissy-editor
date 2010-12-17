@@ -67,22 +67,24 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             //4 比 flash 的优先级 5 高！
         }}, 4);
 
+    editor.addPlugin("bangpai-music", function() {
+        var context = editor.addButton("bangpai-music", {
+            contentCls:"ke-toolbar-music",
+            title:"插入虾米音乐" ,
+            mode:KE.WYSIWYG_MODE,
+            loading:true
+        });
 
-    var context = editor.addButton("bangpai-music", {
-        contentCls:"ke-toolbar-music",
-        title:"插入虾米音乐" ,
-        mode:KE.WYSIWYG_MODE,
-        loading:true
-    });
-
-    KE.use("bangpai-music/support", function() {
-        var music = new KE.BangPaiMusic(editor);
-        context.reload({
-            offClick:function() {
-                music.show();
-            }
+        KE.use("bangpai-music/support", function() {
+            var music = new KE.BangPaiMusic(editor);
+            context.reload({
+                offClick:function() {
+                    music.show();
+                }
+            });
         });
     });
+
 },
 {
     attach:false,

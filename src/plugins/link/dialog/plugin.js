@@ -128,4 +128,6 @@ KISSY.Editor.add("link/dialog", function(editor) {
         })();
     }
     editor.addDialog("link/dialog", new Link.Dialog(editor));
+},{
+    attach:false
 });

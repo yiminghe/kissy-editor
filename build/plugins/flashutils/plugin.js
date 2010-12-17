@@ -1,6 +1,9 @@
 KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
-    if (flashUtils) return;
+    if (flashUtils) {
+        S.log("flashUtils attach more");
+        return;
+    }
     var DOM = S.DOM,Node = S.Node,UA = S.UA;
     flashUtils = {
         getUrl: function (r) {

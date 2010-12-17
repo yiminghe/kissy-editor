@@ -9,7 +9,7 @@ KISSY.Editor.add("definition", function(KE) {
         Utils = KE.Utils,
         NULL = null,
         DOC = document,
-        /** @const */S = KISSY,
+        S = KISSY,
         /**
          * @const
          */
@@ -68,7 +68,7 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @const
          */
-        CSS_FILE = Utils.debugUrl("theme/editor-iframe.css");
+        CSS_FILE = Utils.debugUrl("../theme/editor-iframe.css");
 
     /**
      *
@@ -268,7 +268,7 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,
                 Overlay = KE.Overlay;
             cfg = cfg || {};
-            Overlay.loading();
+            Overlay && Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
                 /**
@@ -279,7 +279,7 @@ KISSY.Editor.add("definition", function(KE) {
                     return;
                 }
                 callback(dialog);
-                Overlay.unloading();
+                Overlay && Overlay.unloading();
             });
         }
         ,
@@ -392,20 +392,7 @@ KISSY.Editor.add("definition", function(KE) {
          */
         sync:function() {
             this.textarea.val(this.getData());
-        }
-        ,
-
-        /**
-         * ie6 其他节点z-index干扰，编辑器z-index必须比baseZIndex大
-         * @this {KISSY.Editor}
-         * @param v {number}
-         */
-        baseZIndex:function(v) {
-            v = v || 0;
-            var zIndex = this.cfg.baseZIndex || 0;
-            return v + zIndex;
-        }
-        ,
+        },
 
         /**
          * 撤销重做时，不需要格式化代码，直接取自身
@@ -414,8 +401,7 @@ KISSY.Editor.add("definition", function(KE) {
 
         _getRawData:function() {
             return this.document.body.innerHTML;
-        }
-        ,
+        },
 
 
         /**
@@ -562,8 +548,7 @@ KISSY.Editor.add("definition", function(KE) {
                 doc.write(data);
                 doc.close();
             }
-        }
-        ,
+        },
         /**
          *@this {KISSY.Editor}
          * @param func {function()}
@@ -574,8 +559,27 @@ KISSY.Editor.add("definition", function(KE) {
             else {
                 self.on("dataReady", func);
             }
-        }
-        ,
+        },
+        addPlugin:function(name, func, cfg) {
+            var self = this;
+            self.__plugins = self.__plugins || [];
+            cfg = cfg || {};
+            cfg.func = func;
+            self.__plugins[name] = cfg;
+        },
+        usePlugin:function(name) {
+            if (!this.__plugins)return;
+            var plugin = this.__plugins[name];
+            //只 use 一次
+            if (!plugin) return;
+            if (plugin.status && !plugin.duplicate) return;
+            var requires = this['Env']['mods'][name]["requires"] || [];
+            for (var i = 0; i < requires.length; i++) {
+                this.usePlugin(requires[i]);
+            }
+            plugin.func.call(this);
+            plugin.status = 1;
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -1135,12 +1139,10 @@ KISSY.Editor.add("definition", function(KE) {
         "getDialog":KEP.getDialog,
         "getMode":KEP.getMode,
         "sync":KEP.sync,
-        "baseZIndex":KEP.baseZIndex,
         "getSelection":KEP.getSelection,
         "focus":KEP.focus,
         "blur":KEP.blur,
         "notifySelectionChange":KEP.notifySelectionChange
     });
 
-})
-    ;
+});

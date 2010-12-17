@@ -3,41 +3,46 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("templates", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        Node = S.Node,
-        DOM = S.DOM;
 
-    DOM.addStyleSheet(
-        ".ke-tpl {" +
-            "    border: 2px solid #EEEEEE;" +
-            "    width: 95%;" +
-            "    margin: 20px auto;" +
-            "}" +
+    editor.addPlugin("templates", function() {
+        var S = KISSY,
+            KE = S.Editor,
+            Node = S.Node,
+            DOM = S.DOM;
 
-            ".ke-tpl-list {" +
-            "    border: 1px solid #EEEEEE;" +
-            "    margin: 5px;" +
-            "    padding: 7px;" +
-            "    display: block;" +
-            "    text-decoration: none;" +
-            "    zoom: 1;" +
-            "}" +
+        DOM.addStyleSheet(
+            ".ke-tpl {" +
+                "    border: 2px solid #EEEEEE;" +
+                "    width: 95%;" +
+                "    margin: 20px auto;" +
+                "}" +
 
-            ".ke-tpl-list:hover, .ke-tpl-selected {" +
-            "    background-color: #FFFACD;" +
-            "    text-decoration: none;" +
-            "    border: 1px solid #FF9933;" +
-            "}"
-        , "ke-templates");
+                ".ke-tpl-list {" +
+                "    border: 1px solid #EEEEEE;" +
+                "    margin: 5px;" +
+                "    padding: 7px;" +
+                "    display: block;" +
+                "    text-decoration: none;" +
+                "    zoom: 1;" +
+                "}" +
 
-    editor.ready(function() {
+                ".ke-tpl-list:hover, .ke-tpl-selected {" +
+                "    background-color: #FFFACD;" +
+                "    text-decoration: none;" +
+                "    border: 1px solid #FF9933;" +
+                "}"
+            , "ke-templates");
+
+
         editor.addButton("templates", {
             contentCls:"ke-toolbar-template",
             title:"模板",
             mode:KE.WYSIWYG_MODE,
             offClick:function() {
-                this.cfg._prepare.call(this);
+                var self = this;
+                KE.use("overlay", function() {
+                    self.cfg._prepare.call(self);
+                });
             },
             _prepare:function() {
                 var self = this,
@@ -83,4 +88,6 @@ KISSY.Editor.add("templates", function(editor) {
     });
 
 
+},{
+    attach:false
 });

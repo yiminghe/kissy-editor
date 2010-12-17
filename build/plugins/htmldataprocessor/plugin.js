@@ -845,4 +845,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
+},{
+    attach:false
 });

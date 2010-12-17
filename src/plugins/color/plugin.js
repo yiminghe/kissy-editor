@@ -1,8 +1,7 @@
 KISSY.Editor.add("color", function(editor) {
-    var S = KISSY,
-        KE = S.Editor;
-
-
+    editor.addPlugin("color", function() {
+        var S = KISSY,
+            KE = S.Editor;
         var pluginConfig = editor.cfg.pluginConfig;
         if (false !== pluginConfig["forecolor"]) {
             (function() {
@@ -46,4 +45,7 @@ KISSY.Editor.add("color", function(editor) {
                 });
             })();
         }
+    });
+},{
+    attach:false
 });

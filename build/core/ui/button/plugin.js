@@ -14,7 +14,10 @@ KISSY.Editor.add("button", function() {
         ACTIVE_CLASS = "ke-triplebutton-active",
         DISABLED_CLASS = "ke-triplebutton-disabled";
 
-    if (KE.TripleButton) return;
+    if (KE.TripleButton) {
+        S.log("TripleButton attach twice","warn");
+        return;
+    }
 
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']], {
         bindUI:function() {

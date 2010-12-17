@@ -14,39 +14,24 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         return /xiami\.com/i.test(url);
     }
 
-
-    editor.ready(function() {
-        dataFilter && dataFilter.addRules({
-            elements : {
-                'object' : function(element) {
-                    var attributes = element.attributes,
-                        //增加音乐名字提示
-                        title = element.attributes.title,
-                        i,
-                        c,
-                        classId = attributes['classid']
-                            && String(attributes['classid']).toLowerCase();
-                    if (!classId) {
-                        // Look for the inner <embed>
-                        for (i = 0; i < element.children.length; i++) {
-                            c = element.children[ i ];
-                            if (c.name == 'embed') {
-                                if (!KE.Utils.isFlashEmbed(c))
-                                    return null;
-                                if (checkXiami(c.attributes.src)) {
-                                    return dataProcessor.createFakeParserElement(element,
-                                        CLS_XIAMI, TYPE_XIAMI, true, {
-                                        title:title
-                                    });
-                                }
-                            }
-                        }
-                        return null;
-                    }
+    dataFilter && dataFilter.addRules({
+        elements : {
+            'object' : function(element) {
+                var attributes = element.attributes,
+                    //增加音乐名字提示
+                    title = element.attributes.title,
+                    i,
+                    c,
+                    classId = attributes['classid']
+                        && String(attributes['classid']).toLowerCase();
+                if (!classId) {
+                    // Look for the inner <embed>
                     for (i = 0; i < element.children.length; i++) {
                         c = element.children[ i ];
-                        if (c.name == 'param' && c.attributes.name == "movie") {
-                            if (checkXiami(c.attributes.value)) {
+                        if (c.name == 'embed') {
+                            if (!KE.Utils.isFlashEmbed(c))
+                                return null;
+                            if (checkXiami(c.attributes.src)) {
                                 return dataProcessor.createFakeParserElement(element,
                                     CLS_XIAMI, TYPE_XIAMI, true, {
                                     title:title
@@ -54,25 +39,52 @@ KISSY.Editor.add("bangpai-music", function(editor) {
                             }
                         }
                     }
-                },
-
-                'embed' : function(element) {
-                    if (!KE.Utils.isFlashEmbed(element))
-                        return null;
-                    if (checkXiami(element.attributes.src)) {
-                        return dataProcessor.createFakeParserElement(element,
-                            CLS_XIAMI, TYPE_XIAMI, true, {
-                            title:element.attributes.title
-                        });
+                    return null;
+                }
+                for (i = 0; i < element.children.length; i++) {
+                    c = element.children[ i ];
+                    if (c.name == 'param' && c.attributes.name == "movie") {
+                        if (checkXiami(c.attributes.value)) {
+                            return dataProcessor.createFakeParserElement(element,
+                                CLS_XIAMI, TYPE_XIAMI, true, {
+                                title:title
+                            });
+                        }
                     }
                 }
-                //4 比 flash 的优先级 5 高！
-            }}, 4);
+            },
+
+            'embed' : function(element) {
+                if (!KE.Utils.isFlashEmbed(element))
+                    return null;
+                if (checkXiami(element.attributes.src)) {
+                    return dataProcessor.createFakeParserElement(element,
+                        CLS_XIAMI, TYPE_XIAMI, true, {
+                        title:element.attributes.title
+                    });
+                }
+            }
+            //4 比 flash 的优先级 5 高！
+        }}, 4);
+
+    editor.addPlugin("bangpai-music", function() {
+        var context = editor.addButton("bangpai-music", {
+            contentCls:"ke-toolbar-music",
+            title:"插入虾米音乐" ,
+            mode:KE.WYSIWYG_MODE,
+            loading:true
+        });
 
         KE.use("bangpai-music/support", function() {
-            new KE.BangPaiMusic(editor);
+            var music = new KE.BangPaiMusic(editor);
+            context.reload({
+                offClick:function() {
+                    music.show();
+                }
+            });
         });
     });
+
 },
 {
     attach:false,
@@ -91,11 +103,11 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
-                function(evt) {
-                    var t=new S.Node(evt.target);
-                    if (t.hasClass(CLS_XIAMI))
-                        evt.preventDefault();
-                });
+                    function(evt) {
+                        var t = new S.Node(evt.target);
+                        if (t.hasClass(CLS_XIAMI))
+                            evt.preventDefault();
+                    });
         }
     }
 
@@ -104,8 +116,6 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             var self = this;
             self._cls = CLS_XIAMI;
             self._type = TYPE_XIAMI;
-            self._contentCls = "ke-toolbar-music";
-            self._tip = "插入虾米音乐";
             self._contextMenu = contextMenu;
             self._flashRules = ["img." + CLS_XIAMI];
         },
@@ -142,10 +152,21 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         "bangpai-music/dialog":{
             attach: false,
             charset:"utf-8",
-            requires:["flash/dialog"],
             path:KE.Utils.debugUrl(
-                "biz/bangpai/plugins/music/" +
+                "../biz/bangpai/plugins/music/" +
                     "dialog/plugin.js"
+                )
+        }
+    });
+
+    KE.add({
+        "bangpai-music/dialog/support":{
+            attach: false,
+            charset:"utf-8",
+            requires:["flash/dialog/support"],
+            path:KE.Utils.debugUrl(
+                "../biz/bangpai/plugins/music/" +
+                    "dialog/support/plugin.js"
                 )
         }
     });
@@ -163,61 +184,69 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
         UA = S.UA;
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;
-    if (!KE.BangPaiSourceArea) {
-        (function() {
-            var SOURCE_MODE = KE.SOURCE_MODE ,
-                WYSIWYG_MODE = KE.WYSIWYG_MODE;
-
-            function BangPaiSourceArea(editor) {
-                this.editor = editor;
-                this._init();
-            }
-
-            S.augment(BangPaiSourceArea, {
-                _init:function() {
-                    var self = this,
-                        editor = self.editor,
-                        statusDiv = editor.statusDiv;
-                    self.el = new Node("<span " +
-                        "style='zoom:1;display:inline-block;height:22px;line-height:22px;'>" +
-                        "<input style='margin:0 5px;vertical-align:middle;' " +
-                        "type='checkbox' />" +
-                        "<span style='vertical-align:middle;'>编辑源代码</span></span>")
-                        .appendTo(statusDiv).one("input");
-                    var el = self.el;
-                    el.on("click", self._check, self);
-                    editor.on("sourcemode", function() {
-                        el[0].checked = true;
-                    });
-                    editor.on("wysiwygmode", function() {
-                        el[0].checked = false;
-                    });
-                },
-                _check:function() {
-                    var self = this,el = self.el;
-                    if (el[0].checked) self._show();
-                    else self._hide();
-                },
-                _show:function() {
-                    var self = this,
-                        editor = self.editor;
-                    editor.execCommand("sourceAreaSupport", SOURCE_MODE);
-                },
-
-
-                _hide:function() {
-                    var self = this,
-                        editor = self.editor;
-                    editor.execCommand("sourceAreaSupport", WYSIWYG_MODE);
-                }
-            });
-            KE.BangPaiSourceArea = BangPaiSourceArea;
-        })();
-    }
-
-    editor.ready(function() {
+    KE.use("bangpai-sourcearea/support", function() {
         new KE.BangPaiSourceArea(editor);
     });
+},
+{
+    attach:false
+});
+/**
+ * bangpai source editor for kissy editor
+ * @author: yiminghe@gmail.com
+ */
+KISSY.Editor.add("bangpai-sourcearea/support", function() {
+    var S = KISSY,
+        KE = S.Editor,
+        Node = S.Node;
+
+    var SOURCE_MODE = KE.SOURCE_MODE ,
+        WYSIWYG_MODE = KE.WYSIWYG_MODE;
+
+    function BangPaiSourceArea(editor) {
+        this.editor = editor;
+        this._init();
+    }
+
+    S.augment(BangPaiSourceArea, {
+        _init:function() {
+            var self = this,
+                editor = self.editor,
+                statusDiv = editor.statusDiv;
+            self.el = new Node("<span " +
+                "style='zoom:1;display:inline-block;height:22px;line-height:22px;'>" +
+                "<input style='margin:0 5px;vertical-align:middle;' " +
+                "type='checkbox' />" +
+                "<span style='vertical-align:middle;'>编辑源代码</span></span>")
+                .appendTo(statusDiv).one("input");
+            var el = self.el;
+            el.on("click", self._check, self);
+            editor.on("sourcemode", function() {
+                el[0].checked = true;
+            });
+            editor.on("wysiwygmode", function() {
+                el[0].checked = false;
+            });
+        },
+        _check:function() {
+            var self = this,el = self.el;
+            if (el[0].checked) self._show();
+            else self._hide();
+        },
+        _show:function() {
+            var self = this,
+                editor = self.editor;
+            KE.SourceAreaSupport.exec(editor, SOURCE_MODE);
+        },
+
+
+        _hide:function() {
+            var self = this,
+                editor = self.editor;
+            KE.SourceAreaSupport.exec(editor, WYSIWYG_MODE);
+        }
+    });
+    KE.BangPaiSourceArea = BangPaiSourceArea;
 },
 {
     attach:false,
@@ -232,30 +261,42 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "bangpai-upload/dialog":{
                 attach: false,
                 charset:"utf-8",
-                requires:["flashutils","progressbar","flashbridge"],
                 path:KE.Utils.debugUrl(
-                    "biz/bangpai/plugins/upload/" +
+                    "../biz/bangpai/plugins/upload/" +
                         "dialog/plugin.js"
                     )
             }
         });
+
+
+        KE.add({
+            "bangpai-upload/dialog/support":{
+                attach: false,
+                charset:"utf-8",
+                requires:["progressbar","localstorage","overlay"],
+                path:KE.Utils.debugUrl(
+                    "../biz/bangpai/plugins/upload/" +
+                        "dialog/support/plugin.js"
+                    )
+            }
+        });
     }
-    editor.ready(function() {
-        KE.use("button localstorage", function() {
-            editor.addButton("bangpai-upload", {
-                contentCls:"ke-toolbar-mul-image",
-                title:"批量插图",
-                mode:KE.WYSIWYG_MODE,
-                offClick:function() {
-                    var editor = this.editor;
-                    editor.useDialog("bangpai-upload/dialog", function(dialog) {
-                        dialog.show();
-                    });
-                }
-            });
+
+    editor.addPlugin("bangpai-upload", function() {
+        editor.addButton("bangpai-upload", {
+            contentCls:"ke-toolbar-mul-image",
+            title:"批量插图",
+            mode:KE.WYSIWYG_MODE,
+            offClick:function() {
+                var editor = this.editor;
+                editor.useDialog("bangpai-upload/dialog", function(dialog) {
+                    dialog.show();
+                });
+            }
         });
     });
-},{
+
+}, {
     attach:false
 });/**
  * biz plugin , video about ku6,youku,tudou for bangpai
@@ -267,121 +308,130 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         dataProcessor = editor.htmlDataProcessor,
         dataFilter = dataProcessor && dataProcessor.dataFilter;
 
-    editor.ready(function() {
-
-
-        function getProvider(url) {
-            for (var i = 0;
-                 i < provider.length;
-                 i++) {
-                var p = provider[i];
-                if (p.reg.test(url)) {
-                    return p;
-                }
+    function getProvider(url) {
+        for (var i = 0;
+             i < provider.length;
+             i++) {
+            var p = provider[i];
+            if (p.reg.test(url)) {
+                return p;
             }
-            return undefined;
         }
+        return undefined;
+    }
 
-        var provider = [
-            {
-                reg:/youku\.com/i,
-                width:480,
-                height:400,
-                detect:function(url) {
-                    var m = url.match(/id_([^.]+)\.html$/);
-                    if (m) {
-                        return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
-                    }
-                    m = url.match(/v_playlist\/([^.]+)\.html$/);
-                    if (m) {
-                        return;
-                        //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
-                    }
-                    return url;
+    var provider = [
+        {
+            reg:/youku\.com/i,
+            width:480,
+            height:400,
+            detect:function(url) {
+                var m = url.match(/id_([^.]+)\.html$/);
+                if (m) {
+                    return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                 }
-            },
-            {
-                reg:/tudou\.com/i,
-                width:480,
-                height:400,
-                detect:function(url) {
-                    return url;
+                m = url.match(/v_playlist\/([^.]+)\.html$/);
+                if (m) {
+                    return;
+                    //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
                 }
-            },
-            {
-                reg:/ku6\.com/i,
-                width:480,
-                height:400,
-                detect:function(url) {
-                    var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
-                    if (m) {
-                        return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
-                    }
-                    return url;
-                }
+                return url;
             }
-        ];
-
-        var cfg = editor.cfg.pluginConfig;
-        cfg["bangpai-video"] = cfg["bangpai-video"] || {};
-        var videoCfg = cfg["bangpai-video"];
-        if (videoCfg['providers']) {
-            provider.push.apply(provider, videoCfg['providers']);
+        },
+        {
+            reg:/tudou\.com/i,
+            width:480,
+            height:400,
+            detect:function(url) {
+                return url;
+            }
+        },
+        {
+            reg:/ku6\.com/i,
+            width:480,
+            height:400,
+            detect:function(url) {
+                var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
+                if (m) {
+                    return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
+                }
+                return url;
+            }
         }
-        videoCfg.getProvider = getProvider;
-        var CLS_VIDEO = "ke_video",
-            TYPE_VIDEO = "bangpai-video";
+    ];
 
-        dataFilter && dataFilter.addRules({
-            elements : {
-                'object' : function(element) {
-                    var attributes = element.attributes,i,
-                        classId = attributes['classid']
-                            && String(attributes['classid']).toLowerCase();
-                    if (!classId) {
-                        // Look for the inner <embed>
-                        for (i = 0; i < element.children.length; i++) {
-                            if (element.children[ i ].name == 'embed') {
-                                if (!KE.Utils.isFlashEmbed(element.children[ i ]))
-                                    return null;
-                                if (getProvider(element.children[ i ].attributes.src)) {
-                                    return dataProcessor.createFakeParserElement(element,
-                                        CLS_VIDEO, TYPE_VIDEO, true);
-                                }
-                            }
-                        }
-                        return null;
-                    }
+    var cfg = editor.cfg.pluginConfig;
+    cfg["bangpai-video"] = cfg["bangpai-video"] || {};
+    var videoCfg = cfg["bangpai-video"];
+    if (videoCfg['providers']) {
+        provider.push.apply(provider, videoCfg['providers']);
+    }
+    videoCfg.getProvider = getProvider;
+    var CLS_VIDEO = "ke_video",
+        TYPE_VIDEO = "bangpai-video";
+
+    dataFilter && dataFilter.addRules({
+        elements : {
+            'object' : function(element) {
+                var attributes = element.attributes,i,
+                    classId = attributes['classid']
+                        && String(attributes['classid']).toLowerCase();
+                if (!classId) {
+                    // Look for the inner <embed>
                     for (i = 0; i < element.children.length; i++) {
-                        var c = element.children[ i ];
-                        if (c.name == 'param' && c.attributes.name == "movie") {
-                            if (getProvider(c.attributes.value)) {
+                        if (element.children[ i ].name == 'embed') {
+                            if (!KE.Utils.isFlashEmbed(element.children[ i ]))
+                                return null;
+                            if (getProvider(element.children[ i ].attributes.src)) {
                                 return dataProcessor.createFakeParserElement(element,
                                     CLS_VIDEO, TYPE_VIDEO, true);
                             }
                         }
                     }
-
-                },
-
-                'embed' : function(element) {
-                    if (!KE.Utils.isFlashEmbed(element))
-                        return null;
-                    if (getProvider(element.attributes.src)) {
-                        return dataProcessor.createFakeParserElement(element,
-                            CLS_VIDEO, TYPE_VIDEO, true);
-                    }
-
+                    return null;
                 }
-                //4 比 flash 的优先级 5 高！
-            }}, 4);
+                for (i = 0; i < element.children.length; i++) {
+                    var c = element.children[ i ];
+                    if (c.name == 'param' && c.attributes.name == "movie") {
+                        if (getProvider(c.attributes.value)) {
+                            return dataProcessor.createFakeParserElement(element,
+                                CLS_VIDEO, TYPE_VIDEO, true);
+                        }
+                    }
+                }
 
-        KE.use("bangpai-video/support", function() {
-            var BangPaiVideo = KE.BangPaiVideo;
-            new BangPaiVideo(editor);
+            },
+
+            'embed' : function(element) {
+                if (!KE.Utils.isFlashEmbed(element))
+                    return null;
+                if (getProvider(element.attributes.src)) {
+                    return dataProcessor.createFakeParserElement(element,
+                        CLS_VIDEO, TYPE_VIDEO, true);
+                }
+
+            }
+            //4 比 flash 的优先级 5 高！
+        }}, 4);
+
+    editor.addPlugin(function() {
+        var context = editor.addButton("bangpai-video", {
+            contentCls:"ke-toolbar-video",
+            title:"插入视频" ,
+            mode:KE.WYSIWYG_MODE,
+            loading:true
         });
 
+        KE.use("bangpai-video/support", function() {
+            var bangPaiVideo = new KE.BangPaiVideo(editor);
+            context.reload({
+                offClick:function() {
+                    bangPaiVideo.show();
+                }
+            });
+        });
     });
+
 }, {
     attach:false,
     requires:["fakeobjects"]
@@ -404,8 +454,6 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             var self = this;
             self._cls = CLS_VIDEO;
             self._type = TYPE_VIDEO;
-            self._contentCls = "ke-toolbar-video";
-            self._tip = "插入视频";
             self._contextMenu = contextMenu;
             self._flashRules = flashRules;
         }
@@ -433,10 +481,19 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         "bangpai-video/dialog":{
             attach: false,
             charset:"utf-8",
-            requires:["flash/dialog"],
             path:KE.Utils.debugUrl(
-                "biz/bangpai/plugins/video/" +
+                "../biz/bangpai/plugins/video/" +
                     "dialog/plugin.js")
+        }
+    });
+
+    KE.add({
+        "bangpai-video/dialog/support":{
+            attach: false,
+            charset:"utf-8",
+            requires:["flash/dialog/support"],
+            path:KE.Utils.debugUrl("../biz/bangpai/plugins/video/" +
+                "dialog/support/plugin.js")
         }
     });
 

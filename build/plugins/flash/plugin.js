@@ -34,31 +34,28 @@ KISSY.Editor.add("flash", function(editor) {
             }
         }}, 5);
 
-    var context;
-    if (!pluginConfig["flash"] ||
-        pluginConfig["flash"].btn !== false) {
-        context = editor.addButton("flash", {
-            contentCls:"ke-toolbar-flash",
-            title:"插入Flash" ,
-            mode:KE.WYSIWYG_MODE,
-            loading:true
+    editor.addPlugin("flash", function() {
+        var context;
+        if (!pluginConfig["flash"] ||
+            pluginConfig["flash"].btn !== false) {
+            context = editor.addButton("flash", {
+                contentCls:"ke-toolbar-flash",
+                title:"插入Flash" ,
+                mode:KE.WYSIWYG_MODE,
+                loading:true
+            });
+        }
+        KE.use("flash/support", function() {
+            var flash = new KE.Flash(editor);
+            context && context.reload({
+                offClick:function() {
+                    flash.show();
+                }
+            })
         });
-    }
-    KE.use("flash/support", function() {
-        var flash = new KE.Flash(editor);
-        /**
-         * 注册添加 flash 的命令
-         */
-        editor.addCommand("insertFlash", {
-            exec:function(editor) {
-                var args = S.makeArray(arguments);
-                return KE.Flash.Insert.apply(null, args);
-            }
-        });
-        context && context.reload({
-            offClick:function() {
-                flash.show();
-            }
-        })
     });
+
+},{
+    attach:false,
+    requires:["fakeobjects"]
 });

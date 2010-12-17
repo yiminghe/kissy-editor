@@ -1,33 +1,34 @@
 KISSY.Editor.add("pagebreak", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        Node = S.Node,
-        dataProcessor = editor.htmlDataProcessor,
-        dataFilter = dataProcessor && dataProcessor.dataFilter,
-        CLS = "ke_pagebreak",
-        TYPE = "div";
-    if (dataFilter) {
-        dataFilter.addRules({
-            elements :
-            {
-                div : function(element) {
-                    var attributes = element.attributes,
-                        style = attributes && attributes.style,
-                        child = style && element.children.length == 1
-                            && element.children[ 0 ],
-                        childStyle = child && ( child.name == 'span' )
-                            && child.attributes.style;
+    editor.addPlugin("pagebreak", function() {
+        var S = KISSY,
+            KE = S.Editor,
+            Node = S.Node,
+            dataProcessor = editor.htmlDataProcessor,
+            dataFilter = dataProcessor && dataProcessor.dataFilter,
+            CLS = "ke_pagebreak",
+            TYPE = "div";
+        if (dataFilter) {
+            dataFilter.addRules({
+                elements :
+                {
+                    div : function(element) {
+                        var attributes = element.attributes,
+                            style = attributes && attributes.style,
+                            child = style && element.children.length == 1
+                                && element.children[ 0 ],
+                            childStyle = child && ( child.name == 'span' )
+                                && child.attributes.style;
 
-                    if (childStyle
-                        && ( /page-break-after\s*:\s*always/i ).test(style)
-                        && ( /display\s*:\s*none/i ).test(childStyle))
-                        return dataProcessor.createFakeParserElement(element,
-                            CLS,
-                            TYPE);
+                        if (childStyle
+                            && ( /page-break-after\s*:\s*always/i ).test(style)
+                            && ( /display\s*:\s*none/i ).test(childStyle))
+                            return dataProcessor.createFakeParserElement(element,
+                                CLS,
+                                TYPE);
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
 
         var mark_up = '<div' +
             ' style="page-break-after: always; ">' +
@@ -62,4 +63,8 @@ KISSY.Editor.add("pagebreak", function(editor) {
                 editor.fire("save");
             }
         });
+    });
+}, {
+    attach:false,
+    "requires":["fakeobjects"]
 });

@@ -4,7 +4,7 @@
  */
 KISSY.Editor.add("preview", function(editor) {
 
-    editor.ready(function() {
+    editor.addPlugin("preview", function() {
         editor.addButton("preview", {
             title:"预览",
             contentCls:"ke-toolbar-preview",
@@ -51,4 +51,6 @@ KISSY.Editor.add("preview", function(editor) {
             }
         });
     });
+},{
+    attach:false
 });

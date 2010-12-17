@@ -213,11 +213,11 @@ KISSY.Editor.add("maximize/support", function() {
 
             editorWrap.css({
                 position:"absolute",
-                zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE),
+                zIndex:KE.baseZIndex(KE.zIndexManager.MAXIMIZE),
                 width:viewportWidth + "px"
             });
             iframe.css({
-                zIndex:editor.baseZIndex(KE.zIndexManager.MAXIMIZE - 5),
+                zIndex:KE.baseZIndex(KE.zIndexManager.MAXIMIZE - 5),
                 height:viewportHeight + "px",
                 width:viewportWidth + "px"
             });

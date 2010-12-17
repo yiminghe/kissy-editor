@@ -3,12 +3,12 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    var S = KISSY,
+    editor.addPlugin("link", function(){
+        var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
         KEStyle = KE.Style,
         _ke_saved_href = "_ke_saved_href",
-        BubbleView = KE.BubbleView,
         link_Style = {
             element : 'a',
             attributes:{
@@ -57,86 +57,86 @@ KISSY.Editor.add("link", function(editor) {
         return re;
     }
 
-    editor.ready(function() {
 
-        var context = editor.addButton("link", {
-            contentCls:"ke-toolbar-link",
-            title:"插入链接",
-            mode:KE.WYSIWYG_MODE,
-            //得到当前选中的 link a
-            _getSelectedLink:function() {
-                var self = this,
-                    editor = self.editor,
-                    //ie焦点很容易丢失,tipwin没了
-                    selection = editor.getSelection(),
-                    common = selection && selection.getStartElement();
-                if (common) {
-                    common = checkLink(common);
-                }
-                return common;
-            },
-            _getSelectionLinkUrl:function() {
-                var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
-                if (link) return link.attr(_ke_saved_href) || link.attr("href");
-            },
-            _removeLink:function(a) {
-                var self = this,
-                    editor = self.editor;
-                editor.fire("save");
-                var sel = editor.getSelection(),
-                    range = sel.getRanges()[0];
-                if (range && range.collapsed) {
-                    var bs = sel.createBookmarks();
-                    //不使用核心 styles ，直接清除元素标记即可。
-                    a._4e_remove(true);
-                    sel.selectBookmarks(bs);
-                } else if (range) {
-                    var attrs = getAttributes(a[0]);
-                    new KEStyle(link_Style, attrs).remove(editor.document);
-                }
-                editor.fire("save");
-                editor.notifySelectionChange();
-            },
-            _link:function(attr) {
-                var self = this,
-                    cfg = self.cfg,
-                    editor = self.editor,
-                    link = cfg._getSelectedLink.call(self);
-                //注意同步，取的话要从 _ke_saved_href 取原始值的
-                attr["_ke_saved_href"] = attr.href;
-                //是修改行为
-                if (link) {
-                    editor.fire("save");
-                    link.attr(attr);
-                    editor.fire("save");
-                } else {
-                    var sel = editor.getSelection(),
-                        range = sel && sel.getRanges()[0];
-                    //编辑器没有焦点或没有选择区域时直接插入链接地址
-                    if (!range || range.collapsed) {
-
-                        var a = new Node("<a>" + attr.href + "</a>",
-                            attr, editor.document);
-                        editor.insertElement(a);
-                    } else {
-                        editor.fire("save");
-                        
-                        var linkStyle = new KEStyle(link_Style, attr);
-                        linkStyle.apply(editor.document);
-                        editor.fire("save");
-                    }
-                }
-                editor.notifySelectionChange();
-            },
-            offClick:function() {
-                var self = this;
-                self.editor.useDialog("link/dialog", function(dialog) {
-                    dialog.show(self);
-                });
+    var context = editor.addButton("link", {
+        contentCls:"ke-toolbar-link",
+        title:"插入链接",
+        mode:KE.WYSIWYG_MODE,
+        //得到当前选中的 link a
+        _getSelectedLink:function() {
+            var self = this,
+                editor = self.editor,
+                //ie焦点很容易丢失,tipwin没了
+                selection = editor.getSelection(),
+                common = selection && selection.getStartElement();
+            if (common) {
+                common = checkLink(common);
             }
-        });
+            return common;
+        },
+        _getSelectionLinkUrl:function() {
+            var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
+            if (link) return link.attr(_ke_saved_href) || link.attr("href");
+        },
+        _removeLink:function(a) {
+            var self = this,
+                editor = self.editor;
+            editor.fire("save");
+            var sel = editor.getSelection(),
+                range = sel.getRanges()[0];
+            if (range && range.collapsed) {
+                var bs = sel.createBookmarks();
+                //不使用核心 styles ，直接清除元素标记即可。
+                a._4e_remove(true);
+                sel.selectBookmarks(bs);
+            } else if (range) {
+                var attrs = getAttributes(a[0]);
+                new KEStyle(link_Style, attrs).remove(editor.document);
+            }
+            editor.fire("save");
+            editor.notifySelectionChange();
+        },
+        _link:function(attr) {
+            var self = this,
+                cfg = self.cfg,
+                editor = self.editor,
+                link = cfg._getSelectedLink.call(self);
+            //注意同步，取的话要从 _ke_saved_href 取原始值的
+            attr["_ke_saved_href"] = attr.href;
+            //是修改行为
+            if (link) {
+                editor.fire("save");
+                link.attr(attr);
+                editor.fire("save");
+            } else {
+                var sel = editor.getSelection(),
+                    range = sel && sel.getRanges()[0];
+                //编辑器没有焦点或没有选择区域时直接插入链接地址
+                if (!range || range.collapsed) {
 
-        BubbleView.register({
+                    var a = new Node("<a>" + attr.href + "</a>",
+                        attr, editor.document);
+                    editor.insertElement(a);
+                } else {
+                    editor.fire("save");
+
+                    var linkStyle = new KEStyle(link_Style, attr);
+                    linkStyle.apply(editor.document);
+                    editor.fire("save");
+                }
+            }
+            editor.notifySelectionChange();
+        },
+        offClick:function() {
+            var self = this;
+            self.editor.useDialog("link/dialog", function(dialog) {
+                dialog.show(self);
+            });
+        }
+    });
+
+    KE.use("bubbleview", function() {
+        KE.BubbleView.register({
             pluginName:"link",
             editor:editor,
             pluginContext:context,
@@ -171,6 +171,7 @@ KISSY.Editor.add("link", function(editor) {
                 });
             }
         });
-
     });
+});},{
+    attach:false
 });

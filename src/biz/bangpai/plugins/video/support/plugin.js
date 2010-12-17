@@ -45,7 +45,7 @@ KISSY.Editor.add("bangpai-video/support", function() {
             attach: false,
             charset:"utf-8",
             path:KE.Utils.debugUrl(
-                "biz/bangpai/plugins/video/" +
+                "../biz/bangpai/plugins/video/" +
                     "dialog/plugin.js")
         }
     });
@@ -55,7 +55,7 @@ KISSY.Editor.add("bangpai-video/support", function() {
             attach: false,
             charset:"utf-8",
             requires:["flash/dialog/support"],
-            path:KE.Utils.debugUrl("biz/bangpai/plugins/video/" +
+            path:KE.Utils.debugUrl("../biz/bangpai/plugins/video/" +
                 "dialog/support/plugin.js")
         }
     });

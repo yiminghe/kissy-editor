@@ -380,4 +380,6 @@ KISSY.Editor.add("table/support", function() {
     };
 
     KE.TableUI = TableUI;
+}, {
+    "requires": ["contextmenu"]
 });

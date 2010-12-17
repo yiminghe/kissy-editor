@@ -12,11 +12,11 @@ KISSY.Editor.add("bangpai-music/support", function() {
         var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
             Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
-                function(evt) {
-                    var t=new S.Node(evt.target);
-                    if (t.hasClass(CLS_XIAMI))
-                        evt.preventDefault();
-                });
+                    function(evt) {
+                        var t = new S.Node(evt.target);
+                        if (t.hasClass(CLS_XIAMI))
+                            evt.preventDefault();
+                    });
         }
     }
 
@@ -25,8 +25,6 @@ KISSY.Editor.add("bangpai-music/support", function() {
             var self = this;
             self._cls = CLS_XIAMI;
             self._type = TYPE_XIAMI;
-            self._contentCls = "ke-toolbar-music";
-            self._tip = "插入虾米音乐";
             self._contextMenu = contextMenu;
             self._flashRules = ["img." + CLS_XIAMI];
         },
@@ -63,10 +61,21 @@ KISSY.Editor.add("bangpai-music/support", function() {
         "bangpai-music/dialog":{
             attach: false,
             charset:"utf-8",
-            requires:["flash/dialog"],
             path:KE.Utils.debugUrl(
-                "biz/bangpai/plugins/music/" +
+                "../biz/bangpai/plugins/music/" +
                     "dialog/plugin.js"
+                )
+        }
+    });
+
+    KE.add({
+        "bangpai-music/dialog/support":{
+            attach: false,
+            charset:"utf-8",
+            requires:["flash/dialog/support"],
+            path:KE.Utils.debugUrl(
+                "../biz/bangpai/plugins/music/" +
+                    "dialog/support/plugin.js"
                 )
         }
     });

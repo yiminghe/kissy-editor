@@ -13,4 +13,6 @@ KISSY.Editor.add("color/dialog", function(editor) {
             }
         });
     });
+},{
+    attach:false
 });

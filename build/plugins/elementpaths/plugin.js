@@ -80,9 +80,10 @@ KISSY.Editor.add("elementpaths", function(editor) {
         })();
     }
 
-    editor.ready(function() {
+
         new KE.ElementPaths({
             editor:editor
         });
-    });
+},{
+    attach:false
 });

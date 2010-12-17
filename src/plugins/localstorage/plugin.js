@@ -17,6 +17,9 @@ KISSY.Editor.add("localstorage", function() {
         }
 
         KE.on("storeReady", rewrite);
+    } else {
+        S.log("localstorage attach more", "warn");
+        return;
     }
     function complete() {
         KE.fire("storeReady");
@@ -33,7 +36,7 @@ KISSY.Editor.add("localstorage", function() {
 
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE['Config'].base +
-        KE.Utils.debugUrl("plugins/localstorage/swfstore.swf?rand=" +
+        KE.Utils.debugUrl("localstorage/swfstore.swf?rand=" +
             (+new Date()));
 
 
@@ -53,4 +56,6 @@ KISSY.Editor.add("localstorage", function() {
     window[STORE].on("contentReady", function() {
         complete();
     });
+}, {
+    "requires":["flashutils","flashbridge"]
 });

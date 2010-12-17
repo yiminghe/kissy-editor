@@ -4,255 +4,198 @@
  */
 KISSY.Editor.add("font", function(editor) {
 
-    function wrapFont(vs) {
-        var v = [];
-        for (var i = 0;
-             i < vs.length;
-             i++) {
-            v.push({
-                name:vs[i],
-                value:vs[i]
-            });
-        }
-        return v;
-    }
-
-    var S = KISSY,
-        KE = S.Editor,
-        KEStyle = KE.Style,
-        TripleButton = KE.TripleButton,
-        pluginConfig = editor.cfg.pluginConfig,
-        Node = S.Node;
-
-    var FONT_SIZES = pluginConfig["font-size"],item,name,attrs;
-
-    if (FONT_SIZES !== false) {
-
-        FONT_SIZES = FONT_SIZES || {};
-
-        S.mix(FONT_SIZES, {
-            items:wrapFont(["8px","10px","12px",
-                "14px","18px","24px",
-                "36px","48px","60px","72px","84px","96px"]),
-            width:"55px"
-        }, false);
-
-        var FONT_SIZE_STYLES = {},
-            FONT_SIZE_ITEMS = [],
-            fontSize_style = {
-                element        : 'span',
-                styles        : { 'font-size' : '#(size)' },
-                overrides    : [
-                    { element : 'font', attributes : { 'size' : null } }
-                ]
-            };
-
-        for (i = 0; i < FONT_SIZES.items.length; i++) {
-            item = FONT_SIZES.items[i];
-            name = item.name;
-            attrs = item.attrs;
-            var size = item.value;
-
-            FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
-                size:size
-            });
-
-            FONT_SIZE_ITEMS.push({
-                name:name,
-                value:size,
-                attrs:attrs
-            });
+    editor.addPlugin("font", function() {
+        function wrapFont(vs) {
+            var v = [];
+            for (var i = 0;
+                 i < vs.length;
+                 i++) {
+                v.push({
+                    name:vs[i],
+                    value:vs[i]
+                });
+            }
+            return v;
         }
 
-        pluginConfig["font-size"] = FONT_SIZES;
-    }
+        var S = KISSY,
+            KE = S.Editor,
+            KEStyle = KE.Style,
+            TripleButton = KE.TripleButton,
+            pluginConfig = editor.cfg.pluginConfig;
 
+        var FONT_SIZES = pluginConfig["font-size"],item,name,attrs;
 
-    /*
-     FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
-     size:"inherit"
-     });
-     */
+        if (FONT_SIZES !== false) {
 
-    var FONT_FAMILIES = pluginConfig["font-family"];
+            FONT_SIZES = FONT_SIZES || {};
 
-    if (FONT_FAMILIES !== false) {
+            S.mix(FONT_SIZES, {
+                items:wrapFont(["8px","10px","12px",
+                    "14px","18px","24px",
+                    "36px","48px","60px","72px","84px","96px"]),
+                width:"55px"
+            }, false);
 
-        FONT_FAMILIES = FONT_FAMILIES || {};
+            var FONT_SIZE_STYLES = {},
+                FONT_SIZE_ITEMS = [],
+                fontSize_style = {
+                    element        : 'span',
+                    styles        : { 'font-size' : '#(size)' },
+                    overrides    : [
+                        { element : 'font', attributes : { 'size' : null } }
+                    ]
+                };
 
-        S.mix(FONT_FAMILIES, {
-            items:[
-                //ie 不认识中文？？？
-                {name:"宋体",value:"SimSun"},
-                {name:"黑体",value:"SimHei"},
-                {name:"隶书",value:"LiSu"},
-                {name:"楷体",value:"KaiTi_GB2312"},
-                {name:"微软雅黑",value:"Microsoft YaHei"},
-                {name:"Georgia",value:"Georgia"},
-                {name:"Times New Roman",value:"Times New Roman"},
-                {name:"Impact",value:"Impact"},
-                {name:"Courier New",value:"Courier New"},
-                {name:"Arial",value:"Arial"},
-                {name:"Verdana",value:"Verdana"},
-                {name:"Tahoma",value:"Tahoma"}
-            ],
-            width:"130px"
-        }, false);
+            for (i = 0; i < FONT_SIZES.items.length; i++) {
+                item = FONT_SIZES.items[i];
+                name = item.name;
+                attrs = item.attrs;
+                var size = item.value;
 
+                FONT_SIZE_STYLES[size] = new KEStyle(fontSize_style, {
+                    size:size
+                });
 
-        var FONT_FAMILY_STYLES = {},
-            FONT_FAMILY_ITEMS = [],
-            fontFamily_style = {
-                element        : 'span',
-                styles        : { 'font-family' : '#(family)' },
-                overrides    : [
-                    { element : 'font', attributes : { 'face' : null } }
-                ]
-            },i;
-
-
-        pluginConfig["font-family"] = FONT_FAMILIES;
-
-
-        for (i = 0; i < FONT_FAMILIES.items.length; i++) {
-            item = FONT_FAMILIES.items[i];
-            name = item.name;
-            attrs = item.attrs || {};
-            var value = item.value;
-            attrs.style = attrs.style || "";
-            attrs.style += ";font-family:" + value;
-            FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
-                family:value
-            });
-            FONT_FAMILY_ITEMS.push({
-                name:name,
-                value:value,
-                attrs:attrs
-            });
-        }
-    }
-
-    /*
-     FONT_FAMILY_STYLES["inherit"] = new KEStyle(fontFamily_style, {
-     family:"inherit"
-     });*/
-
-    if (!KE.FontSelect) {
-        (function() {
-
-
-            function Font(cfg) {
-                var self = this;
-                Font['superclass'].constructor.call(self, cfg);
-                self._init();
+                FONT_SIZE_ITEMS.push({
+                    name:name,
+                    value:size,
+                    attrs:attrs
+                });
             }
 
-            Font.ATTRS = {
-                title:{},
-                html:{},
-                styles:{},
-                editor:{}
-            };
-            var Select = KE.Select;
-            S.extend(Font, S.Base, {
+            pluginConfig["font-size"] = FONT_SIZES;
+        }
 
-                _init:function() {
-                    var self = this,
-                        editor = self.get("editor"),
-                        toolBarDiv = editor.toolBarDiv,
-                        html = self.get("html");
-                    self.el = new Select({
-                        container: toolBarDiv,
-                        doc:editor.document,
-                        width:self.get("width"),
-                        popUpWidth:self.get("popUpWidth"),
-                        title:self.get("title"),
-                        items:self.get("html"),
-                        showValue:self.get("showValue"),
-                        menuContainer:new Node(document.body)
-                    });
 
-                    self.el.on("click", self._vChange, self);
-                    editor.on("selectionChange", self._selectionChange, self);
-                    KE.Utils.sourceDisable(editor, self);
-                },
-                disable:function() {
-                    this.el.set("state", Select.DISABLED);
-                },
-                enable:function() {
-                    this.el.set("state", Select.ENABLED);
-                },
+        /*
+         FONT_SIZE_STYLES["inherit"] = new KEStyle(fontSize_style, {
+         size:"inherit"
+         });
+         */
 
-                _vChange:function(ev) {
-                    var self = this,
-                        editor = self.get("editor"),
-                        v = ev.newVal,
-                        pre = ev.prevVal,
-                        styles = self.get("styles");
-                    editor.focus();
-                    editor.fire("save");
-                    var style = styles[v];
-                    if (v == pre) {
-                        //清除,wildcard pls
-                        //!TODO inherit 小问题，在中间点inherit
-                        style.remove(editor.document);
-                        self.el.set("value", "");
-                    } else {
-                        style.apply(editor.document);
-                    }
-                    editor.fire("save");
-                },
+        var FONT_FAMILIES = pluginConfig["font-family"];
 
-                _selectionChange:function(ev) {
-                    var self = this,
-                        editor = self.get("editor"),
-                        elementPath = ev.path,
-                        elements = elementPath.elements,
-                        styles = self.get("styles");
-                    //S.log(ev);
-                    // For each element into the elements path.
-                    for (var i = 0, element; i < elements.length; i++) {
-                        element = elements[i];
-                        // Check if the element is removable by any of
-                        // the styles.
-                        for (var value in styles) {
-                            if (styles[ value ].checkElementRemovable(element, true)) {
-                                //S.log(value);
-                                self.el.set("value", value);
-                                return;
-                            }
+        if (FONT_FAMILIES !== false) {
+
+            FONT_FAMILIES = FONT_FAMILIES || {};
+
+            S.mix(FONT_FAMILIES, {
+                items:[
+                    //ie 不认识中文？？？
+                    {name:"宋体",value:"SimSun"},
+                    {name:"黑体",value:"SimHei"},
+                    {name:"隶书",value:"LiSu"},
+                    {name:"楷体",value:"KaiTi_GB2312"},
+                    {name:"微软雅黑",value:"Microsoft YaHei"},
+                    {name:"Georgia",value:"Georgia"},
+                    {name:"Times New Roman",value:"Times New Roman"},
+                    {name:"Impact",value:"Impact"},
+                    {name:"Courier New",value:"Courier New"},
+                    {name:"Arial",value:"Arial"},
+                    {name:"Verdana",value:"Verdana"},
+                    {name:"Tahoma",value:"Tahoma"}
+                ],
+                width:"130px"
+            }, false);
+
+
+            var FONT_FAMILY_STYLES = {},
+                FONT_FAMILY_ITEMS = [],
+                fontFamily_style = {
+                    element        : 'span',
+                    styles        : { 'font-family' : '#(family)' },
+                    overrides    : [
+                        { element : 'font', attributes : { 'face' : null } }
+                    ]
+                },i;
+
+
+            pluginConfig["font-family"] = FONT_FAMILIES;
+
+
+            for (i = 0; i < FONT_FAMILIES.items.length; i++) {
+                item = FONT_FAMILIES.items[i];
+                name = item.name;
+                attrs = item.attrs || {};
+                var value = item.value;
+                attrs.style = attrs.style || "";
+                attrs.style += ";font-family:" + value;
+                FONT_FAMILY_STYLES[value] = new KEStyle(fontFamily_style, {
+                    family:value
+                });
+                FONT_FAMILY_ITEMS.push({
+                    name:name,
+                    value:value,
+                    attrs:attrs
+                });
+            }
+        }
+
+        var selectTpl = {
+            click:function(ev) {
+                var self = this,
+                    v = ev.newVal,
+                    pre = ev.prevVal,
+                    styles = self.cfg.styles;
+                editor.focus();
+                editor.fire("save");
+                var style = styles[v];
+                if (v == pre) {
+                    //清除,wildcard pls
+                    //!TODO inherit 小问题，在中间点inherit
+                    style.remove(editor.document);
+                    self.btn.set("value", "");
+                } else {
+                    style.apply(editor.document);
+                }
+                editor.fire("save");
+            },
+
+            selectionChange:function(ev) {
+                var self = this,
+                    elementPath = ev.path,
+                    elements = elementPath.elements,
+                    styles = self.cfg.styles;
+                // For each element into the elements path.
+                for (var i = 0, element; i < elements.length; i++) {
+                    element = elements[i];
+                    // Check if the element is removable by any of
+                    // the styles.
+                    for (var value in styles) {
+                        if (styles[ value ].checkElementRemovable(element, true)) {
+                            //S.log(value);
+                            self.btn.set("value", value);
+                            return;
                         }
                     }
-                    this.el.reset("value");
                 }
-            });
-            KE.FontSelect = Font;
-        })();
-    }
-
+                self.btn.reset("value");
+            }
+        };
 
 
         if (false !== pluginConfig["font-size"]) {
-            new KE.FontSelect({
-                editor:editor,
+            editor.addSelect("font-size", S.mix({
                 title:"大小",
                 width:"30px",
+                mode:KE.WYSIWYG_MODE,
                 showValue:true,
                 popUpWidth:FONT_SIZES.width,
-                styles:FONT_SIZE_STYLES,
-                html:FONT_SIZE_ITEMS
-            });
+                items:FONT_SIZE_ITEMS,
+                styles:FONT_SIZE_STYLES
+            }, selectTpl));
         }
 
         if (false !== pluginConfig["font-family"]) {
-            new KE.FontSelect({
-                editor:editor,
+            editor.addSelect("font-family", S.mix({
                 title:"字体",
                 width:"110px",
+                mode:KE.WYSIWYG_MODE,
                 popUpWidth:FONT_FAMILIES.width,
-                styles:FONT_FAMILY_STYLES,
-                html:FONT_FAMILY_ITEMS
-            });
+                items:FONT_FAMILY_ITEMS,
+                styles:FONT_FAMILY_STYLES
+            }, selectTpl));
         }
 
 
@@ -349,6 +292,7 @@ KISSY.Editor.add("font", function(editor) {
                 })
             }, singleFontTpl));
         }
-
-
+    });
+}, {
+    attach:false
 });

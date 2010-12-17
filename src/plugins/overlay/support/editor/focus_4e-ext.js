@@ -1,9 +1,13 @@
-KISSY.Editor.add("ext-focus", function() {
+KISSY.Editor.add("overlay", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
+    if(KE['UIBase'].Focus) {
+        S.log("ke uibase focus attach more","warn");
+        return;
+    }
 
     function FocusExt() {
         //S.log("FocusExt init");
@@ -97,5 +101,5 @@ KISSY.Editor.add("ext-focus", function() {
     KE['UIBase'].Focus = FocusExt;
 
 }, {
-    host:"overlay"
+    attach:false
 });

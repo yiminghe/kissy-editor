@@ -3,7 +3,8 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    var S = KISSY,
+    editor.addPlugin("link", function(){
+        var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
         KEStyle = KE.Style,
@@ -171,4 +172,6 @@ KISSY.Editor.add("link", function(editor) {
             }
         });
     });
+});},{
+    attach:false
 });

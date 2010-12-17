@@ -3,9 +3,8 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("smiley", function(editor) {
-    var KE = KISSY.Editor;
-
-
+    editor.addPlugin("smiley", function() {
+        var KE = KISSY.Editor;
         var context = editor.addButton("smiley", {
             contentCls:"ke-toolbar-smiley",
             title:"插入表情",
@@ -16,4 +15,7 @@ KISSY.Editor.add("smiley", function(editor) {
         KE.use("smiley/support", function() {
             context.reload(KE.SmileySupport);
         });
+    });
+},{
+    attach:false
 });

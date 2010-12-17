@@ -21,9 +21,8 @@ KISSY.Editor.add("utils", function(KE) {
              */
             debugUrl:function (url) {
                 var debug = S["Config"]["debug"],re;
-                if (!debug) re = url.replace(/\.(js|css)/i, "-min.$1");
-                else if (debug === "dev") {
-                    re = "../src/" + url;
+                if (!debug) {
+                    re = url.replace(/\.(js|css)/i, "-min.$1");
                 } else {
                     re = url
                 }

@@ -1,9 +1,13 @@
-KISSY.Editor.add("ext-focus", function() {
+KISSY.Editor.add("overlay", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
+    if(KE['UIBase'].Focus) {
+        S.log("ke uibase focus attach more","warn");
+        return;
+    }
 
     function FocusExt() {
         //S.log("FocusExt init");
@@ -97,7 +101,7 @@ KISSY.Editor.add("ext-focus", function() {
     KE['UIBase'].Focus = FocusExt;
 
 }, {
-    host:"overlay"
+    attach:false
 });/**
  * custom overlay  for kissy editor
  * @author:yiminghe@gmail.com
@@ -107,14 +111,15 @@ KISSY.Editor.add("overlay", function() {
     var S = KISSY,
         UIBase = S['UIBase'],
         KE = S.Editor;
-    if (KE.Overlay) return;
+    if (KE.Overlay) {
+        S.log("ke overlay attach more");
+        return;
+    }
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
     var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
-        init:function() {
-            //S.log("Overlay4E init");
-        },
+
         syncUI:function() {
             //S.log("_syncUIOverlay4E");
             var self = this;

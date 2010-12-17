@@ -3,7 +3,8 @@
  * @modifier: yiminghe@gmail.com
  */
 KISSY.Editor.add("list", function(editor) {
-    var KE = KISSY.Editor;
+    editor.addPlugin("list", function() {
+        var KE = KISSY.Editor;
 
         var context = editor.addButton("ul", {
             title:"项目列表",
@@ -23,4 +24,8 @@ KISSY.Editor.add("list", function(editor) {
             context.reload(KE.ListSupport);
             contextOl.reload(KE.ListSupport);
         });
+    });
+
+},{
+    attach:false
 });

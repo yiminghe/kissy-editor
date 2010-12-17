@@ -28,13 +28,7 @@ KISSY.Editor.add("zindex", function() {
      * 获得全局最大值
      */
     KE.baseZIndex = function(z) {
-        var r = z,instances = KE.getInstances();
-        for (var i in instances) {
-            if (!instances.hasOwnProperty(i)) return;
-            var instance = instances[i];
-            r = Math.max(r, instance.baseZIndex(z));
-        }
-        return r;
+        return (KE.Config.baseZIndex || 10000) + z;
     };
 
     KE["baseZIndex"] = KE.baseZIndex;

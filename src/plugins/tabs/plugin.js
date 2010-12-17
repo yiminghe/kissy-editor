@@ -10,7 +10,10 @@ KISSY.Editor.add("tabs", function() {
         DIV = "div",
         REL = "rel",
         SELECTED = "ke-tab-selected";
-    if (KE.Tabs) return;
+    if (KE.Tabs) {
+        S.log("ke tabs attach more","warn");
+        return;
+    }
 
     function Tabs(cfg) {
         this.cfg = cfg;

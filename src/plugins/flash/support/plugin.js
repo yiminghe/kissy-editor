@@ -210,7 +210,9 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
+    Flash.Insert = function(editor, src,
+                            attrs, _cls,
+                            _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -228,4 +230,6 @@ KISSY.Editor.add("flash/support", function() {
 
     KE.Flash = Flash;
 
+},{
+    requires:["bubbleview","contextmenu","flashutils"]
 });

@@ -3,40 +3,42 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("removeformat", function(editor) {
-    var S = KISSY,
-        KE = S.Editor,
-        KER = KE.RANGE,
-        ElementPath = KE.ElementPath,
-        KEN = KE.NODE,
-        /**
-         * A comma separated list of elements to be removed
-         * when executing the "remove format" command.
-         * Note that only inline elements are allowed.
-         * @type String
-         * @default 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var'
-         * @example
-         */
-        removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,' +
-            'q,samp,small,span,strike,strong,sub,sup,tt,u,var,s',
-        /**
-         * A comma separated list of elements attributes to be removed
-         * when executing the "remove format" command.
-         * @type String
-         * @default 'class,style,lang,width,height,align,hspace,valign'
-         * @example
-         */
-        removeFormatAttributes = ('class,style,lang,width,height,' +
-            'align,hspace,valign').split(/,/),
-        tagsRegex = new RegExp('^(?:' +
-            removeFormatTags.replace(/,/g, '|') +
-            ')$', 'i');
+
+    editor.addPlugin("removeformat", function() {
+        var S = KISSY,
+            KE = S.Editor,
+            KER = KE.RANGE,
+            ElementPath = KE.ElementPath,
+            KEN = KE.NODE,
+            /**
+             * A comma separated list of elements to be removed
+             * when executing the "remove format" command.
+             * Note that only inline elements are allowed.
+             * @type String
+             * @default 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var'
+             * @example
+             */
+            removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,' +
+                'q,samp,small,span,strike,strong,sub,sup,tt,u,var,s',
+            /**
+             * A comma separated list of elements attributes to be removed
+             * when executing the "remove format" command.
+             * @type String
+             * @default 'class,style,lang,width,height,align,hspace,valign'
+             * @example
+             */
+            removeFormatAttributes = ('class,style,lang,width,height,' +
+                'align,hspace,valign').split(/,/),
+            tagsRegex = new RegExp('^(?:' +
+                removeFormatTags.replace(/,/g, '|') +
+                ')$', 'i');
 
 
-    function removeAttrs(el, attrs) {
-        for (var i = 0; i < attrs.length; i++) {
-            el.removeAttr(attrs[i]);
+        function removeAttrs(el, attrs) {
+            for (var i = 0; i < attrs.length; i++) {
+                el.removeAttr(attrs[i]);
+            }
         }
-    }
 
 
         editor.addButton("removeformat", {
@@ -126,5 +128,9 @@ KISSY.Editor.add("removeformat", function(editor) {
                 editor.fire("save");
             }
         });
+    });
 
+
+},{
+    attach:false
 });

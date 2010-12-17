@@ -159,7 +159,7 @@
         <p>3</p>
         <p>4</p>
     </textarea>
-    
+
 </div>
 
 <div style="width: 60%; margin: 50px auto">
@@ -181,7 +181,7 @@
             var KE = S.Editor;
 
             window.editor = KE("#editor", {
-                 attachForm:true,
+                attachForm:true,
                 //编辑器内弹窗z-index底线，防止互相覆盖
                 baseZIndex:10000,
                 pluginConfig: {
@@ -252,10 +252,13 @@
                             }
                         ],
                         width:"115px"
-                    }
-
+                    },
+                    "flash":{
+                        defaultWidth:"300",
+                        defaultHeight:"300"
+                    },
                     //,"font-family":["song"]
-                    ,"bangpai-upload":{                        
+                    "bangpai-upload":{
                         serverUrl:"/code/upload/upload.jsp",
                         serverParams:{
                             waterMark:function() {

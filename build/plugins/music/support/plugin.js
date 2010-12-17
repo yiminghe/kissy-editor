@@ -13,7 +13,8 @@ KISSY.Editor.add("music/support", function() {
         //只能ie能用？，目前只有firefox,ie支持图片缩放
         var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
-            Event.on(editor.document.body, UA.ie ? 'resizestart' : 'resize',
+            Event.on(editor.document.body,
+                UA.ie ? 'resizestart' : 'resize',
                     function(evt) {
                         var t = new S.Node(evt.target);
                         if (t.hasClass(CLS_MUSIC))
@@ -23,11 +24,13 @@ KISSY.Editor.add("music/support", function() {
     }
 
     function checkMusic(node) {
-        return node._4e_name() === 'img'
-            && (!!node.hasClass(CLS_MUSIC))
-            && node;
+        return  node._4e_name() === 'img' &&
+            (!!node.hasClass(CLS_MUSIC)) && node;
     }
 
+    function getMusicUrl(url) {
+        return url.replace(/^.+niftyplayer\.swf\?file=/, "");
+    }
 
     S.extend(MusicInserter, Flash, {
         _config:function() {
@@ -36,6 +39,9 @@ KISSY.Editor.add("music/support", function() {
             self._type = TYPE_MUSIC;
             self._contextMenu = contextMenu;
             self._flashRules = flashRules;
+        },
+        _getFlashUrl:function() {
+            return getMusicUrl(MusicInserter['superclass']._getFlashUrl.apply(this, arguments));
         }
     });
 
@@ -53,4 +59,6 @@ KISSY.Editor.add("music/support", function() {
             }
         }
     };
+}, {
+    "requires":["flash/support"]
 });

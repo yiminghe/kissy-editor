@@ -7,7 +7,6 @@ KISSY.Editor.add("colorsupport", function() {
         KE = S.Editor,
         Node = S.Node,
         Event = S.Event,
-        Overlay = KE.Overlay,
         DOM = S.DOM;
 
     DOM.addStyleSheet(".ke-color-panel a {" +
@@ -113,7 +112,9 @@ KISSY.Editor.add("colorsupport", function() {
             if (colorWin && colorWin.get("visible")) {
                 colorWin.hide();
             } else {
-                cfg._prepare.call(self, ev);
+                KE.use("overlay", function() {
+                    cfg._prepare.call(self, ev);
+                });
             }
         },
         _prepare:function() {
@@ -124,13 +125,13 @@ KISSY.Editor.add("colorsupport", function() {
                 editor = self.editor,
                 colorPanel;
             initHtml();
-            self.colorWin = new Overlay({
+            self.colorWin = new KE.Overlay({
                 elCls:"ks-popup",
                 content:html,
                 focus4e:false,
                 autoRender:true,
                 width:"170px",
-                zIndex:editor.baseZIndex(KE.zIndexManager.POPUP_MENU)
+                zIndex:KE.baseZIndex(KE.zIndexManager.POPUP_MENU)
             });
 
             var colorWin = self.colorWin;

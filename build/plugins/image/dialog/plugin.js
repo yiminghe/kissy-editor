@@ -6,7 +6,6 @@ KISSY.Editor.add("image/dialog", function(editor) {
         JSON = S['JSON'],
         Node = S.Node,
         Event = S.Event,
-        Dialog = KE.Dialog,
         TIP = "http://",
         DTIP = "自动",
         MARGIN_DEFAULT = 0;
@@ -151,7 +150,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
 
     function prepare() {
 
-        d = new Dialog({
+        d = new KE.Dialog({
             autoRender:true,
             width:500,
             headerContent:"图片",//属性",
@@ -414,15 +413,18 @@ KISSY.Editor.add("image/dialog", function(editor) {
         tab.activate(active);
     }
 
-
-    editor.addDialog("image/dialog", {
-        show:function(_selectedEl) {
-            update(_selectedEl);
-            d.show();
-        },
-        hide:function() {
-            d.hide();
-        }
+    KE.use("overlay,tabs,select", function() {
+        editor.addDialog("image/dialog", {
+            show:function(_selectedEl) {
+                update(_selectedEl);
+                d.show();
+            },
+            hide:function() {
+                d.hide();
+            }
+        });
+        prepare();
     });
-    prepare();
+},{
+    attach:false
 });
