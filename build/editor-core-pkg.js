@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2010-12-17 17:33:46
+ * @buildtime: 2010-12-20 13:41:49
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -88,17 +88,23 @@ KISSY.add("editor", function(S) {
         self["use"] = self.use;
         //配置内部组件载入基路径
         self["Config"]["base"] = Editor["Config"]["base"];
+        self["Config"]["debug"] = Editor["Config"]["debug"];
         //配置内部组件载入文件名
-        self["Config"]['componentJsName'] = "plugin.js?t=2010-12-17 17:33:46";
+        self["Config"]['componentJsName'] = getJSName;
         self.init(textarea);
         return self;
+    }
+
+    function getJSName() {
+        return "plugin-min.js?t=2010-12-20 13:41:49";
     }
 
     S.app(Editor, S.EventTarget);
     //配置内部组件载入基路径
     Editor["Config"]["base"] = S["Config"]["base"] + "editor/plugins/";
+    Editor["Config"]["debug"] = S["Config"]["debug"];
     //配置内部组件载入文件名
-    Editor["Config"]['componentJsName'] = "plugin.js?t=2010-12-17 17:33:46";
+    Editor["Config"]['componentJsName'] = getJSName;
 
     /**
      * @constructor
@@ -134,25 +140,20 @@ KISSY.Editor.add("utils", function(KE) {
         UA = S.UA,
         Event = S.Event,
         Utils = {
-            /**
-             * for debug and production switch
-             * @param url {string}
-             * @return {string}
-             */
-            debugUrl:function (url) {
-                var debug = S["Config"]["debug"],re;
-                if (!debug) {
-                    re = url.replace(/\.(js|css)/i, "-min.$1");
-                } else {
-                    re = url
+            debugUrl:function(url) {
+                url = url.replace(/-min\.(js|css)/i, ".$1");
+                if (!KE["Config"].debug) {
+                    url = url.replace(/\.(js|css)/i, "-min.$1");
                 }
-                if (re.indexOf("?") != -1) {
-                    re += "&";
-                } else {
-                    re += "?";
+                if (url.indexOf("?t") == -1) {
+                    if (url.indexOf("?") != -1) {
+                        url += "&";
+                    } else {
+                        url += "?";
+                    }
+                    url += "t=2010-12-20 13:41:49";
                 }
-                re += "t=" + encodeURIComponent("2010-12-17 16:59:33");
-                return  re;
+                return KE["Config"].base + url;
             },
             /**
              * 懒惰一下
@@ -2171,11 +2172,7 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @const
          */
-        ke_editor_status = ".ke-editor-status",
-        /**
-         * @const
-         */
-        CSS_FILE = Utils.debugUrl("../theme/editor-iframe.css");
+        ke_editor_status = ".ke-editor-status";
 
     /**
      *
@@ -2184,6 +2181,7 @@ KISSY.Editor.add("definition", function(KE) {
      */
     function prepareIFrameHtml(id, customStyle, customLink) {
         var links = "";
+        var CSS_FILE = KE.Utils.debugUrl("../theme/editor-iframe.css");
         if (customLink) {
             for (var i = 0; i < customLink.length; i++) {
                 links += '<link ' +
@@ -2198,7 +2196,6 @@ KISSY.Editor.add("definition", function(KE) {
             + "<title>${title}</title>"
             + "<link "
             + "href='"
-            + KE["Config"]["base"]
             + CSS_FILE
             + "'" +
             " rel='stylesheet'/>"
@@ -10487,6 +10484,10 @@ KISSY.Editor.add("select", function() {
         S.log("ke select attach more");
         return;
     }
+    /**
+     * @constructor
+     * @param cfg
+     */
     function Select(cfg) {
         var self = this;
         Select['superclass'].constructor.call(self, cfg);

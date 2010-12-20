@@ -14,25 +14,20 @@ KISSY.Editor.add("utils", function(KE) {
         UA = S.UA,
         Event = S.Event,
         Utils = {
-            /**
-             * for debug and production switch
-             * @param url {string}
-             * @return {string}
-             */
-            debugUrl:function (url) {
-                var debug = S["Config"]["debug"],re;
-                if (!debug) {
-                    re = url.replace(/\.(js|css)/i, "-min.$1");
-                } else {
-                    re = url
+            debugUrl:function(url) {
+                url = url.replace(/-min\.(js|css)/i, ".$1");
+                if (!KE["Config"].debug) {
+                    url = url.replace(/\.(js|css)/i, "-min.$1");
                 }
-                if (re.indexOf("?") != -1) {
-                    re += "&";
-                } else {
-                    re += "?";
+                if (url.indexOf("?t") == -1) {
+                    if (url.indexOf("?") != -1) {
+                        url += "&";
+                    } else {
+                        url += "?";
+                    }
+                    url += "t=@TIMESTAMP@";
                 }
-                re += "t=" + encodeURIComponent("@TIMESTAMP@");
-                return  re;
+                return KE["Config"].base + url;
             },
             /**
              * 懒惰一下

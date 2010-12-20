@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2010-12-17 17:33:46
+ * @buildtime: 2010-12-20 13:41:49
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -88,17 +88,23 @@ KISSY.add("editor", function(S) {
         self["use"] = self.use;
         //配置内部组件载入基路径
         self["Config"]["base"] = Editor["Config"]["base"];
+        self["Config"]["debug"] = Editor["Config"]["debug"];
         //配置内部组件载入文件名
-        self["Config"]['componentJsName'] = "plugin.js?t=2010-12-17 17:33:46";
+        self["Config"]['componentJsName'] = getJSName;
         self.init(textarea);
         return self;
+    }
+
+    function getJSName() {
+        return "plugin-min.js?t=2010-12-20 13:41:49";
     }
 
     S.app(Editor, S.EventTarget);
     //配置内部组件载入基路径
     Editor["Config"]["base"] = S["Config"]["base"] + "editor/plugins/";
+    Editor["Config"]["debug"] = S["Config"]["debug"];
     //配置内部组件载入文件名
-    Editor["Config"]['componentJsName'] = "plugin.js?t=2010-12-17 17:33:46";
+    Editor["Config"]['componentJsName'] = getJSName;
 
     /**
      * @constructor

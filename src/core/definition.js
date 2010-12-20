@@ -64,11 +64,7 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @const
          */
-        ke_editor_status = ".ke-editor-status",
-        /**
-         * @const
-         */
-        CSS_FILE = Utils.debugUrl("../theme/editor-iframe.css");
+        ke_editor_status = ".ke-editor-status";
 
     /**
      *
@@ -77,6 +73,7 @@ KISSY.Editor.add("definition", function(KE) {
      */
     function prepareIFrameHtml(id, customStyle, customLink) {
         var links = "";
+        var CSS_FILE = KE.Utils.debugUrl("../theme/editor-iframe.css");
         if (customLink) {
             for (var i = 0; i < customLink.length; i++) {
                 links += '<link ' +
@@ -91,7 +88,6 @@ KISSY.Editor.add("definition", function(KE) {
             + "<title>${title}</title>"
             + "<link "
             + "href='"
-            + KE["Config"]["base"]
             + CSS_FILE
             + "'" +
             " rel='stylesheet'/>"

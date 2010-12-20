@@ -25,6 +25,10 @@ KISSY.Editor.add("select", function() {
         S.log("ke select attach more");
         return;
     }
+    /**
+     * @constructor
+     * @param cfg
+     */
     function Select(cfg) {
         var self = this;
         Select['superclass'].constructor.call(self, cfg);

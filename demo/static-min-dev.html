@@ -173,7 +173,7 @@
 <script src="http://yiminghe.github.com/kissy/build/dd/dd-pkg-min.js"></script>
 <script src="http://yiminghe.github.com/kissy/build/overlay/overlay-pkg-min.js"></script>
 
-<script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
+<script src="../build/editor-all-pkg.js?t=20100827a"></script>
 <script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
 <script>
 
@@ -189,6 +189,7 @@
             KE.Config.base = base + "build/plugins/";
             //编辑器内弹窗 z-index 底限，防止互相覆盖
             KE.Config.baseZIndex = 10000;
+            //S.Config.debug=false;
             //if(false)
             window.editor = KE("#editor", {
                 attachForm:true,
