@@ -233,6 +233,21 @@ KISSY.Editor.add("image/dialog", function(editor) {
             });
             uploadIframe = null;
         });
+        function getFileSize(file) {
+            if (file.files) {
+                return file.files[0].size;
+            } else {
+                try {
+                    var fso = new ActiveXObject("Scripting.FileSystemObject");
+                    var file = fso.GetFile(file.value);
+                    return file.size;
+                } catch(e) {
+                    S.log(e.message);
+                }
+            }
+            return 0;
+        }
+
         ok.on("click", function() {
             if (tab.activate() == "local" && cfg) {
 
@@ -248,6 +263,11 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     //清除已选文件， ie 不能使用 val("")
                     uploadForm[0].reset();
                     imgLocalUrl.val(warning);
+                    return;
+                }
+                var size = (getFileSize(fileInput[0]));
+                if (sizeLimit && sizeLimit < (size / 1000)) {
+                    alert("上传图片最大：" + sizeLimit / 1000 + "M");
                     return;
                 }
                 d.loading();
@@ -425,6 +445,6 @@ KISSY.Editor.add("image/dialog", function(editor) {
         });
         prepare();
     });
-},{
+}, {
     attach:false
 });
