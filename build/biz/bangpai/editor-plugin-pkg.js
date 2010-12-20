@@ -152,7 +152,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
         "bangpai-music/dialog":{
             attach: false,
             charset:"utf-8",
-            path:KE.Utils.debugUrl(
+            fullpath:KE.Utils.debugUrl(
                 "../biz/bangpai/plugins/music/" +
                     "dialog/plugin.js"
                 )
@@ -164,7 +164,7 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             attach: false,
             charset:"utf-8",
             requires:["flash/dialog/support"],
-            path:KE.Utils.debugUrl(
+            fullpath:KE.Utils.debugUrl(
                 "../biz/bangpai/plugins/music/" +
                     "dialog/support/plugin.js"
                 )
@@ -261,7 +261,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "bangpai-upload/dialog":{
                 attach: false,
                 charset:"utf-8",
-                path:KE.Utils.debugUrl(
+                fullpath:KE.Utils.debugUrl(
                     "../biz/bangpai/plugins/upload/" +
                         "dialog/plugin.js"
                     )
@@ -274,7 +274,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 attach: false,
                 charset:"utf-8",
                 requires:["progressbar","localstorage","overlay"],
-                path:KE.Utils.debugUrl(
+                fullpath:KE.Utils.debugUrl(
                     "../biz/bangpai/plugins/upload/" +
                         "dialog/support/plugin.js"
                     )
@@ -481,7 +481,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
         "bangpai-video/dialog":{
             attach: false,
             charset:"utf-8",
-            path:KE.Utils.debugUrl(
+            fullpath:KE.Utils.debugUrl(
                 "../biz/bangpai/plugins/video/" +
                     "dialog/plugin.js")
         }
@@ -492,7 +492,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             attach: false,
             charset:"utf-8",
             requires:["flash/dialog/support"],
-            path:KE.Utils.debugUrl("../biz/bangpai/plugins/video/" +
+            fullpath:KE.Utils.debugUrl("../biz/bangpai/plugins/video/" +
                 "dialog/support/plugin.js")
         }
     });

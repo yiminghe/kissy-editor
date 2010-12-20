@@ -7,7 +7,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
             "bangpai-upload/dialog":{
                 attach: false,
                 charset:"utf-8",
-                path:KE.Utils.debugUrl(
+                fullpath:KE.Utils.debugUrl(
                     "../biz/bangpai/plugins/upload/" +
                         "dialog/plugin.js"
                     )
@@ -20,7 +20,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 attach: false,
                 charset:"utf-8",
                 requires:["progressbar","localstorage","overlay"],
-                path:KE.Utils.debugUrl(
+                fullpath:KE.Utils.debugUrl(
                     "../biz/bangpai/plugins/upload/" +
                         "dialog/support/plugin.js"
                     )

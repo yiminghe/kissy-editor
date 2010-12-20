@@ -17,7 +17,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
         Dialog = KE.Dialog,
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
-        movie =KE.Utils.debugUrl("../uploader/uploader.longzang.swf"),
+        movie =KE.Utils.debugUrl("uploader/uploader.longzang.swf"),
         progressBars = {},
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";

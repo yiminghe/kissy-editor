@@ -61,7 +61,7 @@ KISSY.Editor.add("bangpai-music/support", function() {
         "bangpai-music/dialog":{
             attach: false,
             charset:"utf-8",
-            path:KE.Utils.debugUrl(
+            fullpath:KE.Utils.debugUrl(
                 "../biz/bangpai/plugins/music/" +
                     "dialog/plugin.js"
                 )
@@ -73,7 +73,7 @@ KISSY.Editor.add("bangpai-music/support", function() {
             attach: false,
             charset:"utf-8",
             requires:["flash/dialog/support"],
-            path:KE.Utils.debugUrl(
+            fullpath:KE.Utils.debugUrl(
                 "../biz/bangpai/plugins/music/" +
                     "dialog/support/plugin.js"
                 )
