@@ -22,6 +22,7 @@ KISSY.Editor.add("image", function(editor) {
             + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
             + '';
         //重新采用form提交，不采用flash，国产浏览器很多问题
+
         var context = editor.addButton("image", {
             contentCls:"ke-toolbar-image",
             title:"插入图片",
@@ -121,6 +122,6 @@ KISSY.Editor.add("image", function(editor) {
             });
         });
     });
-},{
+}, {
     attach:false
 });

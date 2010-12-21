@@ -126,10 +126,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
         "</div>",
         footHtml = "<div style='padding:5px 20px 20px;'><a class='ke-img-insert ke-button' " +
             "style='margin-right:30px;'>确定</a> " +
-            "<a  class='ke-img-cancel ke-button'>取消</a></div>",
-        //不要加g：http://yiminghe.javaeye.com/blog/581347
-        surfix_reg = /(png|jpg|jpeg|gif)$/i,
-        surfix_warning = "只允许后缀名为png,jpg,jpeg,gif的图片";
+            "<a  class='ke-img-cancel ke-button'>取消</a></div>";
+
 
     var d,
         tab,
@@ -146,7 +144,12 @@ KISSY.Editor.add("image/dialog", function(editor) {
         warning = "请点击浏览上传图片",
         selectedEl,
         cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] ||
-            null;
+            null,
+        surfix = cfg && cfg["surfix"] || "png,jpg,jpeg,gif";
+
+    var //不要加g：http://yiminghe.javaeye.com/blog/581347
+        surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
+        surfix_warning = "只允许后缀名为" + surfix + "的图片";
 
     function prepare() {
 
@@ -234,13 +237,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
             uploadIframe = null;
         });
         function getFileSize(file) {
-            if (file.files) {
-                return file.files[0].size;
-            } else {
+            if (file['files']) {
+                return file['files'][0].size;
+            } else if (1 > 2) {
                 try {
                     var fso = new ActiveXObject("Scripting.FileSystemObject");
-                    var file = fso.GetFile(file.value);
-                    return file.size;
+                    var file2 = fso['GetFile'](file.value);
+                    return file2.size;
                 } catch(e) {
                     S.log(e.message);
                 }
@@ -283,11 +286,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
                             .replace(/\r|\n/g, "");
                         d.unloading();
                         try {
+                            //ie parse error,不抛异常
                             data = JSON.parse(data);
                         } catch(e) {
                             S.log(data);
-                            data = {error:"服务器出错，请重试"};
+                            data = null;
                         }
+                        if (!data) data = {error:"服务器出错，请重试"};
                         if (data.error) {
                             alert(data.error);
                             return;

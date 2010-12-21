@@ -378,14 +378,15 @@ xiami 音乐
                 pluginConfig: {
                     "image":{
                         upload:{
-                            serverUrl:"/code/upload/upload.jsp",
+                            serverUrl:"/code/upload/web/upload.jsp",
                             serverParams:{
                                 waterMark:function() {
                                     return S.one("#ke_img_up_watermark_1")[0].checked;
                                 }
                             },
+                            surfix:"png,jpg,jpeg,gif",
                             fileInput:"Filedata",
-                            sizeLimit:10,//k
+                            sizeLimit:1000,//k
                             extraHtml:"<p style='margin-top:10px;'><input type='checkbox' id='ke_img_up_watermark_1' checked='checked'> 图片加水印，防止别人盗用</p>"
                         }
                     },
@@ -460,6 +461,18 @@ xiami 音乐
                     },
                     "resize":{
                         direction:["y"]
+                    },
+
+                    dragupload:{
+                        surfix:"png,jpg,jpeg,gif",
+                        fileInput:"Filedata",
+                        sizeLimit:1000,
+                        serverUrl:"/code/upload/web/upload.jsp",
+                        serverParams:{
+                            waterMark:function() {
+                                return true;
+                            }
+                        }
                     }
                 }
             };
@@ -479,7 +492,7 @@ xiami 音乐
                     "smiley,separator,table,resize," +
                     "draft," +
                     "bangpai-upload," +
-                    "pagebreak,separator,maximize");
+                    "pagebreak,separator,maximize,dragupload");
 
             //window.editor3 = KE("#editor2", S.clone(cfg)).use("separator,undo");
         });
