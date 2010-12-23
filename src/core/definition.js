@@ -244,6 +244,23 @@ KISSY.Editor.add("definition", function(KE) {
             if (self.cfg['attachForm'] && textarea[0].form)
                 self._attachForm();
         },
+
+        destroy:function() {
+            var self = this;
+            KE.focusManager.remove(self);
+            Event.remove(self.document);
+            Event.remove(DOM._4e_getWin(self.document));
+            var plugins = self.__plugins || [];
+            for (var i in plugins) {
+                if (plugins.hasOwnProperty(i)) {
+                    var p = plugins[i];
+                    if (p.destroy) {
+                        p.destroy();
+                    }
+                }
+            }
+            self.detach();
+        },
         /**
          *  @this {KISSY.Editor}
          */
@@ -294,8 +311,12 @@ KISSY.Editor.add("definition", function(KE) {
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        }
-        ,
+        },
+        destroyDialog:function(name) {
+            var d = this._dialogs[name];
+            d && d.destroy();
+            this._dialogs[name] = null;
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -573,7 +594,7 @@ KISSY.Editor.add("definition", function(KE) {
             for (var i = 0; i < requires.length; i++) {
                 this.usePlugin(requires[i]);
             }
-            plugin.func.call(this);
+            plugin.func.call(plugin);
             plugin.status = 1;
         },
         /**

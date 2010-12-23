@@ -50,12 +50,19 @@ KISSY.Editor.add("flash", function(editor) {
             context && context.reload({
                 offClick:function() {
                     flash.show();
+                },
+                destroy:function() {
+                    flash.destroy();
                 }
             })
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
-},{
+}, {
     attach:false,
     requires:["fakeobjects"]
 });

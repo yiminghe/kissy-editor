@@ -104,6 +104,7 @@ KISSY.Editor.add("colorsupport", function() {
             "</div>";
     }
 
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     KE.ColorSupport = {
         offClick:function(ev) {
             var self = this,
@@ -151,6 +152,9 @@ KISSY.Editor.add("colorsupport", function() {
             });
             cfg._prepare = cfg._show;
             cfg._show.call(self);
+
+            addRes.call(self, colorPanel, colorWin, others);
+
         },
         _show:function() {
             var self = this,
@@ -208,6 +212,16 @@ KISSY.Editor.add("colorsupport", function() {
                 }).remove(doc);
             }
             editor.fire("save");
+        },
+
+        destroy:function() {
+            destroyRes.call(this);
+            var self = this,
+                editor = self.editor,
+                cfg = self.cfg,
+                doc = document;
+            Event.remove(doc, "click", cfg._hidePanel, self);
+            editor.destroyDialog("color/dialog")
         }
     };
 });

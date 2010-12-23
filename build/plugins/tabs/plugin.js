@@ -11,7 +11,7 @@ KISSY.Editor.add("tabs", function() {
         REL = "rel",
         SELECTED = "ke-tab-selected";
     if (KE.Tabs) {
-        S.log("ke tabs attach more","warn");
+        S.log("ke tabs attach more", "warn");
         return;
     }
 
@@ -92,6 +92,13 @@ KISSY.Editor.add("tabs", function() {
             var info = this.getTab(n);
             info.tab.addClass(SELECTED);
             info.content.show();
+        },
+        destroy:function() {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs;
+            tabs.detach();
+            tabs.remove();
         }
     });
 

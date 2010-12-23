@@ -3,6 +3,7 @@ KISSY.Editor.add("color", function(editor) {
         var S = KISSY,
             KE = S.Editor;
         var pluginConfig = editor.cfg.pluginConfig;
+        var destroys = [];
         if (false !== pluginConfig["forecolor"]) {
             (function() {
                 var COLOR_STYLES = {
@@ -25,6 +26,9 @@ KISSY.Editor.add("color", function(editor) {
                 KE.use("colorsupport", function() {
                     context.reload(KE.ColorSupport);
                 });
+                destroys.push(function() {
+                    context.destroy();
+                });
             })();
         }
         if (false !== pluginConfig["bgcolor"]) {
@@ -43,9 +47,19 @@ KISSY.Editor.add("color", function(editor) {
                 KE.use("colorsupport", function() {
                     context.reload(KE.ColorSupport);
                 });
+                destroys.push(function() {
+                    context.destroy();
+                });
             })();
         }
+
+
+        this.destroy = function() {
+            for (var i = 0; i < destroys.length; i++) {
+                destroys[i]();
+            }
+        }
     });
-},{
+}, {
     attach:false
 });

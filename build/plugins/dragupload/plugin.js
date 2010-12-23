@@ -62,7 +62,7 @@ KISSY.Editor.add("dragupload", function(editor) {
         }
     });
 
-    if (!XMLHttpRequest.prototype.sendAsBinary) {
+    if (window['XMLHttpRequest'] && !XMLHttpRequest.prototype.sendAsBinary) {
         XMLHttpRequest.prototype.sendAsBinary = function(datastr, contentType) {
             var bb = new BlobBuilder();
             var len = datastr.length;
@@ -94,13 +94,18 @@ KISSY.Editor.add("dragupload", function(editor) {
             xhr.open("POST", serverUrl, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
-                    if ((xhr.status >= 200 && xhr.status <= 200)
+
+                    if ((xhr.status == 200)
                         ||
                         xhr.status == 304) {
                         if (xhr.responseText != "") {
                             var info = S.JSON.parse(xhr.responseText);
                             img[0].src = info.imgUrl;
                         }
+                    } else {
+                        alert("服务器端出错！");
+                        img._4e_remove();
+                        S.log(xhr);
                     }
                 }
             };

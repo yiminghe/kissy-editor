@@ -47,6 +47,7 @@ KISSY.Editor.add("draft/support", function() {
         this._init();
     }
 
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
         _init:function() {
             var self = this,
@@ -104,23 +105,37 @@ KISSY.Editor.add("draft/support", function() {
                 self.save(false);
             });
 
+            addRes.call(self, save);
+
+
             /*
              监控form提交，每次提交前保存一次，防止出错
              */
             (function() {
                 var textarea = editor.textarea,
                     form = textarea[0].form;
-                form && Event.on(form, "submit", function() {
+
+                function saveF() {
                     self.save(false);
+                }
+
+                form && Event.on(form, "submit", saveF);
+                addRes.call(self, function() {
+                    Event.remove(form, "submit", saveF);
                 });
             })();
 
 
-            setInterval(function() {
+            var timer = setInterval(function() {
                 self.save(true);
             }, self.draftInterval * 60 * 1000);
 
+            addRes.call(self, function() {
+                clearInterval(timer);
+            });
+
             versions.on("click", self.recover, self);
+            addRes.call(self, versions);
             self.holder = holder;
             //KE.Utils.sourceDisable(editor, self);
             if (cfg.draft['helpHtml']) {
@@ -133,11 +148,12 @@ KISSY.Editor.add("draft/support", function() {
                 help.on("click", function() {
                     self._prepareHelp();
                 });
+                addRes.call(self, help);
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
                 self.helpBtn = help.el;
             }
             self._holder = holder;
-
+            addRes.call(self, holder);
         },
         _prepareHelp:function() {
             var self = this,
@@ -178,12 +194,19 @@ KISSY.Editor.add("draft/support", function() {
             });
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
-            Event.on([document,editor.document], "click", function(ev) {
+            function hideHelp() {
                 var t = new Node(ev.target);
                 if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
                 self._help.hide();
-            })
+            }
+
+            Event.on([document,editor.document], "click", hideHelp);
+
+            addRes.call(self, self._help, function() {
+                Event.remove([document,editor.document], "click", hideHelp);
+            });
+
         },
         _realHelp:function() {
             var win = this._help,
@@ -266,6 +289,9 @@ KISSY.Editor.add("draft/support", function() {
                 editor.setData(drafts[v].content);
                 editor.fire("save");
             }
+        },
+        destroy:function() {
+            destroyRes.call(this);
         }
     });
     KE.Draft = Draft;

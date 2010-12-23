@@ -16,6 +16,11 @@ KISSY.Editor.add("image", function(editor) {
                 node;
         };
 
+        var controls = {},
+            addRes = KE.Utils.addRes,
+            destroyRes = KE.Utils.destroyRes;
+
+
         var tipHtml = ' '
             + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
             + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
@@ -43,6 +48,10 @@ KISSY.Editor.add("image", function(editor) {
             }
         });
 
+        addRes.call(controls, context, function() {
+            editor.destroyDialog("image/dialog");
+        });
+
         KE.use("contextmenu", function() {
             var contextMenu = {
                 "图片属性":function(editor) {
@@ -54,15 +63,24 @@ KISSY.Editor.add("image", function(editor) {
                     }
                 }
             };
+
+            function dblshow(ev) {
+                var t = new Node(ev.target);
+                ev.halt();
+                if (checkImg(t)) {
+                    context.call("show", null, t);
+                }
+            }
+
             Event.on(editor.document,
                 "dblclick",
-                    function(ev) {
-                        var t = new Node(ev.target);
-                        ev.halt();
-                        if (checkImg(t)) {
-                            context.call("show", null, t);
-                        }
-                    });
+                dblshow);
+
+            addRes.call(controls, function() {
+                Event.remove(editor.document,
+                    "dblclick",
+                    dblshow);
+            });
             var myContexts = {};
             for (var f in contextMenu) {
                 (function(f) {
@@ -71,12 +89,13 @@ KISSY.Editor.add("image", function(editor) {
                     }
                 })(f);
             }
-            KE.ContextMenu.register({
+            var menu = KE.ContextMenu.register({
                 editor:editor,
                 rules:[checkImg],
                 width:"120px",
                 funcs:myContexts
             });
+            addRes.call(controls, menu);
         });
 
         KE.use("bubbleview", function() {
@@ -120,7 +139,16 @@ KISSY.Editor.add("image", function(editor) {
                     });
                 }
             });
+
+            addRes.call(controls, function() {
+                KE.BubbleView.destroy("image")
+            });
         });
+
+
+        this.destroy = function() {
+            destroyRes.call(controls);
+        };
     });
 }, {
     attach:false

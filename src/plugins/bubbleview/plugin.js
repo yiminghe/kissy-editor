@@ -49,6 +49,14 @@ KISSY.Editor.add("bubbleview", function() {
         return h.bubble;
     }
 
+    BubbleView.destroy = function(pluginName) {
+        var h = holder[pluginName];
+        if (h && h.bubble) {
+            h.bubble.destroy();
+            h.bubble = null;
+        }
+    };
+
     BubbleView.attach = function(cfg) {
         var pluginName = cfg.pluginName;
         var cfgDef = holder[pluginName];
@@ -69,12 +77,10 @@ KISSY.Editor.add("bubbleview", function() {
                 if (!lastElement) return;
                 a = func(lastElement);
                 if (a) {
-
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
                     bubble.hide();
-
                     bubble.show();
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;
@@ -101,7 +107,7 @@ KISSY.Editor.add("bubbleview", function() {
     };
 
     KE.BubbleView = BubbleView;
-},{
+}, {
     attach:false,
     requires:["overlay"]
 });

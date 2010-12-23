@@ -567,6 +567,32 @@ KISSY.Editor.add("utils", function(KE) {
                         ||
                         /\.swf(?:$|\?)/i.test(attributes.src || '')
                     );
+            },
+
+            addRes:function() {
+                this.__res = this.__res || [];
+                var res = this.__res;
+                res.push.apply(res, S.makeArray(arguments));
+            },
+
+            destroyRes:function() {
+                var res = this.__res || [];
+                for (var i = 0; i < res.length; i++) {
+                    var r = res[i];
+                    if (S.isFunction(r)) {
+                        r();
+                    } else {
+                        if (r.detach)
+                            r.detach();
+                        if (r.destroy) {
+                            r.destroy();
+                        }
+                        if (r.nodeType && r.remove) {
+                            r.remove();
+                        }
+                    }
+                }
+                this.__res = [];
             }
         };
 

@@ -10,9 +10,12 @@ KISSY.Editor.add("color/dialog", function(editor) {
             },
             hide:function() {
                 colorPicker.hide();
+            },
+            destroy:function() {
+                colorPicker.destroy();
             }
         });
     });
-},{
+}, {
     attach:false
 });

@@ -4,12 +4,17 @@
  */
 KISSY.Editor.add("draft", function(editor) {
     var S = KISSY,KE = S.Editor;
-
+    editor.addPlugin("draft", function() {
+        var self = this;
         KE.use("draft/support", function() {
             KE.storeReady(function() {
-                new KE.Draft(editor);
+                var d = new KE.Draft(editor);
+                self.destroy = function() {
+                    d.destroy();
+                };
             });
         });
-},{
+    });
+}, {
     attach:false
 });

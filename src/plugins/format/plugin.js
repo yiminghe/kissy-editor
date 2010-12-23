@@ -44,7 +44,7 @@ KISSY.Editor.add("format", function(editor) {
             }
         }
 
-        editor.addSelect("font-family", {
+        var context = editor.addSelect("font-family", {
             items:FORMAT_SELECTION_ITEMS,
             title:"标题",
             width:"100px",
@@ -77,6 +77,11 @@ KISSY.Editor.add("format", function(editor) {
                 }
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 }, {
     attach:false

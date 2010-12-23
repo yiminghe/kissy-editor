@@ -74,16 +74,24 @@ KISSY.Editor.add("elementpaths", function(editor) {
                         statusDom.prepend(a);
                     }
 
+                },
+                destroy:function() {
+                    this.holder.remove();
                 }
             });
             KE.ElementPaths = ElementPaths;
         })();
     }
 
-
-        new KE.ElementPaths({
+    editor.addPlugin("elementpaths", function() {
+        var ep = new KE.ElementPaths({
             editor:editor
         });
-},{
+        this.destroy = function() {
+            ep.destroy();
+        };
+    });
+
+}, {
     attach:false
 });

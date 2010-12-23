@@ -92,7 +92,7 @@ KISSY.Editor.add("select", function() {
         });
 
     };
-
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.extend(Select, S.Base, {
         _init:function() {
             var self = this,
@@ -209,10 +209,16 @@ KISSY.Editor.add("select", function() {
                 focusMgr:false
             }),
                 items = self.get("items");
+            addRes.call(self, menu);
             menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
+
+            addRes.call(self, function() {
+                Event.remove(window, "resize", self._resize, self);
+            });
+
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -238,6 +244,9 @@ KISSY.Editor.add("select", function() {
             }
 
             Event.on(document, "click", deactivate);
+            addRes.call(self, function() {
+                Event.remove(document, "click", deactivate);
+            });
             if (self.get("doc"))
                 Event.on(self.get("doc"), "click", deactivate);
 
@@ -248,7 +257,7 @@ KISSY.Editor.add("select", function() {
             Event.on(menuNode[0], 'mouseenter', function() {
                 self.as.removeClass(ke_menu_selected);
             });
-
+            addRes.call(self, menuNode);
             self.on("afterItemsChange", self._itemsChange, self);
             self.menuNode = menuNode;
         },
@@ -408,6 +417,11 @@ KISSY.Editor.add("select", function() {
                     });
                 }
             });
+        },
+        destroy:function() {
+            destroyRes.call(this);
+            this.el.detach();
+            this.el.remove();
         }
     });
 
@@ -459,6 +473,12 @@ KISSY.Editor.add("select", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function() {
+                    if (btnCfg.destroy) {
+                        btnCfg.destroy.call(context);
+                    }
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {

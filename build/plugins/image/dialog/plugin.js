@@ -151,6 +151,10 @@ KISSY.Editor.add("image/dialog", function(editor) {
         surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
         surfix_warning = "只允许后缀名为" + surfix + "的图片";
 
+    var controls = {},
+        addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
+
     function prepare() {
 
         d = new KE.Dialog({
@@ -161,6 +165,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             footerContent:footHtml,
             mask:true
         });
+        addRes.call(controls, d);
         var content = d.get("el"),
             cancel = content.one(".ke-img-cancel"),
             ok = content.one(".ke-img-insert"),
@@ -172,7 +177,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             tabs:content.one("ul.ke-tabs"),
             contents:content.one("div.ke-image-tabs-content-wrap")
         });
-
+        addRes.call(controls, tab);
         imgLocalUrl.val(warning);
         imgUrl = content.one(".ke-img-url");
         imgHeight = content.one(".ke-img-height");
@@ -194,7 +199,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             }
             imgWidth.val(Math.floor(v * imgRatioValue));
         });
-
+        addRes.call(controls, imgHeight);
 
         imgWidth.on("keyup", function() {
             var v = parseInt(imgWidth.val());
@@ -206,15 +211,14 @@ KISSY.Editor.add("image/dialog", function(editor) {
             }
             imgHeight.val(Math.floor(v / imgRatioValue));
         });
-
+        addRes.call(controls, imgWidth);
         cancel.on("click", function(ev) {
             d.hide();
             ev.halt();
         });
-
+        addRes.call(controls, cancel);
         var loadingCancel = new Node("<a class='ke-button' style='position:absolute;" +
             "z-index:" +
-
             KE.baseZIndex(KE.zIndexManager.LOADING_CANCEL) + ";" +
             "left:-9999px;" +
             "top:-9999px;" +
@@ -236,10 +240,12 @@ KISSY.Editor.add("image/dialog", function(editor) {
             });
             uploadIframe = null;
         });
+        addRes.call(controls, loadingCancel);
         function getFileSize(file) {
             if (file['files']) {
                 return file['files'][0].size;
             } else if (1 > 2) {
+                //ie 会安全警告
                 try {
                     var fso = new ActiveXObject("Scripting.FileSystemObject");
                     var file2 = fso['GetFile'](file.value);
@@ -317,6 +323,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
             }
         });
 
+        addRes.call(controls, ok);
+
         if (cfg) {
             if (cfg['extraHtml']) {
                 content.one(".ke-img-up-extraHtml")
@@ -356,6 +364,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 //去除路径
                 imgLocalUrl.val(file.replace(/.+[\/\\]/, ""));
             });
+            addRes.call(controls, fileInput);
         }
         else {
             tab.remove("local");
@@ -446,6 +455,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
             },
             hide:function() {
                 d.hide();
+            },
+            destroy:function() {
+                destroyRes.call(controls);
             }
         });
         prepare();

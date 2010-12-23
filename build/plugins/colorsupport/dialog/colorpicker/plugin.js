@@ -165,11 +165,13 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
     }
 
     var pickerHtml = "<ul>" +
-        map(ColorGrads([ "red", "orange", "yellow", "green", "cyan", "blue", "purple" ], 5), function(x) {
-            return map(ColorGrads([ "white", "rgb(" + x.join(",") + ")" ,"black" ], 5), function(x) {
-                return "<li><a style='background-color" + ":" + Hex(x) + "' href='#'></a></li>";
-            }).join("");
-        }).join("</ul><ul>") + "</ul>";
+        map(ColorGrads([ "red", "orange", "yellow", "green", "cyan", "blue", "purple" ], 5),
+           function(x) {
+               return map(ColorGrads([ "white", "rgb(" + x.join(",") + ")" ,"black" ], 5),
+                         function(x) {
+                             return "<li><a style='background-color" + ":" + Hex(x) + "' href='#'></a></li>";
+                         }).join("");
+           }).join("</ul><ul>") + "</ul>";
 
 
     var panelHtml = "<div class='ke-color-advanced-picker'>" +
@@ -198,9 +200,11 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
         this._init();
     }
 
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(ColorPicker, {
         _init:function() {
             var self = this;
+            self.__res = [];
             self.win = new KE.Dialog({
                 mask:true,
                 headerContent:"颜色拾取器",
@@ -233,6 +237,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 }, 0);
             });
 
+
             indicatorValue.on("change", function() {
                 var v = S.trim(indicatorValue.val());
                 if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
@@ -241,6 +246,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 }
                 indicator.css("background-color", v);
             });
+
 
             cancel.on("click", function() {
                 self.hide();
@@ -255,6 +261,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                     indicator.css("background-color", c);
                 }
             });
+            addRes.call(self, ok, indicatorValue, cancel, body, self.win);
 
             var defaultColor = "#FF9900";
             self._detailColor(defaultColor);
@@ -268,9 +275,10 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 body = win.get("body"),
                 detailPanel = body.one(".ke-color-advanced-picker-right");
 
-            detailPanel.html(map(ColorGrads(["#ffffff",color,"#000000"], 40), function(x) {
-                return "<a style='background-color:" + Hex(x) + "'></a>";
-            }).join(""));
+            detailPanel.html(map(ColorGrads(["#ffffff",color,"#000000"], 40),
+                                function(x) {
+                                    return "<a style='background-color:" + Hex(x) + "'></a>";
+                                }).join(""));
         },
         show:function(cmd) {
             this.cmd = cmd;
@@ -278,6 +286,9 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
         },
         hide:function() {
             this.win.hide();
+        },
+        destroy:function() {
+            destroyRes.call(this);
         }
     });
 

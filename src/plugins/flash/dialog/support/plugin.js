@@ -212,6 +212,10 @@ KISSY.Editor.add("flash/dialog/support", function() {
                 }
                 editor.notifySelectionChange();
             });
+        },
+
+        destroy:function(){
+            this.d.destroy();
         }
     });
 });

@@ -151,7 +151,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2010-12-20 13:41:49";
+                    url += "t=2010-12-22 16:40:03";
                 }
                 return KE["Config"].base + url;
             },
@@ -693,6 +693,32 @@ KISSY.Editor.add("utils", function(KE) {
                         ||
                         /\.swf(?:$|\?)/i.test(attributes.src || '')
                     );
+            },
+
+            addRes:function() {
+                this.__res = this.__res || [];
+                var res = this.__res;
+                res.push.apply(res, S.makeArray(arguments));
+            },
+
+            destroyRes:function() {
+                var res = this.__res || [];
+                for (var i = 0; i < res.length; i++) {
+                    var r = res[i];
+                    if (S.isFunction(r)) {
+                        r();
+                    } else {
+                        if (r.detach)
+                            r.detach();
+                        if (r.destroy) {
+                            r.destroy();
+                        }
+                        if (r.nodeType && r.remove) {
+                            r.remove();
+                        }
+                    }
+                }
+                this.__res = [];
             }
         };
 
@@ -2352,6 +2378,23 @@ KISSY.Editor.add("definition", function(KE) {
             if (self.cfg['attachForm'] && textarea[0].form)
                 self._attachForm();
         },
+
+        destroy:function() {
+            var self = this;
+            KE.focusManager.remove(self);
+            Event.remove(self.document);
+            Event.remove(DOM._4e_getWin(self.document));
+            var plugins = self.__plugins || [];
+            for (var i in plugins) {
+                if (plugins.hasOwnProperty(i)) {
+                    var p = plugins[i];
+                    if (p.destroy) {
+                        p.destroy();
+                    }
+                }
+            }
+            self.detach();
+        },
         /**
          *  @this {KISSY.Editor}
          */
@@ -2402,8 +2445,12 @@ KISSY.Editor.add("definition", function(KE) {
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        }
-        ,
+        },
+        destroyDialog:function(name) {
+            var d = this._dialogs[name];
+            d && d.destroy();
+            this._dialogs[name] = null;
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -2681,7 +2728,7 @@ KISSY.Editor.add("definition", function(KE) {
             for (var i = 0; i < requires.length; i++) {
                 this.usePlugin(requires[i]);
             }
-            plugin.func.call(this);
+            plugin.func.call(plugin);
             plugin.status = 1;
         },
         /**
@@ -7386,7 +7433,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        
+
         var selection = new KESelection(document);
         // Bookmark the range so we can re-select it after processing.
         var ranges = selection.getRanges();
@@ -7636,11 +7683,11 @@ KISSY.Editor.add("styles", function(KE) {
             tailBookmark = '';
 
         str = str.replace(/(^<span[^>]+_ke_bookmark.*?\/span>)|(<span[^>]+_ke_bookmark.*?\/span>$)/gi,
-            function(str, m1, m2) {
-                m1 && ( headBookmark = m1 );
-                m2 && ( tailBookmark = m2 );
-                return '';
-            });
+                         function(str, m1, m2) {
+                             m1 && ( headBookmark = m1 );
+                             m2 && ( tailBookmark = m2 );
+                             return '';
+                         });
         return headBookmark + str.replace(regexp, replacement) + tailBookmark;
     }
 
@@ -7689,15 +7736,15 @@ KISSY.Editor.add("styles", function(KE) {
             //blockName = preBlock._4e_name(),
             splittedHtml = replace(preBlock._4e_outerHtml(),
                 duoBrRegex,
-                function(match, charBefore, bookmark) {
-                    return charBefore + '</pre>' + bookmark + '<pre>';
-                });
+                                  function(match, charBefore, bookmark) {
+                                      return charBefore + '</pre>' + bookmark + '<pre>';
+                                  });
 
         var pres = [];
         splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
-            function(match, preContent) {
-                pres.push(preContent);
-            });
+                            function(match, preContent) {
+                                pres.push(preContent);
+                            });
         return pres;
     }
 
@@ -7780,9 +7827,9 @@ KISSY.Editor.add("styles", function(KE) {
             // 4. Convert contiguous (i.e. non-singular) spaces or tabs to &nbsp;
             blockHtml = blockHtml.replace(/\n/g, '<br>');
             blockHtml = blockHtml.replace(/[ \t]{2,}/g,
-                function (match) {
-                    return new Array(match.length).join('&nbsp;') + ' ';
-                });
+                                         function (match) {
+                                             return new Array(match.length).join('&nbsp;') + ' ';
+                                         });
 
             var newBlockClone = newBlock._4e_clone();
             newBlockClone.html(blockHtml);
@@ -7948,23 +7995,50 @@ KISSY.Editor.add("styles", function(KE) {
                     // Get the element that holds the entire range.
                     parent = styleRange.getCommonAncestor();
 
+
+                var removeList = {
+                    styles : {},
+                    attrs : {},
+                    // Styles cannot be removed.
+                    blockedStyles : {},
+                    // Attrs cannot be removed.
+                    blockedAttrs : {}
+                };
+
+                var attName, styleName, value;
+
                 // Loop through the parents, removing the redundant attributes
                 // from the element to be applied.
                 while (styleNode && parent && styleNode[0] && parent[0]) {
                     if (parent._4e_name() == elementName) {
-                        for (var attName in def["attributes"]) {
-                            if (styleNode.attr(attName) == parent.attr(attName))
-                                styleNode[0].removeAttribute(attName);
+                        for (attName in def["attributes"]) {
+
+                            if (removeList.blockedAttrs[ attName ]
+                                || !( value = parent.attr(styleName) ))
+                                continue;
+
+                            if (styleNode.attr(attName) == value) {
+                                //removeList.attrs[ attName ] = 1;
+                                styleNode.removeAttr(attName);
+                            }
+                            else
+                                removeList.blockedAttrs[ attName ] = 1;
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
                         //下一次格式xxx为70px
                         //var exit = FALSE;
-                        for (var styleName in def["styles"]) {
-                            if (styleNode._4e_style(styleName) ==
-                                parent._4e_style(styleName)) {
-                                styleNode._4e_style(styleName, "");
+                        for (styleName in def["styles"]) {
+                            if (removeList.blockedStyles[ styleName ]
+                                || !( value = parent._4e_style(styleName) ))
+                                continue;
+
+                            if (styleNode._4e_style(styleName) == value){
+                                //removeList.styles[ styleName ] = 1;
+                                styleNode._4e_style(styleName,"");
                             }
+                            else
+                                removeList.blockedStyles[ styleName ] = 1;
                         }
 
                         if (!styleNode._4e_hasAttributes()) {
@@ -7999,6 +8073,23 @@ KISSY.Editor.add("styles", function(KE) {
                     // We should try to normalize with IE too in some way, somewhere.
                     if (!UA.ie)
                         styleNode[0].normalize();
+                }
+                // Style already inherit from parents, left just to clear up any internal overrides. (#5931)
+                /**
+                 * from koubei
+                 *1.输入ab
+                 2.ctrl-a 设置字体大小 x
+                 3.选中b设置字体大小 y
+                 4.保持选中b,设置字体大小 x
+                 exptected: b 大小为 x
+                 actual: b 大小为 y
+                 */
+                else {
+                    styleNode = new Node(document.createElement("span"));
+                    styleNode[0].appendChild(styleRange.extractContents());
+                    styleRange.insertNode(styleNode);
+                    removeFromInsideElement(self, styleNode);
+                    styleNode._4e_remove(true);
                 }
 
                 // Style applied, let's release the range, so it gets
@@ -8186,9 +8277,9 @@ KISSY.Editor.add("styles", function(KE) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
             .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-            function(match, name, value) {
-                retval[ name ] = value;
-            });
+                    function(match, name, value) {
+                        retval[ name ] = value;
+                    });
         return retval;
     }
 
@@ -10446,6 +10537,10 @@ KISSY.Editor.add("button", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function(){
+                    if(btnCfg['destroy']) btnCfg['destroy'].call(context);
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {
@@ -10551,7 +10646,7 @@ KISSY.Editor.add("select", function() {
         });
 
     };
-
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.extend(Select, S.Base, {
         _init:function() {
             var self = this,
@@ -10668,10 +10763,16 @@ KISSY.Editor.add("select", function() {
                 focusMgr:false
             }),
                 items = self.get("items");
+            addRes.call(self, menu);
             menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
+
+            addRes.call(self, function() {
+                Event.remove(window, "resize", self._resize, self);
+            });
+
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -10697,6 +10798,9 @@ KISSY.Editor.add("select", function() {
             }
 
             Event.on(document, "click", deactivate);
+            addRes.call(self, function() {
+                Event.remove(document, "click", deactivate);
+            });
             if (self.get("doc"))
                 Event.on(self.get("doc"), "click", deactivate);
 
@@ -10707,7 +10811,7 @@ KISSY.Editor.add("select", function() {
             Event.on(menuNode[0], 'mouseenter', function() {
                 self.as.removeClass(ke_menu_selected);
             });
-
+            addRes.call(self, menuNode);
             self.on("afterItemsChange", self._itemsChange, self);
             self.menuNode = menuNode;
         },
@@ -10867,6 +10971,11 @@ KISSY.Editor.add("select", function() {
                     });
                 }
             });
+        },
+        destroy:function() {
+            destroyRes.call(this);
+            this.el.detach();
+            this.el.remove();
         }
     });
 
@@ -10918,6 +11027,12 @@ KISSY.Editor.add("select", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function() {
+                    if (btnCfg.destroy) {
+                        btnCfg.destroy.call(context);
+                    }
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {
@@ -10979,6 +11094,14 @@ KISSY.Editor.add("bubbleview", function() {
         return h.bubble;
     }
 
+    BubbleView.destroy = function(pluginName) {
+        var h = holder[pluginName];
+        if (h && h.bubble) {
+            h.bubble.destroy();
+            h.bubble = null;
+        }
+    };
+
     BubbleView.attach = function(cfg) {
         var pluginName = cfg.pluginName;
         var cfgDef = holder[pluginName];
@@ -10999,12 +11122,10 @@ KISSY.Editor.add("bubbleview", function() {
                 if (!lastElement) return;
                 a = func(lastElement);
                 if (a) {
-
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
                     bubble.hide();
-
                     bubble.show();
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;
@@ -11031,7 +11152,7 @@ KISSY.Editor.add("bubbleview", function() {
     };
 
     KE.BubbleView = BubbleView;
-},{
+}, {
     attach:false,
     requires:["overlay"]
 });/**
@@ -11304,6 +11425,7 @@ KISSY.Editor.add("color", function(editor) {
         var S = KISSY,
             KE = S.Editor;
         var pluginConfig = editor.cfg.pluginConfig;
+        var destroys = [];
         if (false !== pluginConfig["forecolor"]) {
             (function() {
                 var COLOR_STYLES = {
@@ -11326,6 +11448,9 @@ KISSY.Editor.add("color", function(editor) {
                 KE.use("colorsupport", function() {
                     context.reload(KE.ColorSupport);
                 });
+                destroys.push(function() {
+                    context.destroy();
+                });
             })();
         }
         if (false !== pluginConfig["bgcolor"]) {
@@ -11344,10 +11469,20 @@ KISSY.Editor.add("color", function(editor) {
                 KE.use("colorsupport", function() {
                     context.reload(KE.ColorSupport);
                 });
+                destroys.push(function() {
+                    context.destroy();
+                });
             })();
         }
+
+
+        this.destroy = function() {
+            for (var i = 0; i < destroys.length; i++) {
+                destroys[i]();
+            }
+        }
     });
-},{
+}, {
     attach:false
 });/**
  * color support for kissy editor
@@ -11455,6 +11590,7 @@ KISSY.Editor.add("colorsupport", function() {
             "</div>";
     }
 
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     KE.ColorSupport = {
         offClick:function(ev) {
             var self = this,
@@ -11502,6 +11638,9 @@ KISSY.Editor.add("colorsupport", function() {
             });
             cfg._prepare = cfg._show;
             cfg._show.call(self);
+
+            addRes.call(self, colorPanel, colorWin, others);
+
         },
         _show:function() {
             var self = this,
@@ -11559,6 +11698,16 @@ KISSY.Editor.add("colorsupport", function() {
                 }).remove(doc);
             }
             editor.fire("save");
+        },
+
+        destroy:function() {
+            destroyRes.call(this);
+            var self = this,
+                editor = self.editor,
+                cfg = self.cfg,
+                doc = document;
+            Event.remove(doc, "click", cfg._hidePanel, self);
+            editor.destroyDialog("color/dialog")
         }
     };
 });
@@ -11727,7 +11876,13 @@ KISSY.Editor.add("contextmenu", function() {
             }
 
         },
-
+        destroy:function() {
+            var self = this;
+            if (self.el) {
+                self.elDom.children().detach();
+                self.el.destroy();
+            }
+        },
         hide : function() {
             this.el && this.el.hide();
         },
@@ -11759,13 +11914,18 @@ KISSY.Editor.add("contextmenu", function() {
  */
 KISSY.Editor.add("draft", function(editor) {
     var S = KISSY,KE = S.Editor;
-
+    editor.addPlugin("draft", function() {
+        var self = this;
         KE.use("draft/support", function() {
             KE.storeReady(function() {
-                new KE.Draft(editor);
+                var d = new KE.Draft(editor);
+                self.destroy = function() {
+                    d.destroy();
+                };
             });
         });
-},{
+    });
+}, {
     attach:false
 });KISSY.Editor.add("draft/support", function() {
     var S = KISSY,
@@ -11816,6 +11976,7 @@ KISSY.Editor.add("draft", function(editor) {
         this._init();
     }
 
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
         _init:function() {
             var self = this,
@@ -11873,23 +12034,37 @@ KISSY.Editor.add("draft", function(editor) {
                 self.save(false);
             });
 
+            addRes.call(self, save);
+
+
             /*
              监控form提交，每次提交前保存一次，防止出错
              */
             (function() {
                 var textarea = editor.textarea,
                     form = textarea[0].form;
-                form && Event.on(form, "submit", function() {
+
+                function saveF() {
                     self.save(false);
+                }
+
+                form && Event.on(form, "submit", saveF);
+                addRes.call(self, function() {
+                    Event.remove(form, "submit", saveF);
                 });
             })();
 
 
-            setInterval(function() {
+            var timer = setInterval(function() {
                 self.save(true);
             }, self.draftInterval * 60 * 1000);
 
+            addRes.call(self, function() {
+                clearInterval(timer);
+            });
+
             versions.on("click", self.recover, self);
+            addRes.call(self, versions);
             self.holder = holder;
             //KE.Utils.sourceDisable(editor, self);
             if (cfg.draft['helpHtml']) {
@@ -11902,11 +12077,12 @@ KISSY.Editor.add("draft", function(editor) {
                 help.on("click", function() {
                     self._prepareHelp();
                 });
+                addRes.call(self, help);
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
                 self.helpBtn = help.el;
             }
             self._holder = holder;
-
+            addRes.call(self, holder);
         },
         _prepareHelp:function() {
             var self = this,
@@ -11947,12 +12123,19 @@ KISSY.Editor.add("draft", function(editor) {
             });
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
-            Event.on([document,editor.document], "click", function(ev) {
+            function hideHelp() {
                 var t = new Node(ev.target);
                 if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
                 self._help.hide();
-            })
+            }
+
+            Event.on([document,editor.document], "click", hideHelp);
+
+            addRes.call(self, self._help, function() {
+                Event.remove([document,editor.document], "click", hideHelp);
+            });
+
         },
         _realHelp:function() {
             var win = this._help,
@@ -12035,6 +12218,9 @@ KISSY.Editor.add("draft", function(editor) {
                 editor.setData(drafts[v].content);
                 editor.fire("save");
             }
+        },
+        destroy:function() {
+            destroyRes.call(this);
         }
     });
     KE.Draft = Draft;
@@ -12104,7 +12290,7 @@ KISSY.Editor.add("draft", function(editor) {
         }
     });
 
-    if (!XMLHttpRequest.prototype.sendAsBinary) {
+    if (window['XMLHttpRequest'] && !XMLHttpRequest.prototype.sendAsBinary) {
         XMLHttpRequest.prototype.sendAsBinary = function(datastr, contentType) {
             var bb = new BlobBuilder();
             var len = datastr.length;
@@ -12136,13 +12322,18 @@ KISSY.Editor.add("draft", function(editor) {
             xhr.open("POST", serverUrl, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
-                    if ((xhr.status >= 200 && xhr.status <= 200)
+
+                    if ((xhr.status == 200)
                         ||
                         xhr.status == 304) {
                         if (xhr.responseText != "") {
                             var info = S.JSON.parse(xhr.responseText);
                             img[0].src = info.imgUrl;
                         }
+                    } else {
+                        alert("服务器端出错！");
+                        img._4e_remove();
+                        S.log(xhr);
                     }
                 }
             };
@@ -12252,17 +12443,25 @@ KISSY.Editor.add("elementpaths", function(editor) {
                         statusDom.prepend(a);
                     }
 
+                },
+                destroy:function() {
+                    this.holder.remove();
                 }
             });
             KE.ElementPaths = ElementPaths;
         })();
     }
 
-
-        new KE.ElementPaths({
+    editor.addPlugin("elementpaths", function() {
+        var ep = new KE.ElementPaths({
             editor:editor
         });
-},{
+        this.destroy = function() {
+            ep.destroy();
+        };
+    });
+
+}, {
     attach:false
 });
 /**
@@ -12684,12 +12883,19 @@ KISSY.Editor.add("flash", function(editor) {
             context && context.reload({
                 offClick:function() {
                     flash.show();
+                },
+                destroy:function() {
+                    flash.destroy();
                 }
             })
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
-},{
+}, {
     attach:false,
     requires:["fakeobjects"]
 });
@@ -12750,7 +12956,7 @@ KISSY.Editor.add("flash/support", function() {
                 }
             }
             //注册右键，contextmenu时检测
-            ContextMenu.register({
+            self._contextMenu = ContextMenu.register({
                 editor:editor,
                 rules:self._flashRules,
                 width:"120px",
@@ -12806,6 +13012,15 @@ KISSY.Editor.add("flash/support", function() {
             editor.useDialog(self._type + "/dialog", function(dialog) {
                 dialog.show(selected);
             });
+        },
+
+        destroy:function() {
+            var self = this,
+                editor = self.editor;
+            self._contextMenu.destroy();
+            BubbleView.destroy(self._type);
+            Event.remove(editor.document, "dblclick", self._dbclick, self);
+            editor.destroyDialog(self._type + "/dialog");
         }
     });
 
@@ -12827,8 +13042,8 @@ KISSY.Editor.add("flash/support", function() {
      */
     function checkFlash(node) {
         return node._4e_name() === 'img' &&
-            (!!node.hasClass(CLS_FLASH))&&
-                node;
+            (!!node.hasClass(CLS_FLASH)) &&
+            node;
     }
 
     /**
@@ -12905,9 +13120,7 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src,
-                            attrs, _cls,
-                            _type, callback) {
+    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -12925,7 +13138,7 @@ KISSY.Editor.add("flash/support", function() {
 
     KE.Flash = Flash;
 
-},{
+}, {
     requires:["bubbleview","contextmenu","flashutils"]
 });/**
  * simplified flash bridge for yui swf
@@ -13377,7 +13590,11 @@ KISSY.Editor.add("font", function(editor) {
             TripleButton = KE.TripleButton,
             pluginConfig = editor.cfg.pluginConfig;
 
-        var FONT_SIZES = pluginConfig["font-size"],item,name,attrs;
+        var FONT_SIZES = pluginConfig["font-size"],
+            item,
+            name,
+            attrs,
+            controls = [];
 
         if (FONT_SIZES !== false) {
 
@@ -13529,7 +13746,7 @@ KISSY.Editor.add("font", function(editor) {
 
 
         if (false !== pluginConfig["font-size"]) {
-            editor.addSelect("font-size", S.mix({
+            controls.push(editor.addSelect("font-size", S.mix({
                 title:"大小",
                 width:"30px",
                 mode:KE.WYSIWYG_MODE,
@@ -13537,18 +13754,18 @@ KISSY.Editor.add("font", function(editor) {
                 popUpWidth:FONT_SIZES.width,
                 items:FONT_SIZE_ITEMS,
                 styles:FONT_SIZE_STYLES
-            }, selectTpl));
+            }, selectTpl)));
         }
 
         if (false !== pluginConfig["font-family"]) {
-            editor.addSelect("font-family", S.mix({
+            controls.push(editor.addSelect("font-family", S.mix({
                 title:"字体",
                 width:"110px",
                 mode:KE.WYSIWYG_MODE,
                 popUpWidth:FONT_FAMILIES.width,
                 items:FONT_FAMILY_ITEMS,
                 styles:FONT_FAMILY_STYLES
-            }, selectTpl));
+            }, selectTpl)));
         }
 
 
@@ -13588,7 +13805,7 @@ KISSY.Editor.add("font", function(editor) {
         };
 
         if (false !== pluginConfig["font-bold"]) {
-            editor.addButton("font-bold", S.mix({
+            controls.push(editor.addButton("font-bold", S.mix({
                 contentCls:"ke-toolbar-bold",
                 title:"粗体 ",
                 style:new KEStyle({
@@ -13599,11 +13816,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-weight: bold;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-italic"]) {
-            editor.addButton("font-italic", S.mix({
+            controls.push(editor.addButton("font-italic", S.mix({
                 contentCls:"ke-toolbar-italic",
                 title:"斜体 ",
                 style:new KEStyle({
@@ -13614,11 +13831,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-style: italic;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-underline"]) {
-            editor.addButton("font-underline", S.mix({
+            controls.push(editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-underline",
                 title:"下划线 ",
                 style:new KEStyle({
@@ -13628,11 +13845,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'text-decoration: underline;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-strikeThrough"]) {
-            editor.addButton("font-underline", S.mix({
+            controls.push(editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",
                 style:new KEStyle({
@@ -13643,8 +13860,16 @@ KISSY.Editor.add("font", function(editor) {
                         { element : 's' }
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
+
+
+        this.destroy = function() {
+            for (var i = 0; i < controls.length; i++) {
+                var c = controls[i];
+                c.destroy();
+            }
+        };
     });
 }, {
     attach:false
@@ -13695,7 +13920,7 @@ KISSY.Editor.add("format", function(editor) {
             }
         }
 
-        editor.addSelect("font-family", {
+        var context = editor.addSelect("font-family", {
             items:FORMAT_SELECTION_ITEMS,
             title:"标题",
             width:"100px",
@@ -13728,6 +13953,11 @@ KISSY.Editor.add("format", function(editor) {
                 }
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 }, {
     attach:false
@@ -14494,6 +14724,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 lastChild.name == 'input';
         }
 
+        /**
+         *
+         * @param block
+         * @param {boolean=} fromSource
+         */
         function trimFillers(block, fromSource) {
             // If the current node is a block, and if we're converting from source or
             // we're not in IE then search for and remove any tailing BR node.
@@ -14525,7 +14760,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
 
         function extendBlockForOutput(block) {
-            trimFillers(block);
+            trimFillers(block, false);
             if (blockNeedsExtension(block))
                 block.add(new KE.HtmlParser.Text('\xa0'));
         }
@@ -14661,7 +14896,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-},{
+}, {
     attach:false
 });
 /**
@@ -14681,6 +14916,11 @@ KISSY.Editor.add("image", function(editor) {
                 (!/(^|\s+)ke_/.test(node[0].className)) &&
                 node;
         };
+
+        var controls = {},
+            addRes = KE.Utils.addRes,
+            destroyRes = KE.Utils.destroyRes;
+
 
         var tipHtml = ' '
             + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
@@ -14709,6 +14949,10 @@ KISSY.Editor.add("image", function(editor) {
             }
         });
 
+        addRes.call(controls, context, function() {
+            editor.destroyDialog("image/dialog");
+        });
+
         KE.use("contextmenu", function() {
             var contextMenu = {
                 "图片属性":function(editor) {
@@ -14720,15 +14964,24 @@ KISSY.Editor.add("image", function(editor) {
                     }
                 }
             };
+
+            function dblshow(ev) {
+                var t = new Node(ev.target);
+                ev.halt();
+                if (checkImg(t)) {
+                    context.call("show", null, t);
+                }
+            }
+
             Event.on(editor.document,
                 "dblclick",
-                    function(ev) {
-                        var t = new Node(ev.target);
-                        ev.halt();
-                        if (checkImg(t)) {
-                            context.call("show", null, t);
-                        }
-                    });
+                dblshow);
+
+            addRes.call(controls, function() {
+                Event.remove(editor.document,
+                    "dblclick",
+                    dblshow);
+            });
             var myContexts = {};
             for (var f in contextMenu) {
                 (function(f) {
@@ -14737,12 +14990,13 @@ KISSY.Editor.add("image", function(editor) {
                     }
                 })(f);
             }
-            KE.ContextMenu.register({
+            var menu = KE.ContextMenu.register({
                 editor:editor,
                 rules:[checkImg],
                 width:"120px",
                 funcs:myContexts
             });
+            addRes.call(controls, menu);
         });
 
         KE.use("bubbleview", function() {
@@ -14786,7 +15040,16 @@ KISSY.Editor.add("image", function(editor) {
                     });
                 }
             });
+
+            addRes.call(controls, function() {
+                KE.BubbleView.destroy("image")
+            });
         });
+
+
+        this.destroy = function() {
+            destroyRes.call(controls);
+        };
     });
 }, {
     attach:false
@@ -14830,8 +15093,13 @@ KISSY.Editor.add("indent", function(editor) {
                 outdent.call("offClick");
             }
         });
+
+        this.destroy = function() {
+            outdent.destroy();
+            indent.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });
 /*
@@ -17859,7 +18127,7 @@ KISSY.Editor.add("tabs", function() {
         REL = "rel",
         SELECTED = "ke-tab-selected";
     if (KE.Tabs) {
-        S.log("ke tabs attach more","warn");
+        S.log("ke tabs attach more", "warn");
         return;
     }
 
@@ -17940,6 +18208,13 @@ KISSY.Editor.add("tabs", function() {
             var info = this.getTab(n);
             info.tab.addClass(SELECTED);
             info.content.show();
+        },
+        destroy:function() {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs;
+            tabs.detach();
+            tabs.remove();
         }
     });
 

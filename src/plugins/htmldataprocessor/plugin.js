@@ -678,6 +678,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 lastChild.name == 'input';
         }
 
+        /**
+         *
+         * @param block
+         * @param {boolean=} fromSource
+         */
         function trimFillers(block, fromSource) {
             // If the current node is a block, and if we're converting from source or
             // we're not in IE then search for and remove any tailing BR node.
@@ -709,7 +714,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
 
         function extendBlockForOutput(block) {
-            trimFillers(block);
+            trimFillers(block, false);
             if (blockNeedsExtension(block))
                 block.add(new KE.HtmlParser.Text('\xa0'));
         }
@@ -845,6 +850,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-},{
+}, {
     attach:false
 });

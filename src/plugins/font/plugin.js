@@ -24,7 +24,11 @@ KISSY.Editor.add("font", function(editor) {
             TripleButton = KE.TripleButton,
             pluginConfig = editor.cfg.pluginConfig;
 
-        var FONT_SIZES = pluginConfig["font-size"],item,name,attrs;
+        var FONT_SIZES = pluginConfig["font-size"],
+            item,
+            name,
+            attrs,
+            controls = [];
 
         if (FONT_SIZES !== false) {
 
@@ -176,7 +180,7 @@ KISSY.Editor.add("font", function(editor) {
 
 
         if (false !== pluginConfig["font-size"]) {
-            editor.addSelect("font-size", S.mix({
+            controls.push(editor.addSelect("font-size", S.mix({
                 title:"大小",
                 width:"30px",
                 mode:KE.WYSIWYG_MODE,
@@ -184,18 +188,18 @@ KISSY.Editor.add("font", function(editor) {
                 popUpWidth:FONT_SIZES.width,
                 items:FONT_SIZE_ITEMS,
                 styles:FONT_SIZE_STYLES
-            }, selectTpl));
+            }, selectTpl)));
         }
 
         if (false !== pluginConfig["font-family"]) {
-            editor.addSelect("font-family", S.mix({
+            controls.push(editor.addSelect("font-family", S.mix({
                 title:"字体",
                 width:"110px",
                 mode:KE.WYSIWYG_MODE,
                 popUpWidth:FONT_FAMILIES.width,
                 items:FONT_FAMILY_ITEMS,
                 styles:FONT_FAMILY_STYLES
-            }, selectTpl));
+            }, selectTpl)));
         }
 
 
@@ -235,7 +239,7 @@ KISSY.Editor.add("font", function(editor) {
         };
 
         if (false !== pluginConfig["font-bold"]) {
-            editor.addButton("font-bold", S.mix({
+            controls.push(editor.addButton("font-bold", S.mix({
                 contentCls:"ke-toolbar-bold",
                 title:"粗体 ",
                 style:new KEStyle({
@@ -246,11 +250,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-weight: bold;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-italic"]) {
-            editor.addButton("font-italic", S.mix({
+            controls.push(editor.addButton("font-italic", S.mix({
                 contentCls:"ke-toolbar-italic",
                 title:"斜体 ",
                 style:new KEStyle({
@@ -261,11 +265,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'font-style: italic;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-underline"]) {
-            editor.addButton("font-underline", S.mix({
+            controls.push(editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-underline",
                 title:"下划线 ",
                 style:new KEStyle({
@@ -275,11 +279,11 @@ KISSY.Editor.add("font", function(editor) {
                             attributes         : { style:'text-decoration: underline;' }}
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
 
         if (false !== pluginConfig["font-strikeThrough"]) {
-            editor.addButton("font-underline", S.mix({
+            controls.push(editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",
                 style:new KEStyle({
@@ -290,8 +294,16 @@ KISSY.Editor.add("font", function(editor) {
                         { element : 's' }
                     ]
                 })
-            }, singleFontTpl));
+            }, singleFontTpl)));
         }
+
+
+        this.destroy = function() {
+            for (var i = 0; i < controls.length; i++) {
+                var c = controls[i];
+                c.destroy();
+            }
+        };
     });
 }, {
     attach:false

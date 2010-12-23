@@ -163,7 +163,13 @@ KISSY.Editor.add("contextmenu", function() {
             }
 
         },
-
+        destroy:function() {
+            var self = this;
+            if (self.el) {
+                self.elDom.children().detach();
+                self.el.destroy();
+            }
+        },
         hide : function() {
             this.el && this.el.hide();
         },

@@ -38,7 +38,12 @@ KISSY.Editor.add("indent", function(editor) {
                 outdent.call("offClick");
             }
         });
+
+        this.destroy = function() {
+            outdent.destroy();
+            indent.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });

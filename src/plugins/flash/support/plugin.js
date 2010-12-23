@@ -55,7 +55,7 @@ KISSY.Editor.add("flash/support", function() {
                 }
             }
             //注册右键，contextmenu时检测
-            ContextMenu.register({
+            self._contextMenu = ContextMenu.register({
                 editor:editor,
                 rules:self._flashRules,
                 width:"120px",
@@ -111,6 +111,15 @@ KISSY.Editor.add("flash/support", function() {
             editor.useDialog(self._type + "/dialog", function(dialog) {
                 dialog.show(selected);
             });
+        },
+
+        destroy:function() {
+            var self = this,
+                editor = self.editor;
+            self._contextMenu.destroy();
+            BubbleView.destroy(self._type);
+            Event.remove(editor.document, "dblclick", self._dbclick, self);
+            editor.destroyDialog(self._type + "/dialog");
         }
     });
 
@@ -132,8 +141,8 @@ KISSY.Editor.add("flash/support", function() {
      */
     function checkFlash(node) {
         return node._4e_name() === 'img' &&
-            (!!node.hasClass(CLS_FLASH))&&
-                node;
+            (!!node.hasClass(CLS_FLASH)) &&
+            node;
     }
 
     /**
@@ -210,9 +219,7 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src,
-                            attrs, _cls,
-                            _type, callback) {
+    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -230,6 +237,6 @@ KISSY.Editor.add("flash/support", function() {
 
     KE.Flash = Flash;
 
-},{
+}, {
     requires:["bubbleview","contextmenu","flashutils"]
 });

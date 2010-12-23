@@ -170,6 +170,10 @@ KISSY.Editor.add("button", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function(){
+                    if(btnCfg['destroy']) btnCfg['destroy'].call(context);
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {

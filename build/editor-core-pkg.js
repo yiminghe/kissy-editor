@@ -151,7 +151,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2010-12-20 13:41:49";
+                    url += "t=2010-12-22 16:40:03";
                 }
                 return KE["Config"].base + url;
             },
@@ -693,6 +693,32 @@ KISSY.Editor.add("utils", function(KE) {
                         ||
                         /\.swf(?:$|\?)/i.test(attributes.src || '')
                     );
+            },
+
+            addRes:function() {
+                this.__res = this.__res || [];
+                var res = this.__res;
+                res.push.apply(res, S.makeArray(arguments));
+            },
+
+            destroyRes:function() {
+                var res = this.__res || [];
+                for (var i = 0; i < res.length; i++) {
+                    var r = res[i];
+                    if (S.isFunction(r)) {
+                        r();
+                    } else {
+                        if (r.detach)
+                            r.detach();
+                        if (r.destroy) {
+                            r.destroy();
+                        }
+                        if (r.nodeType && r.remove) {
+                            r.remove();
+                        }
+                    }
+                }
+                this.__res = [];
             }
         };
 
@@ -2352,6 +2378,23 @@ KISSY.Editor.add("definition", function(KE) {
             if (self.cfg['attachForm'] && textarea[0].form)
                 self._attachForm();
         },
+
+        destroy:function() {
+            var self = this;
+            KE.focusManager.remove(self);
+            Event.remove(self.document);
+            Event.remove(DOM._4e_getWin(self.document));
+            var plugins = self.__plugins || [];
+            for (var i in plugins) {
+                if (plugins.hasOwnProperty(i)) {
+                    var p = plugins[i];
+                    if (p.destroy) {
+                        p.destroy();
+                    }
+                }
+            }
+            self.detach();
+        },
         /**
          *  @this {KISSY.Editor}
          */
@@ -2402,8 +2445,12 @@ KISSY.Editor.add("definition", function(KE) {
          */
         getDialog:function(name) {
             return this._dialogs[name];
-        }
-        ,
+        },
+        destroyDialog:function(name) {
+            var d = this._dialogs[name];
+            d && d.destroy();
+            this._dialogs[name] = null;
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -2681,7 +2728,7 @@ KISSY.Editor.add("definition", function(KE) {
             for (var i = 0; i < requires.length; i++) {
                 this.usePlugin(requires[i]);
             }
-            plugin.func.call(this);
+            plugin.func.call(plugin);
             plugin.status = 1;
         },
         /**
@@ -7386,7 +7433,7 @@ KISSY.Editor.add("styles", function(KE) {
         // Apply the style to the ranges.
         //ie select 选中期间document得不到range
         document.body.focus();
-        
+
         var selection = new KESelection(document);
         // Bookmark the range so we can re-select it after processing.
         var ranges = selection.getRanges();
@@ -7636,11 +7683,11 @@ KISSY.Editor.add("styles", function(KE) {
             tailBookmark = '';
 
         str = str.replace(/(^<span[^>]+_ke_bookmark.*?\/span>)|(<span[^>]+_ke_bookmark.*?\/span>$)/gi,
-            function(str, m1, m2) {
-                m1 && ( headBookmark = m1 );
-                m2 && ( tailBookmark = m2 );
-                return '';
-            });
+                         function(str, m1, m2) {
+                             m1 && ( headBookmark = m1 );
+                             m2 && ( tailBookmark = m2 );
+                             return '';
+                         });
         return headBookmark + str.replace(regexp, replacement) + tailBookmark;
     }
 
@@ -7689,15 +7736,15 @@ KISSY.Editor.add("styles", function(KE) {
             //blockName = preBlock._4e_name(),
             splittedHtml = replace(preBlock._4e_outerHtml(),
                 duoBrRegex,
-                function(match, charBefore, bookmark) {
-                    return charBefore + '</pre>' + bookmark + '<pre>';
-                });
+                                  function(match, charBefore, bookmark) {
+                                      return charBefore + '</pre>' + bookmark + '<pre>';
+                                  });
 
         var pres = [];
         splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
-            function(match, preContent) {
-                pres.push(preContent);
-            });
+                            function(match, preContent) {
+                                pres.push(preContent);
+                            });
         return pres;
     }
 
@@ -7780,9 +7827,9 @@ KISSY.Editor.add("styles", function(KE) {
             // 4. Convert contiguous (i.e. non-singular) spaces or tabs to &nbsp;
             blockHtml = blockHtml.replace(/\n/g, '<br>');
             blockHtml = blockHtml.replace(/[ \t]{2,}/g,
-                function (match) {
-                    return new Array(match.length).join('&nbsp;') + ' ';
-                });
+                                         function (match) {
+                                             return new Array(match.length).join('&nbsp;') + ' ';
+                                         });
 
             var newBlockClone = newBlock._4e_clone();
             newBlockClone.html(blockHtml);
@@ -7948,23 +7995,50 @@ KISSY.Editor.add("styles", function(KE) {
                     // Get the element that holds the entire range.
                     parent = styleRange.getCommonAncestor();
 
+
+                var removeList = {
+                    styles : {},
+                    attrs : {},
+                    // Styles cannot be removed.
+                    blockedStyles : {},
+                    // Attrs cannot be removed.
+                    blockedAttrs : {}
+                };
+
+                var attName, styleName, value;
+
                 // Loop through the parents, removing the redundant attributes
                 // from the element to be applied.
                 while (styleNode && parent && styleNode[0] && parent[0]) {
                     if (parent._4e_name() == elementName) {
-                        for (var attName in def["attributes"]) {
-                            if (styleNode.attr(attName) == parent.attr(attName))
-                                styleNode[0].removeAttribute(attName);
+                        for (attName in def["attributes"]) {
+
+                            if (removeList.blockedAttrs[ attName ]
+                                || !( value = parent.attr(styleName) ))
+                                continue;
+
+                            if (styleNode.attr(attName) == value) {
+                                //removeList.attrs[ attName ] = 1;
+                                styleNode.removeAttr(attName);
+                            }
+                            else
+                                removeList.blockedAttrs[ attName ] = 1;
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
                         //下一次格式xxx为70px
                         //var exit = FALSE;
-                        for (var styleName in def["styles"]) {
-                            if (styleNode._4e_style(styleName) ==
-                                parent._4e_style(styleName)) {
-                                styleNode._4e_style(styleName, "");
+                        for (styleName in def["styles"]) {
+                            if (removeList.blockedStyles[ styleName ]
+                                || !( value = parent._4e_style(styleName) ))
+                                continue;
+
+                            if (styleNode._4e_style(styleName) == value){
+                                //removeList.styles[ styleName ] = 1;
+                                styleNode._4e_style(styleName,"");
                             }
+                            else
+                                removeList.blockedStyles[ styleName ] = 1;
                         }
 
                         if (!styleNode._4e_hasAttributes()) {
@@ -7999,6 +8073,23 @@ KISSY.Editor.add("styles", function(KE) {
                     // We should try to normalize with IE too in some way, somewhere.
                     if (!UA.ie)
                         styleNode[0].normalize();
+                }
+                // Style already inherit from parents, left just to clear up any internal overrides. (#5931)
+                /**
+                 * from koubei
+                 *1.输入ab
+                 2.ctrl-a 设置字体大小 x
+                 3.选中b设置字体大小 y
+                 4.保持选中b,设置字体大小 x
+                 exptected: b 大小为 x
+                 actual: b 大小为 y
+                 */
+                else {
+                    styleNode = new Node(document.createElement("span"));
+                    styleNode[0].appendChild(styleRange.extractContents());
+                    styleRange.insertNode(styleNode);
+                    removeFromInsideElement(self, styleNode);
+                    styleNode._4e_remove(true);
                 }
 
                 // Style applied, let's release the range, so it gets
@@ -8186,9 +8277,9 @@ KISSY.Editor.add("styles", function(KE) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
             .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-            function(match, name, value) {
-                retval[ name ] = value;
-            });
+                    function(match, name, value) {
+                        retval[ name ] = value;
+                    });
         return retval;
     }
 
@@ -10446,6 +10537,10 @@ KISSY.Editor.add("button", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function(){
+                    if(btnCfg['destroy']) btnCfg['destroy'].call(context);
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {
@@ -10551,7 +10646,7 @@ KISSY.Editor.add("select", function() {
         });
 
     };
-
+    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.extend(Select, S.Base, {
         _init:function() {
             var self = this,
@@ -10668,10 +10763,16 @@ KISSY.Editor.add("select", function() {
                 focusMgr:false
             }),
                 items = self.get("items");
+            addRes.call(self, menu);
             menuNode = menu.get("contentEl").one("div");
             self.menu = menu;
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
+
+            addRes.call(self, function() {
+                Event.remove(window, "resize", self._resize, self);
+            });
+
             if (self.get(TITLE)) {
                 new Node("<div class='ke-menu-title ke-select-menu-item' " +
                     "style='" +
@@ -10697,6 +10798,9 @@ KISSY.Editor.add("select", function() {
             }
 
             Event.on(document, "click", deactivate);
+            addRes.call(self, function() {
+                Event.remove(document, "click", deactivate);
+            });
             if (self.get("doc"))
                 Event.on(self.get("doc"), "click", deactivate);
 
@@ -10707,7 +10811,7 @@ KISSY.Editor.add("select", function() {
             Event.on(menuNode[0], 'mouseenter', function() {
                 self.as.removeClass(ke_menu_selected);
             });
-
+            addRes.call(self, menuNode);
             self.on("afterItemsChange", self._itemsChange, self);
             self.menuNode = menuNode;
         },
@@ -10867,6 +10971,11 @@ KISSY.Editor.add("select", function() {
                     });
                 }
             });
+        },
+        destroy:function() {
+            destroyRes.call(this);
+            this.el.detach();
+            this.el.remove();
         }
     });
 
@@ -10918,6 +11027,12 @@ KISSY.Editor.add("select", function() {
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+                },
+                destroy:function() {
+                    if (btnCfg.destroy) {
+                        btnCfg.destroy.call(context);
+                    }
+                    b.destroy();
                 }
             };
         if (btnCfg.loading) {
