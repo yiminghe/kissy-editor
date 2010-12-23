@@ -20,12 +20,13 @@ KISSY.Editor.add("bangpai-sourcearea/support", function() {
             var self = this,
                 editor = self.editor,
                 statusDiv = editor.statusDiv;
-            self.el = new Node("<span " +
+            self.holder = new Node("<span " +
                 "style='zoom:1;display:inline-block;height:22px;line-height:22px;'>" +
                 "<input style='margin:0 5px;vertical-align:middle;' " +
                 "type='checkbox' />" +
                 "<span style='vertical-align:middle;'>编辑源代码</span></span>")
-                .appendTo(statusDiv).one("input");
+                .appendTo(statusDiv);
+            self.el = self.holder.one("input");
             var el = self.el;
             el.on("click", self._check, self);
             editor.on("sourcemode", function() {
@@ -51,6 +52,11 @@ KISSY.Editor.add("bangpai-sourcearea/support", function() {
             var self = this,
                 editor = self.editor;
             KE.SourceAreaSupport.exec(editor, WYSIWYG_MODE);
+        },
+
+        destroy:function() {
+            this.el.detach();
+            this.holder.remove();
         }
     });
     KE.BangPaiSourceArea = BangPaiSourceArea;

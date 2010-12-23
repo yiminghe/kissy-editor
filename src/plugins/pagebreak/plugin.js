@@ -33,7 +33,7 @@ KISSY.Editor.add("pagebreak", function(editor) {
         var mark_up = '<div' +
             ' style="page-break-after: always; ">' +
             '<span style="DISPLAY:none">&nbsp;</span></div>';
-        editor.addButton("page-break", {
+        var context = editor.addButton("page-break", {
             title:"分页",
             mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-pagebreak",
@@ -63,6 +63,11 @@ KISSY.Editor.add("pagebreak", function(editor) {
                 editor.fire("save");
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 }, {
     attach:false,

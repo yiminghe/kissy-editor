@@ -156,6 +156,9 @@ KISSY.Editor.add("table/dialog/support", function() {
 
     TableUI.Dialog = TableUIDialog;
 
+    var addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
+
     S.augment(TableUIDialog, {
         _tableInit:function() {
             var self = this,
@@ -187,6 +190,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             tclose.on("click", function() {
                 d.hide();
             });
+            addRes.call(self, d, d.twidthunit, tok, tclose);
         },
         _tableOk:function() {
             var self = this,
@@ -344,8 +348,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             if (self.selectedTd) {
                 d.cellpadding.val(
                     parseInt(self.selectedTd.css("padding"))
-                        || "0"
-                    );
+                        || "0");
             }
 
             d.talign.val(selectedTable.attr("align") ||
@@ -403,11 +406,14 @@ KISSY.Editor.add("table/dialog/support", function() {
             var self = this;
             self._tableInit();
         },
-        show:    function(selectedTable, td) {
+        show: function(selectedTable, td) {
             var self = this;
             self.selectedTable = selectedTable;
             self.selectedTd = td;
             self._prepareTableShow();
+        },
+        destroy:function() {
+            destroyRes.call(this);
         }
     });
 });

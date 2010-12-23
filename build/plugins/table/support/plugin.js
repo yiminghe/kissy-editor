@@ -5,6 +5,8 @@ KISSY.Editor.add("table/support", function() {
         KE = S.Editor,
         KEN = KE.NODE,
         tableRules = ["tr","th","td","tbody","table"];
+    var addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
 
     function TableUI(editor) {
         var self = this,
@@ -18,12 +20,13 @@ KISSY.Editor.add("table/support", function() {
                 }
             })(f);
         }
-        KE.ContextMenu.register({
+        var c = KE.ContextMenu.register({
             editor:editor,
             rules:tableRules,
             width:"120px",
             funcs:myContexts
         });
+        addRes.call(self, c);
         self.editor = editor;
     }
 
@@ -33,6 +36,10 @@ KISSY.Editor.add("table/support", function() {
             editor.useDialog("table/dialog", function(dialog) {
                 dialog.show(selectedTable, td);
             });
+        },
+        destroy:function() {
+            destroyRes.call(this);
+            this.editor.destroyDialog("table/dialog");
         }
     });
 

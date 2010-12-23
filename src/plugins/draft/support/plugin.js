@@ -111,20 +111,23 @@ KISSY.Editor.add("draft/support", function() {
             /*
              监控form提交，每次提交前保存一次，防止出错
              */
-            (function() {
-                var textarea = editor.textarea,
-                    form = textarea[0].form;
+            if (editor.textarea[0].form) {
+                (function() {
+                    var textarea = editor.textarea,
+                        form = textarea[0].form;
 
-                function saveF() {
-                    self.save(false);
-                }
+                    function saveF() {
+                        self.save(false);
+                    }
 
-                form && Event.on(form, "submit", saveF);
-                addRes.call(self, function() {
-                    Event.remove(form, "submit", saveF);
-                });
-            })();
 
+                    Event.on(form, "submit", saveF);
+                    addRes.call(self, function() {
+                        Event.remove(form, "submit", saveF);
+                    });
+
+                })();
+            }
 
             var timer = setInterval(function() {
                 self.save(true);

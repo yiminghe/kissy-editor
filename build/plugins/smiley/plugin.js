@@ -11,10 +11,12 @@ KISSY.Editor.add("smiley", function(editor) {
             mode:KE.WYSIWYG_MODE,
             loading:true
         });
-
         KE.use("smiley/support", function() {
             context.reload(KE.SmileySupport);
         });
+        this.destroy=function(){
+          context.destroy();
+        };
     });
 },{
     attach:false

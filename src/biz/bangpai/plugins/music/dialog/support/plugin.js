@@ -148,14 +148,17 @@ KISSY.Editor.add("bangpai-music/dialog/support", function() {
                 dfoot = d.get("footer"),
                 input = del.one(".ke-xiami-url");
             self.dAlign = KE.Select.decorate(del.one(".ke-xiami-align"));
+            self.addRes(self.dAlign);
             self._xiami_input = input;
             KE.Utils.placeholder(input, TIP);
+            self.addRes(input);
             self._xiamia_list = del.one(".ke-xiami-list");
             self._xiami_submit = del.one(".ke-xiami-submit");
             self._xiami_submit.on("click", function() {
                 if (!self._xiami_submit.hasClass("ke-triplebutton-disabled"))
                     loadRecordsByPage(1);
             });
+            self.addRes(self._xiami_submit);
             input.on("keydown", function(ev) {
                 if (ev.keyCode === 13) {
                     loadRecordsByPage(1);
@@ -169,6 +172,7 @@ KISSY.Editor.add("bangpai-music/dialog/support", function() {
             dfoot.one(".ke-xiami-cancel").on("click", function() {
                 d.hide();
             });
+            self.addRes(dfoot);
             _xiami_ok.on("click", function() {
                 var f = self.selectedFlash,
                     r = editor.restoreRealElement(f);
@@ -186,6 +190,7 @@ KISSY.Editor.add("bangpai-music/dialog/support", function() {
                 };
                 self._gen();
             }, self);
+            self.addRes(_xiami_ok);
 
             function loadRecordsByPage(page) {
                 var query = input.val();
@@ -263,6 +268,7 @@ KISSY.Editor.add("bangpai-music/dialog/support", function() {
                     loadRecordsByPage(parseInt(paging.attr("data-value")));
                 }
             });
+            self.addRes(self._xiamia_list);
         },
         _listSearch:function(data) {
             var self = this,

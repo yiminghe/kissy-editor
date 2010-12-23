@@ -199,7 +199,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             }
             imgWidth.val(Math.floor(v * imgRatioValue));
         });
-        addRes.call(controls, imgHeight);
+        addRes.call(controls, imgHeight,imgUrl,imgWidth);
 
         imgWidth.on("keyup", function() {
             var v = parseInt(imgWidth.val());

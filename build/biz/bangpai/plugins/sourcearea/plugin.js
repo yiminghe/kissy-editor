@@ -10,7 +10,10 @@ KISSY.Editor.add("bangpai-sourcearea", function(editor) {
     //firefox 3.5 不支持，有bug
     if (UA.gecko < 1.92) return;
     KE.use("bangpai-sourcearea/support", function() {
-        new KE.BangPaiSourceArea(editor);
+        var a=new KE.BangPaiSourceArea(editor);
+        editor.on("destroy",function(){
+           a.destroy();
+        });
     });
 },
 {

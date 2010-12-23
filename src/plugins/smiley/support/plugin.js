@@ -37,6 +37,8 @@ KISSY.Editor.add("smiley/support", function() {
         return smiley_markup;
     }
 
+    var addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
 
     KE.SmileySupport = {
         _selectSmiley:function(ev) {
@@ -99,6 +101,10 @@ KISSY.Editor.add("smiley/support", function() {
             Event.on(document, "click", cfg._hidePanel, self);
             Event.on(editor.document, "click", cfg._hidePanel, self);
             self.cfg._prepare = self.cfg._real;
+            addRes.call(self, self.smileyWin, self.smileyPanel, function() {
+                Event.remove(document, "click", cfg._hidePanel, self);
+                Event.remove(editor.document, "click", cfg._hidePanel, self);
+            });
             self.call("_real");
         },
         _real:function() {
@@ -123,6 +129,9 @@ KISSY.Editor.add("smiley/support", function() {
             KE.use("overlay", function() {
                 self.call("_prepare");
             });
+        },
+        destroy:function(){
+            destroyRes.call(this);
         }
     };
 });

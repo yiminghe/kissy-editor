@@ -80,9 +80,16 @@ KISSY.Editor.add("bangpai-music", function(editor) {
             context.reload({
                 offClick:function() {
                     music.show();
+                },
+                destroy:function() {
+                    music.destroy();
                 }
             });
         });
+
+        this.destroy = function() {
+            context.destroy();
+        }
     });
 
 },

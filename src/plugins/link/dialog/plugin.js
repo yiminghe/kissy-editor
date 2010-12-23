@@ -44,6 +44,8 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     "<a class='ke-link-cancel ke-button'>取消</a>" +
                     "</div>";
 
+            var addRes = KE.Utils.addRes,
+                destroyRes = KE.Utils.destroyRes;
 
             function LinkDialog(editor) {
                 var self = this;
@@ -76,6 +78,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     ok.on("click", self._link, self);
                     cancel.on("click", d.hide, d);
                     KE.Utils.placeholder(d.urlEl, "http://");
+                    addRes.call(self,ok,cancel,d,d.urlEl);
                 },
 
 
@@ -123,11 +126,14 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 show:function(cmd) {
                     this.cmd = cmd;
                     this._prepareShow();
+                },
+                destroy:function(){
+                    destroyRes.call(this);
                 }
             });
         })();
     }
     editor.addDialog("link/dialog", new Link.Dialog(editor));
-},{
+}, {
     attach:false
 });

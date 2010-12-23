@@ -34,7 +34,7 @@ KISSY.Editor.add("templates", function(editor) {
             , "ke-templates");
 
 
-        editor.addButton("templates", {
+        var context = editor.addButton("templates", {
             contentCls:"ke-toolbar-template",
             title:"模板",
             mode:KE.WYSIWYG_MODE,
@@ -85,9 +85,14 @@ KISSY.Editor.add("templates", function(editor) {
                 this.ui.show();
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 
-},{
+}, {
     attach:false
 });

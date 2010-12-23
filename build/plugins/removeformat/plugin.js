@@ -41,7 +41,7 @@ KISSY.Editor.add("removeformat", function(editor) {
         }
 
 
-        editor.addButton("removeformat", {
+        var context = editor.addButton("removeformat", {
             title:"清除格式",
             mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-removeformat",
@@ -128,9 +128,13 @@ KISSY.Editor.add("removeformat", function(editor) {
                 editor.fire("save");
             }
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 
-},{
+}, {
     attach:false
 });

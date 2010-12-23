@@ -75,7 +75,8 @@ KISSY.Editor.add("flash/dialog/support", function() {
     KE.Flash.FlashDialog = FlashDialog;
 
     S.augment(FlashDialog, {
-
+        addRes:KE.Utils.addRes,
+        destroyRes:KE.Utils.destroyRes,
         _config:function() {
             var self = this;
             self._urlTip = TIP;
@@ -97,6 +98,7 @@ KISSY.Editor.add("flash/dialog/support", function() {
                 width:self._config_dwidth || "500px",
                 mask:true
             });
+            self.addRes(self.d);
             self._initD();
         },
         _realShow:function() {
@@ -167,7 +169,9 @@ KISSY.Editor.add("flash/dialog/support", function() {
             cancel.on("click", function() {
                 d.hide();
             });
+
             KE.Utils.placeholder(self.dUrl, self._urlTip);
+            self.addRes(action, cancel,self.dUrl);
         },
 
         /**
@@ -214,8 +218,8 @@ KISSY.Editor.add("flash/dialog/support", function() {
             });
         },
 
-        destroy:function(){
-            this.d.destroy();
+        destroy:function() {
+            this.destroyRes();
         }
     });
 });

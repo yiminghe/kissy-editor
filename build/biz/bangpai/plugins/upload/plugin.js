@@ -29,7 +29,7 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
     }
 
     editor.addPlugin("bangpai-upload", function() {
-        editor.addButton("bangpai-upload", {
+        var context = editor.addButton("bangpai-upload", {
             contentCls:"ke-toolbar-mul-image",
             title:"批量插图",
             mode:KE.WYSIWYG_MODE,
@@ -38,8 +38,15 @@ KISSY.Editor.add("bangpai-upload", function(editor) {
                 editor.useDialog("bangpai-upload/dialog", function(dialog) {
                     dialog.show();
                 });
+            },
+            destroy:function() {
+                this.editor.destroyDialog("bangpai-upload/dialog");
             }
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 }, {

@@ -35,7 +35,7 @@ KISSY.Editor.add("maximize/support", function() {
             var self = this,
                 editor = self.editor;
             //body overflow 变化也会引起 resize 变化！！！！先去除
-            
+
             self._resize && Event.remove(window, "resize", self._resize);
             self.call("_saveEditorStatus");
             self.call("_restoreState");
@@ -197,7 +197,8 @@ KISSY.Editor.add("maximize/support", function() {
                 editorWrap = editor.editorWrap,
                 viewportHeight = DOM.viewportHeight(),
                 viewportWidth = DOM.viewportWidth(),
-                statusHeight = editor.statusDiv ? editor.statusDiv[0].offsetHeight : 0,
+                statusHeight = editor.statusDiv ?
+                    editor.statusDiv[0].offsetHeight : 0,
                 toolHeight = editor.toolBarDiv[0].offsetHeight;
 
             if (!UA.ie) {
@@ -259,6 +260,9 @@ KISSY.Editor.add("maximize/support", function() {
             var self = this;
             init();
             self.call("_real");
+        },
+        destroy:function() {
+            //Event.remove(window, "resize", this._resize);
         }
     });
 

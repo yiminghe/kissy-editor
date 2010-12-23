@@ -24,8 +24,13 @@ KISSY.Editor.add("list", function(editor) {
             context.reload(KE.ListSupport);
             contextOl.reload(KE.ListSupport);
         });
+
+        this.destroy = function() {
+            context.destroy();
+            contextOl.destroy();
+        };
     });
 
-},{
+}, {
     attach:false
 });

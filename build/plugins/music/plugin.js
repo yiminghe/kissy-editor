@@ -73,11 +73,18 @@ KISSY.Editor.add("music", function(editor) {
             context.reload({
                 offClick:function() {
                     musicInserter.show();
+                },
+                destroy:function(){
+                    musicInserter.destroy();
                 }
             });
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false,
     "requires":["fakeobjects"]
 });

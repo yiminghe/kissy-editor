@@ -17,8 +17,8 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
         Dialog = KE.Dialog,
         KEY = "Multi-Upload-Save",
         store = window[KE.STORE],
-        movie =KE.Utils.debugUrl("uploader/uploader.longzang.swf"),
-        progressBars = {},
+        movie = KE.Utils.debugUrl("uploader/uploader.longzang.swf"),
+
         name = "ke-bangpai-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";
 
@@ -57,6 +57,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
 
     function BangPaiUploadDialog(editor) {
         this.editor = editor;
+        this.progressBars = {};
         KE.Utils.lazyRun(this, "_prepareShow", "_realShow");
     }
 
@@ -76,10 +77,21 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
 
 
     S.augment(BangPaiUploadDialog, {
+        addRes:KE.Utils.addRes,
+        destroy:KE.Utils.destroyRes,
         _prepareShow:function() {
             var self = this,
                 editor = self.editor,
                 bangpaiCfg = editor.cfg["pluginConfig"]["bangpai-upload"];
+
+            self.addRes(function() {
+                var progressBars = self.progressBars;
+                for (var p in progressBars) {
+                    if (progressBars.hasOwnProperty(p)) {
+                        progressBars[p].destroy();
+                    }
+                }
+            });
 
             self.dialog = new Dialog({
                 headerContent:"批量上传",
@@ -90,6 +102,8 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                 width:"600px"
             });
             var d = self.dialog;
+
+            self.addRes(d);
 
             var bangpaiUploaderHolder = d.get("body"),
                 btnHolder = new Node(
@@ -242,6 +256,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
             uploader.on("mouseOut", function() {
                 bel.removeClass("ke-button-hover");
             });
+            self.addRes(uploader);
             insertAll.on("click", function() {
                 var trs = list.all("tr");
                 for (var i = 0; i < trs.length; i++) {
@@ -258,6 +273,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                     d.hide();
                 }
             });
+            self.addRes(insertAll);
 
             delAll.on("click", function() {
                 var trs = list.all("tr");
@@ -267,6 +283,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                 }
                 listWrap.hide();
             });
+            self.addRes(delAll);
 
             list.on("click", function(ev) {
                 var target = new Node(ev.target),tr;
@@ -322,6 +339,8 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
 
             });
 
+            self.addRes(list);
+
             uploader.on("fileSelect", self._onSelect, self);
             uploader.on("uploadStart", self._onUploadStart, self);
             uploader.on("uploadProgress", self._onProgress, self);
@@ -345,6 +364,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                     width:previewWidth,
                     render:listWrap
                 });
+                self.addRes(previewWin);
                 var preview = previewWin.get("contentEl");
                 preview.css("border", "none");
 
@@ -378,6 +398,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                         previewWin.hide();
                     }
                 });
+                self.addRes(listWrap);
             }
 
             //webkit 一旦整个可被选择就会导致点击事件没有
@@ -387,6 +408,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
         },
         _removeTrFile:function(tr) {
             var self = this,
+                progressBars = self.progressBars,
                 fid = tr.attr("fid"),
                 uploader = self.uploader;
             if (fid) {
@@ -413,6 +435,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
         },
         _uploadError:function(ev) {
             var self = this,
+                progressBars = self.progressBars,
                 uploader = self.uploader,
                 id = ev.id || (ev['file'] && ev['file'].id);
             if (!id) {
@@ -488,6 +511,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
         _onProgress:function(ev) {
 
             var fid = ev['file'].id,
+                progressBars = self.progressBars,
                 progess = Math.floor(ev['bytesLoaded'] * 100 / ev['bytesTotal']),
                 bar = progressBars[fid];
             bar && bar.set("progress", progess);
@@ -611,6 +635,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
 
 
             var self = this,
+                progressBars = self.progressBars,
                 id = f.fid,
                 row = tbl.insertRow(-1);
             DOM.attr(row, "fid", id);
@@ -757,6 +782,7 @@ KISSY.Editor.add("bangpai-upload/dialog/support", function() {
                     normParams(self._dsp),
                     self._fileInput);
             });
+            self.addRes(up);
         }
     });
 

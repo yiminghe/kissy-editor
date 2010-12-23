@@ -158,12 +158,19 @@ KISSY.Editor.add("definition", function(KE) {
          * @param textarea {KISSY.Node}
          */
         init:function(textarea) {
+            var self = this;
+            /**
+             * 内部存储声明
+             */
+            self.__commands = {};
+            self.__dialogs = {};
+            self.__plugins = {};
+
             if (UA.ie)DOM.addClass(DOC.body, "ke-ie" + UA.ie);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
-            var self = this,
-                editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
-                    textarea.attr("tabIndex")));
+            var editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
+                textarea.attr("tabIndex")));
 
 
             self.editorWrap = editorWrap;
@@ -211,9 +218,6 @@ KISSY.Editor.add("definition", function(KE) {
              */
 
 
-            //可以直接调用插件功能
-            self._commands = {};
-            self._dialogs = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -246,11 +250,21 @@ KISSY.Editor.add("definition", function(KE) {
         },
 
         destroy:function() {
-            var self = this;
+            if (this.__destroyed) return;
+            var self = this,
+                editorWrap = self.editorWrap,
+                textarea = self.textarea,
+                doc = self.document,
+                win = self.iframe[0].contentWindow;
+            self.sync();
             KE.focusManager.remove(self);
-            Event.remove(self.document);
-            Event.remove(DOM._4e_getWin(self.document));
-            var plugins = self.__plugins || [];
+            Event.remove(doc);
+            Event.remove(doc.documentElement);
+            Event.remove(doc.body);
+            Event.remove(win);
+            self.iframe.detach();
+            var plugins = self.__plugins;
+            //清除插件
             for (var i in plugins) {
                 if (plugins.hasOwnProperty(i)) {
                     var p = plugins[i];
@@ -259,7 +273,18 @@ KISSY.Editor.add("definition", function(KE) {
                     }
                 }
             }
+            //其他可能处理
+            self.fire("destroy");
+            textarea.insertBefore(editorWrap);
+            editorWrap.remove();
+            textarea.css({
+                width:editorWrap.css("width"),
+                height:self.wrap.css("height")
+            });
+            textarea.show();
+            self.__commands = self.__dialogs = self.__plugins = null;
             self.detach();
+            self.__destroyed = true;
         },
         /**
          *  @this {KISSY.Editor}
@@ -269,6 +294,9 @@ KISSY.Editor.add("definition", function(KE) {
                 textarea = self.textarea,
                 form = new Node(textarea[0].form);
             form.on("submit", self.sync, self);
+            self.on("destroy", function() {
+                form.detach("submit", self.sync, self);
+            });
         }
         ,
         /**
@@ -302,7 +330,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param obj {Object}
          */
         addDialog:function(name, obj) {
-            this._dialogs[name] = obj;
+            this.__dialogs[name] = obj;
         }
         ,
         /**
@@ -310,12 +338,12 @@ KISSY.Editor.add("definition", function(KE) {
          * @param name {string}
          */
         getDialog:function(name) {
-            return this._dialogs[name];
+            return this.__dialogs[name];
         },
         destroyDialog:function(name) {
-            var d = this._dialogs[name];
+            var d = this.__dialogs[name];
             d && d.destroy();
-            this._dialogs[name] = null;
+            this.__dialogs[name] = null;
         },
         /**
          *@this {KISSY.Editor}
@@ -323,7 +351,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param obj {Object}
          */
         addCommand:function(name, obj) {
-            this._commands[name] = obj;
+            this.__commands[name] = obj;
         }
         ,
         /**
@@ -331,7 +359,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param name {string}
          */
         hasCommand:function(name) {
-            return this._commands[name];
+            return this.__commands[name];
         }
         ,
         /**
@@ -340,7 +368,7 @@ KISSY.Editor.add("definition", function(KE) {
          */
         execCommand:function(name) {
             var self = this,
-                cmd = self._commands[name],
+                cmd = self.__commands[name],
                 args = S.makeArray(arguments);
             args.shift();
             args.unshift(self);
@@ -458,8 +486,7 @@ KISSY.Editor.add("definition", function(KE) {
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
-        }
-        ,
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -468,8 +495,7 @@ KISSY.Editor.add("definition", function(KE) {
                 win = DOM._4e_getWin(self.document);
             win.blur();
             self.document && self.document.body.blur();
-        }
-        ,
+        },
 
         /**
          *@this {KISSY.Editor}
@@ -490,8 +516,7 @@ KISSY.Editor.add("definition", function(KE) {
             } else { // W3C
                 elem.appendChild(doc.createTextNode(cssText));
             }
-        }
-        ,
+        },
         addCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -502,8 +527,7 @@ KISSY.Editor.add("definition", function(KE) {
             elem.rel = "stylesheet";
             doc.getElementsByTagName("head")[0].appendChild(elem);
             elem.href = link;
-        }
-        ,
+        },
         removeCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -520,8 +544,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (ind != -1) {
                 cls.splice(ind, 1);
             }
-        }
-        ,
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -579,13 +602,12 @@ KISSY.Editor.add("definition", function(KE) {
         },
         addPlugin:function(name, func, cfg) {
             var self = this;
-            self.__plugins = self.__plugins || [];
+            self.__plugins = self.__plugins;
             cfg = cfg || {};
             cfg.func = func;
             self.__plugins[name] = cfg;
         },
         usePlugin:function(name) {
-            if (!this.__plugins)return;
             var plugin = this.__plugins[name];
             //只 use 一次
             if (!plugin) return;
@@ -629,8 +651,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.previousPath = NULL;
             //S.log("notifySelectionChange");
             self._monitor();
-        }
-        ,
+        },
 
         /**
          *@this {KISSY.Editor}
@@ -929,6 +950,8 @@ KISSY.Editor.add("definition", function(KE) {
                     focusGrabber[0].focus();
             };
             self.on('destroy', function() {
+                focusGrabber.detach();
+                focusGrabber.remove();
             });
         }
 

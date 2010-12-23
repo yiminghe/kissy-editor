@@ -60,7 +60,7 @@ KISSY.Editor.add("progressbar", function() {
         destroy:function() {
             var self = this;
             self.detach();
-            self.el._4e_remove();
+            self.el.remove();
         },
         _init:function() {
             var self = this,

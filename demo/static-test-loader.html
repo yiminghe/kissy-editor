@@ -5,7 +5,7 @@
 <title>KISSY Editor Test</title>
 <link href="http://assets.taobaocdn.com/tbsp/reset-grids.css?t=20090602.css" rel="stylesheet"/>
 <link href="../build/theme/cool/editor-pkg.css" rel="stylesheet" id="theme"/>
-<script src="../../kissy/build/kissy.js"></script>
+
 </head>
 <body>
 
@@ -21,16 +21,7 @@
                 清爽
             </option>
         </select></label>
-    <script>
-        KISSY.ready(function(S) {
-            var theme = S.one("#theme"),themes = S.one("#themes");
-            themes.val("cool");
-            themes.on("change", function() {
-                var v = themes.val();
-                theme.attr("href", "../build/theme/" + v + "/editor-pkg.css");
-            });
-        })
-    </script>
+
 </p>
 <form>
     <div style="width: 90%; margin: 0 auto">
@@ -39,6 +30,7 @@
         </p>
         <p>
             <button id='destroy1'>destroy实例</button>
+            <button id='recover1'>重建实例</button>
         </p>
         <textarea id="editor" tabindex="0" style="width:100%;height:400px;margin:0 auto;">
             <script>alert(1);</script>
@@ -180,11 +172,21 @@
     <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;"></textarea>
 </div>
 <!--from kissy component start-->
+<script src="../../kissy/build/kissy.js"></script>
 <script src="../../kissy/build/uibase/uibase-pkg.js"></script>
 <script src="../../kissy/build/dd/dd-pkg.js"></script>
 <script src="../../kissy/build/overlay/overlay-pkg.js"></script>
 <!--from kissy component end-->
-
+<script>
+    KISSY.ready(function(S) {
+        var theme = S.one("#theme"),themes = S.one("#themes");
+        themes.val("cool");
+        themes.on("change", function() {
+            var v = themes.val();
+            theme.attr("href", "../build/theme/" + v + "/editor-pkg.css");
+        });
+    })
+</script>
 <script src="../src/editor.js"></script>
 <script src="../src/core/utils.js"></script>
 <script src="../src/core/dom.js"></script>
@@ -469,7 +471,7 @@ xiami 音乐
 
 
             //if(1>2)
-            {
+            function test() {
                 window.editor2 = KE("#editor", S.clone(cfg)).use("elementpaths," +
                         "sourcearea,preview," +
                         "bangpai-sourcearea," +
@@ -486,12 +488,22 @@ xiami 音乐
                         "draft," +
                         "bangpai-upload," +
                         "pagebreak,separator,maximize,dragupload");
-                S.one('#destroy1').on("click", function(ev) {
-                    ev.halt();
-                    editor2.destroy();
 
-                });
             }
+
+            test();
+            S.one('#destroy1').on("click", function(ev) {
+                ev.halt();
+                editor2.destroy();
+                editor2 = null;
+            });
+            S.one('#recover1').on("click", function(ev) {
+                ev.halt();
+                if (!editor2) {
+                    test()
+                }
+
+            });
 
             window.editor3 = KE("#editor2", S.clone(cfg)).use("separator,undo");
         });

@@ -128,6 +128,7 @@ KISSY.Editor.add("image", function(editor) {
                         flash.editor.notifySelectionChange();
                         ev.halt();
                     });
+                    KE.Utils.addRes.call(bubble, tipchange, tipremove);
                     /*
                      位置变化
                      */

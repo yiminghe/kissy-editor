@@ -89,6 +89,11 @@ KISSY.Editor.add("undo", function(editor) {
             b1.reload(undoCfg);
             b2.reload(redoCfg);
         });
+
+        this.destroy = function() {
+            b1.destroy();
+            b2.destroy();
+        };
     });
 
 }, {

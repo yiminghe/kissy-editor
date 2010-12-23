@@ -108,6 +108,7 @@ KISSY.Editor.add("bangpai-video/dialog/support", function(editor) {
             KE.Utils.placeholder(self.dUrl, self._urlTip);
             KE.Utils.placeholder(self.dWidth, DTIP);
             KE.Utils.placeholder(self.dHeight, DTIP);
+            self.addRes(action,cancel,self.dUrl,self.dWidth,self.dHeight);
         },
 
         _getDInfo:function() {

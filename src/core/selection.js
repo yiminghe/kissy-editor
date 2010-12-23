@@ -1081,7 +1081,6 @@ KISSY.Editor.add("selection", function(KE) {
         "removeAllRanges":SelectionP.removeAllRanges
     });
 
-
     KE.on("instanceCreated", function(ev) {
         var editor = ev.editor;
         monitorAndFix(editor);

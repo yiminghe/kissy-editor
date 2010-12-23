@@ -41,7 +41,11 @@ KISSY.Editor.add("sourcearea", function(editor) {
             });
             editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });

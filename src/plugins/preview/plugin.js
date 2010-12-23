@@ -5,7 +5,7 @@
 KISSY.Editor.add("preview", function(editor) {
 
     editor.addPlugin("preview", function() {
-        editor.addButton("preview", {
+        var context = editor.addButton("preview", {
             title:"预览",
             contentCls:"ke-toolbar-preview",
             offClick:function() {
@@ -50,7 +50,12 @@ KISSY.Editor.add("preview", function(editor) {
                 oWindow.focus();
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });

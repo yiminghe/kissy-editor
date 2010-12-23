@@ -184,6 +184,7 @@ KISSY.Editor.add("flash/support", function() {
                     flash.editor.notifySelectionChange();
                     ev.halt();
                 });
+                KE.Utils.addRes.call(bubble, tipchange, tipremove);
 
                 /*
                  位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小

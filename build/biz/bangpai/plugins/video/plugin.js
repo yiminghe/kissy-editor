@@ -114,7 +114,7 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             //4 比 flash 的优先级 5 高！
         }}, 4);
 
-    editor.addPlugin("bangpai-video",function() {
+    editor.addPlugin("bangpai-video", function() {
         var context = editor.addButton("bangpai-video", {
             contentCls:"ke-toolbar-video",
             title:"插入视频" ,
@@ -127,9 +127,16 @@ KISSY.Editor.add("bangpai-video", function(editor) {
             context.reload({
                 offClick:function() {
                     bangPaiVideo.show();
+                },
+                destroy:function() {
+                    bangPaiVideo.destroy();
                 }
             });
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 }, {

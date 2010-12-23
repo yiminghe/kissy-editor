@@ -81,25 +81,31 @@ KISSY.Editor.add("justify", function(editor) {
                 }
             }
         };
-        editor.addButton("alignleft", S.mix({
+        var alignleft = editor.addButton("alignleft", S.mix({
             contentCls:"ke-toolbar-alignleft",
             title:"左对齐",
             v:"left"
         }, JustifyTpl));
 
-        editor.addButton("aligncenter", S.mix({
+        var aligncenter = editor.addButton("aligncenter", S.mix({
             contentCls:"ke-toolbar-aligncenter",
             title:"居中对齐",
             v:"center"
         }, JustifyTpl));
 
-        editor.addButton("alignright", S.mix({
+        var alignright = editor.addButton("alignright", S.mix({
             contentCls:"ke-toolbar-alignright",
             title:"右对齐",
             v:"right"
         }, JustifyTpl));
+
+        this.destroy = function() {
+            alignleft.destroy();
+            aligncenter.destroy();
+            alignright.destroy();
+        };
     });
 
-},{
+}, {
     attach:false
 });

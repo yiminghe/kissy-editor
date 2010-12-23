@@ -2292,12 +2292,19 @@ KISSY.Editor.add("definition", function(KE) {
          * @param textarea {KISSY.Node}
          */
         init:function(textarea) {
+            var self = this;
+            /**
+             * 内部存储声明
+             */
+            self.__commands = {};
+            self.__dialogs = {};
+            self.__plugins = {};
+
             if (UA.ie)DOM.addClass(DOC.body, "ke-ie" + UA.ie);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
-            var self = this,
-                editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
-                    textarea.attr("tabIndex")));
+            var editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
+                textarea.attr("tabIndex")));
 
 
             self.editorWrap = editorWrap;
@@ -2345,9 +2352,6 @@ KISSY.Editor.add("definition", function(KE) {
              */
 
 
-            //可以直接调用插件功能
-            self._commands = {};
-            self._dialogs = {};
             var tw = textarea._4e_style(WIDTH),th = textarea._4e_style(HEIGHT);
             if (tw) {
                 editorWrap.css(WIDTH, tw);
@@ -2380,11 +2384,21 @@ KISSY.Editor.add("definition", function(KE) {
         },
 
         destroy:function() {
-            var self = this;
+            if (this.__destroyed) return;
+            var self = this,
+                editorWrap = self.editorWrap,
+                textarea = self.textarea,
+                doc = self.document,
+                win = self.iframe[0].contentWindow;
+            self.sync();
             KE.focusManager.remove(self);
-            Event.remove(self.document);
-            Event.remove(DOM._4e_getWin(self.document));
-            var plugins = self.__plugins || [];
+            Event.remove(doc);
+            Event.remove(doc.documentElement);
+            Event.remove(doc.body);
+            Event.remove(win);
+            self.iframe.detach();
+            var plugins = self.__plugins;
+            //清除插件
             for (var i in plugins) {
                 if (plugins.hasOwnProperty(i)) {
                     var p = plugins[i];
@@ -2393,7 +2407,18 @@ KISSY.Editor.add("definition", function(KE) {
                     }
                 }
             }
+            //其他可能处理
+            self.fire("destroy");
+            textarea.insertBefore(editorWrap);
+            editorWrap.remove();
+            textarea.css({
+                width:editorWrap.css("width"),
+                height:self.wrap.css("height")
+            });
+            textarea.show();
+            self.__commands = self.__dialogs = self.__plugins = null;
             self.detach();
+            self.__destroyed = true;
         },
         /**
          *  @this {KISSY.Editor}
@@ -2403,6 +2428,9 @@ KISSY.Editor.add("definition", function(KE) {
                 textarea = self.textarea,
                 form = new Node(textarea[0].form);
             form.on("submit", self.sync, self);
+            self.on("destroy", function() {
+                form.detach("submit", self.sync, self);
+            });
         }
         ,
         /**
@@ -2436,7 +2464,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param obj {Object}
          */
         addDialog:function(name, obj) {
-            this._dialogs[name] = obj;
+            this.__dialogs[name] = obj;
         }
         ,
         /**
@@ -2444,12 +2472,12 @@ KISSY.Editor.add("definition", function(KE) {
          * @param name {string}
          */
         getDialog:function(name) {
-            return this._dialogs[name];
+            return this.__dialogs[name];
         },
         destroyDialog:function(name) {
-            var d = this._dialogs[name];
+            var d = this.__dialogs[name];
             d && d.destroy();
-            this._dialogs[name] = null;
+            this.__dialogs[name] = null;
         },
         /**
          *@this {KISSY.Editor}
@@ -2457,7 +2485,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param obj {Object}
          */
         addCommand:function(name, obj) {
-            this._commands[name] = obj;
+            this.__commands[name] = obj;
         }
         ,
         /**
@@ -2465,7 +2493,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @param name {string}
          */
         hasCommand:function(name) {
-            return this._commands[name];
+            return this.__commands[name];
         }
         ,
         /**
@@ -2474,7 +2502,7 @@ KISSY.Editor.add("definition", function(KE) {
          */
         execCommand:function(name) {
             var self = this,
-                cmd = self._commands[name],
+                cmd = self.__commands[name],
                 args = S.makeArray(arguments);
             args.shift();
             args.unshift(self);
@@ -2592,8 +2620,7 @@ KISSY.Editor.add("definition", function(KE) {
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
-        }
-        ,
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -2602,8 +2629,7 @@ KISSY.Editor.add("definition", function(KE) {
                 win = DOM._4e_getWin(self.document);
             win.blur();
             self.document && self.document.body.blur();
-        }
-        ,
+        },
 
         /**
          *@this {KISSY.Editor}
@@ -2624,8 +2650,7 @@ KISSY.Editor.add("definition", function(KE) {
             } else { // W3C
                 elem.appendChild(doc.createTextNode(cssText));
             }
-        }
-        ,
+        },
         addCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -2636,8 +2661,7 @@ KISSY.Editor.add("definition", function(KE) {
             elem.rel = "stylesheet";
             doc.getElementsByTagName("head")[0].appendChild(elem);
             elem.href = link;
-        }
-        ,
+        },
         removeCustomLink:function(link) {
             var self = this,
                 cfg = self.cfg,
@@ -2654,8 +2678,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (ind != -1) {
                 cls.splice(ind, 1);
             }
-        }
-        ,
+        },
         /**
          * @this {KISSY.Editor}
          */
@@ -2713,13 +2736,12 @@ KISSY.Editor.add("definition", function(KE) {
         },
         addPlugin:function(name, func, cfg) {
             var self = this;
-            self.__plugins = self.__plugins || [];
+            self.__plugins = self.__plugins;
             cfg = cfg || {};
             cfg.func = func;
             self.__plugins[name] = cfg;
         },
         usePlugin:function(name) {
-            if (!this.__plugins)return;
             var plugin = this.__plugins[name];
             //只 use 一次
             if (!plugin) return;
@@ -2763,8 +2785,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.previousPath = NULL;
             //S.log("notifySelectionChange");
             self._monitor();
-        }
-        ,
+        },
 
         /**
          *@this {KISSY.Editor}
@@ -3063,6 +3084,8 @@ KISSY.Editor.add("definition", function(KE) {
                     focusGrabber[0].focus();
             };
             self.on('destroy', function() {
+                focusGrabber.detach();
+                focusGrabber.remove();
             });
         }
 
@@ -7314,7 +7337,6 @@ KISSY.Editor.add("selection", function(KE) {
         "removeAllRanges":SelectionP.removeAllRanges
     });
 
-
     KE.on("instanceCreated", function(ev) {
         var editor = ev.editor;
         monitorAndFix(editor);
@@ -11058,7 +11080,8 @@ KISSY.Editor.add("bubbleview", function() {
         return;
     }
 
-    var BubbleView = S['UIBase'].create(KE.Overlay, [], {
+    var BubbleView = S['UIBase'].create(KE.Overlay,
+        [], {
         renderUI:function() {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
@@ -11070,6 +11093,9 @@ KISSY.Editor.add("bubbleview", function() {
             xy.top += a.height() + 5;
             BubbleView['superclass'].show.call(self);
             self.set("xy", [xy.left,xy.top]);
+        },
+        destructor:function() {
+            KE.Utils.destroyRes.call(this);
         }
     }, {
         ATTRS:{
@@ -12040,20 +12066,23 @@ KISSY.Editor.add("draft", function(editor) {
             /*
              监控form提交，每次提交前保存一次，防止出错
              */
-            (function() {
-                var textarea = editor.textarea,
-                    form = textarea[0].form;
+            if (editor.textarea[0].form) {
+                (function() {
+                    var textarea = editor.textarea,
+                        form = textarea[0].form;
 
-                function saveF() {
-                    self.save(false);
-                }
+                    function saveF() {
+                        self.save(false);
+                    }
 
-                form && Event.on(form, "submit", saveF);
-                addRes.call(self, function() {
-                    Event.remove(form, "submit", saveF);
-                });
-            })();
 
+                    Event.on(form, "submit", saveF);
+                    addRes.call(self, function() {
+                        Event.remove(form, "submit", saveF);
+                    });
+
+                })();
+            }
 
             var timer = setInterval(function() {
                 self.save(true);
@@ -13085,6 +13114,7 @@ KISSY.Editor.add("flash/support", function() {
                     flash.editor.notifySelectionChange();
                     ev.halt();
                 });
+                KE.Utils.addRes.call(bubble, tipchange, tipremove);
 
                 /*
                  位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
@@ -15029,6 +15059,7 @@ KISSY.Editor.add("image", function(editor) {
                         flash.editor.notifySelectionChange();
                         ev.halt();
                     });
+                    KE.Utils.addRes.call(bubble, tipchange, tipremove);
                     /*
                      位置变化
                      */
@@ -15472,26 +15503,32 @@ KISSY.Editor.add("justify", function(editor) {
                 }
             }
         };
-        editor.addButton("alignleft", S.mix({
+        var alignleft = editor.addButton("alignleft", S.mix({
             contentCls:"ke-toolbar-alignleft",
             title:"左对齐",
             v:"left"
         }, JustifyTpl));
 
-        editor.addButton("aligncenter", S.mix({
+        var aligncenter = editor.addButton("aligncenter", S.mix({
             contentCls:"ke-toolbar-aligncenter",
             title:"居中对齐",
             v:"center"
         }, JustifyTpl));
 
-        editor.addButton("alignright", S.mix({
+        var alignright = editor.addButton("alignright", S.mix({
             contentCls:"ke-toolbar-alignright",
             title:"右对齐",
             v:"right"
         }, JustifyTpl));
+
+        this.destroy = function() {
+            alignleft.destroy();
+            aligncenter.destroy();
+            alignright.destroy();
+        };
     });
 
-},{
+}, {
     attach:false
 });
 /**
@@ -15499,176 +15536,196 @@ KISSY.Editor.add("justify", function(editor) {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
-    editor.addPlugin("link", function(){
+    editor.addPlugin("link", function() {
         var S = KISSY,
-        KE = S.Editor,
-        Node = S.Node,
-        KEStyle = KE.Style,
-        _ke_saved_href = "_ke_saved_href",
-        link_Style = {
-            element : 'a',
-            attributes:{
-                "href":"#(href)",
-                "title":"#(title)",
-                //ie < 8 会把锚点地址修改
-                "_ke_saved_href":"#(_ke_saved_href)",
-                target:"#(target)"
-            }
-        },
-        /**
-         * bubbleview/tip 初始化，所有共享一个 tip
-         */
-        tipHtml = '前往链接： '
-            + ' <a ' +
-            'href="" '
-            + ' target="_blank" ' +
-            'class="ke-bubbleview-url">' +
-            '</a> - '
-            + ' <span ' +
-            'class="ke-bubbleview-link ke-bubbleview-change">' +
-            '编辑' +
-            '</span> - '
-            + ' <span ' +
-            'class="ke-bubbleview-link ke-bubbleview-remove">' +
-            '去除' +
-            '</span>';
+            KE = S.Editor,
+            Node = S.Node,
+            KEStyle = KE.Style,
+            _ke_saved_href = "_ke_saved_href",
+            link_Style = {
+                element : 'a',
+                attributes:{
+                    "href":"#(href)",
+                    "title":"#(title)",
+                    //ie < 8 会把锚点地址修改
+                    "_ke_saved_href":"#(_ke_saved_href)",
+                    target:"#(target)"
+                }
+            },
+            /**
+             * bubbleview/tip 初始化，所有共享一个 tip
+             */
+            tipHtml = '前往链接： '
+                + ' <a ' +
+                'href="" '
+                + ' target="_blank" ' +
+                'class="ke-bubbleview-url">' +
+                '</a> - '
+                + ' <span ' +
+                'class="ke-bubbleview-link ke-bubbleview-change">' +
+                '编辑' +
+                '</span> - '
+                + ' <span ' +
+                'class="ke-bubbleview-link ke-bubbleview-remove">' +
+                '去除' +
+                '</span>';
 
-    function checkLink(lastElement) {
-        return lastElement._4e_ascendant(function(node) {
-            return node._4e_name() === 'a' && (!!node.attr("href"));
-        }, true);
-    }
-
-    function getAttributes(el) {
-        var attributes = el.attributes,re = {};
-        for (var i = 0; i < attributes.length; i++) {
-            var a = attributes[i];
-            if (a.specified) {
-                re[a.name] = a.value;
-            }
+        function checkLink(lastElement) {
+            return lastElement._4e_ascendant(function(node) {
+                return node._4e_name() === 'a' && (!!node.attr("href"));
+            }, true);
         }
-        if (el.style.cssText) {
-            re.style = el.style.cssText;
-        }
-        return re;
-    }
 
-
-    var context = editor.addButton("link", {
-        contentCls:"ke-toolbar-link",
-        title:"插入链接",
-        mode:KE.WYSIWYG_MODE,
-        //得到当前选中的 link a
-        _getSelectedLink:function() {
-            var self = this,
-                editor = self.editor,
-                //ie焦点很容易丢失,tipwin没了
-                selection = editor.getSelection(),
-                common = selection && selection.getStartElement();
-            if (common) {
-                common = checkLink(common);
-            }
-            return common;
-        },
-        _getSelectionLinkUrl:function() {
-            var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
-            if (link) return link.attr(_ke_saved_href) || link.attr("href");
-        },
-        _removeLink:function(a) {
-            var self = this,
-                editor = self.editor;
-            editor.fire("save");
-            var sel = editor.getSelection(),
-                range = sel.getRanges()[0];
-            if (range && range.collapsed) {
-                var bs = sel.createBookmarks();
-                //不使用核心 styles ，直接清除元素标记即可。
-                a._4e_remove(true);
-                sel.selectBookmarks(bs);
-            } else if (range) {
-                var attrs = getAttributes(a[0]);
-                new KEStyle(link_Style, attrs).remove(editor.document);
-            }
-            editor.fire("save");
-            editor.notifySelectionChange();
-        },
-        _link:function(attr) {
-            var self = this,
-                cfg = self.cfg,
-                editor = self.editor,
-                link = cfg._getSelectedLink.call(self);
-            //注意同步，取的话要从 _ke_saved_href 取原始值的
-            attr["_ke_saved_href"] = attr.href;
-            //是修改行为
-            if (link) {
-                editor.fire("save");
-                link.attr(attr);
-                editor.fire("save");
-            } else {
-                var sel = editor.getSelection(),
-                    range = sel && sel.getRanges()[0];
-                //编辑器没有焦点或没有选择区域时直接插入链接地址
-                if (!range || range.collapsed) {
-
-                    var a = new Node("<a>" + attr.href + "</a>",
-                        attr, editor.document);
-                    editor.insertElement(a);
-                } else {
-                    editor.fire("save");
-
-                    var linkStyle = new KEStyle(link_Style, attr);
-                    linkStyle.apply(editor.document);
-                    editor.fire("save");
+        function getAttributes(el) {
+            var attributes = el.attributes,re = {};
+            for (var i = 0; i < attributes.length; i++) {
+                var a = attributes[i];
+                if (a.specified) {
+                    re[a.name] = a.value;
                 }
             }
-            editor.notifySelectionChange();
-        },
-        offClick:function() {
-            var self = this;
-            self.editor.useDialog("link/dialog", function(dialog) {
-                dialog.show(self);
-            });
+            if (el.style.cssText) {
+                re.style = el.style.cssText;
+            }
+            return re;
         }
-    });
 
-    KE.use("bubbleview", function() {
-        KE.BubbleView.register({
-            pluginName:"link",
-            editor:editor,
-            pluginContext:context,
-            func:checkLink,
-            init:function() {
-                var bubble = this,
-                    el = bubble.get("contentEl");
-                el.html(tipHtml);
-                var tipurl = el.one(".ke-bubbleview-url"),
-                    tipchange = el.one(".ke-bubbleview-change"),
-                    tipremove = el.one(".ke-bubbleview-remove");
-                //ie focus not lose
-                KE.Utils.preventFocus(el);
-                tipchange.on("click", function(ev) {
-                    var link = bubble._plugin;
-                    link.call("offClick");
-                    ev.halt();
-                });
-                tipremove.on("click", function(ev) {
-                    var link = bubble._plugin;
-                    link.call("_removeLink", bubble._selectedEl);
-                    ev.halt();
-                });
+        var controls ={},addRes = KE.Utils.addRes,
+            destroyRes = KE.Utils.destroyRes;
 
-                bubble.on("show", function() {
-                    var a = bubble._selectedEl;
-                    if (!a)return;
-                    var href = a.attr(_ke_saved_href) ||
-                        a.attr("href");
-                    tipurl.html(href);
-                    tipurl.attr("href", href);
+
+        var context = editor.addButton("link", {
+            contentCls:"ke-toolbar-link",
+            title:"插入链接",
+            mode:KE.WYSIWYG_MODE,
+            //得到当前选中的 link a
+            _getSelectedLink:function() {
+                var self = this,
+                    editor = self.editor,
+                    //ie焦点很容易丢失,tipwin没了
+                    selection = editor.getSelection(),
+                    common = selection && selection.getStartElement();
+                if (common) {
+                    common = checkLink(common);
+                }
+                return common;
+            },
+            _getSelectionLinkUrl:function() {
+                var self = this,cfg = self.cfg,link = cfg._getSelectedLink.call(self);
+                if (link) return link.attr(_ke_saved_href) || link.attr("href");
+            },
+            _removeLink:function(a) {
+                var self = this,
+                    editor = self.editor;
+                editor.fire("save");
+                var sel = editor.getSelection(),
+                    range = sel.getRanges()[0];
+                if (range && range.collapsed) {
+                    var bs = sel.createBookmarks();
+                    //不使用核心 styles ，直接清除元素标记即可。
+                    a._4e_remove(true);
+                    sel.selectBookmarks(bs);
+                } else if (range) {
+                    var attrs = getAttributes(a[0]);
+                    new KEStyle(link_Style, attrs).remove(editor.document);
+                }
+                editor.fire("save");
+                editor.notifySelectionChange();
+            },
+            _link:function(attr) {
+                var self = this,
+                    cfg = self.cfg,
+                    editor = self.editor,
+                    link = cfg._getSelectedLink.call(self);
+                //注意同步，取的话要从 _ke_saved_href 取原始值的
+                attr["_ke_saved_href"] = attr.href;
+                //是修改行为
+                if (link) {
+                    editor.fire("save");
+                    link.attr(attr);
+                    editor.fire("save");
+                } else {
+                    var sel = editor.getSelection(),
+                        range = sel && sel.getRanges()[0];
+                    //编辑器没有焦点或没有选择区域时直接插入链接地址
+                    if (!range || range.collapsed) {
+
+                        var a = new Node("<a>" + attr.href + "</a>",
+                            attr, editor.document);
+                        editor.insertElement(a);
+                    } else {
+                        editor.fire("save");
+
+                        var linkStyle = new KEStyle(link_Style, attr);
+                        linkStyle.apply(editor.document);
+                        editor.fire("save");
+                    }
+                }
+                editor.notifySelectionChange();
+            },
+            offClick:function() {
+                var self = this;
+                self.editor.useDialog("link/dialog", function(dialog) {
+                    dialog.show(self);
                 });
+            },
+            destroy:function() {
+                this.editor.destroyDialog("link/dialog");
             }
         });
+
+        addRes.call(controls, context);
+
+        KE.use("bubbleview", function() {
+            KE.BubbleView.register({
+                pluginName:"link",
+                editor:editor,
+                pluginContext:context,
+                func:checkLink,
+                init:function() {
+                    var bubble = this,
+                        el = bubble.get("contentEl");
+                    el.html(tipHtml);
+                    var tipurl = el.one(".ke-bubbleview-url"),
+                        tipchange = el.one(".ke-bubbleview-change"),
+                        tipremove = el.one(".ke-bubbleview-remove");
+                    //ie focus not lose
+                    KE.Utils.preventFocus(el);
+                    tipchange.on("click", function(ev) {
+                        var link = bubble._plugin;
+                        link.call("offClick");
+                        ev.halt();
+                    });
+
+                    tipremove.on("click", function(ev) {
+                        var link = bubble._plugin;
+                        link.call("_removeLink", bubble._selectedEl);
+                        ev.halt();
+                    });
+
+                    addRes.call(bubble, tipchange, tipremove);
+
+                    bubble.on("show", function() {
+                        var a = bubble._selectedEl;
+                        if (!a)return;
+                        var href = a.attr(_ke_saved_href) ||
+                            a.attr("href");
+                        tipurl.html(href);
+                        tipurl.attr("href", href);
+                    });
+                }
+            });
+
+            addRes.call(controls, function() {
+                KE.BubbleView.destroy("link");
+            });
+        });
+
+        this.destroy = function() {
+            destroyRes.call(controls);
+        };
     });
-});},{
+}, {
     attach:false
 });/**
  * list formatting
@@ -15696,9 +15753,14 @@ KISSY.Editor.add("list", function(editor) {
             context.reload(KE.ListSupport);
             contextOl.reload(KE.ListSupport);
         });
+
+        this.destroy = function() {
+            context.destroy();
+            contextOl.destroy();
+        };
     });
 
-},{
+}, {
     attach:false
 });
 /*
@@ -16362,8 +16424,11 @@ KISSY.Editor.add("maximize", function(editor) {
         KE.use("maximize/support", function() {
             context.reload(KE.Maximize);
         });
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });KISSY.Editor.add("maximize/support", function() {
     var KE = KISSY.Editor,
@@ -16402,7 +16467,7 @@ KISSY.Editor.add("maximize", function(editor) {
             var self = this,
                 editor = self.editor;
             //body overflow 变化也会引起 resize 变化！！！！先去除
-            
+
             self._resize && Event.remove(window, "resize", self._resize);
             self.call("_saveEditorStatus");
             self.call("_restoreState");
@@ -16564,7 +16629,8 @@ KISSY.Editor.add("maximize", function(editor) {
                 editorWrap = editor.editorWrap,
                 viewportHeight = DOM.viewportHeight(),
                 viewportWidth = DOM.viewportWidth(),
-                statusHeight = editor.statusDiv ? editor.statusDiv[0].offsetHeight : 0,
+                statusHeight = editor.statusDiv ?
+                    editor.statusDiv[0].offsetHeight : 0,
                 toolHeight = editor.toolBarDiv[0].offsetHeight;
 
             if (!UA.ie) {
@@ -16626,6 +16692,9 @@ KISSY.Editor.add("maximize", function(editor) {
             var self = this;
             init();
             self.call("_real");
+        },
+        destroy:function() {
+            //Event.remove(window, "resize", this._resize);
         }
     });
 
@@ -16705,11 +16774,18 @@ KISSY.Editor.add("music", function(editor) {
             context.reload({
                 offClick:function() {
                     musicInserter.show();
+                },
+                destroy:function(){
+                    musicInserter.destroy();
                 }
             });
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false,
     "requires":["fakeobjects"]
 });KISSY.Editor.add("music/support", function() {
@@ -16991,7 +17067,7 @@ KISSY.Editor.add("overlay", function() {
         var mark_up = '<div' +
             ' style="page-break-after: always; ">' +
             '<span style="DISPLAY:none">&nbsp;</span></div>';
-        editor.addButton("page-break", {
+        var context = editor.addButton("page-break", {
             title:"分页",
             mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-pagebreak",
@@ -17021,6 +17097,11 @@ KISSY.Editor.add("overlay", function() {
                 editor.fire("save");
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 }, {
     attach:false,
@@ -17032,7 +17113,7 @@ KISSY.Editor.add("overlay", function() {
 KISSY.Editor.add("preview", function(editor) {
 
     editor.addPlugin("preview", function() {
-        editor.addButton("preview", {
+        var context = editor.addButton("preview", {
             title:"预览",
             contentCls:"ke-toolbar-preview",
             offClick:function() {
@@ -17077,8 +17158,13 @@ KISSY.Editor.add("preview", function(editor) {
                 oWindow.focus();
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });
 KISSY.Editor.add("progressbar", function() {
@@ -17143,7 +17229,7 @@ KISSY.Editor.add("progressbar", function() {
         destroy:function() {
             var self = this;
             self.detach();
-            self.el._4e_remove();
+            self.el.remove();
         },
         _init:function() {
             var self = this,
@@ -17227,7 +17313,7 @@ KISSY.Editor.add("removeformat", function(editor) {
         }
 
 
-        editor.addButton("removeformat", {
+        var context = editor.addButton("removeformat", {
             title:"清除格式",
             mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-removeformat",
@@ -17314,59 +17400,72 @@ KISSY.Editor.add("removeformat", function(editor) {
                 editor.fire("save");
             }
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 
-},{
+}, {
     attach:false
 });KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
         Node = S.Node;
 
 
-        S.use("dd", function() {
-            var Draggable = S['Draggable'];
-            var statusDiv = editor.statusDiv,
-                resizer = new Node("<div class='ke-resizer'>"),
-                cfg = editor.cfg["pluginConfig"]["resize"] || {};
-            cfg = cfg["direction"] || ["x","y"];
-            resizer.appendTo(statusDiv);
-            //最大化时就不能缩放了
-            editor.on("maximizeWindow", function() {
-                resizer.css("display", "none");
-            });
-            editor.on("restoreWindow", function() {
-                resizer.css("display", "");
-            });
-            var d = new Draggable({
-                node:resizer
-            }),
-                height = 0,
-                width = 0,
-                heightEl = editor.wrap,
-                widthEl = editor.editorWrap;
-            d.on("dragstart", function() {
-                height = heightEl.height();
-                width = widthEl.width();
-            });
-            d.on("drag", function(ev) {
-                var diffX = ev.left - this['startNodePos'].left,
-                    diffY = ev.top - this['startNodePos'].top;
-                if (S.inArray("y", cfg)) heightEl.height(height + diffY);
-                if (S.inArray("x", cfg)) widthEl.width(width + diffX);
-            });
+    S.use("dd", function() {
+        var Draggable = S['Draggable'];
+        var statusDiv = editor.statusDiv,
+            resizer = new Node("<div class='ke-resizer'>"),
+            cfg = editor.cfg["pluginConfig"]["resize"] || {};
+        cfg = cfg["direction"] || ["x","y"];
+        resizer.appendTo(statusDiv);
+        //最大化时就不能缩放了
+        editor.on("maximizeWindow", function() {
+            resizer.css("display", "none");
         });
-},{
+        editor.on("restoreWindow", function() {
+            resizer.css("display", "");
+        });
+        var d = new Draggable({
+            node:resizer
+        }),
+            height = 0,
+            width = 0,
+            heightEl = editor.wrap,
+            widthEl = editor.editorWrap;
+        d.on("dragstart", function() {
+            height = heightEl.height();
+            width = widthEl.width();
+        });
+        d.on("drag", function(ev) {
+            var diffX = ev.left - this['startNodePos'].left,
+                diffY = ev.top - this['startNodePos'].top;
+            if (S.inArray("y", cfg)) heightEl.height(height + diffY);
+            if (S.inArray("x", cfg)) widthEl.width(width + diffX);
+        });
+
+        editor.on("destroy", function() {
+            d.destroy();
+            resizer.remove();
+        });
+    });
+}, {
     attach:false
 });KISSY.Editor.add("separator", function(editor) {
     editor.addPlugin("separator", function() {
-
-        new KISSY.Node('<span class="ke-toolbar-separator">&nbsp;</span>')
+        var s = new KISSY.Node('<span ' +
+            'class="ke-toolbar-separator">&nbsp;' +
+            '</span>')
             .appendTo(editor.toolBarDiv);
-    },{
+        editor.on("destroy", function() {
+            s.remove();
+        });
+    }, {
         duplicate:true
     });
-},{
+}, {
     attach:false
 });/**
  * smiley icon from wangwang for kissy editor
@@ -17381,10 +17480,12 @@ KISSY.Editor.add("smiley", function(editor) {
             mode:KE.WYSIWYG_MODE,
             loading:true
         });
-
         KE.use("smiley/support", function() {
             context.reload(KE.SmileySupport);
         });
+        this.destroy=function(){
+          context.destroy();
+        };
     });
 },{
     attach:false
@@ -17428,6 +17529,8 @@ KISSY.Editor.add("smiley/support", function() {
         return smiley_markup;
     }
 
+    var addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
 
     KE.SmileySupport = {
         _selectSmiley:function(ev) {
@@ -17490,6 +17593,10 @@ KISSY.Editor.add("smiley/support", function() {
             Event.on(document, "click", cfg._hidePanel, self);
             Event.on(editor.document, "click", cfg._hidePanel, self);
             self.cfg._prepare = self.cfg._real;
+            addRes.call(self, self.smileyWin, self.smileyPanel, function() {
+                Event.remove(document, "click", cfg._hidePanel, self);
+                Event.remove(editor.document, "click", cfg._hidePanel, self);
+            });
             self.call("_real");
         },
         _real:function() {
@@ -17514,6 +17621,9 @@ KISSY.Editor.add("smiley/support", function() {
             KE.use("overlay", function() {
                 self.call("_prepare");
             });
+        },
+        destroy:function(){
+            destroyRes.call(this);
         }
     };
 });/**
@@ -17559,8 +17669,12 @@ KISSY.Editor.add("sourcearea", function(editor) {
             });
             editor.addCommand("sourceAreaSupport", KE.SourceAreaSupport);
         });
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });
 /**
@@ -17719,15 +17833,21 @@ KISSY.Editor.add("table", function(editor) {
             context.reload({
                 offClick:function() {
                     tableUI._tableShow();
+                },
+                destroy:function() {
+                    tableUI.destroy();
                 }
             });
         });
+        this.destroy = function() {
+            context.destroy();
+        };
         /**
          * 动态加入显表格border css，便于编辑
          */
         editor.addCustomStyle(cssStyleText);
     });
-},{
+}, {
     attach:false
 });
 KISSY.Editor.add("table/support", function() {
@@ -17737,6 +17857,8 @@ KISSY.Editor.add("table/support", function() {
         KE = S.Editor,
         KEN = KE.NODE,
         tableRules = ["tr","th","td","tbody","table"];
+    var addRes = KE.Utils.addRes,
+        destroyRes = KE.Utils.destroyRes;
 
     function TableUI(editor) {
         var self = this,
@@ -17750,12 +17872,13 @@ KISSY.Editor.add("table/support", function() {
                 }
             })(f);
         }
-        KE.ContextMenu.register({
+        var c = KE.ContextMenu.register({
             editor:editor,
             rules:tableRules,
             width:"120px",
             funcs:myContexts
         });
+        addRes.call(self, c);
         self.editor = editor;
     }
 
@@ -17765,6 +17888,10 @@ KISSY.Editor.add("table/support", function() {
             editor.useDialog("table/dialog", function(dialog) {
                 dialog.show(selectedTable, td);
             });
+        },
+        destroy:function() {
+            destroyRes.call(this);
+            this.editor.destroyDialog("table/dialog");
         }
     });
 
@@ -18255,7 +18382,7 @@ KISSY.Editor.add("templates", function(editor) {
             , "ke-templates");
 
 
-        editor.addButton("templates", {
+        var context = editor.addButton("templates", {
             contentCls:"ke-toolbar-template",
             title:"模板",
             mode:KE.WYSIWYG_MODE,
@@ -18306,10 +18433,15 @@ KISSY.Editor.add("templates", function(editor) {
                 this.ui.show();
             }
         });
+
+
+        this.destroy = function() {
+            context.destroy();
+        };
     });
 
 
-},{
+}, {
     attach:false
 });
 /**
@@ -18403,6 +18535,11 @@ KISSY.Editor.add("undo", function(editor) {
             b1.reload(undoCfg);
             b2.reload(redoCfg);
         });
+
+        this.destroy = function() {
+            b1.destroy();
+            b2.destroy();
+        };
     });
 
 }, {

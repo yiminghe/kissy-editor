@@ -23,7 +23,10 @@ KISSY.Editor.add("maximize", function(editor) {
         KE.use("maximize/support", function() {
             context.reload(KE.Maximize);
         });
+        this.destroy = function() {
+            context.destroy();
+        };
     });
-},{
+}, {
     attach:false
 });

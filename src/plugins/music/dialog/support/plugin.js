@@ -79,6 +79,7 @@ KISSY.Editor.add("music/dialog/support", function() {
                 d.hide();
             });
             KE.Utils.placeholder(self.dUrl, self._urlTip);
+             self.addRes(action,cancel,self.dUrl);
         },
 
         _getDInfo:function() {

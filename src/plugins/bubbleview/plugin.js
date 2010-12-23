@@ -13,7 +13,8 @@ KISSY.Editor.add("bubbleview", function() {
         return;
     }
 
-    var BubbleView = S['UIBase'].create(KE.Overlay, [], {
+    var BubbleView = S['UIBase'].create(KE.Overlay,
+        [], {
         renderUI:function() {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
@@ -25,6 +26,9 @@ KISSY.Editor.add("bubbleview", function() {
             xy.top += a.height() + 5;
             BubbleView['superclass'].show.call(self);
             self.set("xy", [xy.left,xy.top]);
+        },
+        destructor:function() {
+            KE.Utils.destroyRes.call(this);
         }
     }, {
         ATTRS:{

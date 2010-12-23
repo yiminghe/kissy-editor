@@ -83,14 +83,20 @@ KISSY.Editor.add("table", function(editor) {
             context.reload({
                 offClick:function() {
                     tableUI._tableShow();
+                },
+                destroy:function() {
+                    tableUI.destroy();
                 }
             });
         });
+        this.destroy = function() {
+            context.destroy();
+        };
         /**
          * 动态加入显表格border css，便于编辑
          */
         editor.addCustomStyle(cssStyleText);
     });
-},{
+}, {
     attach:false
 });
