@@ -12369,6 +12369,8 @@ KISSY.Editor.add("draft", function(editor) {
                         img._4e_remove();
                         S.log(xhr);
                     }
+
+                    xhr.onreadystatechange=null;
                 }
             };
 
@@ -12396,6 +12398,7 @@ KISSY.Editor.add("draft", function(editor) {
             xhr.sendAsBinary("Content-Type: multipart/form-data; boundary=" +
                 boundary + "\r\nContent-Length: " + body.length
                 + "\r\n" + body + "\r\n");
+            reader.onload=null;
         };
         reader.readAsBinaryString(file);
     }
