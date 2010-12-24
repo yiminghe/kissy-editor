@@ -11257,7 +11257,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                     var bms = sel.createBookmarks();
 
                     // Turn off design mode temporarily before give focus to the paste bin.
-
                     range.setStartAt(pastebin, KER.POSITION_AFTER_START);
                     range.setEndAt(pastebin, KER.POSITION_BEFORE_END);
                     range.select(true);
@@ -11277,8 +11276,13 @@ KISSY.Editor.add("clipboard", function(editor) {
                             && (bogusSpan.hasClass('Apple-style-span') ) ?
                             bogusSpan : pastebin );
                         sel.selectBookmarks(bms);
-
-                        editor.insertHtml(pastebin.html());
+                        var html = pastebin.html();
+                        var re = editor.fire("paste", {
+                            html:html,
+                            holder:pastebin
+                        });
+                        if (re !== undefined) html = re;
+                        editor.insertHtml(html);
                         self._running = false;
                     }, 0);
                 }
