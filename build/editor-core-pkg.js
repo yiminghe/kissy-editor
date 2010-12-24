@@ -2301,6 +2301,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.__plugins = {};
 
             if (UA.ie)DOM.addClass(DOC.body, "ke-ie" + UA.ie);
+            if (UA.trident)DOM.addClass(DOC.body, "ke-trident" + UA.trident);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
             var editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
