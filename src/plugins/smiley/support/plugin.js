@@ -67,17 +67,6 @@ KISSY.Editor.add("smiley/support", function() {
             }
             smileyWin.hide();
         },
-        _show:function() {
-            var self = this,
-                smileyWin = self.smileyWin;
-            if (smileyWin && smileyWin.get("visible")) {
-                smileyWin.hide();
-            } else {
-                KE.use("overlay", function() {
-                    self.call("_prepare");
-                });
-            }
-        },
         _prepare:function() {
             var self = this,
                 cfg = self.cfg,
@@ -125,13 +114,11 @@ KISSY.Editor.add("smiley/support", function() {
             });
         },
         onClick:function() {
-            var self = this;
-            KE.use("overlay", function() {
-                self.call("_prepare");
-            });
+            this.smileyWin && this.smileyWin.hide();
         },
-        destroy:function(){
-            destroyRes.call(this);
+        destroy:function() {
+            var self = this;
+            destroyRes.call(self);
         }
     };
 });

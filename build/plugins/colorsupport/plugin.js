@@ -108,15 +108,13 @@ KISSY.Editor.add("colorsupport", function() {
     KE.ColorSupport = {
         offClick:function(ev) {
             var self = this,
-                cfg = self.cfg,
-                colorWin = self.colorWin;
-            if (colorWin && colorWin.get("visible")) {
-                colorWin.hide();
-            } else {
-                KE.use("overlay", function() {
-                    cfg._prepare.call(self, ev);
-                });
-            }
+                cfg = self.cfg;
+            KE.use("overlay", function() {
+                cfg._prepare.call(self, ev);
+            });
+        },
+        onClick:function() {
+            this.colorWin && this.colorWin.hide();
         },
         _prepare:function() {
             var self = this,
