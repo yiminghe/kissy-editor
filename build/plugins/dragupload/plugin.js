@@ -13,25 +13,31 @@ KISSY.Editor.add("dragupload", function(editor) {
         surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
         document = editor.document;
 
-    var inserted = {};
+    var inserted = {},startMonitor = false;
 
     function nodeInsert(ev) {
         var oe = ev.originalEvent;
         var t = oe.target;
-        if (S.DOM._4e_name(t) == "img") {
+        if (S.DOM._4e_name(t) == "img" && t.src.match(/^file:\/\//)) {
             inserted[t.src] = t;
         }
     }
 
+    Event.on(document, "dragenter", function(ev) {
+        //firefox 会插入伪数据
+        if (!startMonitor) {
+            Event.on(document, "DOMNodeInserted", nodeInsert);
+            startMonitor = true;
+        }
+    });
     Event.on(document, "dragenter dragover", function(ev) {
         ev.halt();
         ev = ev.originalEvent;
         var dt = ev.dataTransfer;
-        //firefox 会插入伪数据
-        Event.on(document, "DOMNodeInserted", nodeInsert);
     });
     Event.on(document, "drop", function(ev) {
         Event.remove(document, "DOMNodeInserted", nodeInsert);
+        startMonitor = false;
         ev.halt();
         ev = ev.originalEvent;
         S.log(ev);
@@ -42,9 +48,11 @@ KISSY.Editor.add("dragupload", function(editor) {
         if (!S.isEmptyObject(inserted)) {
 
             S.each(inserted, function(el) {
-                archor = el.nextSibling;
-                ap = el.parentNode;
-                S.DOM._4e_remove(el);
+                if (S.DOM._4e_name(el) == "img") {
+                    archor = el.nextSibling;
+                    ap = el.parentNode;
+                    S.DOM._4e_remove(el);
+                }
             });
             inserted = {};
         } else {
