@@ -13,13 +13,25 @@ KISSY.Editor.add("dragupload", function(editor) {
         surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
         document = editor.document;
 
+    var inserted = {};
+
+    function nodeInsert(ev) {
+        var oe = ev.originalEvent;
+        var t = oe.target;
+        if (S.DOM._4e_name(t) == "img") {
+            inserted[t.src] = t;
+        }
+    }
 
     Event.on(document, "dragenter dragover", function(ev) {
         ev.halt();
         ev = ev.originalEvent;
         var dt = ev.dataTransfer;
+        //firefox 会插入伪数据
+        Event.on(document, "DOMNodeInserted", nodeInsert);
     });
     Event.on(document, "drop", function(ev) {
+        Event.remove(document, "DOMNodeInserted", nodeInsert);
         ev.halt();
         ev = ev.originalEvent;
         S.log(ev);
@@ -27,19 +39,20 @@ KISSY.Editor.add("dragupload", function(editor) {
         /**
          * firefox 会自动添加节点
          */
-        if (UA.gecko) {
-            S.all("img", document.body).each(function(el) {
-                if (el[0].hasAttribute("_moz_dirty")) {
-                    archor = el[0].nextSibling;
-                    ap = el[0].parentNode;
-                    el._4e_remove();
-                }
+        if (!S.isEmptyObject(inserted)) {
+
+            S.each(inserted, function(el) {
+                archor = el.nextSibling;
+                ap = el.parentNode;
+                S.DOM._4e_remove(el);
             });
+            inserted = {};
         } else {
             //空行里拖放肯定没问题，其他在文字中间可能不准确
             ap = document.elementFromPoint(ev.clientX, ev.clientY);
             archor = ap.lastChild;
         }
+
         var dt = ev.dataTransfer;
         dt.dropEffect = "copy";
         var files = dt.files;
@@ -108,7 +121,7 @@ KISSY.Editor.add("dragupload", function(editor) {
                         S.log(xhr);
                     }
 
-                    xhr.onreadystatechange=null;
+                    xhr.onreadystatechange = null;
                 }
             };
 
@@ -136,7 +149,7 @@ KISSY.Editor.add("dragupload", function(editor) {
             xhr.sendAsBinary("Content-Type: multipart/form-data; boundary=" +
                 boundary + "\r\nContent-Length: " + body.length
                 + "\r\n" + body + "\r\n");
-            reader.onload=null;
+            reader.onload = null;
         };
         reader.readAsBinaryString(file);
     }
