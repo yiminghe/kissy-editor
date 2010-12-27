@@ -1,1 +1,0 @@
-KISSY.Editor.add("bangpai-upload/dialog",function(a){var b=KISSY.Editor;b.use("bangpai-upload/dialog/support",function(){a.addDialog("bangpai-upload/dialog",new b.BangPaiUpload.Dialog(a))})},{attach:false});

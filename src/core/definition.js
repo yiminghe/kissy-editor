@@ -958,20 +958,23 @@ KISSY.Editor.add("definition", function(KE) {
 
         // IE standard compliant in editing frame doesn't focus the editor when
         // clicking outside actual content, manually apply the focus. (#1659)
+
         if (UA.ie
             && doc.compatMode == 'CSS1Compat'
+            //wierd ,sometimes ie9 break
+            || doc['documentMode']
             || UA.gecko
             || UA.opera) {
-            var htmlElement = new Node(doc.documentElement);
-            htmlElement.on('mousedown', function(evt) {
+            var htmlElement = doc.documentElement;
+            Event.on(htmlElement, 'mousedown', function(evt) {
                 // Setting focus directly on editor doesn't work, we
                 // have to use here a temporary element to 'redirect'
                 // the focus.
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                var t = new Node(evt.target);
-                if (t[0] == htmlElement[0]) {
+                var t = evt.target;
+                if (t == htmlElement) {
                     //S.log("click");
                     //self.focus();
                     //return;

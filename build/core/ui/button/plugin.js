@@ -15,7 +15,7 @@ KISSY.Editor.add("button", function() {
         DISABLED_CLASS = "ke-triplebutton-disabled";
 
     if (KE.TripleButton) {
-        S.log("TripleButton attach twice","warn");
+        S.log("TripleButton attach twice", "warn");
         return;
     }
 
@@ -72,9 +72,12 @@ KISSY.Editor.add("button", function() {
         },
         _action:function(ev) {
             var self = this;
-            self.fire(self.get("state") + "Click", ev);
-            ev.type = self.get("state") + "Click";
-            self.fire("click", ev);
+            self.fire(self.get("state") + "Click", {
+                TripleEvent:ev
+            });
+            self.fire("click", {
+                TripleClickType:self.get("state") + "Click"
+            });
             ev.preventDefault();
         },
         bon:function() {
@@ -162,7 +165,7 @@ KISSY.Editor.add("button", function() {
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
                     b.on("click", function(ev) {
-                        var t = ev.type;
+                        var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
@@ -171,8 +174,8 @@ KISSY.Editor.add("button", function() {
                     }
                     btnCfg.init && btnCfg.init.call(context);
                 },
-                destroy:function(){
-                    if(btnCfg['destroy']) btnCfg['destroy'].call(context);
+                destroy:function() {
+                    if (btnCfg['destroy']) btnCfg['destroy'].call(context);
                     b.destroy();
                 }
             };

@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2010-12-22 16:40:03";
+                    url += "t=2010-12-27 13:53:27";
                 }
                 return KE["Config"].base + url;
             },

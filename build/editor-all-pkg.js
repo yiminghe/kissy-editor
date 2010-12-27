@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2010-12-20 13:41:49
+ * @buildtime: 2010-12-27 13:53:27
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -96,7 +96,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2010-12-20 13:41:49";
+        return "plugin-min.js?t=2010-12-27 13:53:27";
     }
 
     S.app(Editor, S.EventTarget);
@@ -151,7 +151,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2010-12-22 16:40:03";
+                    url += "t=2010-12-27 13:53:27";
                 }
                 return KE["Config"].base + url;
             },
@@ -3092,20 +3092,23 @@ KISSY.Editor.add("definition", function(KE) {
 
         // IE standard compliant in editing frame doesn't focus the editor when
         // clicking outside actual content, manually apply the focus. (#1659)
+
         if (UA.ie
             && doc.compatMode == 'CSS1Compat'
+            //wierd ,sometimes ie9 break
+            || doc['documentMode']
             || UA.gecko
             || UA.opera) {
-            var htmlElement = new Node(doc.documentElement);
-            htmlElement.on('mousedown', function(evt) {
+            var htmlElement = doc.documentElement;
+            Event.on(htmlElement, 'mousedown', function(evt) {
                 // Setting focus directly on editor doesn't work, we
                 // have to use here a temporary element to 'redirect'
                 // the focus.
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                var t = new Node(evt.target);
-                if (t[0] == htmlElement[0]) {
+                var t = evt.target;
+                if (t == htmlElement) {
                     //S.log("click");
                     //self.focus();
                     //return;
@@ -10405,7 +10408,7 @@ KISSY.Editor.add("button", function() {
         DISABLED_CLASS = "ke-triplebutton-disabled";
 
     if (KE.TripleButton) {
-        S.log("TripleButton attach twice","warn");
+        S.log("TripleButton attach twice", "warn");
         return;
     }
 
@@ -10462,9 +10465,12 @@ KISSY.Editor.add("button", function() {
         },
         _action:function(ev) {
             var self = this;
-            self.fire(self.get("state") + "Click", ev);
-            ev.type = self.get("state") + "Click";
-            self.fire("click", ev);
+            self.fire(self.get("state") + "Click", {
+                TripleEvent:ev
+            });
+            self.fire("click", {
+                TripleClickType:self.get("state") + "Click"
+            });
             ev.preventDefault();
         },
         bon:function() {
@@ -10552,7 +10558,7 @@ KISSY.Editor.add("button", function() {
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
                     b.on("click", function(ev) {
-                        var t = ev.type;
+                        var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
@@ -10561,8 +10567,8 @@ KISSY.Editor.add("button", function() {
                     }
                     btnCfg.init && btnCfg.init.call(context);
                 },
-                destroy:function(){
-                    if(btnCfg['destroy']) btnCfg['destroy'].call(context);
+                destroy:function() {
+                    if (btnCfg['destroy']) btnCfg['destroy'].call(context);
                     b.destroy();
                 }
             };
@@ -14018,88 +14024,6 @@ KISSY.Editor.add("format", function(editor) {
     });
 }, {
     attach:false
-});
-/**
- * format formatting,modified from ckeditor
- * @modifier: yiminghe@gmail.com
- */
-KISSY.Editor.add("format/support", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
-        Node = S.Node;
-
-    function Format(cfg) {
-        var self = this;
-        Format['superclass'].constructor.call(self, cfg);
-        self._init();
-    }
-
-    Format.ATTRS = {
-        editor:{}
-    };
-    var Select = KE.Select;
-    S.extend(Format, S.Base, {
-        _init:function() {
-            var self = this,
-                editor = this.get("editor"),
-                toolBarDiv = editor.toolBarDiv;
-            self.el = new Select({
-                container: toolBarDiv,
-                value:"",
-                doc:editor.document,
-                width:self.get("width"),
-                popUpWidth:self.get("popUpWidth"),
-                title:self.get("title"),
-                items:self.get("html"),
-                menuContainer:new Node(document.body)
-            });
-            self.el.on("click", self._vChange, self);
-            editor.on("selectionChange", self._selectionChange, self);
-            KE.Utils.sourceDisable(editor, self);
-        },
-        disable:function() {
-            this.el.set("state", Select.DISABLED);
-        },
-        enable:function() {
-            this.el.set("state", Select.ENABLED);
-        },
-
-        _vChange:function(ev) {
-            var self = this,
-                editor = self.get("editor"),
-                FORMAT_STYLES = self.get("formatStyles"),
-                v = ev.newVal,
-                pre = ev.prevVal;
-            editor.fire("save");
-            if (v != pre) {
-                FORMAT_STYLES[v].apply(editor.document);
-            } else {
-                FORMAT_STYLES["p"].apply(editor.document);
-                self.el.set("value", "p");
-            }
-            editor.fire("save");
-        },
-
-        _selectionChange:function(ev) {
-            var self = this,
-                editor = self.get("editor"),
-                FORMAT_STYLES = self.get("formatStyles"),
-                elementPath = ev.path;
-            // For each element into the elements path.
-            // Check if the element is removable by any of
-            // the styles.
-            for (var value in FORMAT_STYLES) {
-                if (FORMAT_STYLES[ value ].checkActive(elementPath)) {
-                    self.el.set("value", value);
-                    return;
-                }
-            }
-
-            //self.el.reset("value");
-        }
-    });
-    KE.Format = Format;
-
 });
 /**
  * modified from ckeditor,process malform html and ms-word copy for kissyeditor
