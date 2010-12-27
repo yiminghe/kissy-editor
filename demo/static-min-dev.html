@@ -185,7 +185,7 @@
 <script src="../../kissy/build/overlay/overlay-pkg.js"></script>
 -->
 <script src="../build/editor-all-pkg-min.js?t=20101223a"></script>
-<script src="../build/biz/bangpai/editor-plugin-pkg-min.js?t=20101223a"></script>
+<script src="../build/biz/ext/editor-plugin-pkg-min.js?t=20101223a"></script>
 <script>
 
 
@@ -284,7 +284,7 @@ KISSY.ready(function(S) {
                 // "font-italic":false,
                 //"font-underline":false,
                 //"font-strikeThrough":false,
-                "bangpai-upload":{
+                "multi-upload":{
                     serverUrl:"/code/upload/upload.jsp",
                     serverParams:{
                         waterMark:function() {
@@ -301,7 +301,7 @@ KISSY.ready(function(S) {
                             "id='ke_img_up_watermark_2'>" +
                             "<span style='vertical-align:middle;'>图片加水印，防止别人盗用</span></p>"
                 },
-                "bangpai-video":{
+                "video":{
                     urlCfg:[
                         {
                             reg:/tudou\.com/i,
@@ -310,6 +310,51 @@ KISSY.ready(function(S) {
                         }
                     ],
                     providers:[
+                        {
+                            reg:/youku\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                var m = url.match(/id_([^.]+)\.html$/);
+                                if (m) {
+                                    return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                                }
+                                m = url.match(/v_playlist\/([^.]+)\.html$/);
+                                if (m) {
+                                    return;
+                                    //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                                }
+                                return url;
+                            }
+                        },
+                        {
+                            reg:/tudou\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                return url;
+                            }
+                        },
+                        {
+                            reg:/ku6\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
+                                if (m) {
+                                    return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
+                                }
+                                return url;
+                            }
+                        }/*,
+                         {
+                         reg:/taobaocdn\.com/i,
+                         width:480,
+                         height:400,
+                         detect:function(url) {
+                         return url;
+                         }
+                         }*/,
                         {
                             reg:/taobaocdn\.com/i,
                             width:480,
@@ -354,19 +399,19 @@ KISSY.ready(function(S) {
         function test() {
             window.editor2 = KE("#editor", S.clone(cfg)).use("elementpaths," +
                     "sourcearea,preview," +
-                    "bangpai-sourcearea," +
+                    "checkbox-sourcearea," +
                     "templates,separator," +
                     "undo,separator," +
                     "removeformat,font,format,color,separator," +
                     "list,indent," +
                     "justify,separator,link," +
                     "image,flash," +
-                    "bangpai-video," +
+                    "video," +
                     "music," +
-                    "bangpai-music," +
+                    "xiami-music," +
                     "smiley,separator,table,resize," +
                     "draft," +
-                    "bangpai-upload," +
+                    "multi-upload," +
                     "pagebreak,separator,maximize,dragupload");
 
         }
