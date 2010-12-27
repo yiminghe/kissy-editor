@@ -146,6 +146,8 @@ KISSY.Editor.add("undo/support", function() {
             self._keyMonitor();
             //先save一下,why??
             //初始状态保存，异步，必须等use中已经 set 了编辑器中初始代码
+            //必须在从 textarea 复制到编辑区域前，use所有plugin，为了过滤插件生效
+            //而这段代码必须在从 textarea 复制到编辑区域后运行，所以设个延迟
             setTimeout(function() {
                 self.save();
             }, 0);
