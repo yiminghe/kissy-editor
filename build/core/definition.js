@@ -394,7 +394,10 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,
                 html;
             if (self.getMode() == KE.WYSIWYG_MODE) {
-                html = self.document.body.innerHTML;
+                if (self.document && self.document.body)
+                    html = self.document.body.innerHTML;
+                else
+                    html = "";
             } else {
                 //代码模式下不需过滤
                 html = self.textarea.val();
