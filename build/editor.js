@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2010-12-28 14:49:10
+ * @buildtime: 2011-01-04 17:59:45
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -96,7 +96,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2010-12-28 14:49:10";
+        return "plugin-min.js?t=2011-01-04 17:59:45";
     }
 
     S.app(Editor, S.EventTarget);

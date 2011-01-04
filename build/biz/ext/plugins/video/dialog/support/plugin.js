@@ -1,7 +1,7 @@
 KISSY.Editor.add("video/dialog/support", function() {
     var S = KISSY,
         KE = S.Editor,
-       Video = KE.Video,
+        Video = KE.Video,
         CLS_VIDEO = "ke_video",
         TYPE_VIDEO = "video",
         DTIP = "自动";
@@ -88,7 +88,8 @@ KISSY.Editor.add("video/dialog/support", function() {
             self._footHtml = footHtml;
             self.urlCfg = cfg["video"] &&
                 cfg["video"].urlCfg;
-            self._urlTip = "请输入优酷网、土豆网、酷6网的视频播放页链接...";
+            self._urlTip = (cfg["video"] &&
+                cfg["video"]['urlTip']) || "请输入视频播放链接...";
         },
         _initD:function() {
             var self = this,
@@ -108,7 +109,7 @@ KISSY.Editor.add("video/dialog/support", function() {
             KE.Utils.placeholder(self.dUrl, self._urlTip);
             KE.Utils.placeholder(self.dWidth, DTIP);
             KE.Utils.placeholder(self.dHeight, DTIP);
-            self.addRes(action,cancel,self.dUrl,self.dWidth,self.dHeight);
+            self.addRes(action, cancel, self.dUrl, self.dWidth, self.dHeight);
         },
 
         _getDInfo:function() {
