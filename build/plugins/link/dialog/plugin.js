@@ -85,7 +85,6 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 _link:function() {
                     var self = this,
                         cmd = self.cmd,
-                        action = cmd.cfg,
                         d = self.dialog,
                         url = d.urlEl.val();
                     if (!KE.Utils.verifyInputs(d.get("el").all("input"))) {
@@ -99,7 +98,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     };
                     //ie9 focus 不同步，hide后等会才能恢复焦点
                     setTimeout(function() {
-                        action._link.call(cmd, attr);
+                        cmd.call("_link",attr,self._selectedEl);
                     }, 0);
                 },
 
@@ -109,9 +108,10 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     var self = this,
                         cmd = self.cmd,
                         action = cmd.cfg,
-                        link = action._getSelectedLink.call(cmd),
-                        url = action._getSelectionLinkUrl.call(cmd),
+                        link = cmd.call("_getSelectedLink"),
+                        url = cmd.call("_getSelectionLinkUrl"),
                         d = self.dialog;
+                    self._selectedEl=link;
                     //是修改行为
                     if (link) {
                         KE.Utils.valInput(d.urlEl, url);

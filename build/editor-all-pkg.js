@@ -6919,8 +6919,11 @@ KISSY.Editor.add("selection", function(KE) {
                     dummySpan;
                 //选的是元素，直接使用selectElement
                 //还是有差异的，特别是img选择框问题
-                if (self.startContainer[0] === self.endContainer[0]
-                    && self.endOffset - self.startOffset == 1) {
+                if (
+                //ie8 有问题？？
+                //UA.ieEngine!=8 &&
+                    self.startContainer[0] === self.endContainer[0]
+                        && self.endOffset - self.startOffset == 1) {
                     var selEl = self.startContainer[0].childNodes[self.startOffset];
                     if (selEl.nodeType == KEN.NODE_ELEMENT) {
                         new KESelection(self.document).selectElement(new Node(selEl));
@@ -7123,7 +7126,9 @@ KISSY.Editor.add("selection", function(KE) {
                     // Well not break because of this.
                     try {
                         //S.log("body focusin");
-                        restoreEnabled && savedRange.select();
+                        if (restoreEnabled) {
+                            savedRange.select();
+                        }
                     }
                     catch (e) {
                     }
@@ -14658,6 +14663,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [ ( /^_ke_saved_/ ), '' ],
                 [ ( /^ke_on/ ), 'on' ],
                 [ ( /^_ke.*/ ), '' ],
+                //!TODO 不知道怎么回事会引入
+                [ ( /^_ks.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
             ]
         };
@@ -15544,7 +15551,7 @@ KISSY.Editor.add("link", function(editor) {
             return re;
         }
 
-        var controls ={},addRes = KE.Utils.addRes,
+        var controls = {},addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes;
 
 
@@ -15586,11 +15593,11 @@ KISSY.Editor.add("link", function(editor) {
                 editor.fire("save");
                 editor.notifySelectionChange();
             },
-            _link:function(attr) {
+            _link:function(attr, _selectedEl) {
                 var self = this,
                     cfg = self.cfg,
                     editor = self.editor,
-                    link = cfg._getSelectedLink.call(self);
+                    link = _selectedEl;
                 //注意同步，取的话要从 _ke_saved_href 取原始值的
                 attr["_ke_saved_href"] = attr.href;
                 //是修改行为
@@ -17274,6 +17281,7 @@ KISSY.Editor.add("removeformat", function(editor) {
             offClick:function() {
                 var self = this,
                     editor = self.editor;
+                editor.focus();
                 tagsRegex.lastIndex = 0;
                 var ranges = editor.getSelection().getRanges();
                 editor.fire("save");

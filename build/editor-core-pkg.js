@@ -6919,8 +6919,11 @@ KISSY.Editor.add("selection", function(KE) {
                     dummySpan;
                 //选的是元素，直接使用selectElement
                 //还是有差异的，特别是img选择框问题
-                if (self.startContainer[0] === self.endContainer[0]
-                    && self.endOffset - self.startOffset == 1) {
+                if (
+                //ie8 有问题？？
+                //UA.ieEngine!=8 &&
+                    self.startContainer[0] === self.endContainer[0]
+                        && self.endOffset - self.startOffset == 1) {
                     var selEl = self.startContainer[0].childNodes[self.startOffset];
                     if (selEl.nodeType == KEN.NODE_ELEMENT) {
                         new KESelection(self.document).selectElement(new Node(selEl));
@@ -7123,7 +7126,9 @@ KISSY.Editor.add("selection", function(KE) {
                     // Well not break because of this.
                     try {
                         //S.log("body focusin");
-                        restoreEnabled && savedRange.select();
+                        if (restoreEnabled) {
+                            savedRange.select();
+                        }
                     }
                     catch (e) {
                     }

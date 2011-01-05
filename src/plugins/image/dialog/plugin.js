@@ -199,7 +199,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             }
             imgWidth.val(Math.floor(v * imgRatioValue));
         });
-        addRes.call(controls, imgHeight,imgUrl,imgWidth);
+        addRes.call(controls, imgHeight, imgUrl, imgWidth);
 
         imgWidth.on("keyup", function() {
             var v = parseInt(imgWidth.val());
@@ -391,27 +391,38 @@ KISSY.Editor.add("image/dialog", function(editor) {
         if (!isNaN(margin)) {
             style += "margin:" + margin + "px;";
         }
-        if (style) {
-            style = " style='" + style + "' ";
-        }
-        var img = new Node("<img " +
-            style +
-            "src='" +
-            url +
-            "' alt='' />", null, editor.document);
+
         d.hide();
-        editor.insertElement(img, function(el) {
-            el.on("abort error", function() {
-                el.detach();
-                //ie6 手动设置，才会出现红叉
-                el[0].src = url;
+
+        /**
+         * 2011-01-05
+         * <a><img></a> 这种结构，a不要设成 position:absolute
+         * 否则img select 不到？!!: editor.getSelection().selectElement(img) 选择不到
+         */
+        if (selectedEl) {
+            editor.fire("save");
+            selectedEl.attr({
+                "src":url,
+                "style":style
             });
-        }, function(img) {
-            if (selectedEl) {
-                editor.getSelection().selectElement(img);
-            }
-            editor.notifySelectionChange();
-        });
+            editor.fire("save");
+        } else {
+            var img = new Node("<img " +
+                (style ? ("style='" +
+                    style +
+                    "'") : "") +
+                " src='" +
+                url +
+                "' alt='' />", null, editor.document);
+            editor.insertElement(img, function(el) {
+                el.on("abort error", function() {
+                    el.detach();
+                    //ie6 手动设置，才会出现红叉
+                    el[0].src = url;
+                });
+            });
+        }
+
     }
 
     function update(_selectedEl) {

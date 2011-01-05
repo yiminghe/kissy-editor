@@ -48,6 +48,7 @@ KISSY.Editor.add("removeformat", function(editor) {
             offClick:function() {
                 var self = this,
                     editor = self.editor;
+                editor.focus();
                 tagsRegex.lastIndex = 0;
                 var ranges = editor.getSelection().getRanges();
                 editor.fire("save");

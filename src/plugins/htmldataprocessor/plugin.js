@@ -628,6 +628,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [ ( /^_ke_saved_/ ), '' ],
                 [ ( /^ke_on/ ), 'on' ],
                 [ ( /^_ke.*/ ), '' ],
+                //!TODO 不知道怎么回事会引入
+                [ ( /^_ks.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
             ]
         };

@@ -57,7 +57,7 @@ KISSY.Editor.add("link", function(editor) {
             return re;
         }
 
-        var controls ={},addRes = KE.Utils.addRes,
+        var controls = {},addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes;
 
 
@@ -99,11 +99,11 @@ KISSY.Editor.add("link", function(editor) {
                 editor.fire("save");
                 editor.notifySelectionChange();
             },
-            _link:function(attr) {
+            _link:function(attr, _selectedEl) {
                 var self = this,
                     cfg = self.cfg,
                     editor = self.editor,
-                    link = cfg._getSelectedLink.call(self);
+                    link = _selectedEl;
                 //注意同步，取的话要从 _ke_saved_href 取原始值的
                 attr["_ke_saved_href"] = attr.href;
                 //是修改行为
