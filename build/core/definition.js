@@ -22,6 +22,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @const
          */
         Node = S.Node,
+        OLD_IE = !window.getSelection,
         /**
          * @const
          */
@@ -805,7 +806,7 @@ KISSY.Editor.add("definition", function(KE) {
                     return;
                 }
                 self.fire("save");
-                if (UA.ie) {
+                if (OLD_IE) {
                     var $sel = selection.getNative();
                     if ($sel.type == 'Control')
                         $sel.clear();

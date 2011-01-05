@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-01-04 17:59:45
+ * @buildtime: 2011-01-05 18:09:51
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -96,7 +96,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2011-01-04 17:59:45";
+        return "plugin-min.js?t=2011-01-05 18:09:51";
     }
 
     S.app(Editor, S.EventTarget);
@@ -151,7 +151,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2011-01-04 17:59:45";
+                    url += "t=2011-01-05 18:09:51";
                 }
                 return KE["Config"].base + url;
             },
@@ -2156,6 +2156,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @const
          */
         Node = S.Node,
+        OLD_IE = !window.getSelection,
         /**
          * @const
          */
@@ -2939,7 +2940,7 @@ KISSY.Editor.add("definition", function(KE) {
                     return;
                 }
                 self.fire("save");
-                if (UA.ie) {
+                if (OLD_IE) {
                     var $sel = selection.getNative();
                     if ($sel.type == 'Control')
                         $sel.clear();
