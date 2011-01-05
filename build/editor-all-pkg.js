@@ -2940,8 +2940,9 @@ KISSY.Editor.add("definition", function(KE) {
                     return;
                 }
                 self.fire("save");
-                if (OLD_IE) {
-                    var $sel = selection.getNative();
+                //ie9 仍然需要这样！
+                if (document.selection) {
+                    var $sel = document.selection;
                     if ($sel.type == 'Control')
                         $sel.clear();
                     $sel.createRange().pasteHTML(data);
