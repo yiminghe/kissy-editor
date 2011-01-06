@@ -67,6 +67,13 @@ KISSY.Editor.add("styles", function(KE) {
         varRegex = /#\((.+?)\)/g;
 
     KE.STYLE = KEST;
+
+    function notBookmark(node) {
+        //only get attributes on element nodes by kissy
+        //when textnode attr() return undefined ,wonderful !!!
+        return !node.attr("_ke_bookmark");
+    }
+
     function replaceVariables(list, variablesValues) {
         for (var item in list) {
             list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
@@ -624,34 +631,27 @@ KISSY.Editor.add("styles", function(KE) {
                             // to the range.
                             //2010-11-18 fix ; http://dev.ckeditor.com/ticket/6687
                             //<span><book/>123<book/></span> 直接越过末尾 <book/>
-                            var validNextSilbing = includedNode._4e_next(function(node) {
-                                //only get attributes on element nodes by kissy
-                                //when textnode attr() return undefined ,wonderful !!!
-                                return !node.attr("_ke_bookmark");
-                            });
-
-                            while (!validNextSilbing
-                                && ( parentNode = includedNode.parent(),
-                                dtd[ parentNode._4e_name() ] )
-                                && ( parentNode._4e_position(firstNode) |
-                                KEP.POSITION_FOLLOWING |
-                                KEP.POSITION_IDENTICAL |
-                                KEP.POSITION_IS_CONTAINED) ==
-                                ( KEP.POSITION_FOLLOWING +
-                                    KEP.POSITION_IDENTICAL +
-                                    KEP.POSITION_IS_CONTAINED )
-                                && ( !def["childRule"] ||
-                                def["childRule"](parentNode) )) {
-                                includedNode = parentNode;
-                            }
-
-                            styleRange.setEndAfter(includedNode);
 
                             // If the included node still is the last node in its
                             // parent, it means that the parent can't be included
                             // in this style DTD, so apply the style immediately.
-                            if (!includedNode[0].nextSibling)
-                                applyStyle = TRUE;
+                            while (
+                                (applyStyle = !includedNode._4e_next(notBookmark))
+                                    && ( parentNode = includedNode.parent(),
+                                    dtd[ parentNode._4e_name() ] )
+                                    && ( parentNode._4e_position(firstNode) |
+                                    KEP.POSITION_FOLLOWING |
+                                    KEP.POSITION_IDENTICAL |
+                                    KEP.POSITION_IS_CONTAINED) ==
+                                    ( KEP.POSITION_FOLLOWING +
+                                        KEP.POSITION_IDENTICAL +
+                                        KEP.POSITION_IS_CONTAINED )
+                                    && ( !def["childRule"] ||
+                                    def["childRule"](parentNode) )) {
+                                includedNode = parentNode;
+                            }
+
+                            styleRange.setEndAfter(includedNode);
 
                         }
                     }
@@ -711,9 +711,9 @@ KISSY.Editor.add("styles", function(KE) {
                                 || !( value = parent._4e_style(styleName) ))
                                 continue;
 
-                            if (styleNode._4e_style(styleName) == value){
+                            if (styleNode._4e_style(styleName) == value) {
                                 //removeList.styles[ styleName ] = 1;
-                                styleNode._4e_style(styleName,"");
+                                styleNode._4e_style(styleName, "");
                             }
                             else
                                 removeList.blockedStyles[ styleName ] = 1;
@@ -951,7 +951,12 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     // Turn inline style text properties into one hash.
+    /**
+     *
+     * @param {string} styleText
+     */
     function parseStyleText(styleText) {
+        styleText = String(styleText);
         var retval = {};
         styleText.replace(/&quot;/g, '"')
             .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
@@ -983,7 +988,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param {boolean=} nativeNormalize
      */
     function normalizeCssText(unparsedCssText, nativeNormalize) {
-        var styleText;
+        var styleText = "";
         if (nativeNormalize !== FALSE) {
             // Injects the style in a temporary span object, so the browser parses it,
             // retrieving its final format.

@@ -248,6 +248,7 @@ KISSY.Editor.add("range", function(KE) {
             self.optimizeBookmark();
             // For text containers, we must simply split the node and point to the
             // second part. The removal will be handled by the rest of the code .
+            //最关键：一般起始都是在文字节点中，得到起点选择右边的文字节点，只对节点处理！
             if (endNode[0].nodeType == KEN.NODE_TEXT)
                 endNode = endNode._4e_splitText(endOffset);
             else {
