@@ -886,7 +886,7 @@ KISSY.Editor.add("selection", function(KE) {
                     return;
 
                 // Disable selections from being saved.
-                saveEnabled = FALSE;
+                disableSave();
                 restoreEnabled = 1;
             });
 
@@ -894,8 +894,12 @@ KISSY.Editor.add("selection", function(KE) {
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
             Event.on(DOM._4e_getWin(doc), 'blur', function() {
-                //把选择区域与光标清除                               
-                doc && doc.selection.empty();
+                //把选择区域与光标清除
+                // Try/Catch to avoid errors if the editor is hidden. (#6375)
+                try {
+                    doc && doc.selection.empty();
+                } catch (e) {
+                }
             });
             /*
              Event.on(body, 'blur', function() {
