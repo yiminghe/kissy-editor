@@ -22,7 +22,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @const
          */
         Node = S.Node,
-        OLD_IE = !window.getSelection,
+        //OLD_IE = !window.getSelection,
         /**
          * @const
          */

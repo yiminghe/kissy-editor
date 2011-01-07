@@ -2156,7 +2156,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @const
          */
         Node = S.Node,
-        OLD_IE = !window.getSelection,
+        //OLD_IE = !window.getSelection,
         /**
          * @const
          */
@@ -6488,7 +6488,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // IE report line break as CRLF with range.text but
                         // only LF with textnode.nodeValue, normalize them to avoid
                         // breaking character counting logic below. (#3949)
-                        var distance = testRange.text
+                        var distance = String(testRange.text)
                             .replace(/\r\n|\r/g, '\n').length;
 
                         try {
