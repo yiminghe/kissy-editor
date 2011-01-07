@@ -71,7 +71,6 @@ KISSY.Editor.add("bubbleview", function() {
             bubble = cfg.bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {
-
             var elementPath = ev.path,
                 elements = elementPath.elements,
                 a,
@@ -92,7 +91,11 @@ KISSY.Editor.add("bubbleview", function() {
                 }
             }
         });
-
+        //代码模式下就消失
+        //!TODO 耦合---
+        editor.on("sourcemode", function() {
+            bubble && bubble.hide();
+        });
         Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
             bubble && bubble.hide();
         });

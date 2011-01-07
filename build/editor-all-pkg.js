@@ -11159,7 +11159,6 @@ KISSY.Editor.add("bubbleview", function() {
             bubble = cfg.bubble;
         //借鉴google doc tip提示显示
         editor.on("selectionChange", function(ev) {
-
             var elementPath = ev.path,
                 elements = elementPath.elements,
                 a,
@@ -11180,7 +11179,11 @@ KISSY.Editor.add("bubbleview", function() {
                 }
             }
         });
-
+        //代码模式下就消失
+        //!TODO 耦合---
+        editor.on("sourcemode", function() {
+            bubble && bubble.hide();
+        });
         Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
             bubble && bubble.hide();
         });
@@ -11811,6 +11814,7 @@ KISSY.Editor.add("contextmenu", function() {
         if (!doc.ke_contextmenu) {
             doc.ke_contextmenu = 1;
             Event.on(doc, "mousedown", ContextMenu.hide);
+            editor.on("sourcemode",ContextMenu.hide,doc);
             /*
              Event.on(doc, "contextmenu", function(ev) {
              ev.preventDefault();
@@ -11839,8 +11843,6 @@ KISSY.Editor.add("contextmenu", function() {
                                     //只能右键作用完后才能，才会发生光标移动,range变化
                                     //异步右键操作
                                     //qc #3764,#3767
-
-
                                     var x = ev.pageX,y = ev.pageY;
                                     //ie9 没有pageX,pageY,clientX,clientY
                                     if (!x) {
