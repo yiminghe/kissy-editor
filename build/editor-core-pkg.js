@@ -7056,17 +7056,15 @@ KISSY.Editor.add("selection", function(KE) {
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
             //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
-            if (UA.ie < 8 ||
-                //ie8 的 7 兼容模式
-                document['documentMode'] == 7) {
+            if (//ie8 的 7 兼容模式
+                UA.ieEngine < 8) {
                 // The 'click' event is not fired when clicking the
                 // scrollbars, so we can use it to check whether
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
                     var t = new Node(evt.target);
                     if (t._4e_name() === "html")
-                        editor.getSelection()
-                            .getRanges()[ 0 ].select();
+                        editor.getSelection().getNative().createRange().select();
                 });
             }
 
@@ -7212,7 +7210,7 @@ KISSY.Editor.add("selection", function(KE) {
                     var doc = editor.document,
                         sel = editor.getSelection(),
                         type = sel && sel.getType(),
-                        nativeSel = sel && sel.getNative();
+                        nativeSel = sel && doc.selection;
 
                     // There is a very specific case, when clicking
                     // inside a text selection. In that case, the
@@ -7245,7 +7243,7 @@ KISSY.Editor.add("selection", function(KE) {
                         && parentTag in { "input": 1, "textarea": 1 }) {
                         return;
                     }
-                    savedRange = nativeSel && sel.getRanges()[ 0 ];
+                    savedRange = nativeSel && nativeSel.createRange();
                     editor._monitor();
                 }
             }
