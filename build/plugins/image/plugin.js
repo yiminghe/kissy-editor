@@ -36,7 +36,7 @@ KISSY.Editor.add("image", function(editor) {
                 this.call("show");
             },
             _updateTip:function(tipurl, img) {
-                var src = img.attr("src");
+                var src = img.attr("_ke_saved_src") || img.attr("src");
                 tipurl.html(src);
                 tipurl.attr("href", src);
             },

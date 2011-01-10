@@ -229,7 +229,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
          */
         var uploadIframe = null;
         loadingCancel.on("click", function(ev) {
-            ev&&ev.halt();
+            ev && ev.halt();
             d.unloading();
             if (uploadIframe) {
                 Event.remove(uploadIframe, "load");
@@ -259,7 +259,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
         }
 
         ok.on("click", function(ev) {
-            ev&&ev.halt();
+            ev && ev.halt();
             if (tab.activate() == "local" && cfg) {
 
                 if (!verifyInputs(commonSettingTable.all("input")))
@@ -405,6 +405,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
             editor.fire("save");
             selectedEl.attr({
                 "src":url,
+                //注意设置，取的话要从 _ke_saved_src 里取
+                "_ke_saved_src":url,
                 "style":style
             });
             editor.fire("save");
@@ -414,6 +416,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     style +
                     "'") : "") +
                 " src='" +
+                url +
+                "' " +
+                "_ke_saved_src='" +
                 url +
                 "' alt='' />", null, editor.document);
             editor.insertElement(img, function(el) {
