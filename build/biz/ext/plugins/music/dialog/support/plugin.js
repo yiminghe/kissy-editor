@@ -154,9 +154,10 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
             self.addRes(input);
             self._xiamia_list = del.one(".ke-xiami-list");
             self._xiami_submit = del.one(".ke-xiami-submit");
-            self._xiami_submit.on("click", function() {
+            self._xiami_submit.on("click", function(ev) {
                 if (!self._xiami_submit.hasClass("ke-triplebutton-disabled"))
                     loadRecordsByPage(1);
+                ev.halt();
             });
             self.addRes(self._xiami_submit);
             input.on("keydown", function(ev) {
@@ -169,11 +170,12 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
             self._xiamia_title = del.one(".ke-xiami-title");
 
             var _xiami_ok = dfoot.one(".ke-xiami-ok");
-            dfoot.one(".ke-xiami-cancel").on("click", function() {
+            dfoot.one(".ke-xiami-cancel").on("click", function(ev) {
                 d.hide();
+                ev.halt();
             });
             self.addRes(dfoot);
-            _xiami_ok.on("click", function() {
+            _xiami_ok.on("click", function(ev) {
                 var f = self.selectedFlash,
                     r = editor.restoreRealElement(f);
                 self._dinfo = {
@@ -189,6 +191,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
                     }
                 };
                 self._gen();
+                ev.halt();
             }, self);
             self.addRes(_xiami_ok);
 
@@ -267,6 +270,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
                 } else if (paging) {
                     loadRecordsByPage(parseInt(paging.attr("data-value")));
                 }
+                ev.halt();
             });
             self.addRes(self._xiamia_list);
         },

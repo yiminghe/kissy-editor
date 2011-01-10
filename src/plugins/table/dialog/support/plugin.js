@@ -187,12 +187,14 @@ KISSY.Editor.add("table/dialog/support", function() {
             self.tableDialog = d;
             tok.on("click", self._tableOk, self);
 
-            tclose.on("click", function() {
+            tclose.on("click", function(ev) {
+                ev&&ev.halt();
                 d.hide();
             });
             addRes.call(self, d, d.twidthunit, tok, tclose);
         },
-        _tableOk:function() {
+        _tableOk:function(ev) {
+            ev&&ev.halt();
             var self = this,
                 tableDialog = self.tableDialog,
                 inputs = tableDialog.get("el").all("input");

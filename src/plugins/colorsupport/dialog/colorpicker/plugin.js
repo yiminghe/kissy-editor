@@ -223,7 +223,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 ok = foot.one(".ke-color-advanced-ok"),
                 cancel = foot.one(".ke-color-advanced-cancel");
 
-            ok.on("click", function() {
+            ok.on("click", function(ev) {
                 var v = S.trim(indicatorValue.val()),
                     cmd = self.cmd;
                 if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
@@ -235,6 +235,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 setTimeout(function() {
                     cmd.cfg._applyColor.call(cmd, indicatorValue.val());
                 }, 0);
+                ev&&ev.halt();
             });
 
 
@@ -248,8 +249,9 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
             });
 
 
-            cancel.on("click", function() {
+            cancel.on("click", function(ev) {
                 self.hide();
+                ev&&ev.halt();
             });
             body.on("click", function(ev) {
                 ev.halt();

@@ -276,7 +276,7 @@ KISSY.Editor.add("select", function() {
             this.set("state", DISABLED);
         },
         _select:function(ev) {
-            ev.halt();
+            ev&&ev.halt();
             var self = this,
                 menu = self.menu,
                 menuNode = self.menuNode,
@@ -385,7 +385,7 @@ KISSY.Editor.add("select", function() {
         },
         _click:function(ev) {
             if (this.loading) return;
-            ev.preventDefault();
+            ev&&ev.halt();
 
             var self = this,
                 el = self.el,
@@ -467,12 +467,14 @@ KISSY.Editor.add("select", function() {
                     b.on("click", function(ev) {
                         var t = ev.type;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                        ev&&ev.halt();
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
                         editor.on("wysiwygmode", b.enable, b);
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+
                 },
                 destroy:function() {
                     if (btnCfg.destroy) {

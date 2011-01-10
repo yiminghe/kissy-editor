@@ -100,9 +100,11 @@ KISSY.Editor.add("draft/support", function() {
             }
             self.drafts = drafts;
             self.sync();
-
-            save.on("click", function() {
+            save._4e_unselectable();
+            save.on("click", function(ev) {
                 self.save(false);
+                //如果不阻止，部分页面在ie6下会莫名奇妙把其他input的值丢掉！
+                ev.halt();
             });
 
             addRes.call(self, save);
@@ -148,8 +150,9 @@ KISSY.Editor.add("draft/support", function() {
                     text:"帮助",
                     container: holder
                 });
-                help.on("click", function() {
+                help.on("click", function(ev) {
                     self._prepareHelp();
+                    ev&&ev.halt();
                 });
                 addRes.call(self, help);
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
@@ -197,7 +200,8 @@ KISSY.Editor.add("draft/support", function() {
             });
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
-            function hideHelp() {
+            function hideHelp(ev) {
+                ev&&ev.halt();
                 var t = new Node(ev.target);
                 if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
@@ -292,6 +296,7 @@ KISSY.Editor.add("draft/support", function() {
                 editor.setData(drafts[v].content);
                 editor.fire("save");
             }
+            ev&&ev.halt();
         },
         destroy:function() {
             destroyRes.call(this);

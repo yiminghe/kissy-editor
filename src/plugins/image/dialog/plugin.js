@@ -228,7 +228,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
          * 取消当前iframe的上传
          */
         var uploadIframe = null;
-        loadingCancel.on("click", function() {
+        loadingCancel.on("click", function(ev) {
+            ev&&ev.halt();
             d.unloading();
             if (uploadIframe) {
                 Event.remove(uploadIframe, "load");
@@ -257,7 +258,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
             return 0;
         }
 
-        ok.on("click", function() {
+        ok.on("click", function(ev) {
+            ev&&ev.halt();
             if (tab.activate() == "local" && cfg) {
 
                 if (!verifyInputs(commonSettingTable.all("input")))

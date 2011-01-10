@@ -76,13 +76,17 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     var cancel = foot.one(".ke-link-cancel"),
                         ok = foot.one(".ke-link-ok");
                     ok.on("click", self._link, self);
-                    cancel.on("click", d.hide, d);
+                    cancel.on("click", function(ev){
+                        ev&&ev.halt();
+                        d.hide();
+                    });
                     KE.Utils.placeholder(d.urlEl, "http://");
                     addRes.call(self,ok,cancel,d,d.urlEl);
                 },
 
 
-                _link:function() {
+                _link:function(ev) {
+                    ev&&ev.halt();
                     var self = this,
                         cmd = self.cmd,
                         d = self.dialog,
@@ -107,7 +111,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                 _real:function() {
                     var self = this,
                         cmd = self.cmd,
-                        action = cmd.cfg,
+                        //action = cmd.cfg,
                         link = cmd.call("_getSelectedLink"),
                         url = cmd.call("_getSelectionLinkUrl"),
                         d = self.dialog;

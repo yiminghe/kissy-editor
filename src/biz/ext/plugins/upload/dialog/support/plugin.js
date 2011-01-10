@@ -256,7 +256,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 bel.removeClass("ke-button-hover");
             });
             self.addRes(uploader);
-            insertAll.on("click", function() {
+            insertAll.on("click", function(ev) {
                 var trs = list.all("tr");
                 for (var i = 0; i < trs.length; i++) {
                     var tr = new Node(trs[i]),
@@ -271,16 +271,18 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     listWrap.hide();
                     d.hide();
                 }
+                ev.halt();
             });
             self.addRes(insertAll);
 
-            delAll.on("click", function() {
+            delAll.on("click", function(ev) {
                 var trs = list.all("tr");
                 for (var i = 0; i < trs.length; i++) {
                     var tr = new Node(trs[i]);
                     self._removeTrFile(tr);
                 }
                 listWrap.hide();
+                ev.halt();
             });
             self.addRes(delAll);
 
@@ -334,8 +336,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                         self._syncStatus();
                     }
                 }
-
-
+                ev.halt();
             });
 
             self.addRes(list);
@@ -778,6 +779,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     "POST",
                     normParams(self._dsp),
                     self._fileInput);
+                ev.halt();
             });
             self.addRes(up);
         }

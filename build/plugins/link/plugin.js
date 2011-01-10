@@ -101,15 +101,13 @@ KISSY.Editor.add("link", function(editor) {
             },
             _link:function(attr, _selectedEl) {
                 var self = this,
-                    cfg = self.cfg,
-                    editor = self.editor,
-                    link = _selectedEl;
+                    editor = self.editor;
                 //注意同步，取的话要从 _ke_saved_href 取原始值的
                 attr["_ke_saved_href"] = attr.href;
                 //是修改行为
-                if (link) {
+                if (_selectedEl) {
                     editor.fire("save");
-                    link.attr(attr);
+                    _selectedEl.attr(attr);
                     editor.fire("save");
                 } else {
                     var sel = editor.getSelection(),

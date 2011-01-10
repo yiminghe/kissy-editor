@@ -78,7 +78,7 @@ KISSY.Editor.add("button", function() {
             self.fire("click", {
                 TripleClickType:self.get("state") + "Click"
             });
-            ev.preventDefault();
+            ev&&ev.halt();
         },
         bon:function() {
             this.set("state", ON);
@@ -167,6 +167,7 @@ KISSY.Editor.add("button", function() {
                     b.on("click", function(ev) {
                         var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                        ev&&ev.halt();
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
                         editor.on("wysiwygmode", b.enable, b);

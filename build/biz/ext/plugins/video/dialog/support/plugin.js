@@ -103,8 +103,9 @@ KISSY.Editor.add("video/dialog/support", function() {
             var action = el.one(".ke-video-ok"),
                 cancel = el.one(".ke-video-cancel");
             action.on("click", self._gen, self);
-            cancel.on("click", function() {
+            cancel.on("click", function(ev) {
                 d.hide();
+                ev.halt();
             });
             KE.Utils.placeholder(self.dUrl, self._urlTip);
             KE.Utils.placeholder(self.dWidth, DTIP);
@@ -141,7 +142,7 @@ KISSY.Editor.add("video/dialog/support", function() {
             }
         },
 
-        _gen:function() {
+        _gen:function(ev) {
             var self = this,
                 url = self.dUrl.val(),
                 urlCfg = self.urlCfg;
@@ -173,6 +174,7 @@ KISSY.Editor.add("video/dialog/support", function() {
                 }
             }
             VideoDialog['superclass']._gen.call(self);
+            ev&&ev.halt();
         },
 
         _dynamicUrlPrepare:function(re) {

@@ -75,7 +75,8 @@ KISSY.Editor.add("music/dialog/support", function() {
             var action = el.one(".ke-music-ok"),
                 cancel = el.one(".ke-music-cancel");
             action.on("click", self._gen, self);
-            cancel.on("click", function() {
+            cancel.on("click", function(ev) {
+                ev&&ev.halt();
                 d.hide();
             });
             KE.Utils.placeholder(self.dUrl, self._urlTip);

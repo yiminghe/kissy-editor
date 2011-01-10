@@ -10489,7 +10489,7 @@ KISSY.Editor.add("button", function() {
             self.fire("click", {
                 TripleClickType:self.get("state") + "Click"
             });
-            ev.preventDefault();
+            ev&&ev.halt();
         },
         bon:function() {
             this.set("state", ON);
@@ -10578,6 +10578,7 @@ KISSY.Editor.add("button", function() {
                     b.on("click", function(ev) {
                         var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                        ev&&ev.halt();
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
                         editor.on("wysiwygmode", b.enable, b);
@@ -10877,7 +10878,7 @@ KISSY.Editor.add("select", function() {
             this.set("state", DISABLED);
         },
         _select:function(ev) {
-            ev.halt();
+            ev&&ev.halt();
             var self = this,
                 menu = self.menu,
                 menuNode = self.menuNode,
@@ -10986,7 +10987,7 @@ KISSY.Editor.add("select", function() {
         },
         _click:function(ev) {
             if (this.loading) return;
-            ev.preventDefault();
+            ev&&ev.halt();
 
             var self = this,
                 el = self.el,
@@ -11068,12 +11069,14 @@ KISSY.Editor.add("select", function() {
                     b.on("click", function(ev) {
                         var t = ev.type;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
+                        ev&&ev.halt();
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
                         editor.on("wysiwygmode", b.enable, b);
                         editor.on("sourcemode", b.disable, b);
                     }
                     btnCfg.init && btnCfg.init.call(context);
+
                 },
                 destroy:function() {
                     if (btnCfg.destroy) {
@@ -12084,9 +12087,11 @@ KISSY.Editor.add("draft", function(editor) {
             }
             self.drafts = drafts;
             self.sync();
-
-            save.on("click", function() {
+            save._4e_unselectable();
+            save.on("click", function(ev) {
                 self.save(false);
+                //如果不阻止，部分页面在ie6下会莫名奇妙把其他input的值丢掉！
+                ev.halt();
             });
 
             addRes.call(self, save);
@@ -12132,8 +12137,9 @@ KISSY.Editor.add("draft", function(editor) {
                     text:"帮助",
                     container: holder
                 });
-                help.on("click", function() {
+                help.on("click", function(ev) {
                     self._prepareHelp();
+                    ev&&ev.halt();
                 });
                 addRes.call(self, help);
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
@@ -12181,7 +12187,8 @@ KISSY.Editor.add("draft", function(editor) {
             });
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
-            function hideHelp() {
+            function hideHelp(ev) {
+                ev&&ev.halt();
                 var t = new Node(ev.target);
                 if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
@@ -12276,6 +12283,7 @@ KISSY.Editor.add("draft", function(editor) {
                 editor.setData(drafts[v].content);
                 editor.fire("save");
             }
+            ev&&ev.halt();
         },
         destroy:function() {
             destroyRes.call(this);
@@ -15607,15 +15615,13 @@ KISSY.Editor.add("link", function(editor) {
             },
             _link:function(attr, _selectedEl) {
                 var self = this,
-                    cfg = self.cfg,
-                    editor = self.editor,
-                    link = _selectedEl;
+                    editor = self.editor;
                 //注意同步，取的话要从 _ke_saved_href 取原始值的
                 attr["_ke_saved_href"] = attr.href;
                 //是修改行为
-                if (link) {
+                if (_selectedEl) {
                     editor.fire("save");
-                    link.attr(attr);
+                    _selectedEl.attr(attr);
                     editor.fire("save");
                 } else {
                     var sel = editor.getSelection(),
@@ -18246,6 +18252,7 @@ KISSY.Editor.add("tabs", function() {
                 lis = tabs.children(LI);
 
             tabs.on("click", function(ev) {
+                ev&&ev.halt();
                 var li = new Node(ev.target);
                 if (li = li._4e_ascendant(function(n) {
                     return n._4e_name() === LI && tabs.contains(n);

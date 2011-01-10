@@ -30,6 +30,7 @@ KISSY.Editor.add("tabs", function() {
                 lis = tabs.children(LI);
 
             tabs.on("click", function(ev) {
+                ev&&ev.halt();
                 var li = new Node(ev.target);
                 if (li = li._4e_ascendant(function(n) {
                     return n._4e_name() === LI && tabs.contains(n);

@@ -166,8 +166,9 @@ KISSY.Editor.add("flash/dialog/support", function() {
             var action = el.one(".ke-flash-ok"),
                 cancel = el.one(".ke-flash-cancel");
             action.on("click", self._gen, self);
-            cancel.on("click", function() {
+            cancel.on("click", function(ev) {
                 d.hide();
+                ev&&ev.halt();
             });
 
             KE.Utils.placeholder(self.dUrl, self._urlTip);
@@ -196,7 +197,8 @@ KISSY.Editor.add("flash/dialog/support", function() {
         /**
          * 真正产生 flash 元素
          */
-        _gen: function() {
+        _gen: function(ev) {
+            ev&&ev.halt();
             //debugger
             var self = this,
                 editor = self.editor,
