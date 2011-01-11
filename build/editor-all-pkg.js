@@ -16371,7 +16371,7 @@ KISSY.Editor.add("localstorage", function() {
     }
 
     //国产浏览器用随机数/时间戳试试 ! 是可以的
-    var movie =KE.Utils.debugUrl("localstorage/swfstore.swf?t=" + (+new Date()));
+    var movie = KE.Utils.debugUrl("localstorage/swfstore.swf?t=" + (+new Date()));
 
 
     window[STORE] = new KE.FlashBridge({
@@ -16391,6 +16391,10 @@ KISSY.Editor.add("localstorage", function() {
         complete();
     });
 }, {
+    //important
+    //不能立即运行，ie6 可能会没有 domready 添加 flash 节点
+    //导致：operation aborted
+    attach:false,
     "requires":["flashutils","flashbridge"]
 });/**
  * maximize editor
