@@ -248,7 +248,7 @@ KISSY.Editor.add("select", function() {
                 focusA.removeClass(ke_select_active);
             });
             function deactivate(ev) {
-                ev && ev.halt();
+                //ev && ev.halt();
                 var t = new Node(ev.target);
                 if (el.contains(t) || el._4e_equals(t)) return;
                 menu.hide();
@@ -309,6 +309,7 @@ KISSY.Editor.add("select", function() {
                 prevVal:preVal,
                 name:a.html()
             });
+
             menu.hide();
         },
         _real:function() {
