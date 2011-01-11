@@ -1172,6 +1172,23 @@ KISSY.Editor.add("definition", function(KE) {
      */
 
 
+    /**
+     * patch for browser mode = ie7 ,document mode=ie8/9 : 条件注释导致mhtml 引入但是不能处理
+     */
+    if (document['documentMode'] > 7) {
+        (function() {
+            var links = S.all("link");
+            for (var i = 0; i < links.length; i++) {
+                var link = new Node(links[i]),href = link.attr("href");
+                if (href.indexOf("editor-pkg-min-mhtml.css") != -1) {
+                    link.attr("href", href.replace(/editor-pkg-min-mhtml\.css/g,
+                        "editor-pkg-min-datauri.css"));
+                }
+            }
+        })();
+    }
+
+
     var KEP = KE.prototype;
     Utils.extern(KEP, {
         "setData":KEP.setData,
