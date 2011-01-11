@@ -89,6 +89,7 @@ KISSY.Editor.add("draft/support", function() {
                     width:"85px",
                     popUpWidth:"225px",
                     align:["r","t"],
+                    emptyText:"&nbsp;&nbsp;&nbsp;尚无编辑器历史存在",
                     title:"恢复编辑历史"
                 }),
                 str = localStorage.getItem(DRAFT_SAVE),
@@ -152,7 +153,7 @@ KISSY.Editor.add("draft/support", function() {
                 });
                 help.on("click", function(ev) {
                     self._prepareHelp();
-                    ev&&ev.halt();
+                    ev && ev.halt();
                 });
                 addRes.call(self, help);
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
@@ -201,7 +202,7 @@ KISSY.Editor.add("draft/support", function() {
             self._help.el.css("border", "none");
             self._help.arrow = arrow;
             function hideHelp(ev) {
-                ev&&ev.halt();
+                ev && ev.halt();
                 var t = new Node(ev.target);
                 if (t[0] == helpBtn[0] || helpBtn.contains(t))
                     return;
@@ -240,7 +241,8 @@ KISSY.Editor.add("draft/support", function() {
             var self = this,
                 draftLimit = self.draftLimit,
                 timeTip = self.timeTip,
-                versions = self.versions,drafts = self.drafts;
+                versions = self.versions,
+                drafts = self.drafts;
             if (drafts.length > draftLimit)
                 drafts.splice(0, drafts.length - draftLimit);
             var items = [],draft,tip;
@@ -296,7 +298,7 @@ KISSY.Editor.add("draft/support", function() {
                 editor.setData(drafts[v].content);
                 editor.fire("save");
             }
-            ev&&ev.halt();
+            ev && ev.halt();
         },
         destroy:function() {
             destroyRes.call(this);
