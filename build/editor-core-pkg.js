@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-01-12 20:07:37
+ * @buildtime: 2011-01-12 23:00:39
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -71,6 +71,7 @@ KISSY.add("editor", function(S) {
                     callback && callback.call(self);
                     //也用在窗口按需加载，只有在初始化时才进行内容设置
                     if (!initial) {
+
                         self.setData(textarea.val());
                         //是否自动focus
                         if (cfg["focus"]) {
@@ -99,7 +100,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2011-01-12 20:07:37";
+        return "plugin-min.js?t=2011-01-12 23:00:39";
     }
 
     S.app(Editor, S.EventTarget);

@@ -26,7 +26,7 @@
 
 </p>
 <input value='ie6 加入链接会影响？'/>
-<form id="form1">
+<form id="form1" method="post">
     <div style="width: 90%; margin: 0 auto">
         <p>
             <label for="editor">Editor Instance 1:</label>
@@ -35,8 +35,11 @@
             <button id='destroy1'>destroy实例</button>
             <button id='recover1'>重建实例</button>
         </p>
-        <textarea id="editor" tabindex="0" style="width:100%;height:400px;margin:0 auto;">
+        <textarea id="editor" name='editor' tabindex="0" style="width:100%;height:400px;margin:0 auto;">
             <script>alert(1);</script>
+            <p>
+	            &amp;lt;strong&amp;gt;aaaaaaaaa &amp;lt;/strong&amp;gt;
+            </p>
             <p>
                 我是虾米音乐
             </p>

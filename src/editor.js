@@ -71,6 +71,7 @@ KISSY.add("editor", function(S) {
                     callback && callback.call(self);
                     //也用在窗口按需加载，只有在初始化时才进行内容设置
                     if (!initial) {
+
                         self.setData(textarea.val());
                         //是否自动focus
                         if (cfg["focus"]) {
