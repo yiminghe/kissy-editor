@@ -285,4 +285,6 @@ KISSY.Editor.add("indent/support", function() {
             }
         }
     };
+},{
+    attach:false
 });

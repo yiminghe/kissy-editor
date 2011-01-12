@@ -123,5 +123,6 @@ KISSY.Editor.add("music/dialog/support", function() {
         }
     });
 },{
+    attach:false,
     requires:["flash/dialog/support"]
 });

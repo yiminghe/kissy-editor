@@ -238,4 +238,6 @@ KISSY.Editor.add("flashbridge", function() {
      }
      */
 
+},{
+    attach:false
 });

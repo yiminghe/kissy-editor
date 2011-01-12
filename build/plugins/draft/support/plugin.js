@@ -306,5 +306,6 @@ KISSY.Editor.add("draft/support", function() {
     });
     KE.Draft = Draft;
 }, {
+    attach:false,
     "requires":["localstorage"]
 });

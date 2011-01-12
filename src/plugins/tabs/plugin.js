@@ -102,6 +102,7 @@ KISSY.Editor.add("tabs", function() {
             tabs.remove();
         }
     });
-
     KE.Tabs = Tabs;
+},{
+    attach:false
 });

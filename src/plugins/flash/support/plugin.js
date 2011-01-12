@@ -239,5 +239,6 @@ KISSY.Editor.add("flash/support", function() {
     KE.Flash = Flash;
 
 }, {
+    attach:false,
     requires:["bubbleview","contextmenu","flashutils"]
 });

@@ -180,6 +180,6 @@ KISSY.Editor.add("flashutils", function() {
 
     };
     KE.Utils.flash = flashUtils;
-
-
+},{
+    attach:false
 });

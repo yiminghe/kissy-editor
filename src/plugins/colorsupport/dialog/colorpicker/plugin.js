@@ -295,4 +295,6 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
     });
 
     KE.ColorSupport.ColorPicker = ColorPicker;
+},{
+    attach:false
 });

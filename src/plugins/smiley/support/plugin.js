@@ -121,4 +121,6 @@ KISSY.Editor.add("smiley/support", function() {
             destroyRes.call(self);
         }
     };
+},{
+    attach:false
 });

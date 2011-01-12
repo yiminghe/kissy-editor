@@ -388,5 +388,6 @@ KISSY.Editor.add("table/support", function() {
 
     KE.TableUI = TableUI;
 }, {
+    attach:false,
     "requires": ["contextmenu"]
 });

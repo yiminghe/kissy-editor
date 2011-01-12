@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-01-12 19:32:53
+ * @buildtime: 2011-01-12 20:07:37
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -58,8 +58,11 @@ KISSY.add("editor", function(S) {
             }
 
             //编辑器实例 use 时会进行编辑器 ui 操作而不单单是功能定义，必须 ready
-            self.ready(function() {
 
+            self.ready(function() {
+                //通过 add 里面的又一层 addPlugin 保证
+                //use : 下载，非图形为乱序并行
+                //plugin 的attach（按钮）为串行
                 S.use.call(self, mods.join(","), function() {
                     //载入了插件的attach功能，现在按照顺序一个个attach
                     for (var i = 0; i < mods.length; i++) {
@@ -96,7 +99,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2011-01-12 19:32:53";
+        return "plugin-min.js?t=2011-01-12 20:07:37";
     }
 
     S.app(Editor, S.EventTarget);
@@ -11292,17 +11295,10 @@ KISSY.Editor.add("bubbleview", function() {
     };
 
     KE.BubbleView = BubbleView;
-}
-
-    ,
-{
+}, {
     attach:false,
-    requires
-        :
-        ["overlay"]
-}
-    )
-    ;/**
+    requires:["overlay"]
+});/**
  * monitor user's paste key ,clear user input,modified from ckeditor
  * @author: yiminghe@gmail.com
  */
@@ -11859,6 +11855,8 @@ KISSY.Editor.add("colorsupport", function() {
             editor.destroyDialog("color/dialog")
         }
     };
+}, {
+    attach:false
 });
 /**
  * contextmenu for kissy editor
@@ -12383,6 +12381,7 @@ KISSY.Editor.add("draft", function(editor) {
     });
     KE.Draft = Draft;
 }, {
+    attach:false,
     "requires":["localstorage"]
 });KISSY.Editor.add("dragupload", function(editor) {
     var S = KISSY,
@@ -13323,6 +13322,7 @@ KISSY.Editor.add("flash/support", function() {
     KE.Flash = Flash;
 
 }, {
+    attach:false,
     requires:["bubbleview","contextmenu","flashutils"]
 });/**
  * simplified flash bridge for yui swf
@@ -13564,6 +13564,8 @@ KISSY.Editor.add("flashbridge", function() {
      }
      */
 
+},{
+    attach:false
 });KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
     if (flashUtils) {
@@ -13746,8 +13748,8 @@ KISSY.Editor.add("flashbridge", function() {
 
     };
     KE.Utils.flash = flashUtils;
-
-
+},{
+    attach:false
 });/**
  * font formatting for kissy editor
  * @author: yiminghe@gmail.com
@@ -15494,6 +15496,8 @@ KISSY.Editor.add("indent/support", function() {
             }
         }
     };
+},{
+    attach:false
 });/**
  * align support for kissy editor
  * @author: yiminghe@gmail.com
@@ -16413,6 +16417,8 @@ KISSY.Editor.add("list/support", function() {
     };
     KE.ListUtils = list;
     KE.ListSupport = listSupport
+},{
+    attach:false
 });/**
  * localStorage support for ie<8
  * @author:yiminghe@gmail.com
@@ -16775,6 +16781,8 @@ KISSY.Editor.add("maximize", function(editor) {
     });
 
     KE.Maximize = Maximize;
+},{
+    attach:false
 });/**
  * insert music for kissy editor
  * @author: yiminghe@gmail.com
@@ -16927,6 +16935,7 @@ KISSY.Editor.add("music", function(editor) {
         }
     };
 }, {
+    attach:false,
     "requires":["flash/support"]
 });KISSY.Editor.add("overlay", function() {
     var S = KISSY,
@@ -17346,7 +17355,8 @@ KISSY.Editor.add("progressbar", function() {
         }
     });
     KE.ProgressBar = ProgressBar;
-
+},{
+    attach:false
 });/**
  * remove inline-style format for kissy editor,modified from ckeditor
  * @author: yiminghe@gmail.com
@@ -17703,6 +17713,8 @@ KISSY.Editor.add("smiley/support", function() {
             destroyRes.call(self);
         }
     };
+},{
+    attach:false
 });/**
  * source editor for kissy editor
  * @author: yiminghe@gmail.com
@@ -17824,7 +17836,8 @@ KISSY.Editor.add("sourcearea/support", function() {
         }
     });
     KE.SourceAreaSupport = new SourceAreaSupport();
-
+},{
+    attach:false
 });/**
  * table edit plugin for kissy editor
  * @author: yiminghe@gmail.com
@@ -18317,6 +18330,7 @@ KISSY.Editor.add("table/support", function() {
 
     KE.TableUI = TableUI;
 }, {
+    attach:false,
     "requires": ["contextmenu"]
 });/**
  * simple tabs ui component for kissy editor
@@ -18422,8 +18436,9 @@ KISSY.Editor.add("tabs", function() {
             tabs.remove();
         }
     });
-
     KE.Tabs = Tabs;
+},{
+    attach:false
 });/**
  * templates support for kissy editor
  * @author: yiminghe@gmail.com
@@ -18842,4 +18857,6 @@ KISSY.Editor.add("undo/support", function() {
         }
     });
     KE.UndoManager = UndoManager;
+},{
+    attach:false
 });

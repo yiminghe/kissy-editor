@@ -167,14 +167,7 @@ KISSY.Editor.add("bubbleview", function() {
     };
 
     KE.BubbleView = BubbleView;
-}
-
-    ,
-{
+}, {
     attach:false,
-    requires
-        :
-        ["overlay"]
-}
-    )
-    ;
+    requires:["overlay"]
+});

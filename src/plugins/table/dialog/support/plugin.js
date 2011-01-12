@@ -418,4 +418,6 @@ KISSY.Editor.add("table/dialog/support", function() {
             destroyRes.call(this);
         }
     });
+},{
+    attach:false
 });

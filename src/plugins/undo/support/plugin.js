@@ -217,4 +217,6 @@ KISSY.Editor.add("undo/support", function() {
         }
     });
     KE.UndoManager = UndoManager;
+},{
+    attach:false
 });

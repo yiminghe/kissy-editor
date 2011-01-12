@@ -267,4 +267,6 @@ KISSY.Editor.add("maximize/support", function() {
     });
 
     KE.Maximize = Maximize;
+},{
+    attach:false
 });

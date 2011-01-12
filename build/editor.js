@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-01-12 19:32:53
+ * @buildtime: 2011-01-12 20:07:37
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -58,8 +58,11 @@ KISSY.add("editor", function(S) {
             }
 
             //编辑器实例 use 时会进行编辑器 ui 操作而不单单是功能定义，必须 ready
-            self.ready(function() {
 
+            self.ready(function() {
+                //通过 add 里面的又一层 addPlugin 保证
+                //use : 下载，非图形为乱序并行
+                //plugin 的attach（按钮）为串行
                 S.use.call(self, mods.join(","), function() {
                     //载入了插件的attach功能，现在按照顺序一个个attach
                     for (var i = 0; i < mods.length; i++) {
@@ -96,7 +99,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2011-01-12 19:32:53";
+        return "plugin-min.js?t=2011-01-12 20:07:37";
     }
 
     S.app(Editor, S.EventTarget);

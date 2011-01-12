@@ -576,4 +576,6 @@ KISSY.Editor.add("list/support", function() {
     };
     KE.ListUtils = list;
     KE.ListSupport = listSupport
+},{
+    attach:false
 });

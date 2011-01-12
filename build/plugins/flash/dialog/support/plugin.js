@@ -224,4 +224,6 @@ KISSY.Editor.add("flash/dialog/support", function() {
             this.destroyRes();
         }
     });
+},{
+    attach:false
 });

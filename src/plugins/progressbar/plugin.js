@@ -100,5 +100,6 @@ KISSY.Editor.add("progressbar", function() {
         }
     });
     KE.ProgressBar = ProgressBar;
-
+},{
+    attach:false
 });

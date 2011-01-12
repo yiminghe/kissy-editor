@@ -222,4 +222,6 @@ KISSY.Editor.add("colorsupport", function() {
             editor.destroyDialog("color/dialog")
         }
     };
+}, {
+    attach:false
 });

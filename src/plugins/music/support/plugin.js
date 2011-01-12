@@ -60,5 +60,6 @@ KISSY.Editor.add("music/support", function() {
         }
     };
 }, {
+    attach:false,
     "requires":["flash/support"]
 });

@@ -58,8 +58,11 @@ KISSY.add("editor", function(S) {
             }
 
             //编辑器实例 use 时会进行编辑器 ui 操作而不单单是功能定义，必须 ready
-            self.ready(function() {
 
+            self.ready(function() {
+                //通过 add 里面的又一层 addPlugin 保证
+                //use : 下载，非图形为乱序并行
+                //plugin 的attach（按钮）为串行
                 S.use.call(self, mods.join(","), function() {
                     //载入了插件的attach功能，现在按照顺序一个个attach
                     for (var i = 0; i < mods.length; i++) {

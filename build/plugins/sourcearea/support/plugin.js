@@ -68,5 +68,6 @@ KISSY.Editor.add("sourcearea/support", function() {
         }
     });
     KE.SourceAreaSupport = new SourceAreaSupport();
-
+},{
+    attach:false
 });
