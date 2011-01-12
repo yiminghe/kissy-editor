@@ -12,6 +12,7 @@ KISSY.Editor.add("music", function(editor) {
 
 
         function music(src) {
+            src=src||"";
             return src.indexOf(MUSIC_PLAYER) != -1;
         }
 

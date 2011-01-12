@@ -177,7 +177,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             ], undefined);
 
         function isListBulletIndicator(element) {
-            var styleText = element.attributes && element.attributes.style;
+            var styleText = element.attributes && element.attributes.style ||"";
             if (/mso-list\s*:\s*Ignore/i.test(styleText))
                 return true;
             return undefined;

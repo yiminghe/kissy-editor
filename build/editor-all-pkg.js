@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-01-05 18:09:51
+ * @buildtime: 2011-01-12 19:32:53
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -96,7 +96,7 @@ KISSY.add("editor", function(S) {
     }
 
     function getJSName() {
-        return "plugin-min.js?t=2011-01-05 18:09:51";
+        return "plugin-min.js?t=2011-01-12 19:32:53";
     }
 
     S.app(Editor, S.EventTarget);
@@ -151,7 +151,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2011-01-05 18:09:51";
+                    url += "t=2011-01-12 19:32:53";
                 }
                 return KE["Config"].base + url;
             },
@@ -12933,7 +12933,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 var writer = new HtmlParser.BasicWriter();
                 realElement.writeHtml(writer);
                 html = writer.getHtml();
-                var style = realElement.attributes.style;
+                var style = realElement.attributes.style || '';
                 if (realElement.attributes.width) {
                     style = "width:" + realElement.attributes.width + "px;" + style;
                 }
@@ -13010,8 +13010,9 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         });
     }
 
-},{
-    attach:false
+}, {
+    attach:false,
+    requires:["htmldataprocessor"]
 });
 KISSY.Editor.add("flash", function(editor) {
 
@@ -14324,7 +14325,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             ], undefined);
 
         function isListBulletIndicator(element) {
-            var styleText = element.attributes && element.attributes.style;
+            var styleText = element.attributes && element.attributes.style ||"";
             if (/mso-list\s*:\s*Ignore/i.test(styleText))
                 return true;
             return undefined;
@@ -16788,6 +16789,7 @@ KISSY.Editor.add("music", function(editor) {
 
 
         function music(src) {
+            src=src||"";
             return src.indexOf(MUSIC_PLAYER) != -1;
         }
 

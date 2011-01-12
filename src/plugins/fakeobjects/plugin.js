@@ -70,7 +70,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 var writer = new HtmlParser.BasicWriter();
                 realElement.writeHtml(writer);
                 html = writer.getHtml();
-                var style = realElement.attributes.style;
+                var style = realElement.attributes.style || '';
                 if (realElement.attributes.width) {
                     style = "width:" + realElement.attributes.width + "px;" + style;
                 }
@@ -147,6 +147,7 @@ KISSY.Editor.add("fakeobjects", function(editor) {
         });
     }
 
-},{
-    attach:false
+}, {
+    attach:false,
+    requires:["htmldataprocessor"]
 });
