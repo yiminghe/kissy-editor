@@ -14036,17 +14036,19 @@ KISSY.Editor.add("font", function(editor) {
         }
 
         if (false !== pluginConfig["font-strikeThrough"]) {
+            var strikeStyle = (pluginConfig["font-strikeThrough"] || {})["style"] || {
+                element        : 'del',
+                overrides    : [
+                    {element        : 'span',
+                        attributes         : { style:'text-decoration: line-through;' }},
+                    { element : 's' },
+                    { element : 'strike' }
+                ]
+            };
             controls.push(editor.addButton("font-underline", S.mix({
                 contentCls:"ke-toolbar-strikeThrough",
                 title:"删除线 ",
-                style:new KEStyle({
-                    element        : 'del',
-                    overrides    : [
-                        {element        : 'span',
-                            attributes         : { style:'text-decoration: line-through;' }},
-                        { element : 's' }
-                    ]
-                })
+                style:new KEStyle(strikeStyle)
             }, singleFontTpl)));
         }
 
