@@ -425,8 +425,10 @@ KISSY.Editor.add("definition", function(KE) {
          * @param data {string}
          */
         setData:function(data) {
+
             var self = this,
                 afterData = data;
+            debugger
             if (self["htmlDataProcessor"])
                 afterData = self["htmlDataProcessor"]["toDataFormat"](data, "p");
             self.document.body.innerHTML = afterData;

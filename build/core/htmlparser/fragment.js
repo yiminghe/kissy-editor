@@ -1,7 +1,7 @@
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("htmlparser-fragment", function(
     ) {
     var
@@ -151,7 +151,20 @@ KISSY.Editor.add("htmlparser-fragment", function(
 
                     // Create a <p> in the fragment.
                     currentNode = target;
-                    parser.onTagOpen(fixForBody, {});
+                    /**
+                     * notice : 2011-01-13
+                     * bug
+                     * <li>1</li> ->
+                     * <p><li>1</li></p>
+                     *
+                     * should be <ul><li>1</li></ul>
+                     */
+                    var meta = {
+                        li:"ul",
+                        dt:"dl",
+                        dd:"dl"
+                    };
+                    parser.onTagOpen(meta[elementName] || fixForBody, {});
 
                     // The new target now is the <p>.
                     target = currentNode;
@@ -252,7 +265,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                     addElement(currentNode, currentNode.parent);
                 }
                 else {
-                    if (nonBreakingBlocks[ currentName ]) {
+                    if (false && nonBreakingBlocks[ currentName ]) {
                         if (!returnPoint)
                             returnPoint = currentNode;
                     }
@@ -260,7 +273,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
                         //拆分，闭合掉
                         addElement(currentNode, currentNode.parent, TRUE);
                         //li,p等现在就闭合，以后都不用再管了
-                        if (!optionalClose[ currentName ]) {
+                        if (!optionalClose[ currentName ] && currentName in XHTML_DTD.$inline) {
                             // The current element is an inline element, which
                             // cannot hold the new one. Put it in the pending list,
                             // and try adding the new one after it.
@@ -386,8 +399,7 @@ KISSY.Editor.add("htmlparser-fragment", function(
             currentNode.add(new KE.HtmlParser.Text(text));
         };
 
-        parser.onCDATA = function(
-            //cdata
+        parser.onCDATA = function(//cdata
             ) {
             //不做
             //currentNode.add(new KE.HtmlParser.cdata(cdata));
