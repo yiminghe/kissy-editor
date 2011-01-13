@@ -25,7 +25,18 @@
         </select></label>
 
 </p>
-<input value='ie6 加入链接会影响？'/>
+<label>
+    执行代码：
+<textarea id='code1' style="width: 60%; height:200px;margin: 0 auto"></textarea>
+</label>
+<button onclick="eval(KISSY.trim(KISSY.one('#code1').val()))">执行</button>
+<br>
+<label>
+    插入html：
+<textarea id='code2' style="width: 60%; height:200px;margin: 0 auto"></textarea>
+</label>
+<button onclick="editor2.insertHtml(KISSY.trim(KISSY.one('#code2').val()))">执行</button>
+<br>
 <form id="form1" method="post">
     <div style="width: 90%; margin: 0 auto">
         <p>
