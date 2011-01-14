@@ -188,13 +188,13 @@ KISSY.Editor.add("table/dialog/support", function() {
             tok.on("click", self._tableOk, self);
 
             tclose.on("click", function(ev) {
-                ev&&ev.halt();
+                ev && ev.halt();
                 d.hide();
             });
             addRes.call(self, d, d.twidthunit, tok, tclose);
         },
         _tableOk:function(ev) {
-            ev&&ev.halt();
+            ev && ev.halt();
             var self = this,
                 tableDialog = self.tableDialog,
                 inputs = tableDialog.get("el").all("input");
@@ -286,7 +286,7 @@ KISSY.Editor.add("table/dialog/support", function() {
                 cols = parseInt(d.tcols.val()) || 1,
                 rows = parseInt(d.trows.val()) || 1,
                 //firefox 需要 br 才能得以放置焦点
-                cellpad = UA.ie ? "" : "<br/>",
+                cellpad = UA.ie ? "&nbsp;" : "&nbsp;<br/>",
                 editor = self.editor;
 
             if (valid(d.talign.val()))
@@ -418,6 +418,6 @@ KISSY.Editor.add("table/dialog/support", function() {
             destroyRes.call(this);
         }
     });
-},{
+}, {
     attach:false
 });

@@ -167,6 +167,7 @@ KISSY.Editor.add("font", function(editor) {
                     // Check if the element is removable by any of
                     // the styles.
                     for (var value in styles) {
+
                         if (styles[ value ].checkElementRemovable(element, true)) {
                             //S.log(value);
                             self.btn.set("value", value);

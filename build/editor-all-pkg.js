@@ -13934,6 +13934,7 @@ KISSY.Editor.add("font", function(editor) {
                     // Check if the element is removable by any of
                     // the styles.
                     for (var value in styles) {
+
                         if (styles[ value ].checkElementRemovable(element, true)) {
                             //S.log(value);
                             self.btn.set("value", value);
@@ -14344,7 +14345,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             ], undefined);
 
         function isListBulletIndicator(element) {
-            var styleText = element.attributes && element.attributes.style ||"";
+            var styleText = element.attributes && element.attributes.style || "";
             if (/mso-list\s*:\s*Ignore/i.test(styleText))
                 return true;
             return undefined;
@@ -14591,9 +14592,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 assembleList(element);
             },
             elements : {
-                font:function(el) {
-                    delete el.name;
-                },
+                /*
+                 宝贝发布兼容性考虑，不要去除
+                 font:function(el) {
+                 delete el.name;
+                 },
+                 */
                 p:function(element) {
                     element.filterChildren();
                     // Is the paragraph actually a list item?
@@ -14875,10 +14879,16 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             trimFillers(block, true);
 
             if (blockNeedsExtension(block)) {
-                if (UA.ie)
+                //任何浏览器都要加空格！，否则空表格可能间隙太小，不能容下光标
+
+                if (UA.ie) {
                     block.add(new KE.HtmlParser.Text('\xa0'));
-                else
+                } else {
+                    //其他浏览器需要加空格??
+                    block.add(new KE.HtmlParser.Text('&nbsp;'));
                     block.add(new KE.HtmlParser.Element('br', {}));
+                }
+
             }
         }
 
