@@ -3,8 +3,8 @@
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("contextmenu", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
@@ -49,7 +49,7 @@ KISSY.Editor.add("contextmenu", function() {
         if (!doc.ke_contextmenu) {
             doc.ke_contextmenu = 1;
             Event.on(doc, "mousedown", ContextMenu.hide);
-            editor.on("sourcemode",ContextMenu.hide,doc);
+            editor.on("sourcemode", ContextMenu.hide, doc);
             /*
              Event.on(doc, "contextmenu", function(ev) {
              ev.preventDefault();
@@ -151,10 +151,13 @@ KISSY.Editor.add("contextmenu", function() {
                 (function(a, func) {
                     a._4e_unselectable();
                     a.on("click", function(ev) {
+                        ev.halt();
+                        if (a.hasClass("ke-menuitem-disable")) {
+                            return;
+                        }
                         //先 hide 还原编辑器内焦点
                         self.hide();
 
-                        ev.halt();
                         //给 ie 一点 hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操作
                         setTimeout(func, 30);
                     });
@@ -179,6 +182,21 @@ KISSY.Editor.add("contextmenu", function() {
                 contextmenu:self
             });
             this.el.set("xy", [offset.left,offset.top]);
+            var cfg = self.cfg,statusChecker = cfg.statusChecker;
+            if (statusChecker) {
+                var as = self.elDom.children("a");
+                for (var i = 0; i < as.length; i++) {
+                    var a = new Node(as[i]);
+                    var func = statusChecker[S.trim(a.text())];
+                    if (func) {
+                        if (func(cfg.editor)) {
+                            a.removeClass("ke-menuitem-disable");
+                        } else {
+                            a.addClass("ke-menuitem-disable");
+                        }
+                    }
+                }
+            }
             this.el.show();
         },
         _prepareShow:function() {

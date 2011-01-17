@@ -22,6 +22,7 @@ KISSY.Editor.add("table/support", function() {
         }
         var c = KE.ContextMenu.register({
             editor:editor,
+            statusChecker:statusChecker,
             rules:tableRules,
             width:"120px",
             funcs:myContexts
@@ -114,7 +115,7 @@ KISSY.Editor.add("table/support", function() {
         var $cells = $tr.cells;
         // Empty all cells.
         for (var i = 0; i < $cells.length; i++) {
-            $cells[ i ].innerHTML = '&nbsp;';
+            $cells[ i ].innerHTML = '';
             if (!UA.ie)
                 ( new Node($cells[ i ]) )._4e_appendBogus();
         }
@@ -205,7 +206,7 @@ KISSY.Editor.add("table/support", function() {
             if ($row.cells.length < ( cellIndex + 1 ))
                 continue;
             cell = new Node($row.cells[ cellIndex ].cloneNode(false));
-            cell.html("&nbsp;");
+
             if (!UA.ie)
                 cell._4e_appendBogus();
             // Get back the currently selected cell.
@@ -312,20 +313,57 @@ KISSY.Editor.add("table/support", function() {
         range.select(true);
     }
 
+    function getSel(editor) {
+        var selection = editor.getSelection(),
+            startElement = selection && selection.getStartElement(),
+            table = startElement && startElement._4e_ascendant('table', true);
+        if (!table)
+            return undefined;
+        var td = startElement._4e_ascendant(function(n) {
+            var name = n._4e_name();
+            return table.contains(n) && (name == "td" || name == "th");
+        }, true);
+        var tr = startElement._4e_ascendant(function(n) {
+            var name = n._4e_name();
+            return table.contains(n) && name == "tr";
+        }, true);
+        return {
+            table:table,
+            td:td,
+            tr:tr
+        };
+    }
+
+    function ensureTd(editor) {
+        var info = getSel(editor);
+        return info && info.td;
+
+    }
+
+
+    function ensureTr(editor) {
+        var info = getSel(editor);
+        return info && info.tr;
+
+    }
+
+    var statusChecker = {
+        "表格属性" :ensureTd,
+        "删除表格" :ensureTd,
+        "删除列" :ensureTd,
+        "删除行" :ensureTr,
+        '在上方插入行': ensureTr,
+        '在下方插入行' : ensureTr,
+        '在左侧插入列' : ensureTd,
+        '在右侧插入列' : ensureTd
+    };
+
     var contextMenu = {
 
         "表格属性" : function(cmd) {
-            var editor = cmd.editor,
-                selection = editor.getSelection(),
-                startElement = selection && selection.getStartElement(),
-                table = startElement && startElement._4e_ascendant('table', true);
-            if (!table)
-                return;
-            var td = startElement._4e_ascendant(function(n) {
-                var name = n._4e_name();
-                return name == "td" || name == "th";
-            }, true);
-            cmd._tableShow(null, table, td);
+            var editor = cmd.editor,info = getSel(editor);
+            if (!info) return;
+            cmd._tableShow(null, info.table, info.td);
         },
 
         "删除表格" : function(cmd) {

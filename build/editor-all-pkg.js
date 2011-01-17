@@ -11882,8 +11882,8 @@ KISSY.Editor.add("colorsupport", function() {
  * @author: yiminghe@gmail.com
  */
 KISSY.Editor.add("contextmenu", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
+    var S = KISSY,
+        KE = S.Editor,
         Node = S.Node,
         DOM = S.DOM,
         Event = S.Event,
@@ -11928,7 +11928,7 @@ KISSY.Editor.add("contextmenu", function() {
         if (!doc.ke_contextmenu) {
             doc.ke_contextmenu = 1;
             Event.on(doc, "mousedown", ContextMenu.hide);
-            editor.on("sourcemode",ContextMenu.hide,doc);
+            editor.on("sourcemode", ContextMenu.hide, doc);
             /*
              Event.on(doc, "contextmenu", function(ev) {
              ev.preventDefault();
@@ -12030,10 +12030,13 @@ KISSY.Editor.add("contextmenu", function() {
                 (function(a, func) {
                     a._4e_unselectable();
                     a.on("click", function(ev) {
+                        ev.halt();
+                        if (a.hasClass("ke-menuitem-disable")) {
+                            return;
+                        }
                         //先 hide 还原编辑器内焦点
                         self.hide();
 
-                        ev.halt();
                         //给 ie 一点 hide() 中的事件触发 handler 运行机会，原编辑器获得焦点后再进行下步操作
                         setTimeout(func, 30);
                     });
@@ -12058,6 +12061,21 @@ KISSY.Editor.add("contextmenu", function() {
                 contextmenu:self
             });
             this.el.set("xy", [offset.left,offset.top]);
+            var cfg = self.cfg,statusChecker = cfg.statusChecker;
+            if (statusChecker) {
+                var as = self.elDom.children("a");
+                for (var i = 0; i < as.length; i++) {
+                    var a = new Node(as[i]);
+                    var func = statusChecker[S.trim(a.text())];
+                    if (func) {
+                        if (func(cfg.editor)) {
+                            a.removeClass("ke-menuitem-disable");
+                        } else {
+                            a.addClass("ke-menuitem-disable");
+                        }
+                    }
+                }
+            }
             this.el.show();
         },
         _prepareShow:function() {
@@ -17995,6 +18013,7 @@ KISSY.Editor.add("table/support", function() {
         }
         var c = KE.ContextMenu.register({
             editor:editor,
+            statusChecker:statusChecker,
             rules:tableRules,
             width:"120px",
             funcs:myContexts
@@ -18087,7 +18106,7 @@ KISSY.Editor.add("table/support", function() {
         var $cells = $tr.cells;
         // Empty all cells.
         for (var i = 0; i < $cells.length; i++) {
-            $cells[ i ].innerHTML = '&nbsp;';
+            $cells[ i ].innerHTML = '';
             if (!UA.ie)
                 ( new Node($cells[ i ]) )._4e_appendBogus();
         }
@@ -18178,7 +18197,7 @@ KISSY.Editor.add("table/support", function() {
             if ($row.cells.length < ( cellIndex + 1 ))
                 continue;
             cell = new Node($row.cells[ cellIndex ].cloneNode(false));
-            cell.html("&nbsp;");
+
             if (!UA.ie)
                 cell._4e_appendBogus();
             // Get back the currently selected cell.
@@ -18285,20 +18304,57 @@ KISSY.Editor.add("table/support", function() {
         range.select(true);
     }
 
+    function getSel(editor) {
+        var selection = editor.getSelection(),
+            startElement = selection && selection.getStartElement(),
+            table = startElement && startElement._4e_ascendant('table', true);
+        if (!table)
+            return undefined;
+        var td = startElement._4e_ascendant(function(n) {
+            var name = n._4e_name();
+            return table.contains(n) && (name == "td" || name == "th");
+        }, true);
+        var tr = startElement._4e_ascendant(function(n) {
+            var name = n._4e_name();
+            return table.contains(n) && name == "tr";
+        }, true);
+        return {
+            table:table,
+            td:td,
+            tr:tr
+        };
+    }
+
+    function ensureTd(editor) {
+        var info = getSel(editor);
+        return info && info.td;
+
+    }
+
+
+    function ensureTr(editor) {
+        var info = getSel(editor);
+        return info && info.tr;
+
+    }
+
+    var statusChecker = {
+        "表格属性" :ensureTd,
+        "删除表格" :ensureTd,
+        "删除列" :ensureTd,
+        "删除行" :ensureTr,
+        '在上方插入行': ensureTr,
+        '在下方插入行' : ensureTr,
+        '在左侧插入列' : ensureTd,
+        '在右侧插入列' : ensureTd
+    };
+
     var contextMenu = {
 
         "表格属性" : function(cmd) {
-            var editor = cmd.editor,
-                selection = editor.getSelection(),
-                startElement = selection && selection.getStartElement(),
-                table = startElement && startElement._4e_ascendant('table', true);
-            if (!table)
-                return;
-            var td = startElement._4e_ascendant(function(n) {
-                var name = n._4e_name();
-                return name == "td" || name == "th";
-            }, true);
-            cmd._tableShow(null, table, td);
+            var editor = cmd.editor,info = getSel(editor);
+            if (!info) return;
+            cmd._tableShow(null, info.table, info.td);
         },
 
         "删除表格" : function(cmd) {

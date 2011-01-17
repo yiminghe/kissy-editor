@@ -377,9 +377,12 @@ KISSY.Editor.add("table/dialog/support", function() {
             var head = selectedTable._4e_first(function(n) {
                 return n._4e_name() == "thead";
             });
-            d.trows.val(selectedTable.one("tbody").children().length +
-                (head ? head.children("tr").length : 0));
-            d.tcols.val(selectedTable.one("tr").children().length);
+            var rowLenth = (selectedTable.one("tbody") ?
+                selectedTable.one("tbody").children().length : 0)
+                + (head ? head.children("tr").length : 0);
+            d.trows.val(rowLenth);
+            d.tcols.val(selectedTable.one("tr") ?
+                selectedTable.one("tr").children().length : 0);
             d.thead.val(head ? '1' : '');
         },
         _realTableShow:function() {
