@@ -76,9 +76,14 @@ KISSY.Editor.add("styles", function(KE) {
 
     function replaceVariables(list, variablesValues) {
         for (var item in list) {
-            list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
-                return variablesValues[ varName ];
-            });
+            if (!list.hasOwnProperty(item)) continue;
+            if (S.isString(list[ item ])) {
+                list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
+                    return variablesValues[ varName ];
+                });
+            } else {
+                replaceVariables(list[ item ], variablesValues);
+            }
         }
     }
 
@@ -90,8 +95,7 @@ KISSY.Editor.add("styles", function(KE) {
     function KEStyle(styleDefinition, variablesValues) {
         if (variablesValues) {
             styleDefinition = S.clone(styleDefinition);
-            replaceVariables(styleDefinition["attributes"], variablesValues);
-            replaceVariables(styleDefinition["styles"], variablesValues);
+            replaceVariables(styleDefinition, variablesValues);
         }
 
         var element = this["element"] = this.element = ( styleDefinition["element"] || '*' ).toLowerCase();
@@ -170,7 +174,7 @@ KISSY.Editor.add("styles", function(KE) {
                 return FALSE;
 
             var def = this._.definition,
-                attribs;
+                attribs,styles;
 
             // If the element name is the same as the style name.
             if (element._4e_name() == this.element) {
@@ -204,29 +208,50 @@ KISSY.Editor.add("styles", function(KE) {
             }
 
             // Check if the element can be somehow overriden.
-            var override = getOverrides(this)[ element._4e_name() ];
+            var overrides = getOverrides(this),
+                override = overrides[ element._4e_name() ] || overrides["*"];
 
             if (override) {
                 // If no attributes have been defined, remove the element.
-                if (!( attribs = override.attributes ))
+                if (!( attribs = override.attributes )
+                    &&
+                    !( styles = override.styles)
+                    )
                     return TRUE;
-
-                for (var i = 0; i < attribs.length; i++) {
-                    attName = attribs[i][0];
-                    var actualAttrValue = element.attr(attName);
-                    if (actualAttrValue) {
-                        var attValue = attribs[i][1];
-                        // Remove the attribute if:
-                        //    - The override definition value is NULL;
-                        //    - The override definition value is a string that
-                        //      matches the attribute value exactly.
-                        //    - The override definition value is a regex that
-                        //      has matches in the attribute value.
-                        if (attValue === NULL ||
-                            ( typeof attValue == 'string'
-                                && actualAttrValue == attValue ) ||
-                            attValue.test && attValue.test(actualAttrValue))
-                            return TRUE;
+                if (attribs) {
+                    for (var i = 0; i < attribs.length; i++) {
+                        attName = attribs[i][0];
+                        var actualAttrValue = element.attr(attName);
+                        if (actualAttrValue) {
+                            var attValue = attribs[i][1];
+                            // Remove the attribute if:
+                            //    - The override definition value is NULL;
+                            //    - The override definition value is a string that
+                            //      matches the attribute value exactly.
+                            //    - The override definition value is a regex that
+                            //      has matches in the attribute value.
+                            if (attValue === NULL ||
+                                ( typeof attValue == 'string'
+                                    && actualAttrValue == attValue ) ||
+                                attValue.test && attValue.test(actualAttrValue))
+                                return TRUE;
+                        }
+                    }
+                }
+                if (styles) {
+                    for (i = 0; i < styles.length; i++) {
+                        var styleName = styles[i][0];
+                        var actualStyleValue = element.css(styleName);
+                        if (actualStyleValue) {
+                            var styleValue = styles[i][1];
+                            if (styleValue === NULL
+                                //inherit wildcard !
+                                //|| styleValue == "inherit"
+                                || ( typeof styleValue == 'string'
+                                && actualStyleValue == styleValue ) ||
+                                styleValue.test && styleValue.test(actualStyleValue))
+                                return TRUE;
+                        }
                     }
                 }
             }
@@ -307,7 +332,7 @@ KISSY.Editor.add("styles", function(KE) {
         return ( styleDefinition._ST = stylesText );
     };
 
-    function getElement(style, targetDocument) {
+    function getElement(style, targetDocument, element) {
         var el,
             //def = style._.definition,
             elementName = style["element"];
@@ -318,6 +343,10 @@ KISSY.Editor.add("styles", function(KE) {
 
         // Create the element.
         el = new Node(targetDocument.createElement(elementName));
+
+        // #6226: attributes should be copied before the new ones are applied
+        if (element)
+            element._4e_copyAttributes(el);
 
         return setupElement(el, style);
     }
@@ -356,7 +385,7 @@ KISSY.Editor.add("styles", function(KE) {
         var block, doc = range.document;
         // Only one =
         while (( block = iterator.getNextParagraph() )) {
-            var newBlock = getElement(this, doc);
+            var newBlock = getElement(this, doc, block);
             replaceBlock(block, newBlock);
         }
         range.moveToBookmark(bookmark);
@@ -532,7 +561,7 @@ KISSY.Editor.add("styles", function(KE) {
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
-            var collapsedElement = getElement(this, document);
+            var collapsedElement = getElement(this, document, undefined);
             // Insert the empty element into the DOM at the range position.
             range.insertNode(collapsedElement);
             // Place the selection right inside the empty element.
@@ -668,7 +697,7 @@ KISSY.Editor.add("styles", function(KE) {
             // Apply the style if we have something to which apply it.
             if (applyStyle && styleRange && !styleRange.collapsed) {
                 // Build the style element, based on the style object definition.
-                var styleNode = getElement(self, document),
+                var styleNode = getElement(self, document, undefined),
 
                     // Get the element that holds the entire range.
                     parent = styleRange.getCommonAncestor();
@@ -789,7 +818,6 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function removeInlineStyle(range) {
-
         /*
          * Make sure our range has included all "collpased" parent inline nodes so
          * that our operation logic can be simpler.
@@ -836,11 +864,14 @@ KISSY.Editor.add("styles", function(KE) {
                         //yiminghe:note,bug for ckeditor
                         //qc #3700 for chengyu(yiminghe)
                         //从word复制过来的已编辑文本无法使用粗体和斜体等功能取消
-                        if (element._4e_name() == this.element)
-                            removeFromElement(this, element);
-                        else
+                        if (element._4e_name() != this.element) {
+                            var _overrides = getOverrides(this);
                             removeOverrides(element,
-                                getOverrides(this)[ element._4e_name() ]);
+                                _overrides[ element._4e_name() ] || _overrides["*"]);
+                        } else {
+                            removeFromElement(this, element);
+                        }
+
                     }
                 }
             }
@@ -928,9 +959,12 @@ KISSY.Editor.add("styles", function(KE) {
                     // Remove style from element or overriding element.
                     if (currentNode._4e_name() == this["element"])
                         removeFromElement(this, currentNode);
-                    else
+                    else {
+                        var overrides = getOverrides(this);
                         removeOverrides(currentNode,
-                            getOverrides(this)[ currentNode._4e_name() ]);
+                            overrides[ currentNode._4e_name() ] || overrides["*"]);
+
+                    }
 
                     /*
                      * removeFromElement() may have merged the next node with something before
@@ -1073,7 +1107,7 @@ KISSY.Editor.add("styles", function(KE) {
                 var override = definition[i];
                 var elementName;
                 var overrideEl;
-                var attrs;
+                var attrs,styles;
 
                 // If can be a string with the element name.
                 if (typeof override == 'string')
@@ -1084,6 +1118,7 @@ KISSY.Editor.add("styles", function(KE) {
                         override["element"].toLowerCase() :
                         style.element;
                     attrs = override["attributes"];
+                    styles = override["styles"];
                 }
 
                 // We can have more than one override definition for the same
@@ -1102,7 +1137,25 @@ KISSY.Editor.add("styles", function(KE) {
                         // Each item in the attributes array is also an array,
                         // where [0] is the attribute name and [1] is the
                         // override value.
-                        overrideAttrs.push([ attName.toLowerCase(), attrs[ attName ] ]);
+                        if (attrs.hasOwnProperty(attName))
+                            overrideAttrs.push([ attName.toLowerCase(), attrs[ attName ] ]);
+                    }
+                }
+
+
+                if (styles) {
+                    // The returning attributes list is an array, because we
+                    // could have different override definitions for the same
+                    // attribute name.
+                    var overrideStyles = ( overrideEl["styles"] =
+                        overrideEl["styles"] || new Array() );
+                    for (var styleName in styles) {
+                        // Each item in the styles array is also an array,
+                        // where [0] is the style name and [1] is the
+                        // override value.
+                        if (styles.hasOwnProperty(styleName))
+                            overrideStyles.push([ styleName.toLowerCase(),
+                                styles[ styleName ] ]);
                     }
                 }
             }
@@ -1115,33 +1168,40 @@ KISSY.Editor.add("styles", function(KE) {
     // Removes a style from an element itself, don't care about its subtree.
     function removeFromElement(style, element) {
         var def = style._.definition,
+            overrides = getOverrides(style),
             attributes = Utils.mix(def["attributes"],
-                getOverrides(style)[ element._4e_name()]),
-            styles = def["styles"],
+                (overrides[ element._4e_name()] || overrides["*"] || {})["attributes"]),
+            styles = Utils.mix(def["styles"],
+                (overrides[ element._4e_name()] || overrides["*"] || {})["styles"]),
             // If the style is only about the element itself, we have to remove the element.
             removeEmpty = S.isEmptyObject(attributes) &&
                 S.isEmptyObject(styles);
 
-        // Remove definition attributes/style from the elemnt.
+        // Remove definition attributes/style from the element.
         for (var attName in attributes) {
-            // The 'class' element value must match (#1318).
-            if (( attName == 'class' || style._.definition["fullMatch"] )
-                && element.attr(attName) != normalizeProperty(attName,
-                attributes[ attName ]))
-                continue;
-            removeEmpty = removeEmpty || !!element._4e_hasAttribute(attName);
-            element.removeAttr(attName);
+            if (attributes.hasOwnProperty(attName)) {
+                // The 'class' element value must match (#1318).
+                if (( attName == 'class' || style._.definition["fullMatch"] )
+                    && element.attr(attName) != normalizeProperty(attName,
+                    attributes[ attName ]))
+                    continue;
+                removeEmpty = removeEmpty || !!element._4e_hasAttribute(attName);
+                element.removeAttr(attName);
+            }
         }
 
         for (var styleName in styles) {
-            // Full match style insist on having fully equivalence. (#5018)
-            if (style._.definition["fullMatch"]
-                && element._4e_style(styleName) != normalizeProperty(styleName, styles[ styleName ], TRUE))
-                continue;
+            if (styles.hasOwnProperty(styleName)) {
+                // Full match style insist on having fully equivalence. (#5018)
+                if (style._.definition["fullMatch"]
+                    && element._4e_style(styleName)
+                    != normalizeProperty(styleName, styles[ styleName ], TRUE))
+                    continue;
 
-            removeEmpty = removeEmpty || !!element._4e_style(styleName);
-            //设置空即为：清除样式
-            element._4e_style(styleName, "");
+                removeEmpty = removeEmpty || !!element._4e_style(styleName);
+                //设置空即为：清除样式
+                element._4e_style(styleName, "");
+            }
         }
 
         //removeEmpty &&
@@ -1180,7 +1240,8 @@ KISSY.Editor.add("styles", function(KE) {
                 innerElements = element.all(overrideElement);
                 for (i = innerElements.length - 1; i >= 0; i--) {
                     var innerElement = new Node(innerElements[i]);
-                    removeOverrides(innerElement, overrides[ overrideElement ]);
+                    removeOverrides(innerElement,
+                        overrides[ overrideElement ]);
                 }
             }
         }
@@ -1194,10 +1255,10 @@ KISSY.Editor.add("styles", function(KE) {
      * @param {Object} overrides
      */
     function removeOverrides(element, overrides) {
-        var attributes = overrides && overrides["attributes"];
+        var i,attributes = overrides && overrides["attributes"];
 
         if (attributes) {
-            for (var i = 0; i < attributes.length; i++) {
+            for (i = 0; i < attributes.length; i++) {
                 var attName = attributes[i][0], actualAttrValue;
 
                 if (( actualAttrValue = element.attr(attName) )) {
@@ -1213,6 +1274,24 @@ KISSY.Editor.add("styles", function(KE) {
                         ( attValue.test && attValue.test(actualAttrValue) ) ||
                         ( typeof attValue == 'string' && actualAttrValue == attValue ))
                         element[0].removeAttribute(attName);
+                }
+            }
+        }
+
+
+        var styles = overrides && overrides["styles"];
+
+        if (styles) {
+            for (i = 0; i < styles.length; i++) {
+                var styleName = styles[i][0], actualStyleValue;
+
+                if (( actualStyleValue = element.css(styleName) )) {
+                    var styleValue = styles[i][1];
+                    if (styleValue === NULL ||
+                        //styleValue === "inherit" ||
+                        ( styleValue.test && styleValue.test(actualAttrValue) ) ||
+                        ( typeof styleValue == 'string' && actualStyleValue == styleValue ))
+                        element.css(styleName, "");
                 }
             }
         }

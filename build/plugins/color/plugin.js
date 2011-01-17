@@ -35,7 +35,10 @@ KISSY.Editor.add("color", function(editor) {
             (function() {
                 var colorButton_backStyle = {
                     element        : 'span',
-                    styles        : { 'background-color' : '#(color)' }
+                    styles        : { 'background-color' : '#(color)' },
+                    overrides    : [
+                        { element : '*', styles : { 'background-color' :null } }
+                    ]
                 };
                 var context = editor.addButton("color", {
                     styles:colorButton_backStyle,
