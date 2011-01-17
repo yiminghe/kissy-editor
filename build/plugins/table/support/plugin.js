@@ -114,7 +114,7 @@ KISSY.Editor.add("table/support", function() {
         var $cells = $tr.cells;
         // Empty all cells.
         for (var i = 0; i < $cells.length; i++) {
-            $cells[ i ].innerHTML = '';
+            $cells[ i ].innerHTML = '&nbsp;';
             if (!UA.ie)
                 ( new Node($cells[ i ]) )._4e_appendBogus();
         }
@@ -205,7 +205,7 @@ KISSY.Editor.add("table/support", function() {
             if ($row.cells.length < ( cellIndex + 1 ))
                 continue;
             cell = new Node($row.cells[ cellIndex ].cloneNode(false));
-
+            cell.html("&nbsp;");
             if (!UA.ie)
                 cell._4e_appendBogus();
             // Get back the currently selected cell.

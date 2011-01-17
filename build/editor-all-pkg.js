@@ -3104,12 +3104,15 @@ KISSY.Editor.add("definition", function(KE) {
         // IE standard compliant in editing frame doesn't focus the editor when
         // clicking outside actual content, manually apply the focus. (#1659)
 
-        if (UA.ie
-            && doc.compatMode == 'CSS1Compat'
-            //wierd ,sometimes ie9 break
-            || doc['documentMode']
-            || UA.gecko
-            || UA.opera) {
+        if (
+        //ie6,7 点击滚动条失效
+        //UA.ie
+        //&& doc.compatMode == 'CSS1Compat'
+        //wierd ,sometimes ie9 break
+        //||
+            doc['documentMode']
+                || UA.gecko
+                || UA.opera) {
             var htmlElement = doc.documentElement;
             Event.on(htmlElement, 'mousedown', function(evt) {
                 // Setting focus directly on editor doesn't work, we
@@ -3118,8 +3121,9 @@ KISSY.Editor.add("definition", function(KE) {
                 //firefox 不能直接设置，需要先失去焦点
                 //return;
                 //左键激活
-                var t = evt.target;
-                if (t == htmlElement) {
+                var t = new Node(evt.target);
+
+                if (t[0] == htmlElement) {
                     //S.log("click");
                     //self.focus();
                     //return;
@@ -7086,8 +7090,9 @@ KISSY.Editor.add("selection", function(KE) {
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
                     var t = new Node(evt.target);
-                    if (t._4e_name() === "html")
+                    if (t._4e_name() === "html") {
                         editor.getSelection().getNative().createRange().select();
+                    }
                 });
             }
 
@@ -7142,7 +7147,6 @@ KISSY.Editor.add("selection", function(KE) {
                 // it must be ignored to allow edit its contents #4682
                 if (t._4e_name() != 'body')
                     return;
-
 
                 // If we have saved a range, restore it at this
                 // point.
@@ -18083,7 +18087,7 @@ KISSY.Editor.add("table/support", function() {
         var $cells = $tr.cells;
         // Empty all cells.
         for (var i = 0; i < $cells.length; i++) {
-            $cells[ i ].innerHTML = '';
+            $cells[ i ].innerHTML = '&nbsp;';
             if (!UA.ie)
                 ( new Node($cells[ i ]) )._4e_appendBogus();
         }
@@ -18174,7 +18178,7 @@ KISSY.Editor.add("table/support", function() {
             if ($row.cells.length < ( cellIndex + 1 ))
                 continue;
             cell = new Node($row.cells[ cellIndex ].cloneNode(false));
-
+            cell.html("&nbsp;");
             if (!UA.ie)
                 cell._4e_appendBogus();
             // Get back the currently selected cell.

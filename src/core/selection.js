@@ -797,8 +797,9 @@ KISSY.Editor.add("selection", function(KE) {
                 // the empty space following <body> has been clicked.
                 html.on('click', function(evt) {
                     var t = new Node(evt.target);
-                    if (t._4e_name() === "html")
+                    if (t._4e_name() === "html") {
                         editor.getSelection().getNative().createRange().select();
+                    }
                 });
             }
 
@@ -853,7 +854,6 @@ KISSY.Editor.add("selection", function(KE) {
                 // it must be ignored to allow edit its contents #4682
                 if (t._4e_name() != 'body')
                     return;
-
 
                 // If we have saved a range, restore it at this
                 // point.
