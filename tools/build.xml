@@ -57,6 +57,7 @@ build file for kissy editor
     htmlparser/element.js,
     htmlparser/filter.js,
     htmlparser/text.js,
+    htmlparser/cdata.js,
     htmlparser/comment.js,
     ui/button/plugin.js,
     ui/select/plugin.js

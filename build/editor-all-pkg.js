@@ -2912,11 +2912,12 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          *@this {KISSY.Editor}
          * @param data {string}
+         * @param dataFilter 是否采用特定的 dataFilter
          */
-        insertHtml:function(data) {
+        insertHtml:function(data, dataFilter) {
             var self = this;
             if (self["htmlDataProcessor"])
-                data = self["htmlDataProcessor"]["toDataFormat"](data);//, "p");
+                data = self["htmlDataProcessor"]["toDataFormat"](data, null, dataFilter);//, "p");
             /**
              * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
              */
@@ -3826,9 +3827,9 @@ KISSY.Editor.add("elementpath", function(KE) {
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("walker", function(KE) {
 
     var TRUE = true,
@@ -3843,7 +3844,7 @@ KISSY.Editor.add("walker", function(KE) {
      * @this {Walker}
      * @param  {boolean=} rtl
      * @param  {boolean=} breakOnFalse
-     * 
+     *
      */
     function iterate(rtl, breakOnFalse) {
         var self = this;
@@ -4154,7 +4155,7 @@ KISSY.Editor.add("walker", function(KE) {
     };
 
     /**
-     * Whether the node is a text node containing only whitespaces characters.
+     * Whether the node is a text node() containing only whitespaces characters.
      * @param {boolean=} isReject
      */
     Walker.whitespaces = function(isReject) {
@@ -5670,6 +5671,16 @@ KISSY.Editor.add("range", function(KE) {
             fixedBlock._4e_trim();
             if (!UA.ie)
                 fixedBlock._4e_appendBogus();
+            var childNodes = fixedBlock[0].childNodes;
+
+            for (var i = 0; i < childNodes.length; i++) {
+                var c = childNodes[i];
+                //注释特别对待！不要加到 p 里
+                if (c.nodeType == 8) {
+                    self.insertNode(new Node(c));
+                }
+            }
+
             self.insertNode(fixedBlock);
             self.moveToBookmark(bookmark);
             return fixedBlock;
@@ -7303,7 +7314,8 @@ KISSY.Editor.add("selection", function(KE) {
         var nonExitableElementNames = { "table":1,"pre":1 };
 
         // Matching an empty paragraph at the end of document.
-        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+        //注释也要排除掉
+        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
 
 
         function isBlankParagraph(block) {
@@ -7312,7 +7324,10 @@ KISSY.Editor.add("selection", function(KE) {
 
         var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
         //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
-
+        //除去注释和空格的下一个有效元素
+        var nextValidEl = function(node) {
+            return isNotWhitespace(node) && node && node[0].nodeType != 8
+        };
         /**
          * 如果选择了body下面的直接inline元素，则新建p
          */
@@ -7329,32 +7344,34 @@ KISSY.Editor.add("selection", function(KE) {
                 ) return;
 
             if (blockLimit._4e_name() == "body") {
-                var fixedBlock = range.fixBlock(TRUE, "p");
-                //firefox选择区域变化时自动添加空行，不要出现裸的text
-                if (isBlankParagraph(fixedBlock)) {
-                    var element = fixedBlock._4e_next(isNotWhitespace);
 
-                    if (element &&
-                        element[0].nodeType == KEN.NODE_ELEMENT &&
-                        !nonExitableElementNames[ element._4e_name() ]) {
-                        range.moveToElementEditablePosition(element);
-                        fixedBlock._4e_remove();
-                    } else {
-                        element = fixedBlock._4e_previous(isNotWhitespace);
+                var fixedBlock = range.fixBlock(TRUE, "p");
+                if (fixedBlock) {
+                    //firefox选择区域变化时自动添加空行，不要出现裸的text
+                    if (isBlankParagraph(fixedBlock)) {
+                        var element = fixedBlock._4e_next(nextValidEl);
                         if (element &&
                             element[0].nodeType == KEN.NODE_ELEMENT &&
-                            !nonExitableElementNames[element._4e_name()]) {
-                            range.moveToElementEditablePosition(element,
-                                //空行的话还是要移到开头的
-                                isBlankParagraph(element) ? FALSE : TRUE);
+                            !nonExitableElementNames[ element._4e_name() ]) {
+                            range.moveToElementEditablePosition(element);
                             fixedBlock._4e_remove();
+                        } else {
+                            element = fixedBlock._4e_previous(nextValidEl);
+                            if (element &&
+                                element[0].nodeType == KEN.NODE_ELEMENT &&
+                                !nonExitableElementNames[element._4e_name()]) {
+                                range.moveToElementEditablePosition(element,
+                                    //空行的话还是要移到开头的
+                                    isBlankParagraph(element) ? FALSE : TRUE);
+                                fixedBlock._4e_remove();
+                            }
                         }
                     }
-                }
-                range.select();
-                if (!OLD_IE) {
-                    //选择区域变了，通知其他插件更新状态
-                    editor.notifySelectionChange();
+                    range.select();
+                    if (!OLD_IE) {
+                        //选择区域变了，通知其他插件更新状态
+                        editor.notifySelectionChange();
+                    }
                 }
             }
 
@@ -9804,10 +9821,8 @@ KISSY.Editor.add("htmlparser-fragment", function(
             currentNode.add(new KE.HtmlParser.Text(text));
         };
 
-        parser.onCDATA = function(//cdata
-            ) {
-            //不做
-            //currentNode.add(new KE.HtmlParser.cdata(cdata));
+        parser.onCDATA = function(cdata) {
+            currentNode.add(new KE.HtmlParser.cdata(cdata));
         };
 
         parser.onComment = function(comment) {
@@ -10468,9 +10483,45 @@ KISSY.Editor.add("htmlparser-text", function() {
     KE.HtmlParser["Text"] = MText;
 });
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
+KISSY.Editor.add("htmlparser-cdata", function(KE) {
+    /**
+     * A lightweight representation of HTML text.
+     * @constructor
+     * @example
+     */
+    KE.HtmlParser.cdata = function(value) {
+        /**
+         * The CDATA value.
+         * @type String
+         * @example
+         */
+        this.value = value;
+    };
+
+    KE.HtmlParser.cdata.prototype = {
+        /**
+         * CDATA has the same type as .htmlParser.text This is
+         * a constant value set to NODE_TEXT.
+         * @type Number
+         * @example
+         */
+        type : KE.NODE.NODE_TEXT,
+
+        /**
+         * Writes write the CDATA with no special manipulations.
+         * @param  writer The writer to which write the HTML.
+         */
+        writeHtml : function(writer) {
+            writer.write(this.value);
+        }
+    };
+});/*
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("htmlparser-comment", function() {
     var KE = KISSY.Editor,KEN = KE.NODE;
 
@@ -11410,6 +11461,7 @@ KISSY.Editor.add("clipboard", function(editor) {
         Event = S.Event;
     if (!KE.Paste) {
         (function() {
+
             function Paste(editor) {
                 this.editor = editor;
                 this._init();
@@ -11496,7 +11548,12 @@ KISSY.Editor.add("clipboard", function(editor) {
                             holder:pastebin
                         });
                         if (re !== undefined) html = re;
-                        editor.insertHtml(html);
+                        var dataFilter = null;
+                        // MS-WORD format sniffing.
+                        if (/(class="?Mso|style="[^"]*\bmso\-|w:WordDocument)/.test(html)) {
+                            dataFilter = editor.htmlDataProcessor.wordFilter;
+                        }
+                        editor.insertHtml(html, dataFilter);
                         self._running = false;
                     }, 0);
                 }
@@ -14288,6 +14345,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         HtmlParser = KE.HtmlParser,
         htmlFilter = new HtmlParser.Filter(),
         dataFilter = new HtmlParser.Filter(),
+        wordFilter = new HtmlParser.Filter(),
         dtd = KE.XHTML_DTD;
     //每个编辑器的规则独立
     if (editor.htmlDataProcessor) return;
@@ -14553,7 +14611,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 // html-encoded quote might be introduced by 'font-family'
                 // from MS-Word which confused the following regexp. e.g.
                 //'font-family: &quot;Lucida, Console&quot;'
-                styleText
+                String(styleText)
                     .replace(/&quot;/g, '"')
                     .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
                             function(match, name, value) {
@@ -14720,16 +14778,16 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
                     /*
                      太激进，只做span*/
-                    var style = el.attributes.style;
-                    //没有属性的inline去掉了
-                    if (//tagName in dtd.$inline
-                        tagName == "span"
-                            && (!style || !filterStyle(style))
-                    //&&tagName!=="a"
-                        ) {
-                        //el.filterChildren();
-                        delete el.name;
-                    }
+                    //span也不做了，可能设置class，模板用来占位展示
+//                    var style = el.attributes.style;
+//                    //没有属性的inline去掉了
+//                    if (//tagName in dtd.$inline
+//                        tagName == "span"
+//                            && (!style || !filterStyle(style))
+//                        ) {
+//                        //el.filterChildren();
+//                        delete el.name;
+//                    }
 
                     // Assembling list items into a whole list.
                     if (tagName in listDtdParents) {
@@ -14771,6 +14829,37 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 }
             },
+
+            attributes :  {
+                //防止word的垃圾class，
+                //全部杀掉算了，除了以ke_开头的编辑器内置class
+                //不要全部杀掉，可能其他应用有需要
+                'class' : function(value
+                                   // , element
+                    ) {
+                    if (/(^|\s+)Mso/.test(value)) return false;
+                    return value;
+                },
+                'style':function(value) {
+                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
+                    var re = filterStyle(value);
+                    if (!re) return false;
+                    return re;
+                }
+            },
+            attributeNames :  [
+                // Event attributes (onXYZ) must not be directly set. They can become
+                // active in the editing area (IE|WebKit).
+                [ ( /^on/ ), 'ke_on' ],
+                [/^lang$/,'']
+            ]
+        };
+
+
+        /**
+         * word 的注释对非 ie 浏览器很特殊
+         */
+        var wordRules = {
             comment : !UA.ie ?
                       function(value, node) {
                           var imageInfo = value.match(/<img.*?>/),
@@ -14795,34 +14884,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                               return img;
                           }
                           return false;
-                      }
-                :
+                      } :
                       function() {
                           return false;
-                      },
-            attributes :  {
-                //防止word的垃圾class，
-                //全部杀掉算了，除了以ke_开头的编辑器内置class
-                //不要全部杀掉，可能其他应用有需要
-                'class' : function(value
-                                   // , element
-                    ) {
-                    if (/(^|\s+)Mso/.test(value)) return false;
-                    return value;
-                },
-                'style':function(value) {
-                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
-                    var re = filterStyle(value);
-                    if (!re) return false;
-                    return re;
-                }
-            },
-            attributeNames :  [
-                // Event attributes (onXYZ) must not be directly set. They can become
-                // active in the editing area (IE|WebKit).
-                [ ( /^on/ ), 'ke_on' ],
-                [/^lang$/,'']
-            ]
+                      }
         };
         //将编辑区生成html最终化
         var defaultHtmlFilterRules = {
@@ -14891,7 +14956,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 span:function(element) {
-                    if (! element.children.length)return false;
+
+                    if (! element.children.length
+                        && S.isEmptyObject(element.attributes))return false;
                 }
             },
             attributes :  {
@@ -14909,7 +14976,22 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 //!TODO 不知道怎么回事会引入
                 [ ( /^_ks.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
-            ]
+            ],
+
+            comment : function(contents) {
+                // If this is a comment for protected source.
+                if (contents.substr(0, protectedSourceMarker.length) == protectedSourceMarker) {
+                    // Remove the extra marker for real comments from it.
+                    if (contents.substr(protectedSourceMarker.length, 3) == '{C}')
+                        contents = contents.substr(protectedSourceMarker.length + 3);
+                    else
+                        contents = contents.substr(protectedSourceMarker.length);
+
+                    return new KE.HtmlParser.cdata(decodeURIComponent(contents));
+                }
+
+                return contents;
+            }
         };
         if (UA.ie) {
             // IE outputs style attribute in capital letters. We should convert
@@ -14923,6 +15005,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         htmlFilter.addRules(defaultHtmlFilterRules);
         dataFilter.addRules(defaultDataFilterRules);
+
+        wordFilter.addRules(defaultDataFilterRules);
+        wordFilter.addRules(wordRules);
     })();
 
 
@@ -15026,6 +15111,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
         dataFilter.addRules(defaultDataBlockFilterRules);
         htmlFilter.addRules(defaultHtmlBlockFilterRules);
+        wordFilter.addRules(defaultDataBlockFilterRules);
     })();
 
 
@@ -15062,12 +15148,32 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                            });
     }
 
+    var protectedSourceMarker = '{ke_protected}';
+
+//    function protectRealComments(html) {
+//        return html.replace(/<!--(?!{ke_protected})[\s\S]+?-->/g, function(match) {
+//            return '<!--' + protectedSourceMarker +
+//                '{C}' +
+//                encodeURIComponent(match).replace(/--/g, '%2D%2D') +
+//                '-->';
+//        });
+//    }
+//
+//    function unprotectRealComments(html) {
+//        return html.replace(/<!--\{ke_protected\}\{C\}([\s\S]+?)-->/g, function(match, data) {
+//            return decodeURIComponent(data);
+//        });
+//    }
+
 
     editor.htmlDataProcessor = {
-        htmlFilter:htmlFilter,
+        //过滤 ms-word
+        wordFilter:wordFilter,
         dataFilter:dataFilter,
+        htmlFilter:htmlFilter,
         //编辑器 html 到外部 html
         toHtml:function(html, fixForBody) {
+
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
@@ -15080,8 +15186,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         },
         //外部html进入编辑器
-        toDataFormat : function(html, fixForBody) {
+        toDataFormat : function(html, fixForBody, _dataFilter) {
 
+            //可以传 wordFilter 或 dataFilter
+            _dataFilter = _dataFilter || dataFilter;
             // Firefox will be confused by those downlevel-revealed IE conditional
             // comments, fixing them first( convert it to upperlevel-revealed one ).
             // e.g. <![if !vml]>...<![endif]>
@@ -15112,6 +15220,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             div.html('a' + html);
             html = div.html().substr(1);
 
+
+            // Restore the comments that have been protected, in this way they
+            // can be properly filtered.
+            //html = unprotectRealComments(html);
+
             // Certain elements has problem to go through DOM operation, protect
             // them by prefixing 'ke' namespace. (#3591)
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
@@ -15122,9 +15235,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
             writer.reset();
-            fragment.writeHtml(writer, dataFilter);
+            fragment.writeHtml(writer, _dataFilter);
+            html = writer.getHtml(true);
+            // Protect the real comments again.
+            //html = protectRealComments(html);
 
-            return writer.getHtml(true);
+            return html;
         },
         /*
          最精简html传送到server

@@ -16,6 +16,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         HtmlParser = KE.HtmlParser,
         htmlFilter = new HtmlParser.Filter(),
         dataFilter = new HtmlParser.Filter(),
+        wordFilter = new HtmlParser.Filter(),
         dtd = KE.XHTML_DTD;
     //每个编辑器的规则独立
     if (editor.htmlDataProcessor) return;
@@ -281,7 +282,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 // html-encoded quote might be introduced by 'font-family'
                 // from MS-Word which confused the following regexp. e.g.
                 //'font-family: &quot;Lucida, Console&quot;'
-                styleText
+                String(styleText)
                     .replace(/&quot;/g, '"')
                     .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
                             function(match, name, value) {
@@ -448,16 +449,16 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
                     /*
                      太激进，只做span*/
-                    var style = el.attributes.style;
-                    //没有属性的inline去掉了
-                    if (//tagName in dtd.$inline
-                        tagName == "span"
-                            && (!style || !filterStyle(style))
-                    //&&tagName!=="a"
-                        ) {
-                        //el.filterChildren();
-                        delete el.name;
-                    }
+                    //span也不做了，可能设置class，模板用来占位展示
+//                    var style = el.attributes.style;
+//                    //没有属性的inline去掉了
+//                    if (//tagName in dtd.$inline
+//                        tagName == "span"
+//                            && (!style || !filterStyle(style))
+//                        ) {
+//                        //el.filterChildren();
+//                        delete el.name;
+//                    }
 
                     // Assembling list items into a whole list.
                     if (tagName in listDtdParents) {
@@ -499,6 +500,37 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 }
             },
+
+            attributes :  {
+                //防止word的垃圾class，
+                //全部杀掉算了，除了以ke_开头的编辑器内置class
+                //不要全部杀掉，可能其他应用有需要
+                'class' : function(value
+                                   // , element
+                    ) {
+                    if (/(^|\s+)Mso/.test(value)) return false;
+                    return value;
+                },
+                'style':function(value) {
+                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
+                    var re = filterStyle(value);
+                    if (!re) return false;
+                    return re;
+                }
+            },
+            attributeNames :  [
+                // Event attributes (onXYZ) must not be directly set. They can become
+                // active in the editing area (IE|WebKit).
+                [ ( /^on/ ), 'ke_on' ],
+                [/^lang$/,'']
+            ]
+        };
+
+
+        /**
+         * word 的注释对非 ie 浏览器很特殊
+         */
+        var wordRules = {
             comment : !UA.ie ?
                       function(value, node) {
                           var imageInfo = value.match(/<img.*?>/),
@@ -523,34 +555,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                               return img;
                           }
                           return false;
-                      }
-                :
+                      } :
                       function() {
                           return false;
-                      },
-            attributes :  {
-                //防止word的垃圾class，
-                //全部杀掉算了，除了以ke_开头的编辑器内置class
-                //不要全部杀掉，可能其他应用有需要
-                'class' : function(value
-                                   // , element
-                    ) {
-                    if (/(^|\s+)Mso/.test(value)) return false;
-                    return value;
-                },
-                'style':function(value) {
-                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
-                    var re = filterStyle(value);
-                    if (!re) return false;
-                    return re;
-                }
-            },
-            attributeNames :  [
-                // Event attributes (onXYZ) must not be directly set. They can become
-                // active in the editing area (IE|WebKit).
-                [ ( /^on/ ), 'ke_on' ],
-                [/^lang$/,'']
-            ]
+                      }
         };
         //将编辑区生成html最终化
         var defaultHtmlFilterRules = {
@@ -619,7 +627,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 span:function(element) {
-                    if (! element.children.length)return false;
+
+                    if (! element.children.length
+                        && S.isEmptyObject(element.attributes))return false;
                 }
             },
             attributes :  {
@@ -637,7 +647,22 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 //!TODO 不知道怎么回事会引入
                 [ ( /^_ks.*/ ), '' ],
                 [ ( /^ke:.*$/ ), '' ]
-            ]
+            ],
+
+            comment : function(contents) {
+                // If this is a comment for protected source.
+                if (contents.substr(0, protectedSourceMarker.length) == protectedSourceMarker) {
+                    // Remove the extra marker for real comments from it.
+                    if (contents.substr(protectedSourceMarker.length, 3) == '{C}')
+                        contents = contents.substr(protectedSourceMarker.length + 3);
+                    else
+                        contents = contents.substr(protectedSourceMarker.length);
+
+                    return new KE.HtmlParser.cdata(decodeURIComponent(contents));
+                }
+
+                return contents;
+            }
         };
         if (UA.ie) {
             // IE outputs style attribute in capital letters. We should convert
@@ -651,6 +676,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         htmlFilter.addRules(defaultHtmlFilterRules);
         dataFilter.addRules(defaultDataFilterRules);
+
+        wordFilter.addRules(defaultDataFilterRules);
+        wordFilter.addRules(wordRules);
     })();
 
 
@@ -754,6 +782,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
         dataFilter.addRules(defaultDataBlockFilterRules);
         htmlFilter.addRules(defaultHtmlBlockFilterRules);
+        wordFilter.addRules(defaultDataBlockFilterRules);
     })();
 
 
@@ -790,12 +819,32 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                            });
     }
 
+    var protectedSourceMarker = '{ke_protected}';
+
+//    function protectRealComments(html) {
+//        return html.replace(/<!--(?!{ke_protected})[\s\S]+?-->/g, function(match) {
+//            return '<!--' + protectedSourceMarker +
+//                '{C}' +
+//                encodeURIComponent(match).replace(/--/g, '%2D%2D') +
+//                '-->';
+//        });
+//    }
+//
+//    function unprotectRealComments(html) {
+//        return html.replace(/<!--\{ke_protected\}\{C\}([\s\S]+?)-->/g, function(match, data) {
+//            return decodeURIComponent(data);
+//        });
+//    }
+
 
     editor.htmlDataProcessor = {
-        htmlFilter:htmlFilter,
+        //过滤 ms-word
+        wordFilter:wordFilter,
         dataFilter:dataFilter,
+        htmlFilter:htmlFilter,
         //编辑器 html 到外部 html
         toHtml:function(html, fixForBody) {
+
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
             // well as apply the filter.
@@ -808,8 +857,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         },
         //外部html进入编辑器
-        toDataFormat : function(html, fixForBody) {
+        toDataFormat : function(html, fixForBody, _dataFilter) {
 
+            //可以传 wordFilter 或 dataFilter
+            _dataFilter = _dataFilter || dataFilter;
             // Firefox will be confused by those downlevel-revealed IE conditional
             // comments, fixing them first( convert it to upperlevel-revealed one ).
             // e.g. <![if !vml]>...<![endif]>
@@ -840,6 +891,11 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             div.html('a' + html);
             html = div.html().substr(1);
 
+
+            // Restore the comments that have been protected, in this way they
+            // can be properly filtered.
+            //html = unprotectRealComments(html);
+
             // Certain elements has problem to go through DOM operation, protect
             // them by prefixing 'ke' namespace. (#3591)
             //html = html.replace(protectElementNamesRegex, '$1ke:$2');
@@ -850,9 +906,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
 
             writer.reset();
-            fragment.writeHtml(writer, dataFilter);
+            fragment.writeHtml(writer, _dataFilter);
+            html = writer.getHtml(true);
+            // Protect the real comments again.
+            //html = protectRealComments(html);
 
-            return writer.getHtml(true);
+            return html;
         },
         /*
          最精简html传送到server

@@ -8,7 +8,7 @@
 <link href="http://a.tbcdn.cn/s/kissy/1.1.5/editor/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet"/>
 <![endif]-->
 <!--[if gte IE 8]><!-->
-<link href="../build/theme/cool/editor-pkg-min-datauri.css " rel="stylesheet"/>
+<link href="http://a.tbcdn.cn/s/kissy/1.1.5/editor/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
 <!--<![endif]-->
 </head>
 <body>
@@ -166,13 +166,14 @@
     <label for="editor2">Editor Instance 2:</label>
     <textarea id="editor2" style="width:100%;height:400px;margin:0 auto;"></textarea>
 </div>
-<script src="http://github.com/kissyteam/kissy/raw/master/build/kissy-min.js"></script>
-<script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
-<script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/kissy-min.js"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/editor/editor-all-pkg-min.js?t=20100827a"></script>
+<script src="http://a.tbcdn.cn/s/kissy/1.1.5/editor/biz/bangpai/editor-plugin-pkg-min.js"></script>
 <script>
 // just for test
-var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1'),S = KISSY;
-S.Config.base = base;
+//var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1'),S = KISSY;
+//S.Config.base = base;
+var S=KISSY;
 S.ready(function() {
 
 
@@ -180,7 +181,7 @@ S.ready(function() {
 
         var KE = S.Editor;
 
-        KE.Config.base = base + "build/";
+        //KE.Config.base = base + "build/";
 
         window.editor = KE("#editor", {
             attachForm:true,
@@ -307,6 +308,14 @@ S.ready(function() {
                     dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
             if (dataFilter) {
                 dataFilter.addRules({
+                    elements : {
+                        a:function(el) {
+                            var href = KISSY.trim(el.attributes && el.attributes.href || "");
+
+                            if (/(http(s)?:\/\/)?s\.click/i.test(href))
+                                return false;
+                        }
+                    },
                     attributes:{
                         style:function(value) {
                             value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
@@ -417,6 +426,12 @@ S.ready(function() {
             if (dataFilter) {
                 dataFilter.addRules({
                     elements : {
+                        a:function(el) {
+                            var href = KISSY.trim(el.attributes && el.attributes.href || "");
+
+                            if (/(http(s)?:\/\/)?s\.click/i.test(href))
+                                return false;
+                        },
                         img:function(el) {
                             if (!el.attributes ||
                                     !el.attributes['class']

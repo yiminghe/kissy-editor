@@ -4,9 +4,9 @@
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("walker", function(KE) {
 
     var TRUE = true,
@@ -21,7 +21,7 @@ KISSY.Editor.add("walker", function(KE) {
      * @this {Walker}
      * @param  {boolean=} rtl
      * @param  {boolean=} breakOnFalse
-     * 
+     *
      */
     function iterate(rtl, breakOnFalse) {
         var self = this;
@@ -332,7 +332,7 @@ KISSY.Editor.add("walker", function(KE) {
     };
 
     /**
-     * Whether the node is a text node containing only whitespaces characters.
+     * Whether the node is a text node() containing only whitespaces characters.
      * @param {boolean=} isReject
      */
     Walker.whitespaces = function(isReject) {

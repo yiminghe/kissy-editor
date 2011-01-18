@@ -2912,11 +2912,12 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          *@this {KISSY.Editor}
          * @param data {string}
+         * @param dataFilter 是否采用特定的 dataFilter
          */
-        insertHtml:function(data) {
+        insertHtml:function(data, dataFilter) {
             var self = this;
             if (self["htmlDataProcessor"])
-                data = self["htmlDataProcessor"]["toDataFormat"](data);//, "p");
+                data = self["htmlDataProcessor"]["toDataFormat"](data, null, dataFilter);//, "p");
             /**
              * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
              */
@@ -3826,9 +3827,9 @@ KISSY.Editor.add("elementpath", function(KE) {
  * @author: <yiminghe@gmail.com>
  */
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("walker", function(KE) {
 
     var TRUE = true,
@@ -3843,7 +3844,7 @@ KISSY.Editor.add("walker", function(KE) {
      * @this {Walker}
      * @param  {boolean=} rtl
      * @param  {boolean=} breakOnFalse
-     * 
+     *
      */
     function iterate(rtl, breakOnFalse) {
         var self = this;
@@ -4154,7 +4155,7 @@ KISSY.Editor.add("walker", function(KE) {
     };
 
     /**
-     * Whether the node is a text node containing only whitespaces characters.
+     * Whether the node is a text node() containing only whitespaces characters.
      * @param {boolean=} isReject
      */
     Walker.whitespaces = function(isReject) {
@@ -5670,6 +5671,16 @@ KISSY.Editor.add("range", function(KE) {
             fixedBlock._4e_trim();
             if (!UA.ie)
                 fixedBlock._4e_appendBogus();
+            var childNodes = fixedBlock[0].childNodes;
+
+            for (var i = 0; i < childNodes.length; i++) {
+                var c = childNodes[i];
+                //注释特别对待！不要加到 p 里
+                if (c.nodeType == 8) {
+                    self.insertNode(new Node(c));
+                }
+            }
+
             self.insertNode(fixedBlock);
             self.moveToBookmark(bookmark);
             return fixedBlock;
@@ -7303,7 +7314,8 @@ KISSY.Editor.add("selection", function(KE) {
         var nonExitableElementNames = { "table":1,"pre":1 };
 
         // Matching an empty paragraph at the end of document.
-        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+        //注释也要排除掉
+        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
 
 
         function isBlankParagraph(block) {
@@ -7312,7 +7324,10 @@ KISSY.Editor.add("selection", function(KE) {
 
         var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
         //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
-
+        //除去注释和空格的下一个有效元素
+        var nextValidEl = function(node) {
+            return isNotWhitespace(node) && node && node[0].nodeType != 8
+        };
         /**
          * 如果选择了body下面的直接inline元素，则新建p
          */
@@ -7329,32 +7344,34 @@ KISSY.Editor.add("selection", function(KE) {
                 ) return;
 
             if (blockLimit._4e_name() == "body") {
-                var fixedBlock = range.fixBlock(TRUE, "p");
-                //firefox选择区域变化时自动添加空行，不要出现裸的text
-                if (isBlankParagraph(fixedBlock)) {
-                    var element = fixedBlock._4e_next(isNotWhitespace);
 
-                    if (element &&
-                        element[0].nodeType == KEN.NODE_ELEMENT &&
-                        !nonExitableElementNames[ element._4e_name() ]) {
-                        range.moveToElementEditablePosition(element);
-                        fixedBlock._4e_remove();
-                    } else {
-                        element = fixedBlock._4e_previous(isNotWhitespace);
+                var fixedBlock = range.fixBlock(TRUE, "p");
+                if (fixedBlock) {
+                    //firefox选择区域变化时自动添加空行，不要出现裸的text
+                    if (isBlankParagraph(fixedBlock)) {
+                        var element = fixedBlock._4e_next(nextValidEl);
                         if (element &&
                             element[0].nodeType == KEN.NODE_ELEMENT &&
-                            !nonExitableElementNames[element._4e_name()]) {
-                            range.moveToElementEditablePosition(element,
-                                //空行的话还是要移到开头的
-                                isBlankParagraph(element) ? FALSE : TRUE);
+                            !nonExitableElementNames[ element._4e_name() ]) {
+                            range.moveToElementEditablePosition(element);
                             fixedBlock._4e_remove();
+                        } else {
+                            element = fixedBlock._4e_previous(nextValidEl);
+                            if (element &&
+                                element[0].nodeType == KEN.NODE_ELEMENT &&
+                                !nonExitableElementNames[element._4e_name()]) {
+                                range.moveToElementEditablePosition(element,
+                                    //空行的话还是要移到开头的
+                                    isBlankParagraph(element) ? FALSE : TRUE);
+                                fixedBlock._4e_remove();
+                            }
                         }
                     }
-                }
-                range.select();
-                if (!OLD_IE) {
-                    //选择区域变了，通知其他插件更新状态
-                    editor.notifySelectionChange();
+                    range.select();
+                    if (!OLD_IE) {
+                        //选择区域变了，通知其他插件更新状态
+                        editor.notifySelectionChange();
+                    }
                 }
             }
 
@@ -9804,10 +9821,8 @@ KISSY.Editor.add("htmlparser-fragment", function(
             currentNode.add(new KE.HtmlParser.Text(text));
         };
 
-        parser.onCDATA = function(//cdata
-            ) {
-            //不做
-            //currentNode.add(new KE.HtmlParser.cdata(cdata));
+        parser.onCDATA = function(cdata) {
+            currentNode.add(new KE.HtmlParser.cdata(cdata));
         };
 
         parser.onComment = function(comment) {
@@ -10468,9 +10483,45 @@ KISSY.Editor.add("htmlparser-text", function() {
     KE.HtmlParser["Text"] = MText;
 });
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
+KISSY.Editor.add("htmlparser-cdata", function(KE) {
+    /**
+     * A lightweight representation of HTML text.
+     * @constructor
+     * @example
+     */
+    KE.HtmlParser.cdata = function(value) {
+        /**
+         * The CDATA value.
+         * @type String
+         * @example
+         */
+        this.value = value;
+    };
+
+    KE.HtmlParser.cdata.prototype = {
+        /**
+         * CDATA has the same type as .htmlParser.text This is
+         * a constant value set to NODE_TEXT.
+         * @type Number
+         * @example
+         */
+        type : KE.NODE.NODE_TEXT,
+
+        /**
+         * Writes write the CDATA with no special manipulations.
+         * @param  writer The writer to which write the HTML.
+         */
+        writeHtml : function(writer) {
+            writer.write(this.value);
+        }
+    };
+});/*
+ Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 KISSY.Editor.add("htmlparser-comment", function() {
     var KE = KISSY.Editor,KEN = KE.NODE;
 

@@ -1010,7 +1010,8 @@ KISSY.Editor.add("selection", function(KE) {
         var nonExitableElementNames = { "table":1,"pre":1 };
 
         // Matching an empty paragraph at the end of document.
-        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;)?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+        //注释也要排除掉
+        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
 
 
         function isBlankParagraph(block) {
@@ -1019,7 +1020,10 @@ KISSY.Editor.add("selection", function(KE) {
 
         var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
         //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
-
+        //除去注释和空格的下一个有效元素
+        var nextValidEl = function(node) {
+            return isNotWhitespace(node) && node && node[0].nodeType != 8
+        };
         /**
          * 如果选择了body下面的直接inline元素，则新建p
          */
@@ -1036,32 +1040,34 @@ KISSY.Editor.add("selection", function(KE) {
                 ) return;
 
             if (blockLimit._4e_name() == "body") {
-                var fixedBlock = range.fixBlock(TRUE, "p");
-                //firefox选择区域变化时自动添加空行，不要出现裸的text
-                if (isBlankParagraph(fixedBlock)) {
-                    var element = fixedBlock._4e_next(isNotWhitespace);
 
-                    if (element &&
-                        element[0].nodeType == KEN.NODE_ELEMENT &&
-                        !nonExitableElementNames[ element._4e_name() ]) {
-                        range.moveToElementEditablePosition(element);
-                        fixedBlock._4e_remove();
-                    } else {
-                        element = fixedBlock._4e_previous(isNotWhitespace);
+                var fixedBlock = range.fixBlock(TRUE, "p");
+                if (fixedBlock) {
+                    //firefox选择区域变化时自动添加空行，不要出现裸的text
+                    if (isBlankParagraph(fixedBlock)) {
+                        var element = fixedBlock._4e_next(nextValidEl);
                         if (element &&
                             element[0].nodeType == KEN.NODE_ELEMENT &&
-                            !nonExitableElementNames[element._4e_name()]) {
-                            range.moveToElementEditablePosition(element,
-                                //空行的话还是要移到开头的
-                                isBlankParagraph(element) ? FALSE : TRUE);
+                            !nonExitableElementNames[ element._4e_name() ]) {
+                            range.moveToElementEditablePosition(element);
                             fixedBlock._4e_remove();
+                        } else {
+                            element = fixedBlock._4e_previous(nextValidEl);
+                            if (element &&
+                                element[0].nodeType == KEN.NODE_ELEMENT &&
+                                !nonExitableElementNames[element._4e_name()]) {
+                                range.moveToElementEditablePosition(element,
+                                    //空行的话还是要移到开头的
+                                    isBlankParagraph(element) ? FALSE : TRUE);
+                                fixedBlock._4e_remove();
+                            }
                         }
                     }
-                }
-                range.select();
-                if (!OLD_IE) {
-                    //选择区域变了，通知其他插件更新状态
-                    editor.notifySelectionChange();
+                    range.select();
+                    if (!OLD_IE) {
+                        //选择区域变了，通知其他插件更新状态
+                        editor.notifySelectionChange();
+                    }
                 }
             }
 

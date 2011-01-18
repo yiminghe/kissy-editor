@@ -399,10 +399,8 @@ KISSY.Editor.add("htmlparser-fragment", function(
             currentNode.add(new KE.HtmlParser.Text(text));
         };
 
-        parser.onCDATA = function(//cdata
-            ) {
-            //不做
-            //currentNode.add(new KE.HtmlParser.cdata(cdata));
+        parser.onCDATA = function(cdata) {
+            currentNode.add(new KE.HtmlParser.cdata(cdata));
         };
 
         parser.onComment = function(comment) {

@@ -774,11 +774,12 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          *@this {KISSY.Editor}
          * @param data {string}
+         * @param dataFilter 是否采用特定的 dataFilter
          */
-        insertHtml:function(data) {
+        insertHtml:function(data, dataFilter) {
             var self = this;
             if (self["htmlDataProcessor"])
-                data = self["htmlDataProcessor"]["toDataFormat"](data);//, "p");
+                data = self["htmlDataProcessor"]["toDataFormat"](data, null, dataFilter);//, "p");
             /**
              * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
              */

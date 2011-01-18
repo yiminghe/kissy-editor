@@ -12,6 +12,7 @@ KISSY.Editor.add("clipboard", function(editor) {
         Event = S.Event;
     if (!KE.Paste) {
         (function() {
+
             function Paste(editor) {
                 this.editor = editor;
                 this._init();
@@ -98,7 +99,12 @@ KISSY.Editor.add("clipboard", function(editor) {
                             holder:pastebin
                         });
                         if (re !== undefined) html = re;
-                        editor.insertHtml(html);
+                        var dataFilter = null;
+                        // MS-WORD format sniffing.
+                        if (/(class="?Mso|style="[^"]*\bmso\-|w:WordDocument)/.test(html)) {
+                            dataFilter = editor.htmlDataProcessor.wordFilter;
+                        }
+                        editor.insertHtml(html, dataFilter);
                         self._running = false;
                     }, 0);
                 }
