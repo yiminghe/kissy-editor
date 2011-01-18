@@ -18012,6 +18012,37 @@ KISSY.Editor.add("sourcearea", function(editor) {
         this.destroy = function() {
             context.destroy();
         };
+
+
+        //support wrap : http://www.w3.org/TR/2011/WD-html-markup-20110113/textarea.html
+
+        function initWrap() {
+            var textarea = editor.textarea;
+            //textarea.attr("cols", 100);
+            textarea.on("keydown", function(ev) {
+                //ctrl+w
+                if (ev.ctrlKey &&
+                    ev.keyCode == 87) {
+                    ev.halt();
+                    var next = textarea.attr("wrap") == "off" ? "soft" : "off";
+                    if (!UA.ie) {
+                        textarea.detach();
+                        var newTextarea = textarea._4e_clone();
+                        editor.textarea = newTextarea;
+                        newTextarea.attr("wrap", next);
+                        newTextarea.val(textarea.val());
+                        textarea[0].parentNode.replaceChild(newTextarea[0], textarea[0]);
+                        initWrap();
+                        textarea = null;
+                    } else {
+                        textarea.attr("wrap", next);
+                    }
+                }
+            });
+        }
+
+        initWrap();
+
     });
 }, {
     attach:false
