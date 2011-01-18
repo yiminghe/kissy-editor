@@ -14409,7 +14409,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             filterStyle = stylesFilter([
                 //word 自有属性名去除
                 [/mso/i],
-                //ie 自有属性名
+                [/w:WordDocument/i],
+                //ie 自有属性名[/mso/i],
                 [/^-ms/i],
                 //firefox 自有属性名
                 [/^-moz/i],
@@ -14800,12 +14801,14 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                           return false;
                       },
             attributes :  {
-                //防止word的垃圾class，全部杀掉算了，除了以ke_开头的编辑器内置class
+                //防止word的垃圾class，
+                //全部杀掉算了，除了以ke_开头的编辑器内置class
+                //不要全部杀掉，可能其他应用有需要
                 'class' : function(value
                                    // , element
                     ) {
-                    if (/(^|\s+)ke_/.test(value)) return value;
-                    return false;
+                    if (/(^|\s+)Mso/.test(value)) return false;
+                    return value;
                 },
                 'style':function(value) {
                     //去除<i style="mso-bidi-font-style: normal">微软垃圾
