@@ -49,8 +49,8 @@ KISSY.Editor.add("smiley/support", function() {
             if (t._4e_name() == "a"
                 && (icon = t.attr("data-icon"))) {
                 var img = new S.Node("<img " +
-                    "class='ke_smiley'" +
-                    "alt='' src='" + icon + "'/>", null,
+                    "alt='' src='" +
+                    icon + "'/>", null,
                     editor.document);
                 editor.insertElement(img);
                 this.smileyWin.hide();
@@ -121,6 +121,6 @@ KISSY.Editor.add("smiley/support", function() {
             destroyRes.call(self);
         }
     };
-},{
+}, {
     attach:false
 });

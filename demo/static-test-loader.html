@@ -50,6 +50,7 @@
                   name='editor'
                   tabindex="0"
                   style="width:100%;height:400px;margin:0 auto;">
+
             <script>alert(1);</script>
             <p>
                 我是虾米音乐
@@ -401,7 +402,7 @@ KISSY.ready(function(S) {
                                 return S.one("#ke_img_up_watermark_1")[0].checked;
                             }
                         },
-                        surfix:"png,jpg,jpeg,gif",
+                        suffix:"png,jpg,jpeg,gif",
                         fileInput:"Filedata",
                         sizeLimit:1000,//k
                         extraHtml:"<p style='margin-top:10px;'><input type='checkbox' id='ke_img_up_watermark_1' checked='checked'> 图片加水印，防止别人盗用</p>"
@@ -530,7 +531,7 @@ KISSY.ready(function(S) {
                 },
 
                 dragupload:{
-                    surfix:"png,jpg,jpeg,gif",
+                    suffix:"png,jpg,jpeg,gif",
                     fileInput:"Filedata",
                     sizeLimit:1000,
                     serverUrl:"/code/upload/web/upload.jsp",

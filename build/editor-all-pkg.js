@@ -12565,26 +12565,28 @@ KISSY.Editor.add("draft", function(editor) {
         Node = S.Node,
         Event = S.Event,
         UA = S.UA,
+        DOM = S.DOM,
         cfg = editor.cfg.pluginConfig['dragupload'] || {},
-        fileInput = cfg.fileInput || "Filedata",
-        sizeLimit = cfg.sizeLimit || Number.MAX_VALUE,
-        serverParams = cfg.serverParams || {},
-        serverUrl = cfg.serverUrl || "",
-        surfix = cfg.surfix || "png,jpg,jpeg,gif",
-        surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
+        fileInput = cfg['fileInput'] || "Filedata",
+        sizeLimit = cfg['sizeLimit'] || Number.MAX_VALUE,
+        serverParams = cfg['serverParams'] || {},
+        serverUrl = cfg['serverUrl'] || "",
+        suffix = cfg['suffix'] || "png,jpg,jpeg,gif",
+        suffix_reg = new RegExp(suffix.split(/,/).join("|") + "$", "i"),
         document = editor.document;
+    if (UA.ie) return;
 
     var inserted = {},startMonitor = false;
 
     function nodeInsert(ev) {
-        var oe = ev.originalEvent;
+        var oe = ev['originalEvent'];
         var t = oe.target;
-        if (S.DOM._4e_name(t) == "img" && t.src.match(/^file:\/\//)) {
+        if (DOM._4e_name(t) == "img" && t.src.match(/^file:\/\//)) {
             inserted[t.src] = t;
         }
     }
 
-    Event.on(document, "dragenter", function(ev) {
+    Event.on(document, "dragenter", function() {
         //firefox 会插入伪数据
         if (!startMonitor) {
             Event.on(document, "DOMNodeInserted", nodeInsert);
@@ -12593,14 +12595,14 @@ KISSY.Editor.add("draft", function(editor) {
     });
     Event.on(document, "dragenter dragover", function(ev) {
         ev.halt();
-        ev = ev.originalEvent;
-        var dt = ev.dataTransfer;
+        ev = ev['originalEvent'];
+        //var dt = ev['dataTransfer'];
     });
     Event.on(document, "drop", function(ev) {
         Event.remove(document, "DOMNodeInserted", nodeInsert);
         startMonitor = false;
         ev.halt();
-        ev = ev.originalEvent;
+        ev = ev['originalEvent'];
         S.log(ev);
         var archor,ap;
         /**
@@ -12609,10 +12611,10 @@ KISSY.Editor.add("draft", function(editor) {
         if (!S.isEmptyObject(inserted)) {
 
             S.each(inserted, function(el) {
-                if (S.DOM._4e_name(el) == "img") {
+                if (DOM._4e_name(el) == "img") {
                     archor = el.nextSibling;
                     ap = el.parentNode;
-                    S.DOM._4e_remove(el);
+                    DOM._4e_remove(el);
                 }
             });
             inserted = {};
@@ -12622,13 +12624,13 @@ KISSY.Editor.add("draft", function(editor) {
             archor = ap.lastChild;
         }
 
-        var dt = ev.dataTransfer;
+        var dt = ev['dataTransfer'];
         dt.dropEffect = "copy";
-        var files = dt.files;
+        var files = dt['files'];
         if (!files) return;
         for (var i = 0; i < files.length; i++) {
             var file = files[i],name = file.name,size = file.size;
-            if (!name.match(surfix_reg)) {
+            if (!name.match(suffix_reg)) {
                 continue;
             }
             if (size / 1000 > sizeLimit) {
@@ -12636,7 +12638,7 @@ KISSY.Editor.add("draft", function(editor) {
             }
             var img = new Node("<img " +
                 "src='" +
-                (KE.Config.base + "../theme/loading.gif") + "'" +
+                (KE['Config'].base + "../theme/loading.gif") + "'" +
                 "/>");
             ap.insertBefore(img[0], archor);
 
@@ -12653,7 +12655,7 @@ KISSY.Editor.add("draft", function(editor) {
                 data[i] = datastr.charCodeAt(i);
             }
             bb.append(data.buffer);
-            this.send(bb.getBlob(contentType));
+            this.send(bb['getBlob'](contentType));
         }
     }
 
@@ -12669,7 +12671,7 @@ KISSY.Editor.add("draft", function(editor) {
         reader.onload = function(ev) {
             // Please report improvements to: marco.buratto at tiscali.it
             var fileName = file.name,
-                fileData = ev.target.result,
+                fileData = ev.target['result'],
                 boundary = "----kissy-editor-2.1",
                 xhr = new XMLHttpRequest();
 
@@ -12681,8 +12683,8 @@ KISSY.Editor.add("draft", function(editor) {
                         ||
                         xhr.status == 304) {
                         if (xhr.responseText != "") {
-                            var info = S.JSON.parse(xhr.responseText);
-                            img[0].src = info.imgUrl;
+                            var info = S['JSON'].parse(xhr.responseText);
+                            img[0].src = info['imgUrl'];
                         }
                     } else {
                         alert("服务器端出错！");
@@ -12720,10 +12722,11 @@ KISSY.Editor.add("draft", function(editor) {
                 + "\r\n" + body + "\r\n");
             reader.onload = null;
         };
-        reader.readAsBinaryString(file);
+        reader['readAsBinaryString'](file);
     }
 }, {
-    attach:false
+    attach:false,
+    requires:["json"]
 });/**
  * element path shown in status bar,modified from ckeditor
  * @modifier: yiminghe@gmail.com
@@ -17891,8 +17894,8 @@ KISSY.Editor.add("smiley/support", function() {
             if (t._4e_name() == "a"
                 && (icon = t.attr("data-icon"))) {
                 var img = new S.Node("<img " +
-                    "class='ke_smiley'" +
-                    "alt='' src='" + icon + "'/>", null,
+                    "alt='' src='" +
+                    icon + "'/>", null,
                     editor.document);
                 editor.insertElement(img);
                 this.smileyWin.hide();
@@ -17963,7 +17966,7 @@ KISSY.Editor.add("smiley/support", function() {
             destroyRes.call(self);
         }
     };
-},{
+}, {
     attach:false
 });/**
  * source editor for kissy editor

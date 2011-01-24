@@ -145,11 +145,11 @@ KISSY.Editor.add("image/dialog", function(editor) {
         selectedEl,
         cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] ||
             null,
-        surfix = cfg && cfg["surfix"] || "png,jpg,jpeg,gif";
+        suffix = cfg && cfg["suffix"] || "png,jpg,jpeg,gif";
 
     var //不要加g：http://yiminghe.javaeye.com/blog/581347
-        surfix_reg = new RegExp(surfix.split(/,/).join("|") + "$", "i"),
-        surfix_warning = "只允许后缀名为" + surfix + "的图片";
+        suffix_reg = new RegExp(suffix.split(/,/).join("|") + "$", "i"),
+        suffix_warning = "只允许后缀名为" + suffix + "的图片";
 
     var controls = {},
         addRes = KE.Utils.addRes,
@@ -269,8 +269,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     return;
                 }
 
-                if (!surfix_reg.test(imgLocalUrl.val())) {
-                    alert(surfix_warning);
+                if (!suffix_reg.test(imgLocalUrl.val())) {
+                    alert(suffix_warning);
                     //清除已选文件， ie 不能使用 val("")
                     uploadForm[0].reset();
                     imgLocalUrl.val(warning);
