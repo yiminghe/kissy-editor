@@ -12683,7 +12683,7 @@ KISSY.Editor.add("draft", function(editor) {
                         ||
                         xhr.status == 304) {
                         if (xhr.responseText != "") {
-                            var info = S['JSON'].parse(xhr.responseText);
+                            var info = window['JSON'].parse(xhr.responseText);
                             img[0].src = info['imgUrl'];
                         }
                     } else {
@@ -12725,8 +12725,7 @@ KISSY.Editor.add("draft", function(editor) {
         reader['readAsBinaryString'](file);
     }
 }, {
-    attach:false,
-    requires:["json"]
+    attach:false
 });/**
  * element path shown in status bar,modified from ckeditor
  * @modifier: yiminghe@gmail.com
