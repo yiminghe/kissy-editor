@@ -15134,27 +15134,22 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     })();
 
 
-    var protectAttributeRegex = /<((?:a|area|img|input)[\s\S]*?\s)((href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+)))([^>]*)>/gi,
-        findSavedSrcRegex = /\s_cke_saved_src\s*=/;
-
+    var protectElementRegex = /<(a|area|img|input)\b([^>]*)>/gi,
+        protectAttributeRegex = /\b(href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+))/gi;
     //ie 6-7 会将 关于 url 的 content value 替换为 dom value
     //#a -> http://xxx/#a
     //../x.html -> http://xx/x.html
     function protectAttributes(html) {
-        return html.replace(protectAttributeRegex,
-                           function(tag, beginning, fullAttr, attrName, end) {
-                               // We should not rewrite the _cke_saved_src attribute (#5218)
-                               if (attrName == 'src'
-                                   && findSavedSrcRegex.test(tag))
-                                   return tag;
-                               else
-                                   return '<' +
-                                       beginning +
-                                       fullAttr +
-                                       ' _ke_saved_' +
-                                       fullAttr +
-                                       end + '>';
-                           });
+        return html.replace(protectElementRegex, function(element, tag, attributes) {
+            return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
+                // We should not rewrite the existed protected attributes,
+                // e.g. clipboard content from editor. (#5218)
+                if (attributes.indexOf('_ke_saved_' + attrName) == -1)
+                    return ' _ke_saved_' + fullAttr + ' ' + fullAttr;
+
+                return fullAttr;
+            }) + '>';
+        });
     }
 
     var protectedSourceMarker = '{ke_protected}';
