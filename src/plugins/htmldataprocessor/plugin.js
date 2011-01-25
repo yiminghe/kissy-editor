@@ -640,7 +640,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 }
             },
             attributeNames :  [
-                //把保存的作为真正的属性，替换掉原来的
+                // 把保存的作为真正的属性，替换掉原来的
+                // replace(/^_ke_saved_/,"")
+                // _ke_saved_href -> href
                 [ ( /^_ke_saved_/ ), '' ],
                 [ ( /^ke_on/ ), 'on' ],
                 [ ( /^_ke.*/ ), '' ],
@@ -815,7 +817,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                                    && findSavedSrcRegex.test(tag))
                                    return tag;
                                else
-                                   return '<' + beginning + fullAttr + ' _ke_saved_' + fullAttr + end + '>';
+                                   return '<' +
+                                       beginning +
+                                       fullAttr +
+                                       ' _ke_saved_' +
+                                       fullAttr +
+                                       end + '>';
                            });
     }
 
