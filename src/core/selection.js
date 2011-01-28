@@ -885,6 +885,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (evt.relatedTarget)
                     return;
 
+                //S.log("beforedeactivate");
                 // Disable selections from being saved.
                 disableSave();
                 restoreEnabled = 1;
@@ -893,9 +894,10 @@ KISSY.Editor.add("selection", function(KE) {
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
-            Event.on(DOM._4e_getWin(doc), 'blur', function() {
+            editor.on('blur', function(ev) {
                 //把选择区域与光标清除
                 // Try/Catch to avoid errors if the editor is hidden. (#6375)
+                //S.log("blur");
                 try {
                     doc && doc.selection.empty();
                 } catch (e) {

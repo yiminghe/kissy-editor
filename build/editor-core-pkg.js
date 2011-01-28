@@ -2052,6 +2052,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         DOM = S.DOM,
         Event = S.Event,
         INSTANCES = {},
+        timer,
         //当前焦点所在处
         currentInstance,
         focusManager = {
@@ -2116,6 +2117,12 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = TRUE;
         currentInstance = editor;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function() {
+            editor.fire("focus");
+        }, 100);
         //S.log(editor._UUID + " focus");
     }
 
@@ -2126,6 +2133,16 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = FALSE;
         currentInstance = NULL;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        /*
+         Note that this functions acts asynchronously with a delay of 100ms to
+         avoid subsequent blur/focus effects.
+         */
+        timer = setTimeout(function() {
+            editor.fire("blur");
+        }, 100);
         //S.log(editor._UUID + " blur");
     }
 
@@ -7194,6 +7211,7 @@ KISSY.Editor.add("selection", function(KE) {
                 if (evt.relatedTarget)
                     return;
 
+                //S.log("beforedeactivate");
                 // Disable selections from being saved.
                 disableSave();
                 restoreEnabled = 1;
@@ -7202,9 +7220,10 @@ KISSY.Editor.add("selection", function(KE) {
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
-            Event.on(DOM._4e_getWin(doc), 'blur', function() {
+            editor.on('blur', function(ev) {
                 //把选择区域与光标清除
                 // Try/Catch to avoid errors if the editor is hidden. (#6375)
+                //S.log("blur");
                 try {
                     doc && doc.selection.empty();
                 } catch (e) {

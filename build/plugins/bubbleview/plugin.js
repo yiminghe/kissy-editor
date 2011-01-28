@@ -146,12 +146,12 @@ KISSY.Editor.add("bubbleview", function() {
         });
         //代码模式下就消失
         //!TODO 耦合---
-        editor.on("sourcemode", function() {
+        function hide() {
             bubble && bubble.hide();
-        });
-        Event.on(DOM._4e_getWin(editor.document), "scroll blur", function() {
-            bubble && bubble.hide();
-        });
+        }
+
+        editor.on("sourcemode blur", hide);
+        Event.on(DOM._4e_getWin(editor.document), "scroll", hide);
     };
     BubbleView.register = function(cfg) {
         var pluginName = cfg.pluginName;

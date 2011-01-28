@@ -9,6 +9,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
         DOM = S.DOM,
         Event = S.Event,
         INSTANCES = {},
+        timer,
         //当前焦点所在处
         currentInstance,
         focusManager = {
@@ -73,6 +74,12 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = TRUE;
         currentInstance = editor;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function() {
+            editor.fire("focus");
+        }, 100);
         //S.log(editor._UUID + " focus");
     }
 
@@ -83,6 +90,16 @@ KISSY.Editor.add("focusmanager", function(KE) {
         var editor = this;
         editor.iframeFocus = FALSE;
         currentInstance = NULL;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        /*
+         Note that this functions acts asynchronously with a delay of 100ms to
+         avoid subsequent blur/focus effects.
+         */
+        timer = setTimeout(function() {
+            editor.fire("blur");
+        }, 100);
         //S.log(editor._UUID + " blur");
     }
 
