@@ -7220,12 +7220,17 @@ KISSY.Editor.add("selection", function(KE) {
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
             //if (UA.ie < 8) {
-            editor.on('blur', function(ev) {
+            editor.on('blur', function() {
                 //把选择区域与光标清除
                 // Try/Catch to avoid errors if the editor is hidden. (#6375)
                 //S.log("blur");
                 try {
+                    var el = document.documentElement || document.body;
+                    var top = el.scrollTop,left = el.scrollLeft;
                     doc && doc.selection.empty();
+                    //in case if window scroll to editor
+                    el.scrollTop = top;
+                    el.scrollLeft = left;
                 } catch (e) {
                 }
             });
