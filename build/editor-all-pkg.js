@@ -1475,7 +1475,10 @@ KISSY.Editor.add("dom", function(KE) {
                                    el = normalElDom(el);
                                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
                                    // IE5-7 doesn't return the value of a style attribute.
-                                   var $attr = el.attributes[name];
+                                   // var $attr = el.attributes[name];
+                                   // http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+                                   // try name=tabindex
+                                   var $attr = el.getAttributeNode(name);
                                    return !!( $attr && $attr.specified );
                                }
                 :
@@ -2326,8 +2329,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (UA.trident)DOM.addClass(DOC.body, "ke-trident" + UA.trident);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
-            var editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
-                textarea.attr("tabIndex")));
+            var editorWrap = new Node(editorHtml);
 
 
             self.editorWrap = editorWrap;
@@ -2391,9 +2393,8 @@ KISSY.Editor.add("definition", function(KE) {
 
             var iframe = self.iframe;
 
-            if (textarea._4e_hasAttribute("tabIndex")) {
-                iframe.attr("tabIndex",
-                    UA.webkit ? -1 : textarea.attr("tabIndex"));
+            if (textarea._4e_hasAttribute("tabindex")) {
+                iframe[0].tabIndex = UA.webkit ? -1 : textarea[0].tabIndex;
             }
 
             self.on("dataReady", function() {

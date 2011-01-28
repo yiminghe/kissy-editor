@@ -709,7 +709,10 @@ KISSY.Editor.add("dom", function(KE) {
                                    el = normalElDom(el);
                                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
                                    // IE5-7 doesn't return the value of a style attribute.
-                                   var $attr = el.attributes[name];
+                                   // var $attr = el.attributes[name];
+                                   // http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+                                   // try name=tabindex
+                                   var $attr = el.getAttributeNode(name);
                                    return !!( $attr && $attr.specified );
                                }
                 :

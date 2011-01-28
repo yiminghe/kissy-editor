@@ -171,8 +171,7 @@ KISSY.Editor.add("definition", function(KE) {
             if (UA.trident)DOM.addClass(DOC.body, "ke-trident" + UA.trident);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
-            var editorWrap = new Node(editorHtml.replace(/\$\(tabIndex\)/,
-                textarea.attr("tabIndex")));
+            var editorWrap = new Node(editorHtml);
 
 
             self.editorWrap = editorWrap;
@@ -236,9 +235,8 @@ KISSY.Editor.add("definition", function(KE) {
 
             var iframe = self.iframe;
 
-            if (textarea._4e_hasAttribute("tabIndex")) {
-                iframe.attr("tabIndex",
-                    UA.webkit ? -1 : textarea.attr("tabIndex"));
+            if (textarea._4e_hasAttribute("tabindex")) {
+                iframe[0].tabIndex = UA.webkit ? -1 : textarea[0].tabIndex;
             }
 
             self.on("dataReady", function() {
