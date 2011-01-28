@@ -139,7 +139,7 @@ KISSY.Editor.add("definition", function(KE) {
             // for other browsers, the 'src' attribute should be left empty to
             // trigger iframe's 'load' event.
             ' src="' + ( UA.ie ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '' ) + '" ' +
-            ' tabIndex="' + ( UA.webkit ? -1 : "$(tabIndex)" ) + '" ' +
+            //' tabIndex="' + ( UA.webkit ? -1 : "$(tabIndex)" ) + '" ' +
             ' allowTransparency="true" ' +
             '></iframe></div>' +
             "<div class='" + ke_editor_status.substring(1) + "'></div>" +
@@ -235,6 +235,11 @@ KISSY.Editor.add("definition", function(KE) {
             }
 
             var iframe = self.iframe;
+
+            if (textarea._4e_hasAttribute("tabIndex")) {
+                iframe.attr("tabIndex",
+                    UA.webkit ? -1 : textarea.attr("tabIndex"));
+            }
 
             self.on("dataReady", function() {
                 self._ready = TRUE;
