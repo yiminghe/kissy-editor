@@ -43,7 +43,10 @@ KISSY.Editor.add("xiami-music", function(editor) {
                 }
                 for (i = 0; i < element.children.length; i++) {
                     c = element.children[ i ];
-                    if (c.name == 'param' && c.attributes.name == "movie") {
+                    //innerHTML 会莫名首字母大写，还会加入一些属性
+                    //Movie
+                    if (c.name == 'param'
+                        && c.attributes.name.toLowerCase() == "movie") {
                         if (checkXiami(c.attributes.value)) {
                             return dataProcessor.createFakeParserElement(element,
                                 CLS_XIAMI, TYPE_XIAMI, true, {
@@ -378,7 +381,7 @@ KISSY.Editor.add("video", function(editor) {
                 }
                 for (i = 0; i < element.children.length; i++) {
                     var c = element.children[ i ];
-                    if (c.name == 'param' && c.attributes.name == "movie") {
+                    if (c.name == 'param' && c.attributes.name.toLowerCase() == "movie") {
                         if (getProvider(c.attributes.value)) {
                             return dataProcessor.createFakeParserElement(element,
                                 CLS_VIDEO, TYPE_VIDEO, true);

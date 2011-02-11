@@ -29,7 +29,7 @@ KISSY.Editor.add("music", function(editor) {
                     if (!classId) {
                         // Look for the inner <embed>
                         for (i = 0; i < element.children.length; i++) {
-                            if (element.children[ i ].name == 'embed') {
+                            if (element.children[ i ].name== 'embed') {
                                 if (!KE.Utils.isFlashEmbed(element.children[ i ]))
                                     return null;
                                 if (music(element.children[ i ].attributes.src)) {
@@ -42,7 +42,8 @@ KISSY.Editor.add("music", function(editor) {
                     }
                     for (i = 0; i < element.children.length; i++) {
                         var c = element.children[ i ];
-                        if (c.name == 'param' && c.attributes.name == "movie") {
+                        if (c.name == 'param'
+                            && c.attributes.name.toLowerCase() == "movie") {
                             if (music(c.attributes.value)) {
                                 return dataProcessor.createFakeParserElement(element,
                                     CLS_MUSIC, TYPE_MUSIC, true);

@@ -893,7 +893,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             div.html('a' + html);
             html = div.html().substr(1);
 
-
             // Restore the comments that have been protected, in this way they
             // can be properly filtered.
             //html = unprotectRealComments(html);

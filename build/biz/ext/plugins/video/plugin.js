@@ -54,7 +54,7 @@ KISSY.Editor.add("video", function(editor) {
                 }
                 for (i = 0; i < element.children.length; i++) {
                     var c = element.children[ i ];
-                    if (c.name == 'param' && c.attributes.name == "movie") {
+                    if (c.name == 'param' && c.attributes.name.toLowerCase() == "movie") {
                         if (getProvider(c.attributes.value)) {
                             return dataProcessor.createFakeParserElement(element,
                                 CLS_VIDEO, TYPE_VIDEO, true);
