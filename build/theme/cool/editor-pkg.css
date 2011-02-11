@@ -22,9 +22,9 @@ from : resource://gre/res/html.css
 }
 
 .ke-hidden {
-    position:absolute;
-    left:-9999px;
-    top:-9999px;
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
 }
 
 .ke-post h1,
@@ -54,6 +54,25 @@ from : resource://gre/res/html.css
 {
     margin: 0;
     padding: 0;
+}
+
+.ke-post address,
+.ke-post caption,
+.ke-post cite,
+.ke-post code,
+.ke-post dfn,
+.ke-post em,
+.ke-post strong,
+.ke-post h1,
+.ke-post h2,
+.ke-post h3,
+.ke-post h4,
+.ke-post h5,
+.ke-post h6,
+.ke-post th,
+.ke-post var {
+    font-style: inherit;
+    font-weight: inherit;
 }
 
 .ke-post,
@@ -112,6 +131,12 @@ from : resource://gre/res/html.css
 
 .ke-post i, .ke-post cite, .ke-post em, .ke-post var, .ke-post dfn {
     font-style: italic;
+    font-weight: inherit;
+}
+
+.ke-post strong {
+    font-style: inherit;
+    font-weight: bold;
 }
 
 .ke-post u, .ke-post ins {
@@ -215,7 +240,8 @@ by the nsHTMLHRElement attribute mapping code
 
 .ke-post caption {
 /* coordinated margin to match cell's padding */
-    margin-bottom: .5em; /*ie6,7下会换行，强制不换行*/
+    margin-bottom: .5em;
+/* prevent ie6,7 newline */
     white-space: nowrap;
 }
 
