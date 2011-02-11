@@ -16,7 +16,7 @@ KISSY.Editor.add("utils", function(KE) {
         Utils = {
             debugUrl:function(url) {
                 url = url.replace(/-min\.(js|css)/i, ".$1");
-                if (!KE["Config"].debug) {
+                if (!KE["Config"]['debug']) {
                     url = url.replace(/\.(js|css)/i, "-min.$1");
                 }
                 if (url.indexOf("?t") == -1) {
@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=2011-01-12 19:32:53";
+                    url += "t="+encodeURIComponent("2011-02-11 16:22:45");
                 }
                 return KE["Config"].base + url;
             },
