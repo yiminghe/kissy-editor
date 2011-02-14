@@ -133,12 +133,13 @@ fieldset, img {
 /*
 do not need to specify
 switch to default
-table {
+*/
+table.k-e-collapse-table {
     display: table;
     border-color: black;
     border-collapse: collapse;
 }
-*/
+
 
 blockquote, ul, ol, dl {
 /* giving blockquotes and lists room to breath */
@@ -173,11 +174,12 @@ dl dd {
     margin-left: 1em;
 }
 
-th, td {
+.k-e-collapse-table th,
+.k-e-collapse-table td {
 /* padding to make the table readable */
     /*padding: .5em;*/
     /*th,td no need to specify ? inherit from table ?*/
-    /*border-color: black;*/
+    border-color: black;
 }
 
 th {

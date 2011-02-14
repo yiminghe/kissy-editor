@@ -187,12 +187,13 @@ by the nsHTMLHRElement attribute mapping code
 
 /*
 switch to default
-.ke-post table {
+*/
+.ke-post table.k-e-collapse-table {
     display: table;
     border-collapse: collapse;
     border-color: black;
 }
-*/
+
 
 /* giving blockquotes and lists room to breath */
 .ke-post blockquote, .ke-post ul, .ke-post ol, .ke-post dl {
@@ -232,10 +233,11 @@ switch to default
     margin-left: 1em;
 }
 
-.ke-post th, .ke-post td {
+.ke-post .k-e-collapse-table th,
+.ke-post .k-e-collapse-table td {
 /* padding to make the table readable */
 /*padding: .5em;*/
-    /*border-color: black;*/
+    border-color: black;
 }
 
 .ke-post th {

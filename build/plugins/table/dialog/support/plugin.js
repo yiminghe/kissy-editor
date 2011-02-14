@@ -7,6 +7,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         trim = S.trim,
         TableUI = KE.TableUI,
         showBorderClassName = "ke_show_border",
+        collapseTableClass = "k-e-collapse-table",
         Dialog = KE.Dialog,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
@@ -266,9 +267,9 @@ KISSY.Editor.add("table/dialog/support", function() {
                 selectedTable.css("height", "");
 
             if (d.tcollapse[0].checked) {
-                selectedTable.css("borderCollapse", "collapse");
+                selectedTable.addClass(collapseTableClass);
             } else {
-                selectedTable.css("borderCollapse", "");
+                selectedTable.removeClass(collapseTableClass);
             }
 
             d.cellpadding.val(parseInt(d.cellpadding.val()) || 0);
@@ -311,27 +312,35 @@ KISSY.Editor.add("table/dialog/support", function() {
             //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
             if (valid(d.tborder.val()))
                 html += "border='" + trim(d.tborder.val()) + "' ";
-            if (valid(d.twidth.val())
-                || valid(d.theight.val())
-                || d.tcollapse[0].checked) {
-                html += "style='";
-                if (valid(d.twidth.val())) {
-                    html += "width:" + trim(d.twidth.val())
-                        + d.twidthunit.val() + ";"
-                }
 
-                if (valid(d.theight.val())) {
-                    html += "height:" + trim(d.theight.val()) + "px;"
-                }
+            var styles = [];
 
-                if (d.tcollapse[0].checked) {
-                    html += "border-collapse:collapse;";
-                }
-                html += "' "
+
+            if (valid(d.twidth.val())) {
+                styles.push("width:" + trim(d.twidth.val())
+                    + d.twidthunit.val() + ";");
             }
+
+            if (valid(d.theight.val())) {
+                styles.push("height:" + trim(d.theight.val()) + "px;");
+            }
+
+            if (styles.length) {
+                html += "style='" + styles.join("") + "' ";
+            }
+
+            var classes = [];
+
             if (!valid(d.tborder.val())
                 || String(trim(d.tborder.val())) == "0") {
-                html += "class='" + showBorderClassName + "' "
+                classes.push(showBorderClassName);
+            }
+
+            if (d.tcollapse[0].checked) {
+                classes.push(collapseTableClass);
+            }
+            if (classes.length) {
+                html += "class='" + classes.join(" ") + "' ";
             }
 
             html += ">";
@@ -383,7 +392,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             var w = selectedTable._4e_style("width") ||
                 ("" + selectedTable.width());
 
-            d.tcollapse[0].checked = !!(selectedTable.css("borderCollapse") == "collapse");
+            d.tcollapse[0].checked = !!(selectedTable.hasClass(collapseTableClass));
 
             //忽略pt单位
             d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));
