@@ -140,6 +140,10 @@ table.k-e-collapse-table {
     border-collapse: collapse;
 }
 
+table {
+    /*prevent inherit for nested table*/
+    border-collapse:separate;
+}
 
 blockquote, ul, ol, dl {
 /* giving blockquotes and lists room to breath */
@@ -174,8 +178,8 @@ dl dd {
     margin-left: 1em;
 }
 
-.k-e-collapse-table th,
-.k-e-collapse-table td {
+table.k-e-collapse-table >tbody>tr>th,
+table.k-e-collapse-table >tbody>tr>td {
 /* padding to make the table readable */
     /*padding: .5em;*/
     /*th,td no need to specify ? inherit from table ?*/

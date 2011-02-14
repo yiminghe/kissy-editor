@@ -194,6 +194,10 @@ switch to default
     border-color: black;
 }
 
+.ke-post table {
+    /*prevent inherit for nested table*/
+    border-collapse:separate;
+}
 
 /* giving blockquotes and lists room to breath */
 .ke-post blockquote, .ke-post ul, .ke-post ol, .ke-post dl {
@@ -233,8 +237,8 @@ switch to default
     margin-left: 1em;
 }
 
-.ke-post .k-e-collapse-table th,
-.ke-post .k-e-collapse-table td {
+.ke-post table.k-e-collapse-table >tbody>tr>th,
+.ke-post table.k-e-collapse-table >tbody>tr>td {
 /* padding to make the table readable */
 /*padding: .5em;*/
     border-color: black;
