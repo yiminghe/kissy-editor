@@ -6,7 +6,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         UA = S.UA,
         trim = S.trim,
         TableUI = KE.TableUI,
-        showBorderClassName = TableUI['showBorderClassName'],
+        showBorderClassName = "ke_show_border",
         Dialog = KE.Dialog,
         IN_SIZE = 6,
         alignStyle = 'margin-left:2px;',
@@ -102,6 +102,13 @@ KISSY.Editor.add("table/dialog/support", function() {
             "class='ke-table-border ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> &nbsp;像素" +
+            " " +
+            '<label><input ' +
+            'type="checkbox" ' +
+            'style="vertical-align: middle; margin-left: 5px;" ' +
+            'class="ke-table-collapse" ' +
+            '/> 合并边框' +
+            "</label>" +
             "</td>" +
             "<td>" +
             "<label " +
@@ -181,6 +188,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             d.thead = KE.Select.decorate(dbody.one(".ke-table-head"));
             d.cellpaddingHolder = dbody.one(".ke-table-cellpadding-holder");
             d.cellpadding = dbody.one(".ke-table-cellpadding");
+            d.tcollapse = dbody.one(".ke-table-collapse");
             var tok = foot.one(".ke-table-ok"),
                 tclose = foot.one(".ke-table-cancel");
             d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
@@ -257,6 +265,12 @@ KISSY.Editor.add("table/dialog/support", function() {
             else
                 selectedTable.css("height", "");
 
+            if (d.tcollapse[0].checked) {
+                selectedTable.css("borderCollapse", "collapse");
+            } else {
+                selectedTable.css("borderCollapse", "");
+            }
+
             d.cellpadding.val(parseInt(d.cellpadding.val()) || 0);
             if (self.selectedTd)self.selectedTd.css("padding", d.cellpadding.val());
             if (valid(d.tcaption.val())) {
@@ -297,19 +311,26 @@ KISSY.Editor.add("table/dialog/support", function() {
             //    html += "cellpadding='" + S.trim(d.tcellpadding.val()) + "' ";
             if (valid(d.tborder.val()))
                 html += "border='" + trim(d.tborder.val()) + "' ";
-            if (valid(d.twidth.val()) || valid(d.theight.val())) {
+            if (valid(d.twidth.val())
+                || valid(d.theight.val())
+                || d.tcollapse[0].checked) {
                 html += "style='";
                 if (valid(d.twidth.val())) {
                     html += "width:" + trim(d.twidth.val())
                         + d.twidthunit.val() + ";"
                 }
+
                 if (valid(d.theight.val())) {
                     html += "height:" + trim(d.theight.val()) + "px;"
+                }
+
+                if (d.tcollapse[0].checked) {
+                    html += "border-collapse:collapse;";
                 }
                 html += "' "
             }
             if (!valid(d.tborder.val())
-                || trim(d.tborder.val()) === "0") {
+                || String(trim(d.tborder.val())) == "0") {
                 html += "class='" + showBorderClassName + "' "
             }
 
@@ -361,6 +382,8 @@ KISSY.Editor.add("table/dialog/support", function() {
                 "0");
             var w = selectedTable._4e_style("width") ||
                 ("" + selectedTable.width());
+
+            d.tcollapse[0].checked = !!(selectedTable.css("borderCollapse") == "collapse");
 
             //忽略pt单位
             d.twidth.val(w.replace(/px|%|(.*pt)/i, ""));

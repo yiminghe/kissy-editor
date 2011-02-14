@@ -130,11 +130,15 @@ fieldset, img {
     border: 0;
 }
 
+/*
+do not need to specify
+switch to default
 table {
     display: table;
     border-color: black;
     border-collapse: collapse;
 }
+*/
 
 blockquote, ul, ol, dl {
 /* giving blockquotes and lists room to breath */
@@ -172,7 +176,8 @@ dl dd {
 th, td {
 /* padding to make the table readable */
     /*padding: .5em;*/
-    border-color: black;
+    /*th,td no need to specify ? inherit from table ?*/
+    /*border-color: black;*/
 }
 
 th {
