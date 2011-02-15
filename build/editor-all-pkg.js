@@ -10688,7 +10688,7 @@ KISSY.Editor.add("button", function() {
             self.fire("click", {
                 TripleClickType:self.get("state") + "Click"
             });
-            ev&&ev.halt();
+            ev&&ev.preventDefault();
         },
         bon:function() {
             this.set("state", ON);
@@ -11199,7 +11199,7 @@ KISSY.Editor.add("select", function() {
         },
         _click:function(ev) {
             if (this.loading) return;
-            ev && ev.halt();
+            ev && ev.preventDefault();
 
             var self = this,
                 el = self.el,

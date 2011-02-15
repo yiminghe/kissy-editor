@@ -78,7 +78,7 @@ KISSY.Editor.add("button", function() {
             self.fire("click", {
                 TripleClickType:self.get("state") + "Click"
             });
-            ev&&ev.halt();
+            ev&&ev.preventDefault();
         },
         bon:function() {
             this.set("state", ON);

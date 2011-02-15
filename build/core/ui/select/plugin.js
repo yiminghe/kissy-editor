@@ -398,7 +398,7 @@ KISSY.Editor.add("select", function() {
         },
         _click:function(ev) {
             if (this.loading) return;
-            ev && ev.halt();
+            ev && ev.preventDefault();
 
             var self = this,
                 el = self.el,
