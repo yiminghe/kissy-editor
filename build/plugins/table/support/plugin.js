@@ -348,7 +348,7 @@ KISSY.Editor.add("table/support", function() {
     }
 
     var statusChecker = {
-        "表格属性" :ensureTd,
+        "表格属性" :getSel,
         "删除表格" :ensureTd,
         "删除列" :ensureTd,
         "删除行" :ensureTr,
