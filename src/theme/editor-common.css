@@ -197,6 +197,7 @@ switch to default
 .ke-post table {
     /*prevent inherit for nested table*/
     border-collapse:separate;
+    border-spacing:2px;
 }
 
 /* giving blockquotes and lists room to breath */
