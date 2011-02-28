@@ -109,7 +109,8 @@ KISSY.Editor.add("button", function() {
                 value:{
                     //href:"#",
                     hideFocus:true,
-                    tabIndex:-1
+                    //可以被 tab 定位
+                    tabIndex:0
                 }
             },
             elTagName:{value:"a"},
