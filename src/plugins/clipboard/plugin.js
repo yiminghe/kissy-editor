@@ -80,6 +80,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     self._running = true;
                     // Wait a while and grab the pasted contents
                     setTimeout(function() {
+
                         pastebin._4e_remove();
 
                         // Grab the HTML contents.
@@ -140,19 +141,19 @@ KISSY.Editor.add("clipboard", function(editor) {
             // Attempts to execute the Cut and Copy operations.
             var tryToCutCopy =
                 UA.ie ?
-                function(editor, type) {
-                    return execIECommand(editor, type);
-                }
+                    function(editor, type) {
+                        return execIECommand(editor, type);
+                    }
                     : // !IE.
-                function(editor, type) {
-                    try {
-                        // Other browsers throw an error if the command is disabled.
-                        return editor.document.execCommand(type);
-                    }
-                    catch(e) {
-                        return false;
-                    }
-                };
+                    function(editor, type) {
+                        try {
+                            // Other browsers throw an error if the command is disabled.
+                            return editor.document.execCommand(type);
+                        }
+                        catch(e) {
+                            return false;
+                        }
+                    };
 
             var error_types = {
                 "cut":"您的浏览器安全设置不允许编辑器自动执行剪切操作，请使用键盘快捷键(Ctrl/Cmd+X)来完成",

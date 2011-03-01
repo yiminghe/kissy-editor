@@ -4,12 +4,17 @@
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
 <link href="../build/theme/base-min.css" rel="stylesheet"/>
+
 <!--[if lt IE 8]>
+<!--独立部署可用
 <link href="../build/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet"/>
+-->
+<link href="../build/theme/cool/editor-pkg-min.css" rel="stylesheet"/>
 <![endif]-->
 <!--[if gte IE 8]><!-->
 <link href="../build/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
 <!--<![endif]-->
+
 </head>
 <body>
 
@@ -17,6 +22,10 @@
 
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
+    <p>
+        <button id='destroy1'>destroy实例</button>
+        <button id='recover1'>重建实例</button>
+    </p>
     <textarea id="editor" tabindex="1" style="width:100%;height:400px;margin:0 auto;">
         <script>alert(1);</script>
         <p>
@@ -161,41 +170,67 @@
 
 </div>
 
-
-<div id="preview" style="border:1px solid green;">
+<div style="width: 60%; margin: 50px auto">
+    <label for="editor2">Editor Instance 2:</label>
+    <textarea id="editor2" style="width:100%;height:400px;margin:0 auto;"></textarea>
 
 </div>
 
-<script src="http://github.com/kissyteam/kissy/raw/master/build/kissy-min.js"></script>
-<script src="../build/editor-all-pkg-min.js?t=20100827a"></script>
-<script src="../build/biz/bangpai/editor-plugin-pkg-min.js"></script>
 
+<script src="http://kissyteam.github.com/kissy/build/kissy-min.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/uibase/uibase-pkg-min.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/dd/dd-pkg-min.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/overlay/overlay-pkg-min.js?t=20101223a"></script>
+
+<!--
+<script src="../../kissy/build/kissy.js"></script>
+<script src="../../kissy/build/uibase/uibase-pkg.js"></script>
+<script src="../../kissy/build/dd/dd-pkg.js"></script>
+<script src="../../kissy/build/overlay/overlay-pkg.js"></script>
+-->
+<script src="../build/editor-all-pkg-min.js?t=20101223a"></script>
+<script src="../build/biz/ext/editor-plugin-pkg-min.js?t=20101223a"></script>
 <script>
+
+
+KISSY.ready(function(S) {
     // just for test
     var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
-    //var base = "http://kissyteam.github.com/kissy-editor/";
-    KISSY.Config.base = base;
+    S.Config.base = base;
 
-    KISSY.ready(function(S) {
+    S.use('editor', function() {
 
-        var KE = KISSY.Editor;
-        KE.Config.base = base + "build/";
-
-        var k = KE("#editor", {
+        var KE = S.Editor;
+        KE.Config.base = base + "build/plugins/";
+        //编辑器内弹窗 z-index 底限，防止互相覆盖
+        KE.Config.baseZIndex = 10000;
+        var cfg = {
             attachForm:true,
+            baseZIndex:10000,
+            //自定义样式
+            //customStyle:"p{color:purple;}",
+            //自定义外部样式
+            //customLink:["http://localhost/customLink.css","http://xx.com/y2.css"],
+            //是否一开始自动聚焦
+            //focus:true,
             pluginConfig: {
                 "image":{
                     upload:{
-                        serverUrl:"/code/upload/upload.jsp",
+                        serverUrl:"/code/upload/web/upload.jsp",
                         serverParams:{
-                            watermark:function() {
+                            waterMark:function() {
                                 return S.one("#ke_img_up_watermark_1")[0].checked;
                             }
                         },
+                        surfix:"png,jpg,jpeg,gif",
                         fileInput:"Filedata",
                         sizeLimit:1000,//k
-                        extraHtml:"<p style='margin-top:5px;'><input type='checkbox' id='ke_img_up_watermark_1'> 图片加水印，防止别人盗用</p>"
+                        extraHtml:"<p style='margin-top:10px;'><input type='checkbox' id='ke_img_up_watermark_1' checked='checked'> 图片加水印，防止别人盗用</p>"
                     }
+                },
+                "flash":{
+                    defaultWidth:"300",
+                    defaultHeight:"300"
                 },
                 "templates": [
                     {
@@ -247,16 +282,21 @@
                         }
                     ],
                     width:"115px"
-                }
-                //,"font-family":["song"]
-                ,"bangpai-upload":{
-                    holder:"#imgup1",
+                },
+                //"font-family":false,
+                //"font-bold":false,
+                // "font-italic":false,
+                //"font-underline":false,
+                //"font-strikeThrough":false,
+                "multi-upload":{
                     serverUrl:"/code/upload/upload.jsp",
                     serverParams:{
                         waterMark:function() {
                             return S.one("#ke_img_up_watermark_2")[0].checked;
                         }
                     },
+                    //previewSuffix:"_60x60",
+                    previewWidth:"80px",
                     sizeLimit:1000//k,
                     ,numberLimit:15,
                     extraHtml:"<p style='margin-top:10px;'>" +
@@ -265,14 +305,73 @@
                             "id='ke_img_up_watermark_2'>" +
                             "<span style='vertical-align:middle;'>图片加水印，防止别人盗用</span></p>"
                 },
-                "bangpai-video":{
+                "video":{
                     urlCfg:[
                         {
                             reg:/tudou\.com/i,
                             url:"http://bangpai.daily.taobao.net/json/getTudouVideo.htm?" +
                                     "url=@url@&callback=@callback@"//"&rand=@rand@"
                         }
+                    ],
+                    providers:[
+                        {
+                            reg:/youku\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                var m = url.match(/id_([^.]+)\.html$/);
+                                if (m) {
+                                    return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                                }
+                                m = url.match(/v_playlist\/([^.]+)\.html$/);
+                                if (m) {
+                                    return;
+                                    //return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
+                                }
+                                return url;
+                            }
+                        },
+                        {
+                            reg:/tudou\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                return url;
+                            }
+                        },
+                        {
+                            reg:/ku6\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
+                                if (m) {
+                                    return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
+                                }
+                                return url;
+                            }
+                        }/*,
+                         {
+                         reg:/taobaocdn\.com/i,
+                         width:480,
+                         height:400,
+                         detect:function(url) {
+                         return url;
+                         }
+                         }*/,
+                        {
+                            reg:/taobaocdn\.com/i,
+                            width:480,
+                            height:400,
+                            detect:function(url) {
+                                return url;
+                            }
+                        }
                     ]
+                },
+                music:{
+                    //必须和网址url同域而不是类库同域
+                    musicPlayer:KE.Config.base + "music/niftyplayer.swf"
                 },
                 "draft":{
                     interval:5,
@@ -285,75 +384,74 @@
                 },
                 "resize":{
                     direction:["y"]
+                },
+
+                dragupload:{
+                    surfix:"png,jpg,jpeg,gif",
+                    fileInput:"Filedata",
+                    sizeLimit:1000,
+                    serverUrl:"/code/upload/web/upload.jsp",
+                    serverParams:{
+                        waterMark:function() {
+                            return true;
+                        }
+                    }
                 }
             }
-        }).use("elementpaths,sourcearea,preview," +
-                "templates,separator," +
-                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
-                "list,indent,justify,separator,link,image,flash,bangpai-video,music,bangpai-music,smiley," +
-                "separator,table,resize,draft,bangpai-upload,pagebreak,separator,maximize"
-                , function() {
-            var b1 = new TripleButton({
-                container:k.toolBarDiv,
-                title:"get format data",
-                text:"get format data"
+        };
+
+        function test() {
+            window.editor2 = KE("#editor", S.clone(cfg)).use("elementpaths," +
+                    "sourcearea,preview," +
+                    "checkbox-sourcearea," +
+                    "templates,separator," +
+                    "undo,separator," +
+                    "removeformat,font,format,color,separator," +
+                    "list,indent," +
+                    "justify,separator,link," +
+                    "image,flash," +
+                    "video," +
+                    "music," +
+                    "xiami-music," +
+                    "smiley,separator,table,resize," +
+                    "draft," +
+                    "multi-upload," +
+                    "pagebreak,separator,maximize,dragupload", function() {
+
+                editor2.addButton("custom-getdata", {
+                    title:"get data",
+                    text:"get data",
+                    contentCls:"ke-toolbar-custom-getdata",
+                    mode:KE.WYSIWYG_MODE,
+                    offClick:function() {
+                        alert(editor2.getData());
+                    }
+                });
+
             });
-            b1.on("offClick", function() {
-                alert(k.getData(true));
-            });
+
+        }
+
+        test();
+        S.one('#destroy1').on("click", function(ev) {
+            ev.halt();
+            editor2.destroy();
+            editor2 = null;
         });
-
-
-        var TripleButton = KE.TripleButton;
-        //最简单的自己写插件
-        k.ready(function() {
-
-            var b1 = new TripleButton({
-                container:k.toolBarDiv,
-                title:"get data",
-                text:"get data"
-            });
-            b1.on("offClick", function() {
-                alert(k.getData());
-                S.one("#preview").html(k.getData());
-            });
-
-
-            var b2 = new TripleButton({
-                container:k.toolBarDiv,
-                title:"set data",
-                text:"set data"
-            });
-            b2.on("offClick", function() {
-                k.setData("aeolus");
-            });
-
-
-            var b3 = new TripleButton({
-                container:k.toolBarDiv,
-                title:"insert data",
-                //设置图标，css自己写
-                contentCls:"ke-toolbar-table"
-                //text:"insert data"
-            });
-            b3.on("offClick", function() {
-                k.insertHtml("aeolus");
-            });
-
-
-            k.on("sourcemode", function() {
-                alert("切换到了sourcemode ： " + (k.getMode() == KE.SOURCE_MODE));
-                b1.set("state", TripleButton.DISABLED);
-            });
-
-            k.on("wysiwygmode", function() {
-                alert("切换到了可视编辑器模式 ： " + (k.getMode() == KE.WYSIWYG_MODE));
-                b1.set("state", TripleButton.OFF);
-            });
+        S.one('#recover1').on("click", function(ev) {
+            ev.halt();
+            if (!editor2) {
+                test()
+            }
 
         });
+        //if(false)
+        KE("#editor2", {
+            disableObjectResizing:true,
+            disableInlineTableEditing:true
+        }).use("undo,font,image,music");
     });
-
+});
 
 </script>
 </body>

@@ -658,11 +658,14 @@ KISSY.Editor.add("range", function(KE) {
 
                     // In this case, move the start information to that text
                     // node.
-                    if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
-                        && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
-                        startContainer = child;
-                        startOffset = 0;
-                    }
+
+                        //ie 有时 invalid argument？？
+                        if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
+                            && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
+                            startContainer = child;
+                            startOffset = 0;
+                        }
+
                 }
 
                 // Normalize the start.
@@ -845,6 +848,7 @@ KISSY.Editor.add("range", function(KE) {
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset] || null;
+
             startContainer[0].insertBefore(node[0] || node, nextNode);
             // Check if we need to update the end boundary.
             if (DOM._4e_equals(node.parent(), self.endContainer))
@@ -1545,7 +1549,6 @@ KISSY.Editor.add("range", function(KE) {
             // of its contents.
             self.setEndAt(toSplit, KER.POSITION_BEFORE_END);
             var documentFragment = self.extractContents(),
-
                 // Duplicate the element after it.
                 clone = toSplit._4e_clone(FALSE);
 

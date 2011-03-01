@@ -4,6 +4,9 @@ KISSY.Editor.add("draft/support", function() {
         Node = S.Node,
         LIMIT = 5,
         Event = S.Event,
+        //flash 存储默认上限 100k
+        FLASH_STORE_LIMIT = 100 * 1000,
+        EXCEED_MSG = "文章有点长，草稿箱容不下:(",
         INTERVAL = 5,
         JSON = S['JSON'],
         DRAFT_SAVE = "ke-draft-save",
@@ -273,6 +276,16 @@ KISSY.Editor.add("draft/support", function() {
 
             //如果当前内容为空，不保存版本
             if (!data) return;
+
+            var limit = self.draftLimit;
+
+            //2个汉字一个字节
+            if (data.length > (FLASH_STORE_LIMIT / (limit * 2))) {
+                if (!auto) {
+                    alert(EXCEED_MSG);
+                }
+                return;
+            }
 
             if (drafts[drafts.length - 1] &&
                 data == drafts[drafts.length - 1].content) {

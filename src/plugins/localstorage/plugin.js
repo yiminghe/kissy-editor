@@ -4,8 +4,8 @@
  */
 KISSY.Editor.add("localstorage", function() {
     var S = KISSY, KE = S.Editor,STORE;
-    STORE = KE.STORE = "localStorage";
-    if (!KE.storeReady) {
+    STORE = KE.STORE = /*S.UA.ie ? "localStorageKEFake" :*/ "localStorage";
+    if (!KE['storeReady']) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
         };
@@ -40,6 +40,9 @@ KISSY.Editor.add("localstorage", function() {
 
     window[STORE] = new KE.FlashBridge({
         movie:movie,
+        flashVars:{
+            useCompression :true
+        },
         methods:["setItem","removeItem","getValueOf"]
     });
 
@@ -54,6 +57,23 @@ KISSY.Editor.add("localstorage", function() {
     window[STORE].on("contentReady", function() {
         complete();
     });
+    /*
+     window[STORE].on("quotaExceededError", function() {
+     alert("quotaExceededError");
+     });
+
+     window[STORE].on("error", function() {
+     alert("error");
+     });
+
+     window[STORE].on("save", function() {
+     alert("save");
+     });
+
+     window[STORE].on("inadequateDimensions", function() {
+     alert("inadequateDimensions");
+     });
+     */
 }, {
     //important
     //不能立即运行，ie6 可能会没有 domready 添加 flash 节点

@@ -2171,59 +2171,59 @@ KISSY.Editor.add("definition", function(KE) {
         /**
          * @const
          */
-        UA = S.UA,
+            UA = S.UA,
         /**
          * @const
          */
-        DOM = S.DOM,
+            DOM = S.DOM,
         /**
          * @const
          */
-        Node = S.Node,
+            Node = S.Node,
         //OLD_IE = !window.getSelection,
         /**
          * @const
          */
-        Event = S.Event,
+            Event = S.Event,
         /**
          * @const
          */
-        DISPLAY = "display",
+            DISPLAY = "display",
         /**
          * @const
          */
-        WIDTH = "width",
+            WIDTH = "width",
         /**
          * @const
          */
-        HEIGHT = "height",
+            HEIGHT = "height",
         /**
          * @const
          */
-        NONE = "none",
+            NONE = "none",
         focusManager = KE.focusManager,
         tryThese = Utils.tryThese,
         /**
          * @const
          */
-        HTML5_DTD = '<!doctype html>',
+            HTML5_DTD = '<!doctype html>',
         /**
          * @const
          */
-        DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" ' +
+            DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" ' +
             '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         /**
          * @const
          */
-        ke_textarea_wrap = ".ke-textarea-wrap",
+            ke_textarea_wrap = ".ke-textarea-wrap",
         /**
          * @const
          */
-        ke_editor_tools = ".ke-editor-tools",
+            ke_editor_tools = ".ke-editor-tools",
         /**
          * @const
          */
-        ke_editor_status = ".ke-editor-status";
+            ke_editor_status = ".ke-editor-status";
 
     /**
      *
@@ -2941,19 +2941,7 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this;
             if (self["htmlDataProcessor"])
                 data = self["htmlDataProcessor"]["toDataFormat"](data, null, dataFilter);//, "p");
-            /**
-             * webkit insert html 有问题！会把标签去掉，算了直接用insertElement
-             */
-            if (UA.webkit) {
-                var nodes = DOM.create(data, NULL, self.document);
-                if (nodes.nodeType == 11) nodes = S.makeArray(nodes.childNodes);
-                else nodes = [nodes];
-                for (var i = 0; i < nodes.length; i++)
-                    self.insertElement(new Node(nodes[i]));
-                return;
-            }
             self.focus();
-
             setTimeout(function() {
 
                 var selection = self.getSelection(),
@@ -2973,16 +2961,30 @@ KISSY.Editor.add("definition", function(KE) {
                 //ie9 仍然需要这样！
                 if (document.selection) {
                     var $sel = document.selection;
-                    if ($sel.type == 'Control')
+                    if ($sel.type == 'Control') {
                         $sel.clear();
+                    }
+                    //淘吧报告，选中内容不能被正确替换
+                    else if (selection.getType() == KE.SELECTION.SELECTION_TEXT) {
+                        // Due to IE bugs on handling contenteditable=false blocks
+                        // (#6005), we need to make some checks and eventually
+                        // delete the selection first.
+                        //2.ie 当选中一段文字再 inserthtml 时，新内容会插在头部而不是替换.
+                        var range = selection.getRanges()[ 0 ];
+                        range.deleteContents();
+                        range.select();
+                    }
                     $sel.createRange().pasteHTML(data);
                 } else {
+                    // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
+                    // 10.0 修复？？
                     self.document.execCommand('inserthtml', FALSE, data);
                 }
 
                 setTimeout(function() {
                     self.fire("save");
                 }, 10);
+
             }, 0);
         }
     });
@@ -3074,32 +3076,32 @@ KISSY.Editor.add("definition", function(KE) {
 
         function blinkCursor(retry) {
             tryThese(
-                    function() {
-                        doc.designMode = 'on';
-                        //异步引起时序问题，尽可能小间隔
-                        setTimeout(function () {
-                            doc.designMode = 'off';
-
-                            body.focus();
-                            // Try it again once..
-                            if (!arguments.callee.retry) {
-                                arguments.callee.retry = TRUE;
-                                //arguments.callee();
-                            }
-                        }, 50);
-                    },
-                    function() {
-                        // The above call is known to fail when parent DOM
-                        // tree layout changes may break design mode. (#5782)
-                        // Refresh the 'contentEditable' is a cue to this.
+                function() {
+                    doc.designMode = 'on';
+                    //异步引起时序问题，尽可能小间隔
+                    setTimeout(function () {
                         doc.designMode = 'off';
 
-                        DOM.attr(body, 'contentEditable', FALSE);
-                        DOM.attr(body, 'contentEditable', TRUE);
+                        body.focus();
                         // Try it again once..
-                        !retry && blinkCursor(1);
+                        if (!arguments.callee.retry) {
+                            arguments.callee.retry = TRUE;
+                            //arguments.callee();
+                        }
+                    }, 50);
+                },
+                function() {
+                    // The above call is known to fail when parent DOM
+                    // tree layout changes may break design mode. (#5782)
+                    // Refresh the 'contentEditable' is a cue to this.
+                    doc.designMode = 'off';
 
-                    });
+                    DOM.attr(body, 'contentEditable', FALSE);
+                    DOM.attr(body, 'contentEditable', TRUE);
+                    // Try it again once..
+                    !retry && blinkCursor(1);
+
+                });
         }
 
         // Create an invisible element to grab focus.
@@ -4891,11 +4893,14 @@ KISSY.Editor.add("range", function(KE) {
 
                     // In this case, move the start information to that text
                     // node.
-                    if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
-                        && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
-                        startContainer = child;
-                        startOffset = 0;
-                    }
+
+                        //ie 有时 invalid argument？？
+                        if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
+                            && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
+                            startContainer = child;
+                            startOffset = 0;
+                        }
+
                 }
 
                 // Normalize the start.
@@ -5078,6 +5083,7 @@ KISSY.Editor.add("range", function(KE) {
             var startContainer = self.startContainer,
                 startOffset = self.startOffset,
                 nextNode = startContainer[0].childNodes[startOffset] || null;
+
             startContainer[0].insertBefore(node[0] || node, nextNode);
             // Check if we need to update the end boundary.
             if (DOM._4e_equals(node.parent(), self.endContainer))
@@ -5778,7 +5784,6 @@ KISSY.Editor.add("range", function(KE) {
             // of its contents.
             self.setEndAt(toSplit, KER.POSITION_BEFORE_END);
             var documentFragment = self.extractContents(),
-
                 // Duplicate the element after it.
                 clone = toSplit._4e_clone(FALSE);
 
