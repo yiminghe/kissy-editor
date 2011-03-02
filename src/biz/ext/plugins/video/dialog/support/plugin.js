@@ -209,4 +209,6 @@ KISSY.Editor.add("video/dialog/support", function() {
         Video.dynamicUrl.instance._dynamicUrlPrepare(re);
     };
     Video.Dialog = VideoDialog;
+},{
+    attach:false
 });

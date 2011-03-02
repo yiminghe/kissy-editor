@@ -13,13 +13,16 @@ KISSY.Editor.add("bubbleview", function() {
         return;
     }
 
+
     var BubbleView = S['UIBase'].create(KE.Overlay,
         [], {
         renderUI:function() {
+
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
         },
         show:function() {
+
             var self = this,
                 a = self._selectedEl,
                 xy = a._4e_getOffset(document);

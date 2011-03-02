@@ -99,8 +99,15 @@ KISSY.add("editor", function(S) {
         return self;
     }
 
-    function getJSName() {
-        return "plugin-min.js?t=@TIMESTAMP@";
+    var getJSName;
+    if (parseFloat(S.version) < 1.2) {
+        getJSName = function () {
+            return "plugin-min.js?t=@TIMESTAMP@";
+        };
+    } else {
+        getJSName = function (m, tag) {
+            return m + '/plugin-min.js' + (tag ? tag : '?t=@TIMESTAMP@');
+        };
     }
 
     S.app(Editor, S.EventTarget);

@@ -202,12 +202,22 @@
     <label for="editor2">Editor Instance 2:</label>
     <textarea id="editor2" style="width:99%;height:400px;margin:0 auto;"></textarea>
 </div>
-<!--from kissy component start-->
+<!--from kissy < 1.20 start
 <script src="../../build/kissy.js"></script>
 <script src="../../build/uibase/uibase-pkg.js"></script>
 <script src="../../build/dd/dd-pkg.js"></script>
 <script src="../../build/overlay/overlay-pkg.js"></script>
-<!--from kissy component end-->
+
+from kissy component end-->
+
+
+<!-- kissy 1.20 start -->
+<script src="http://localhost/kissy_git/kissy/build/kissy.js"></script>
+<script src="http://localhost/kissy_git/kissy/build/uibase.js"></script>
+<script src="http://localhost/kissy_git/kissy/build/component.js"></script>
+<script src="http://localhost/kissy_git/kissy/build/dd.js"></script>
+<script src="http://localhost/kissy_git/kissy/build/overlay.js"></script>
+<!-- kissy 1.20 end-->
 <script>
     KISSY.ready(function(S) {
         var theme = S.one("#theme"),themes = S.one("#themes");
@@ -382,7 +392,7 @@ KISSY.ready(function(S) {
 
         //document.domain="taobao.com";
         // just for test
-        var base = location.href.replace(/^(.*kissy-editor\/).*$/i, '$1');
+        var base = location.href.replace(/^(.*kissy-editor[^/]*\/).*$/i, '$1');
         KISSY.Config.base = base;
         KISSY.Config.debug = "dev";
 
