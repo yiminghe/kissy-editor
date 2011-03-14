@@ -208,10 +208,12 @@ ul, ol {
     padding-left: 40px;
 }
 
+/*
+业务调用方自己设置
 img {
     vertical-align:middle;
 }
-
+*/
 img.ke_flash, img.ke_video, img.ke_music, img.ke_xiami {
     background: url("placeholder_flash.png") center center no-repeat;
     border: 1px solid #A9A9A9;

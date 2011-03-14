@@ -3,7 +3,8 @@
  thanks to CKSource's intelligent work on CKEditor
  @author: yiminghe@gmail.com, lifesinger@gmail.com
  @version: 2.1.5
- @buildtime: 2011-02-14 14:32:25
+ @buildtime: 2011-03-14 11:19:42
 */
-KISSY.add("editor",function(b){function c(e,d){var a=this;if(!(a instanceof c))return new c(e,d);if(b.isString(e))e=b.one(e);e=n._4e_wrap(e);d=d||{};d.pluginConfig=d.pluginConfig||{};a.cfg=d;d.pluginConfig=d.pluginConfig;a.cfg=d;b.app(a,b.EventTarget);var j=["htmldataprocessor","enterkey","clipboard"],h=o;a.use=function(f,k){f=f.split(",");if(!h)for(var i=0;i<j.length;i++){var l=j[i];b.inArray(l,f)||f.unshift(l)}a.ready(function(){b.use.call(a,f.join(","),function(){for(var g=0;g<f.length;g++)a.usePlugin(f[g]);
-k&&k.call(a);if(!h){a.setData(e.val());if(d.focus)a.focus();else(g=a.getSelection())&&g.removeAllRanges();h=p}},{global:c})});return a};a.use=a.use;a.Config.base=c.Config.base;a.Config.debug=c.Config.debug;a.Config.componentJsName=m;a.init(e);return a}function m(){return"plugin-min.js?t=2011-02-14 14:32:25"}var n=b.DOM,p=true,o=false;b.app(c,b.EventTarget);c.Config.base=b.Config.base+"editor/plugins/";c.Config.debug=b.Config.debug;c.Config.componentJsName=m;b.Editor=c;b.Editor=c});
+KISSY.add("editor",function(b){function d(e,c){var a=this;if(!(a instanceof d))return new d(e,c);if(b.isString(e))e=b.one(e);e=n._4e_wrap(e);c=c||{};c.pluginConfig=c.pluginConfig||{};a.cfg=c;c.pluginConfig=c.pluginConfig;a.cfg=c;b.app(a,b.EventTarget);var k=["htmldataprocessor","enterkey","clipboard"],h=o;a.use=function(f,l){f=f.split(",");if(!h)for(var i=0;i<k.length;i++){var m=k[i];b.inArray(m,f)||f.unshift(m)}a.ready(function(){b.use.call(a,f.join(","),function(){for(var g=0;g<f.length;g++)a.usePlugin(f[g]);
+l&&l.call(a);if(!h){a.setData(e.val());if(c.focus)a.focus();else(g=a.getSelection())&&g.removeAllRanges();h=p}},{global:d})});return a};a.use=a.use;a.Config.base=d.Config.base;a.Config.debug=d.Config.debug;a.Config.componentJsName=j;a.init(e);return a}var n=b.DOM,p=true,o=false,j;j=parseFloat(b.version)<1.2?function(){return"plugin-min.js?t=2011-03-14 11:19:42"}:function(e,c){return e+"/plugin-min.js"+(c?c:"?t=2011-03-14 11:19:42")};b.app(d,b.EventTarget);d.Config.base=b.Config.base+"editor/plugins/";
+d.Config.debug=b.Config.debug;d.Config.componentJsName=j;b.Editor=d;b.Editor=d});

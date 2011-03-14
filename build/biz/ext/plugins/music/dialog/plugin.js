@@ -3,4 +3,6 @@ KISSY.Editor.add("xiami-music/dialog", function(editor) {
     KE.use("xiami-music/dialog/support", function() {
         editor.addDialog("xiami-music/dialog", new KE.XiamiMusic.Dialog(editor));
     });
+},{
+    attach:false
 });

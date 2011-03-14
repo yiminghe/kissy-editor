@@ -19,7 +19,9 @@ KISSY.Editor.add("button", function() {
         return;
     }
 
-    var TripleButton = S['UIBase'].create([S['UIBase']['Box']], {
+    var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
+    ||S['UIBase']['Box']
+    ], {
         bindUI:function() {
             var self = this,el = self.get("el");
             el.on("click", self._action, self);

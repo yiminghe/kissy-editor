@@ -4,4 +4,6 @@ KISSY.Editor.add("video/dialog", function(editor) {
     KE.use("video/dialog/support", function() {
         editor.addDialog("video/dialog", new KE.Video.Dialog(editor));
     });
+},{
+    attach:false
 });

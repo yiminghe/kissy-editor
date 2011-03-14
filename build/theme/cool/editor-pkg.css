@@ -132,6 +132,7 @@ from : resource://gre/res/html.css
 .ke-post i, .ke-post cite, .ke-post em, .ke-post var, .ke-post dfn {
     font-style: italic;
     font-weight: inherit;
+    /*防止reset css破坏层叠继承性*/
     *font-weight:expression(function (el) { el.runtimeStyle.fontWeight = el.parentNode.currentStyle.fontWeight;}(this));
 }
 
@@ -188,12 +189,14 @@ by the nsHTMLHRElement attribute mapping code
 /*
     很多人发帖爱用多图上下拼成一个图
     但是严格标准模式会使得上下图有空隙（基线对齐）
-    设置 vertial-align middle 可以居中对齐，则上下两图可以黏在一起了
+    设置 vertial-align top 可以居中对齐，则上下两图可以黏在一起了
+    (设置middle , ie6 有问题)
     上下想有空隙的话可以用间隔选项设置
-*/
+
 .ke-post img {
-    vertical-align:middle;
+    vertical-align:top;
 }
+*/
 
 /*
 switch to default

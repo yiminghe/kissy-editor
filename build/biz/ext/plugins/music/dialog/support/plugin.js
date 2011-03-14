@@ -419,4 +419,6 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
         });
     }
 
+},{
+    attach:false
 });

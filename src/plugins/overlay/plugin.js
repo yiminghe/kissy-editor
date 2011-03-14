@@ -118,8 +118,6 @@ KISSY.Editor.add("overlay", function() {
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-
-
     var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
 
         syncUI:function() {

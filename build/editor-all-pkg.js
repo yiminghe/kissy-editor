@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-02-14 14:32:25
+ * @buildtime: 2011-03-14 11:19:42
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -99,8 +99,15 @@ KISSY.add("editor", function(S) {
         return self;
     }
 
-    function getJSName() {
-        return "plugin-min.js?t=2011-02-14 14:32:25";
+    var getJSName;
+    if (parseFloat(S.version) < 1.2) {
+        getJSName = function () {
+            return "plugin-min.js?t=2011-03-14 11:19:42";
+        };
+    } else {
+        getJSName = function (m, tag) {
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-03-14 11:19:42');
+        };
     }
 
     S.app(Editor, S.EventTarget);
@@ -10634,7 +10641,9 @@ KISSY.Editor.add("button", function() {
         return;
     }
 
-    var TripleButton = S['UIBase'].create([S['UIBase']['Box']], {
+    var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
+    ||S['UIBase']['Box']
+    ], {
         bindUI:function() {
             var self = this,el = self.get("el");
             el.on("click", self._action, self);
@@ -11326,13 +11335,16 @@ KISSY.Editor.add("bubbleview", function() {
         return;
     }
 
+
     var BubbleView = S['UIBase'].create(KE.Overlay,
         [], {
         renderUI:function() {
+
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
         },
         show:function() {
+
             var self = this,
                 a = self._selectedEl,
                 xy = a._4e_getOffset(document);
