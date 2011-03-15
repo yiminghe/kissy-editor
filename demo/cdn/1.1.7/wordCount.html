@@ -129,22 +129,22 @@ KISSY.ready(function(S) {
                 "list,indent,justify,separator,link,image,bangpai-video,bangpai-music,smiley," +
                 "separator,table,resize,draft,maximize"
                 , function() {
-            var self = this,
-                    htmlDataProcessor = self.htmlDataProcessor,
-                    dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
-            if (dataFilter) {
-                dataFilter.addRules({
-                    attributes:{
-                        style:function(value) {
-                            value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
-                                    .replace(/background\s*:[^;]+(;|$)/g, "");
-                            if (!value) return false;
-                            return value;
-                        }
+                    var self = this,
+                            htmlDataProcessor = self.htmlDataProcessor,
+                            dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
+                    if (dataFilter) {
+                        dataFilter.addRules({
+                            attributes:{
+                                style:function(value) {
+                                    value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
+                                            .replace(/background\s*:[^;]+(;|$)/g, "");
+                                    if (!value) return false;
+                                    return value;
+                                }
+                            }
+                        });
                     }
                 });
-            }
-        });
 
 
     });
@@ -254,29 +254,27 @@ KISSY.ready(function(S) {
                 "list,indent,justify,separator,link,image,bangpai-video,bangpai-music,smiley," +
                 "separator,table,resize,draft,maximize"
                 , function() {
-            var self = this,
-                    htmlDataProcessor = self.htmlDataProcessor,
-                    dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
-            if (dataFilter) {
-                dataFilter.addRules({
-                    attributes:{
-                        style:function(value) {
-                            value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
-                                    .replace(/background\s*:[^;]+(;|$)/g, "");
-                            if (!value) return false;
-                            return value;
-                        }
+                    var self = this,
+                            htmlDataProcessor = self.htmlDataProcessor,
+                            dataFilter = htmlDataProcessor && htmlDataProcessor.dataFilter;
+                    if (dataFilter) {
+                        dataFilter.addRules({
+                            attributes:{
+                                style:function(value) {
+                                    value = value.replace(/background-color\s*:[^;]+(;|$)/g, "")
+                                            .replace(/background\s*:[^;]+(;|$)/g, "");
+                                    if (!value) return false;
+                                    return value;
+                                }
+                            }
+                        });
                     }
                 });
-            }
-        });
     });
 
 
-
-
-    KISSY.wordcount.bind('#test',  100, editor);
-    KISSY.wordcount.bind('#test2',  50, editor2);
+    KISSY.wordcount.bind(100, editor);
+    KISSY.wordcount.bind(50, editor2);
 
 });
 </script>
