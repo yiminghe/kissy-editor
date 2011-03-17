@@ -115,6 +115,7 @@ KISSY.Editor.add("draft/support", function() {
             self.versions = versions;
             //点击才开始 parse
             versions.on("select", function() {
+                versions.detach("select", arguments.callee);
                 self.sync();
             });
             save._4e_unselectable();
