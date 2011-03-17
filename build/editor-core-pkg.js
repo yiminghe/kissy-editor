@@ -11232,6 +11232,7 @@ KISSY.Editor.add("select", function() {
             self.loading = true;
             KE.use("overlay", function() {
                 self.loading = false;
+                self.fire("select");
                 self._prepare();
 
                 //可能的话当显示层时，高亮当前值对应option

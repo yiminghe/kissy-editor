@@ -52,6 +52,23 @@ KISSY.Editor.add("draft/support", function() {
 
     var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
+        /**
+         * parse 历史记录延后，点击 select 时才开始 parse
+         */
+        _getDrafts:function() {
+            var self = this;
+            if (!self.drafts) {
+                var str = localStorage.getItem(DRAFT_SAVE),
+                    drafts = [];
+                if (str) {
+                    drafts = S.isString(str) ?
+                        JSON.parse(decodeURIComponent(str)) : str;
+                }
+                self.drafts = drafts;
+                //S.log("parse drafts", drafts);
+            }
+            return self.drafts;
+        },
         _init:function() {
             var self = this,
                 editor = self.editor,
@@ -94,16 +111,12 @@ KISSY.Editor.add("draft/support", function() {
                     align:["r","t"],
                     emptyText:"&nbsp;&nbsp;&nbsp;尚无编辑器历史存在",
                     title:"恢复编辑历史"
-                }),
-                str = localStorage.getItem(DRAFT_SAVE),
-                drafts = [];
+                });
             self.versions = versions;
-            if (str) {
-                drafts = S.isString(str) ?
-                    JSON.parse(decodeURIComponent(str)) : str;
-            }
-            self.drafts = drafts;
-            self.sync();
+            //点击才开始 parse
+            versions.on("select", function() {
+                self.sync();
+            });
             save._4e_unselectable();
             save.on("click", function(ev) {
                 self.save(false);
@@ -123,9 +136,8 @@ KISSY.Editor.add("draft/support", function() {
                         form = textarea[0].form;
 
                     function saveF() {
-                        self.save(false);
+                        self.save(true);
                     }
-
 
                     Event.on(form, "submit", saveF);
                     addRes.call(self, function() {
@@ -245,7 +257,7 @@ KISSY.Editor.add("draft/support", function() {
                 draftLimit = self.draftLimit,
                 timeTip = self.timeTip,
                 versions = self.versions,
-                drafts = self.drafts;
+                drafts = self._getDrafts();
             if (drafts.length > draftLimit)
                 drafts.splice(0, drafts.length - draftLimit);
             var items = [],draft,tip;
@@ -265,7 +277,7 @@ KISSY.Editor.add("draft/support", function() {
 
         save:function(auto) {
             var self = this,
-                drafts = self.drafts,
+                drafts = self._getDrafts(),
                 editor = self.editor,
                 //不使用rawdata
                 //undo 只需获得可视区域内代码
@@ -303,7 +315,7 @@ KISSY.Editor.add("draft/support", function() {
             var self = this,
                 editor = self.editor,
                 versions = self.versions,
-                drafts = self.drafts,
+                drafts = self._getDrafts(),
                 v = ev.newVal;
             versions.reset("value");
             if (confirm("确认恢复 " + date(drafts[v].date) + " 的编辑历史？")) {
