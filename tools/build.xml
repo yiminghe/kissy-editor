@@ -322,6 +322,9 @@ build file for kissy editor
                 <echo>
                     build ${var.embed.basename} for @{embedFile}
                 </echo>
+                <!--
+                ie9 css expression一直运行，即使设置了内联样式覆盖
+                -->
                 <replaceregexp match="background-image:[^!;]+!([^)]+)\)"
                                replace="background-image:\
                        expression(function(el){\
@@ -330,10 +333,14 @@ build file for kissy editor
                        &amp;&amp;\
                        window.KISSY.Editor.Config\
                        &amp;&amp;\
-                       window.KISSY.Editor.Config.base)\
+                       window.KISSY.Editor.Config.base\
+                       &amp;&amp;\
+                       !el.style.backgroundImage)\
+                       {\
                        el.style.backgroundImage=\
                        'url(mhtml:'+window.KISSY.Editor.Config.base+\
-                       '../theme/${var.embed.basename}/editor-pkg-min-mhtml.css!\1)';}(this))"
+                       '../theme/${var.embed.basename}/editor-pkg-min-mhtml.css!\1)';\
+                       }}(this))"
                                flags="g"
                                byline="false"
                                encoding="${charset}">

@@ -324,6 +324,7 @@ link
     border-radius: 2px;
     text-decoration: none;
     border: 1px solid transparent;
+    /*透明边框 ie6 不支持 ,_hack*/
     _border-color: tomato;
     _filter: chroma(color = tomato);
     vertical-align: middle;
@@ -340,13 +341,17 @@ link
 
 .ke-triplebutton-disabled {
     opacity: 0.3;
+    /*ie7不支持透明属性*/
+    /*ie8 标准模式也需要，不知为何透明度不能作用下层*/
     filter: chroma(color = tomato) alpha(opacity = 30);
     cursor: default;
 }
 
-.ke-trident5 .ke-triplebutton-disabled{
+/*ie9 标准模式 filter 形成黑框*/
+.ke-ie9 .ke-triplebutton-disabled {
     filter:none;
 }
+
 
 /**
 focus
