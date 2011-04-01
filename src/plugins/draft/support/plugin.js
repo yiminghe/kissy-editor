@@ -293,7 +293,8 @@ KISSY.Editor.add("draft/support", function() {
             var limit = self.draftLimit;
 
             //2个汉字一个字节
-            if (S.UA.ie && data.length > (FLASH_STORE_LIMIT / (limit * 1.2))) {
+            if (S.UA.ie
+                && data.length > (FLASH_STORE_LIMIT / (limit * 1.2))) {
                 if (!auto) {
                     alert(EXCEED_MSG);
                 }

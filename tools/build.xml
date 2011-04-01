@@ -93,6 +93,7 @@ build file for kissy editor
                     ></filelist>
         </concat>
 
+        <delete file='${build.dir}/editor.js' />
 
         <copy todir="${build.dir}"
               encoding="${charset}"
@@ -101,14 +102,6 @@ build file for kissy editor
                      includes="**/*"/>
         </copy>
 
-        <replaceregexp match="@TIMESTAMP@"
-                       replace="${timestamp.isoformat}"
-                       flags="g"
-                       byline="true"
-                       encoding="${charset}">
-            <fileset dir="${build.dir}"
-                     includes="**/*.js"/>
-        </replaceregexp>
     </target>
 
     <!--
@@ -118,7 +111,7 @@ build file for kissy editor
     -->
     <target
             name="git"
-            depends="cssembed">
+            depends="cssembed,timestamp">
 
         <input addproperty="git.commit.message">
             git commit message :
@@ -475,6 +468,17 @@ build file for kissy editor
         </move>
 
 
+    </target>
+
+    <target name="timestamp">
+        <replaceregexp match="@TIMESTAMP@"
+                       replace="${timestamp.isoformat}"
+                       flags="g"
+                       byline="true"
+                       encoding="${charset}">
+            <fileset dir="${build.dir}"
+                     includes="**/*.js"/>
+        </replaceregexp>
     </target>
 
     <target name="clean">
