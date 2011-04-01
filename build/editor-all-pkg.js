@@ -12594,7 +12594,7 @@ KISSY.Editor.add("draft", function(editor) {
             var limit = self.draftLimit;
 
             //2个汉字一个字节
-            if (data.length > (FLASH_STORE_LIMIT / (limit * 2))) {
+            if (S.UA.ie && data.length > (FLASH_STORE_LIMIT / (limit * 1.2))) {
                 if (!auto) {
                     alert(EXCEED_MSG);
                 }
