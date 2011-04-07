@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-04-01 11:36:21
+ * @buildtime: 2011-04-07 11:17:52
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -102,11 +102,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-04-01 11:36:21";
+            return "plugin-min.js?t=2011-04-07 11:17:52";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-04-01 11:36:21');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-04-07 11:17:52');
         };
     }
 
@@ -12310,7 +12310,7 @@ KISSY.Editor.add("draft", function(editor) {
         EXCEED_MSG = "文章有点长，草稿箱容不下:(",
         INTERVAL = 5,
         JSON = S['JSON'],
-        DRAFT_SAVE = "ke-draft-save",
+        DRAFT_SAVE = "ke-draft-save20110407",
         localStorage = window[KE.STORE];
 
     function padding(n, l, p) {

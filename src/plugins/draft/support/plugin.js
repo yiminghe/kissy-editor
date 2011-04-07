@@ -9,7 +9,7 @@ KISSY.Editor.add("draft/support", function() {
         EXCEED_MSG = "文章有点长，草稿箱容不下:(",
         INTERVAL = 5,
         JSON = S['JSON'],
-        DRAFT_SAVE = "ke-draft-save",
+        DRAFT_SAVE = "ke-draft-save20110407",
         localStorage = window[KE.STORE];
 
     function padding(n, l, p) {
