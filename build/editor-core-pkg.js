@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-04-08 13:22:51
+ * @buildtime: 2011-04-08 17:26:00
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -102,11 +102,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-04-08 13:22:51";
+            return "plugin-min.js?t=2011-04-08 17:26:00";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-04-08 13:22:51');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-04-08 17:26:00');
         };
     }
 
@@ -2599,7 +2599,12 @@ KISSY.Editor.add("definition", function(KE) {
 
             if (self["htmlDataProcessor"])
                 afterData = self["htmlDataProcessor"]["toDataFormat"](data, "p");
+            
             self.document.body.innerHTML = afterData;
+            // 空值时需要设两次 firefox??
+            if (!afterData) {
+                self.document.body.innerHTML = afterData;
+            }
             if (self.getMode() == KE.WYSIWYG_MODE) {
             } else {
                 //代码模式下不需过滤

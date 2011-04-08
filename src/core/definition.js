@@ -434,7 +434,12 @@ KISSY.Editor.add("definition", function(KE) {
 
             if (self["htmlDataProcessor"])
                 afterData = self["htmlDataProcessor"]["toDataFormat"](data, "p");
+            
             self.document.body.innerHTML = afterData;
+            // 空值时需要设两次 firefox??
+            if (!afterData) {
+                self.document.body.innerHTML = afterData;
+            }
             if (self.getMode() == KE.WYSIWYG_MODE) {
             } else {
                 //代码模式下不需过滤
