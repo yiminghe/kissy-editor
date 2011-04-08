@@ -39,7 +39,9 @@ KISSY.Editor.add("link", function(editor) {
 
         function checkLink(lastElement) {
             return lastElement._4e_ascendant(function(node) {
-                return node._4e_name() === 'a' && (!!node.attr("href"));
+                return node._4e_name() === 'a';
+                // <a><img></a> 不能嵌套 a
+                // && (!!node.attr("href"));
             }, true);
         }
 
