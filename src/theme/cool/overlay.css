@@ -12,7 +12,7 @@
 
 .ks-dialog .ks-stdmod-header {
     background: repeat-x scroll 0 0 #D6DBE2;
-    background-image:url("overlay-hd.png");
+    background-image:url("overlay-hd.png");/** sprite-ref: mysprite; sprite-alignment: repeat; */
     border-bottom: 1px solid #ACB4BE;
     font-size: 14px;
     font-weight: bold;
@@ -40,7 +40,7 @@
 .ks-ext-close .ks-ext-close-x {
     display: block;
     background: no-repeat;
-    background-image: url("close.png");
+    background-image: url("close.png");/** sprite-ref: mysprite; */
     height: 13px;
     text-indent: -9999px;
     width: 13px;

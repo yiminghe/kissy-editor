@@ -54,7 +54,7 @@ textarea,iframe包装
 工具按钮 
 */
 .ke-toolbar-item {
-    background: no-repeat scroll center center transparent;
+    background: no-repeat scroll left top transparent;
     display: block;
     height: 16px;
     overflow: hidden;
@@ -79,126 +79,145 @@ textarea,iframe包装
 }
 
 .ke-toolbar-source {
-    background-image: url("sourcearea.png");
+    background-image: url("sourcearea.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-preview {
-    background-image: url("preview.png");
+    background-image: url("preview.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-bold {
-    background-image: url("bold.png");
+    background-image: url("bold.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-italic {
-    background-image: url("italic.png");
+    background-image: url("italic.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-underline {
-    background-image: url("underline.png");
+    background-image: url("underline.png");/** sprite-ref: mysprite; */
+    height:11px;
+    margin-top:5px;
+    margin-bottom:4px;
+    width:10px;
+    margin-left:7px;
+    margin-right:7px;
 }
 
 .ke-toolbar-strikeThrough {
-    background-image: url("strike.png");
+    background-image: url("strike.png");/** sprite-ref: mysprite; */
+    height:11px;
+    margin-top:4px;
+    margin-bottom:5px;
 }
 
 .ke-toolbar-ol {
-    background-image: url("ol.png");
+    background-image: url("ol.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-ul {
-    background-image: url("ul.png");
+    background-image: url("ul.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-outdent {
-    background-image: url("outdent.png");
+    background-image: url("outdent.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-indent {
-    background-image: url("indent.png");
+    background-image: url("indent.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-alignleft {
-    background-image: url("align-left.png");
+    background-image: url("align-left.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-aligncenter {
-    background-image: url("align-center.png");
+    background-image: url("align-center.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-alignright {
-    background-image: url("align-right.png");
+    background-image: url("align-right.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-image {
-    background-image: url("image.png");
+    background-image: url("image.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-mul-image {
-    background-image: url("mul-image.png");
+    background-image: url("mul-image.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-bgcolor {
-    background-image: url("bgcolor.png");
+    background-image: url("bgcolor.png");/** sprite-ref: mysprite; */
     width: 24px;
+    height:15px;
+    margin-top:3px;
 }
 
 .ke-toolbar-color {
-    background-image: url("color.png");
+    background-image: url("color.png");/** sprite-ref: mysprite; */
     width: 24px;
+    height:14px;
+    margin-top:3px;
+     margin-bottom:3px;
 }
 
 .ke-toolbar-undo {
-    background-image: url("undo.png");
+    background-image: url("undo.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-redo {
-    background-image: url("redo.png");
+    background-image: url("redo.png");/** sprite-ref: mysprite; */
+    height:15px;
+    margin:3px 4px;
 }
 
 .ke-toolbar-table {
-    background-image: url("table.png");
+    background-image: url("table.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-template {
-    background-image: url("templates.png");
+    background-image: url("templates.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-maximize {
-    background-image: url("maximize.png");
+    background-image: url("maximize.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-flash {
-    background-image: url("flash.png");
+    background-image: url("flash.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-link {
-    background-image: url("link.png");
+    background-image: url("link.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-music {
-    background-image: url("music.png");
+    background-image: url("music.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-video {
-    background-image: url("video.png");
+    background-image: url("video.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-smiley {
-    background-image: url("smiley.png");
+    background-image: url("smiley.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-removeformat {
-    background-image: url("removeformat.png");
+    background-image: url("removeformat.png");/** sprite-ref: mysprite; */
 }
 
 .ke-toolbar-pagebreak {
-    background-image: url("pagebreak.png");
+    background-image: url("pagebreak.png");/** sprite-ref: mysprite; */
+    height:12px;
+    margin-top:4px;
+    margin-bottom:4px;
 }
 
 
 .ke-toolbar-restore {
-    background-image: url("restore.png");
+    background-image: url("restore.png");/** sprite-ref: mysprite; */
 }
 
 .ke-input {

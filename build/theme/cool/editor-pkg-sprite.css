@@ -6,7 +6,6 @@ from : resource://gre/res/html.css
 编辑器生成内容
 </div>
 **/
-/** sprite: mysprite; sprite-image: url('./mysprite.png'); sprite-layout: vertical */
 /*
 清除编辑器内容里面的浮动
  */
@@ -403,7 +402,9 @@ active
     box-shadow: 0px 1px 1px rgb(228, 228, 228);
     border: 1px solid rgb(193, 200, 209);
     background: #e8ebee repeat-x left top;
-    background-image: url("ke-button-bg.png");/** sprite-ref: mysprite; sprite-alignment: repeat;*/
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -0px;
     -background-image:none;
     padding: 3px 18px;
     _padding-bottom: 2px;
@@ -418,7 +419,9 @@ active
 .ke-button:hover ,.ke-button-hover{
     border-color: rgb(232, 204, 160);
     background: #f5e7ce repeat-x left top;
-    background-image: url("ke-button-bg-active.png");/** sprite-ref: mysprite; sprite-alignment: repeat;*/
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -26px;
     -background-image:none;
     cursor: pointer;
     color: black;
@@ -429,7 +432,9 @@ active
     cursor: default;
 }
 .ke-triplebutton-disabled.ke-button:hover {
-    background-image: url("ke-button-bg.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -52px;
     -background-image:none;
     border-color:rgb(193, 200, 209);
 }
@@ -458,7 +463,9 @@ active
 
 .ke-draft-mansave {
     background: no-repeat scroll 0 1px transparent;
-    background-image: url("icon_save.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -78px;
     width: 18px;
     height: 15px;
     display: inline-block;
@@ -478,7 +485,9 @@ active
 .ke-draft-help {
 /*不能使用 center center ,ie 对于容器理解有误,text-indent会增加容器*/
     background: no-repeat;
-    background-image: url("icon_help.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -95px;
     width: 14px;
     overflow: hidden;
     height: 14px;
@@ -567,23 +576,33 @@ textarea,iframe包装
 }
 
 .ke-toolbar-source {
-    background-image: url("sourcearea.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -107px;
 }
 
 .ke-toolbar-preview {
-    background-image: url("preview.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -123px;
 }
 
 .ke-toolbar-bold {
-    background-image: url("bold.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -139px;
 }
 
 .ke-toolbar-italic {
-    background-image: url("italic.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -155px;
 }
 
 .ke-toolbar-underline {
-    background-image: url("underline.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -171px;
     height:11px;
     margin-top:5px;
     margin-bottom:4px;
@@ -593,57 +612,81 @@ textarea,iframe包装
 }
 
 .ke-toolbar-strikeThrough {
-    background-image: url("strike.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -182px;
     height:11px;
     margin-top:4px;
     margin-bottom:5px;
 }
 
 .ke-toolbar-ol {
-    background-image: url("ol.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -193px;
 }
 
 .ke-toolbar-ul {
-    background-image: url("ul.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -209px;
 }
 
 .ke-toolbar-outdent {
-    background-image: url("outdent.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -225px;
 }
 
 .ke-toolbar-indent {
-    background-image: url("indent.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -241px;
 }
 
 .ke-toolbar-alignleft {
-    background-image: url("align-left.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -257px;
 }
 
 .ke-toolbar-aligncenter {
-    background-image: url("align-center.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -273px;
 }
 
 .ke-toolbar-alignright {
-    background-image: url("align-right.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -289px;
 }
 
 .ke-toolbar-image {
-    background-image: url("image.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -305px;
 }
 
 .ke-toolbar-mul-image {
-    background-image: url("mul-image.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -321px;
 }
 
 .ke-toolbar-bgcolor {
-    background-image: url("bgcolor.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -337px;
     width: 24px;
     height:15px;
     margin-top:3px;
 }
 
 .ke-toolbar-color {
-    background-image: url("color.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -352px;
     width: 24px;
     height:14px;
     margin-top:3px;
@@ -651,53 +694,77 @@ textarea,iframe包装
 }
 
 .ke-toolbar-undo {
-    background-image: url("undo.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -366px;
 }
 
 .ke-toolbar-redo {
-    background-image: url("redo.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -381px;
     height:15px;
     margin:3px 4px;
 }
 
 .ke-toolbar-table {
-    background-image: url("table.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -396px;
 }
 
 .ke-toolbar-template {
-    background-image: url("templates.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -412px;
 }
 
 .ke-toolbar-maximize {
-    background-image: url("maximize.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -428px;
 }
 
 .ke-toolbar-flash {
-    background-image: url("flash.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -444px;
 }
 
 .ke-toolbar-link {
-    background-image: url("link.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -460px;
 }
 
 .ke-toolbar-music {
-    background-image: url("music.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -476px;
 }
 
 .ke-toolbar-video {
-    background-image: url("video.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -492px;
 }
 
 .ke-toolbar-smiley {
-    background-image: url("smiley.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -508px;
 }
 
 .ke-toolbar-removeformat {
-    background-image: url("removeformat.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -524px;
 }
 
 .ke-toolbar-pagebreak {
-    background-image: url("pagebreak.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -540px;
     height:12px;
     margin-top:4px;
     margin-bottom:4px;
@@ -705,7 +772,9 @@ textarea,iframe包装
 
 
 .ke-toolbar-restore {
-    background-image: url("restore.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -551px;
 }
 
 .ke-input {
@@ -792,7 +861,9 @@ menu style for kissy editor ,include contextmenu and select menu
 
 .ks-dialog .ks-stdmod-header {
     background: repeat-x scroll 0 0 #D6DBE2;
-    background-image:url("overlay-hd.png");/** sprite-ref: mysprite; sprite-alignment: repeat; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -567px;
     border-bottom: 1px solid #ACB4BE;
     font-size: 14px;
     font-weight: bold;
@@ -820,7 +891,9 @@ menu style for kissy editor ,include contextmenu and select menu
 .ks-ext-close .ks-ext-close-x {
     display: block;
     background: no-repeat;
-    background-image: url("close.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -597px;
     height: 13px;
     text-indent: -9999px;
     width: 13px;
@@ -853,7 +926,9 @@ menu style for kissy editor ,include contextmenu and select menu
 **/
 .ke-resizer {
     background: no-repeat right bottom;
-    background-image: url("resizer.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -610px;
     height: 20px;
     width: 10px;
     position: absolute;
@@ -907,7 +982,9 @@ select style for kissy editor
 
 .ke-select-drop {
     background: no-repeat scroll center center transparent;
-    background-image: url("arrow.png");/** sprite-ref: mysprite; */
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -620px;
     width: 7px;
     height: 3px;
     vertical-align: middle;
@@ -991,7 +1068,9 @@ select style for kissy editor
     padding-left: 6px;
     padding-right: 6px;
     background: #e8ebee repeat-x left top;
-    background-image: url("ke-button-bg.png");/** sprite-ref: mysprite; sprite-alignment: repeat;*/
+  background-image: url('./mysprite.png');
+  -background-image: url('./mysprite-ie6.png');
+  background-position: left -0px;
     -background-image:none;
     height: 24px;
     padding-top: 1px;

@@ -17,6 +17,7 @@ build file for kissy editor
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
     <property name="ke-stable.dir" location="${root.dir}/build/editor/"/>
     <property name="build.dir" location="${project.dir}/build/"/>
+    <property name="smartsprites.basedir" location="${ks-tools.dir}/smartsprites/"/>
 
     <property name="theme.dir" value="theme"/>
     <property name="biz.dir" value="biz"/>
@@ -31,6 +32,11 @@ build file for kissy editor
     <fileset dir="${build.dir}/${theme.dir}"
              includes="cool/editor-pkg-min.css"
              id="cssembed_files">
+    </fileset>
+
+    <fileset dir="${build.dir}/${theme.dir}"
+             includes="cool/editor-pkg.css"
+             id="sprites_files">
     </fileset>
 
     <!--
@@ -93,7 +99,7 @@ build file for kissy editor
                     ></filelist>
         </concat>
 
-        <delete file='${build.dir}/editor.js' />
+        <delete file='${build.dir}/editor.js'/>
 
         <copy todir="${build.dir}"
               encoding="${charset}"
@@ -177,10 +183,30 @@ build file for kissy editor
         </copy>
     </target>
 
+    <target name="csssprites">
+        <!--
+              产生 css-sprites 文件 for all
+              -->
+        <taskdef resource="smartsprites.xml">
+            <classpath>
+                <fileset dir="${smartsprites.basedir}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </taskdef>
+
+        <smartsprites cssfilesuffix="-sprite"
+                      spritepngie6="true"
+                      loglevel="info">
+            <fileset refid="sprites_files"/>
+        </smartsprites>
+
+    </target>
+
     <!--
     minify all js and css to build dir
     -->
-    <target name="minify" depends="concat">
+    <target name="minify" depends="concat,csssprites">
 
 
         <apply executable="java"
@@ -207,7 +233,7 @@ build file for kissy editor
 
         <!--
         编辑器核心进行高级编译
-        -->
+       
         <apply executable="java"
                verbose="true"
                dest="${build.dir}"
@@ -219,28 +245,28 @@ build file for kissy editor
                     />
             <arg line="-jar"/>
             <arg path="${ks-tools.dir}/closure-compiler/compiler.jar"/>
-            <arg line="--charset ${charset}"/>
+            <arg line="- -charset ${charset}"/>
 
-            <arg value="--compilation_level"/>
+            <arg value="- -compilation_level"/>
             <arg value="ADVANCED_OPTIMIZATIONS"/>
-            <!--
             <arg value="- -formatting"/>
             <arg value="PRETTY_PRINT"/>
--->
-            <arg value="--externs"/>
+
+            <arg value="- -externs"/>
             <arg value="kissy.js"/>
 
-            <arg value="--create_source_map"/>
+            <arg value="- -create_source_map"/>
             <arg value="editor-core-map"/>
 
-            <arg value="--warning_level"/>
+            <arg value="- -warning_level"/>
             <arg value="VERBOSE"/>
-            <arg value="--js"/>
+            <arg value="- -js"/>
             <srcfile/>
-            <arg value="--js_output_file"/>
+            <arg value="- -js_output_file"/>
             <targetfile/>
             <mapper type="regexp" from="^(.*)\.(css|js)$" to="\1-advanced-min.\2"/>
         </apply>
+        -->
 
         <apply executable="java"
                verbose="true"
@@ -267,6 +293,10 @@ build file for kissy editor
     -->
     <target name="cssembed" depends="native2ascii">
 
+
+        <!--
+        产生 datauri 文件 for 标准浏览器
+        -->
         <apply executable="java"
                verbose="true"
                dest="${build.dir}/${theme.dir}"
@@ -283,6 +313,10 @@ build file for kissy editor
             <arg line="-v"/>
             <mapper type="regexp" from="^(.*)\.css$" to="\1-datauri.css"/>
         </apply>
+
+        <!--
+        产生 mhtml 文件 for ie6,7
+        -->
         <apply executable="java"
                verbose="true"
                dest="${build.dir}/${theme.dir}"
@@ -291,7 +325,7 @@ build file for kissy editor
                 >
             <fileset refid="cssembed_files"/>
             <arg line="-jar"/>
-            <arg path="cssembed-0.3.3.jar"/>
+            <arg path="${ks-tools.dir}/cssembed/cssembed-0.3.3.jar"/>
             <arg line="--charset ${charset}"/>
             <srcfile/>
             <arg line="--mhtml"/>
@@ -303,6 +337,10 @@ build file for kissy editor
             <mapper type="regexp" from="^(.*)\.css$" to="\1-mhtml.css"/>
         </apply>
 
+
+        <!--
+        修改 mhtml 解决方案的动态根目录问题
+        -->
 
         <ac:for param="embedFile">
             <fileset refid="cssembed_files"/>

@@ -4,7 +4,7 @@
 **/
 .ke-resizer {
     background: no-repeat right bottom;
-    background-image: url("resizer.png");
+    background-image: url("resizer.png");/** sprite-ref: mysprite; */
     height: 20px;
     width: 10px;
     position: absolute;
