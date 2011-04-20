@@ -40,6 +40,7 @@
 
             function fixCall() {
                 self.fix();
+                change();
             }
 
             self.shade = new Node(self.msg).prependTo(document.body).on("click",
