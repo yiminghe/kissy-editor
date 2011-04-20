@@ -87,7 +87,7 @@
             };
         }
     };
-    //参数：最大限制数，编辑器editor对象
+    //参数：消息，编辑器editor对象
     KISSY.EditorPlugins.Tip.bind = function(msg, editor) {
         return new EditorDecorate(editor, msg);
     };
