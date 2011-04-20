@@ -1,14 +1,14 @@
 /*
  字数统计插件
- @author:龙啸
+ @author:龙啸,承玉<yiminghe@gmail.com>
  */
 (function() {
     var S = KISSY;
 
-    S.namespace('wordcount');
+    S.namespace('EditorPlugins.Wordcount');
 
     //参数：最大限制数，编辑器editor对象
-    KISSY.wordcount.bind = function(max, editor) {
+    KISSY.EditorPlugins.Wordcount.bind = function(max, editor) {
         var textarea = new S.Node(editor.textarea);
         //在当前text编辑器后面加入操作节点
         var size = 0;
