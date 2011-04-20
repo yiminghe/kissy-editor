@@ -6,7 +6,7 @@
     var S = KISSY,DOM = S.DOM,Node = S.Node,Event = S.Event;
 
     S.namespace('EditorPlugins.Tip');
-    function editorDecorate(editor, msg) {
+    function EditorDecorate(editor, msg) {
         var self = this;
         self.editor = editor;
         self.msg = msg;
@@ -18,7 +18,7 @@
     var trimHTML = function(str) {
         return str.replace(/<[^>]+>/g, "");
     };
-    editorDecorate.prototype = {
+    EditorDecorate.prototype = {
         fix:function() {
             var self = this,shade = self.shade;
             var xy = DOM.offset(DOM.parent(self.editor.textarea[0], '.ke-textarea-wrap'));
@@ -86,9 +86,9 @@
                 }
             };
         }
-    }
+    };
     //参数：最大限制数，编辑器editor对象
     KISSY.EditorPlugins.Tip.bind = function(msg, editor) {
-        return new editorDecorate(editor, msg);
+        return new EditorDecorate(editor, msg);
     };
 })();
