@@ -76,17 +76,17 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     var cancel = foot.one(".ke-link-cancel"),
                         ok = foot.one(".ke-link-ok");
                     ok.on("click", self._link, self);
-                    cancel.on("click", function(ev){
-                        ev&&ev.halt();
+                    cancel.on("click", function(ev) {
+                        ev && ev.halt();
                         d.hide();
                     });
                     KE.Utils.placeholder(d.urlEl, "http://");
-                    addRes.call(self,ok,cancel,d,d.urlEl);
+                    addRes.call(self, ok, cancel, d, d.urlEl);
                 },
 
 
                 _link:function(ev) {
-                    ev&&ev.halt();
+                    ev && ev.halt();
                     var self = this,
                         cmd = self.cmd,
                         d = self.dialog,
@@ -102,7 +102,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     };
                     //ie9 focus 不同步，hide后等会才能恢复焦点
                     setTimeout(function() {
-                        cmd.call("_link",attr,self._selectedEl);
+                        cmd.call("_link", attr, self._selectedEl);
                     }, 0);
                 },
 
@@ -110,12 +110,13 @@ KISSY.Editor.add("link/dialog", function(editor) {
 
                 _real:function() {
                     var self = this,
+                        cfg = self.editor.cfg.pluginConfig["link"] || {},
                         cmd = self.cmd,
                         //action = cmd.cfg,
                         link = cmd.call("_getSelectedLink"),
                         url = cmd.call("_getSelectionLinkUrl"),
                         d = self.dialog;
-                    self._selectedEl=link;
+                    self._selectedEl = link;
                     //是修改行为
                     if (link) {
                         KE.Utils.valInput(d.urlEl, url);
@@ -124,6 +125,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     } else {
                         KE.Utils.resetInput(d.urlEl);
                         d.urlTitle.val("");
+                        if (cfg.target) d.targetEl[0].checked = true;
                     }
                     d.show();
                 },
@@ -131,7 +133,7 @@ KISSY.Editor.add("link/dialog", function(editor) {
                     this.cmd = cmd;
                     this._prepareShow();
                 },
-                destroy:function(){
+                destroy:function() {
                     destroyRes.call(this);
                 }
             });

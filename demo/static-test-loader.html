@@ -398,6 +398,7 @@ KISSY.ready(function(S) {
 
         KE.Config.base = base + "src/plugins/";
         var cfg = {
+
             attachForm:true,
             baseZIndex:10000,
             //自定义样式
@@ -407,6 +408,9 @@ KISSY.ready(function(S) {
             //是否一开始自动聚焦
             //focus:true,
             pluginConfig: {
+                link:{
+                    target:"_blank"
+                },
                 "image":{
                     upload:{
                         serverUrl:"/code/upload/web/upload.jsp",
