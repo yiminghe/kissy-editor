@@ -1,4 +1,4 @@
-KISSY.Editor.add("overlay", function() {
+KISSY.Editor.add("overlay/focus", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,

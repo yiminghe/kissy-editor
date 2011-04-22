@@ -75,4 +75,6 @@ KISSY.Editor.add("overlay", function() {
     KE.Overlay.unloading = function() {
         globalMask && globalMask.hide();
     };
+},{
+    requires:['overlay/focus']
 });
