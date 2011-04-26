@@ -481,9 +481,19 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
         },
         _onUploadCompleteData:function(ev) {
             var self = this,
+                uploader = self.uploader,
                 data = S.trim(ev.data).replace(/\r|\n/g, ""),
                 id = ev['file'].id;
             //S.log(data);
+
+            //成功后不会自动清除列表，自己清除
+            if (id) {
+                try {
+                    uploader['removeFile'](id);
+                } catch(e) {
+                }
+            }
+
             if (!data) return;
             try {
                 data = JSON.parse(data);
