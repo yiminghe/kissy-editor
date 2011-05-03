@@ -20,7 +20,8 @@ KISSY.Editor.add("resize", function(editor) {
         });
         resizer._4e_unselectable();
         var d = new Draggable({
-            node:resizer
+            node:resizer,
+            cursor:'se-resize'
         }),
             height = 0,
             width = 0,

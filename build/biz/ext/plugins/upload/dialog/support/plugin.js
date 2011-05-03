@@ -15,9 +15,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
         Node = S.Node,
         Dialog = KE.Dialog,
         KEY = "Multi-Upload-Save",
-        store = window[KE.STORE],
         movie = KE.Utils.debugUrl("uploader/uploader.longzang.swf"),
-
         name = "ke-multi-upload",
         FLASH_VERSION_REQUIRED = "10.0.0";
 
@@ -349,7 +347,9 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             uploader.on("uploadError", self._uploadError, self);
 
             //从本地恢复已上传记录
-            self._restore();
+            KE.storeReady(function() {
+                self._restore();
+            });
 
 
             //上传后：缩略图预览
@@ -568,6 +568,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
         //当前已上传的图片保存下来
         _restore:function() {
             var self = this,
+                store = KE.localStorage,
                 data = store.getItem(KEY),
                 tbl = self._list[0];
             if (!data) return;
@@ -590,6 +591,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
         },
         _save:function() {
             var self = this,
+                store = KE.localStorage,
                 list = self._list,
                 trs = list.all("tr"),
                 data = [];
@@ -606,7 +608,9 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     });
                 }
             }
-            store.setItem(KEY, encodeURIComponent(JSON.stringify(data)));
+            if (store) {
+                store.setItem(KEY, encodeURIComponent(JSON.stringify(data)));
+            }
         },
         _getFilesSize:function(files) {
             var n = 0;

@@ -413,7 +413,7 @@ KISSY.ready(function(S) {
                 },
                 "image":{
                     upload:{
-                        serverUrl:"/code/upload/web/upload.jsp",
+                        serverUrl:"/upload/upload",
                         serverParams:{
                             waterMark:function() {
                                 return S.one("#ke_img_up_watermark_1")[0].checked;
@@ -457,7 +457,7 @@ KISSY.ready(function(S) {
 //                    }
 //                },
                 "multi-upload":{
-                    serverUrl:"/code/upload/web/upload.jsp",
+                    serverUrl:"/upload/upload",
                     serverParams:{
                         waterMark:function() {
                             return S.one("#ke_img_up_watermark_2")[0].checked;
@@ -551,7 +551,7 @@ KISSY.ready(function(S) {
                     suffix:"png,jpg,jpeg,gif",
                     fileInput:"Filedata",
                     sizeLimit:1000,
-                    serverUrl:"/code/upload/web/upload.jsp",
+                    serverUrl:"/upload/upload",
                     serverParams:{
                         waterMark:function() {
                             return true;

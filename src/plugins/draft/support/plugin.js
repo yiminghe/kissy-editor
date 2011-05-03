@@ -4,13 +4,9 @@ KISSY.Editor.add("draft/support", function() {
         Node = S.Node,
         LIMIT = 5,
         Event = S.Event,
-        //flash 存储默认上限 100k
-        FLASH_STORE_LIMIT = 100 * 1000,
-        EXCEED_MSG = "文章有点长，草稿箱容不下:(",
         INTERVAL = 5,
         JSON = S['JSON'],
-        DRAFT_SAVE = "ke-draft-save20110407",
-        localStorage = window[KE.STORE];
+        DRAFT_SAVE = "ke-draft-save20110503";
 
     function padding(n, l, p) {
         n += "";
@@ -56,12 +52,17 @@ KISSY.Editor.add("draft/support", function() {
          * parse 历史记录延后，点击 select 时才开始 parse
          */
         _getDrafts:function() {
+            var localStorage = KE.localStorage;
             var self = this;
             if (!self.drafts) {
                 var str = localStorage.getItem(DRAFT_SAVE),
                     drafts = [];
+
                 if (str) {
-                    drafts = S.isString(str) ?
+                    /**
+                     * 原生 localStorage 必须串行化
+                     */
+                    drafts = (localStorage == window.localStorage) ?
                         JSON.parse(decodeURIComponent(str)) : str;
                 }
                 self.drafts = drafts;
@@ -254,6 +255,7 @@ KISSY.Editor.add("draft/support", function() {
             this.holder.css("visibility", "");
         },
         sync:function() {
+            var localStorage = KE.localStorage;
             var self = this,
                 draftLimit = self.draftLimit,
                 timeTip = self.timeTip,
@@ -273,7 +275,10 @@ KISSY.Editor.add("draft/support", function() {
             }
             versions.set("items", items.reverse());
             timeTip.html(tip);
-            localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
+            localStorage.setItem(DRAFT_SAVE,
+                (localStorage == window.localStorage) ?
+                    encodeURIComponent(JSON.stringify(drafts))
+                    : drafts);
         },
 
         save:function(auto) {
@@ -289,17 +294,6 @@ KISSY.Editor.add("draft/support", function() {
 
             //如果当前内容为空，不保存版本
             if (!data) return;
-
-            var limit = self.draftLimit;
-
-            //2个汉字一个字节
-            if (S.UA.ie
-                && data.length > (FLASH_STORE_LIMIT / (limit * 1.2))) {
-                if (!auto) {
-                    alert(EXCEED_MSG);
-                }
-                return;
-            }
 
             if (drafts[drafts.length - 1] &&
                 data == drafts[drafts.length - 1].content) {

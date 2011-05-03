@@ -1,1 +1,1 @@
-KISSY.Editor.add("multi-upload/dialog",function(b){var a=KISSY.Editor;a.use("multi-upload/dialog/support",function(){a.storeReady(function(){b.addDialog("multi-upload/dialog",new a.MultiUpload.Dialog(b))})})},{attach:false});
+KISSY.Editor.add("multi-upload/dialog",function(a){var b=KISSY.Editor;b.use("multi-upload/dialog/support",function(){a.addDialog("multi-upload/dialog",new b.MultiUpload.Dialog(a))})},{attach:false});

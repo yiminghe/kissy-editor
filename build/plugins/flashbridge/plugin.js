@@ -5,7 +5,7 @@
 KISSY.Editor.add("flashbridge", function() {
     var S = KISSY,KE = S.Editor;
     if (KE.FlashBridge) {
-        S.log("KE.FlashBridge attach more","warn");
+        S.log("KE.FlashBridge attach more", "warn");
         return;
     }
 
@@ -110,8 +110,7 @@ KISSY.Editor.add("flashbridge", function() {
     });
 
     FlashBridge.EventHandler = function(id, event) {
-        //S.log(id);
-        //S.log(event.type);
+        S.log("flash fire event : " + event.type);
         var instance = instances[id];
         if (instance) {
             //防止ie同步触发事件，后面还没on呢，另外给 swf 喘息机会
@@ -238,6 +237,6 @@ KISSY.Editor.add("flashbridge", function() {
      }
      */
 
-},{
+}, {
     attach:false
 });

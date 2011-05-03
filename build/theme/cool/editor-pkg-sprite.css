@@ -929,7 +929,7 @@ menu style for kissy editor ,include contextmenu and select menu
   background-image: url('./mysprite.png');
   -background-image: url('./mysprite-ie6.png');
   background-position: left -610px;
-    height: 20px;
+    height: 10px;
     width: 10px;
     position: absolute;
     bottom: 0px;

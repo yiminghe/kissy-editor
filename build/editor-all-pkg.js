@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-04-26 13:49:48
+ * @buildtime: 2011-05-03 19:16:01
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -102,11 +102,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-04-26 13:49:48";
+            return "plugin-min.js?t=2011-05-03 19:16:01";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-04-26 13:49:48');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-05-03 19:16:01');
         };
     }
 
@@ -3411,6 +3411,8 @@ KISSY.Editor.add("zindex", function() {
         POPUP_MENU:(1200),
         //拖动垫片要最最高
         DD_PG: (99999),
+        // flash 存储设置最高
+        STORE_FLASH_SHOW:(99999),
         MAXIMIZE:(900),
         OVERLAY:(9999),
         LOADING:(11000),
@@ -12310,13 +12312,9 @@ KISSY.Editor.add("draft", function(editor) {
         Node = S.Node,
         LIMIT = 5,
         Event = S.Event,
-        //flash 存储默认上限 100k
-        FLASH_STORE_LIMIT = 100 * 1000,
-        EXCEED_MSG = "文章有点长，草稿箱容不下:(",
         INTERVAL = 5,
         JSON = S['JSON'],
-        DRAFT_SAVE = "ke-draft-save20110407",
-        localStorage = window[KE.STORE];
+        DRAFT_SAVE = "ke-draft-save20110503";
 
     function padding(n, l, p) {
         n += "";
@@ -12362,12 +12360,17 @@ KISSY.Editor.add("draft", function(editor) {
          * parse 历史记录延后，点击 select 时才开始 parse
          */
         _getDrafts:function() {
+            var localStorage = KE.localStorage;
             var self = this;
             if (!self.drafts) {
                 var str = localStorage.getItem(DRAFT_SAVE),
                     drafts = [];
+
                 if (str) {
-                    drafts = S.isString(str) ?
+                    /**
+                     * 原生 localStorage 必须串行化
+                     */
+                    drafts = (localStorage == window.localStorage) ?
                         JSON.parse(decodeURIComponent(str)) : str;
                 }
                 self.drafts = drafts;
@@ -12560,6 +12563,7 @@ KISSY.Editor.add("draft", function(editor) {
             this.holder.css("visibility", "");
         },
         sync:function() {
+            var localStorage = KE.localStorage;
             var self = this,
                 draftLimit = self.draftLimit,
                 timeTip = self.timeTip,
@@ -12579,7 +12583,10 @@ KISSY.Editor.add("draft", function(editor) {
             }
             versions.set("items", items.reverse());
             timeTip.html(tip);
-            localStorage.setItem(DRAFT_SAVE, encodeURIComponent(JSON.stringify(drafts)));
+            localStorage.setItem(DRAFT_SAVE,
+                (localStorage == window.localStorage) ?
+                    encodeURIComponent(JSON.stringify(drafts))
+                    : drafts);
         },
 
         save:function(auto) {
@@ -12595,17 +12602,6 @@ KISSY.Editor.add("draft", function(editor) {
 
             //如果当前内容为空，不保存版本
             if (!data) return;
-
-            var limit = self.draftLimit;
-
-            //2个汉字一个字节
-            if (S.UA.ie
-                && data.length > (FLASH_STORE_LIMIT / (limit * 1.2))) {
-                if (!auto) {
-                    alert(EXCEED_MSG);
-                }
-                return;
-            }
 
             if (drafts[drafts.length - 1] &&
                 data == drafts[drafts.length - 1].content) {
@@ -13591,7 +13587,7 @@ KISSY.Editor.add("flash/support", function() {
 KISSY.Editor.add("flashbridge", function() {
     var S = KISSY,KE = S.Editor;
     if (KE.FlashBridge) {
-        S.log("KE.FlashBridge attach more","warn");
+        S.log("KE.FlashBridge attach more", "warn");
         return;
     }
 
@@ -13696,8 +13692,7 @@ KISSY.Editor.add("flashbridge", function() {
     });
 
     FlashBridge.EventHandler = function(id, event) {
-        //S.log(id);
-        //S.log(event.type);
+        S.log("flash fire event : " + event.type);
         var instance = instances[id];
         if (instance) {
             //防止ie同步触发事件，后面还没on呢，另外给 swf 喘息机会
@@ -13824,7 +13819,7 @@ KISSY.Editor.add("flashbridge", function() {
      }
      */
 
-},{
+}, {
     attach:false
 });KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
@@ -16761,8 +16756,10 @@ KISSY.Editor.add("list/support", function() {
  * @author:yiminghe@gmail.com
  */
 KISSY.Editor.add("localstorage", function() {
-    var S = KISSY, KE = S.Editor,STORE;
-    STORE = KE.STORE = /*S.UA.ie ? "localStorageKEFake" :*/ "localStorage";
+    var S = KISSY,
+        KE = S.Editor;
+    KE.localStorage = null;
+
     if (!KE['storeReady']) {
         KE.storeReady = function(run) {
             KE.on("storeReady", run);
@@ -16779,59 +16776,103 @@ KISSY.Editor.add("localstorage", function() {
         S.log("localstorage attach more", "warn");
         return;
     }
+
     function complete() {
         KE.fire("storeReady");
     }
 
     //原生或者已经定义过立即返回
-    if (window[STORE]) {
+    //ie 使用 flash 模拟的 localStorage，序列化性能不行
+    //firefox 使用原生
+    if (!S.UA.ie && window.localStorage) {
         //原生的立即可用
-        if (!window[STORE]._ke) {
-            complete();
-        }
+        KE.localStorage = window.localStorage;
+        complete();
         return;
     }
 
     //国产浏览器用随机数/时间戳试试 ! 是可以的
     var movie = KE.Utils.debugUrl("localstorage/swfstore.swf?t=" + (+new Date()));
 
+    //龙藏
+    //var movie = KE.Utils.debugUrl("localstorage/store.swf");
 
-    window[STORE] = new KE.FlashBridge({
+    var store = new KE.FlashBridge({
         movie:movie,
+        //ajbridge:true,
         flashVars:{
             useCompression :true
         },
-        methods:["setItem","removeItem","getValueOf"]
+        methods:["setItem","removeItem","getItem","setMinDiskSpace","getValueOf"]
     });
 
-    S.mix(window[STORE], {
+    S.use("overlay", function() {
+
+        store.swf.height = 138;
+        //Dialog 不行
+        var o = new S.Overlay({
+            headerContent:"请点允许",
+            width:"0px",
+            //mask:true,
+            elStyle:{
+                overflow:'hidden'
+            },
+            content:"<h1 style='border:1px solid black;" +
+                "border-bottom:none;" +
+                "background:white;" +
+                "text-align:center;'>请点击允许</h1>",
+            zIndex:KE.baseZIndex(KE.zIndexManager.STORE_FLASH_SHOW)
+        });
+        o.render();
+        o.get("contentEl").append(store.swf);
+        // 必须在视窗范围内才可以初始化，触发 contentReady 事件
+        o.center();
+        o.show();
+
+        store.on("pending", function() {
+            o.set("width", 215);
+            o.center();
+            o.show();
+            // 轮训，直到用户允许
+            setTimeout(function() {
+                store.retrySave();
+            }, 1000);
+        });
+
+        store.on("save", function() {
+            o.set("width", 0);
+        });
+    });
+
+    var oldSet = store.setItem;
+
+    S.mix(store, {
         _ke:1,
-        getItem:function(key) {
-            return this['getValueOf'](key);
+        getItem:function(k) {
+            return this.getValueOf(k);
+        },
+        retrySave:function() {
+            this.setItem(this.lastSave.k, this.lastSave.v);
+        },
+        setItem:function(k, v) {
+            this.lastSave = {k:k,v:v};
+            oldSet.call(this, k, v);
         }
     });
 
     //非原生，等待flash通知
-    window[STORE].on("contentReady", function() {
+    store.on("contentReady", function() {
         complete();
+        KE.localStorage = store;
     });
+
     /*
-     window[STORE].on("quotaExceededError", function() {
-     alert("quotaExceededError");
-     });
-
-     window[STORE].on("error", function() {
-     alert("error");
-     });
-
-     window[STORE].on("save", function() {
-     alert("save");
-     });
-
-     window[STORE].on("inadequateDimensions", function() {
-     alert("inadequateDimensions");
-     });
+     "quotaExceededError"
+     "error"
+     "save"
+     "inadequateDimensions"
      */
+
 }, {
     //important
     //不能立即运行，ie6 可能会没有 domready 添加 flash 节点
@@ -17879,7 +17920,8 @@ KISSY.Editor.add("removeformat", function(editor) {
         });
         resizer._4e_unselectable();
         var d = new Draggable({
-            node:resizer
+            node:resizer,
+            cursor:'se-resize'
         }),
             height = 0,
             width = 0,
