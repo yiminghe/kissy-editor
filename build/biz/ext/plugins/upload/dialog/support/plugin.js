@@ -798,7 +798,6 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             ]);
             up.detach();
             up.on("click", function(ev) {
-                ev.halt();
                 uploader['uploadAll'](self._ds,
                     "POST",
                     normParams(self._dsp),
