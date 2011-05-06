@@ -174,11 +174,11 @@
 </div>
 
 
-<script src="http://yiminghe.github.com/kissy/build/kissy.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/uibase.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/component.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/dd.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/overlay.js"></script>
+<script src="http://yiminghe.github.com/kissy/build/kissy-min.js"></script>
+<script src="http://yiminghe.github.com/kissy/build/uibase-min.js"></script>
+<script src="http://yiminghe.github.com/kissy/build/component-min.js"></script>
+<script src="http://yiminghe.github.com/kissy/build/dd-min.js"></script>
+<script src="http://yiminghe.github.com/kissy/build/overlay-min.js"></script>
 
 <!--
 <script src="../../kissy/build/kissy.js"></script>
@@ -214,7 +214,7 @@ KISSY.ready(function(S) {
             pluginConfig: {
                 "image":{
                     upload:{
-                        serverUrl:"/code/upload/web/upload.jsp",
+                        serverUrl:"/upload/upload",
                         serverParams:{
                             waterMark:function() {
                                 return S.one("#ke_img_up_watermark_1")[0].checked;
@@ -287,7 +287,7 @@ KISSY.ready(function(S) {
                 //"font-underline":false,
                 //"font-strikeThrough":false,
                 "multi-upload":{
-                    serverUrl:"/code/upload/upload.jsp",
+                    serverUrl:"/upload/upload",
                     serverParams:{
                         waterMark:function() {
                             return S.one("#ke_img_up_watermark_2")[0].checked;

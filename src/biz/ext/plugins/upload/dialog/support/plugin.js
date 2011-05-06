@@ -100,6 +100,16 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             });
             var d = self.dialog;
 
+            // ie 6,7,8 upload swf 的容器如果设计了 visibility hidden 又 visible ，
+            // 那个 swf 似乎就出事了
+            // 所以不设置 visibility ，漂移大法
+            d.on("beforeVisibleChange", function(ev) {
+                if (!ev.newVal) {
+                    d.set("xy", [-9999,-9999]);
+                    return false;
+                }
+            });
+
             self.addRes(d);
 
             var bangpaiUploaderHolder = d.get("body"),
@@ -390,7 +400,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                                     url + "' />")
                             }
                             var offset = DOM.offset(td);
-                            offset.left += td.offsetWidth;
+                            offset.left += td[0].offsetWidth;
                             previewWin.set("xy", [offset.left,offset.top]);
                             previewWin.show();
                         }

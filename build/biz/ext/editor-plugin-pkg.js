@@ -246,7 +246,7 @@ KISSY.Editor.add("checkbox-sourcearea/support", function() {
             var self = this,el = self.el;
             if (el[0].checked) self._show();
             else self._hide();
-            ev && ev.stopPropagation();
+            //ev && ev.stopPropagation();
         },
         _show:function() {
             var self = this,
