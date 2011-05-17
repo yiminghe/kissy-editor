@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-05-06 15:46:06
+ * @buildtime: 2011-05-17 11:58:27
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -102,11 +102,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-05-06 15:46:06";
+            return "plugin-min.js?t=2011-05-17 11:58:27";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-05-06 15:46:06');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-05-17 11:58:27');
         };
     }
 
@@ -162,7 +162,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t="+encodeURIComponent("2011-02-14 14:32:25");
+                    url += "t=" + encodeURIComponent("2011-05-17 11:58:27");
                 }
                 return KE["Config"].base + url;
             },
@@ -12637,7 +12637,13 @@ KISSY.Editor.add("draft", function(editor) {
 }, {
     attach:false,
     "requires":["localstorage"]
-});KISSY.Editor.add("dragupload", function(editor) {
+});/**
+ * drag file support for html5 file&dd
+ * @author:yiminghe@gmail.com
+ * @refer: http://www.html5rocks.com/tutorials/file/filesystem/
+ *         http://yiminghe.iteye.com/blog/848613
+ */
+KISSY.Editor.add("dragupload", function(editor) {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -12671,11 +12677,11 @@ KISSY.Editor.add("draft", function(editor) {
             startMonitor = true;
         }
     });
-    Event.on(document, "dragenter dragover", function(ev) {
-        ev.halt();
-        ev = ev['originalEvent'];
-        //var dt = ev['dataTransfer'];
-    });
+//    Event.on(document, "dragenter dragover", function(ev) {
+//        ev.halt();
+//        ev = ev['originalEvent'];
+//        //var dt = ev['dataTransfer'];
+//    });
     Event.on(document, "drop", function(ev) {
         Event.remove(document, "DOMNodeInserted", nodeInsert);
         startMonitor = false;
@@ -12718,7 +12724,14 @@ KISSY.Editor.add("draft", function(editor) {
                 "src='" +
                 (KE['Config'].base + "../theme/loading.gif") + "'" +
                 "/>");
-            ap.insertBefore(img[0], archor);
+            var nakeImg = img[0];
+            ap.insertBefore(nakeImg, archor);
+            var np = nakeImg.parentNode,np_name = DOM._4e_name(np);
+            // 防止拖放导致插入到 body 以外
+            if (np_name == "head"
+                || np_name == "html") {
+                DOM.insertBefore(nakeImg, document.body.firstChild);
+            }
 
             fileUpload(file, img);
         }
@@ -12726,9 +12739,10 @@ KISSY.Editor.add("draft", function(editor) {
 
     if (window['XMLHttpRequest'] && !XMLHttpRequest.prototype.sendAsBinary) {
         XMLHttpRequest.prototype.sendAsBinary = function(datastr, contentType) {
-            var bb = new BlobBuilder();
+            // chrome12 引入 WebKitBlobBuilder
+            var bb = new (window['BlobBuilder'] || window['WebKitBlobBuilder'])();
             var len = datastr.length;
-            var data = new Uint8Array(len);
+            var data = new window['Uint8Array'](len);
             for (var i = 0; i < len; i++) {
                 data[i] = datastr.charCodeAt(i);
             }
@@ -12744,7 +12758,7 @@ KISSY.Editor.add("draft", function(editor) {
      */
     function fileUpload(file, img) {
 
-        var reader = new FileReader();
+        var reader = new window['FileReader']();
         //chrome 不支持 addEventListener("load")
         reader.onload = function(ev) {
             // Please report improvements to: marco.buratto at tiscali.it
