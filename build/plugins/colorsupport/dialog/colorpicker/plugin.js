@@ -54,22 +54,22 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
         "}", "ke-color-advanced");
 
     //获取颜色数组
-    function GetData(color) {
+    function getData(color) {
         if (S.isArray(color)) return color;
         var re = RegExp;
         if (/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.test(color)) {
             //#rrggbb
-            return map([ re.$1, re.$2, re.$3 ], function(x) {
+            return map([ re['$1'], re['$2'], re['$3'] ], function(x) {
                 return parseInt(x, 16);
             });
         } else if (/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.test(color)) {
             //#rgb
-            return map([ re.$1, re.$2, re.$3 ], function(x) {
+            return map([ re['$1'], re['$2'], re['$3'] ], function(x) {
                 return parseInt(x + x, 16);
             });
         } else if (/^rgb\((.*),(.*),(.*)\)$/i.test(color)) {
             //rgb(n,n,n) or rgb(n%,n%,n%)
-            return map([ re.$1, re.$2, re.$3 ], function(x) {
+            return map([ re['$1'], re['$2'], re['$3'] ], function(x) {
                 return x.indexOf("%") > 0 ? parseFloat(x, 10) * 2.55 : x | 0;
             });
         }
@@ -81,10 +81,10 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
     //获取颜色梯度方法
     var ColorGrads = (function() {
         //获取颜色梯度数据
-        function GetStep(start, end, step) {
+        function getStep(start, end, step) {
             var colors = [];
-            start = GetColor(start);
-            end = GetColor(end);
+            start = getColor(start);
+            end = getColor(end);
             var stepR = (end[0] - start[0]) / step,
                 stepG = (end[1] - start[1]) / step,
                 stepB = (end[2] - start[2]) / step;
@@ -107,8 +107,8 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
         //获取颜色数据
         var frag;
 
-        function GetColor(color) {
-            var ret = GetData(color);
+        function getColor(color) {
+            var ret = getData(color);
             if (ret === undefined) {
                 if (!frag) {
                     frag = document.createElement("textarea");
@@ -122,7 +122,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 }
 
                 if (document.defaultView) {
-                    ret = GetData(document.defaultView.getComputedStyle(frag, null).color);
+                    ret = getData(document.defaultView.getComputedStyle(frag, null).color);
                 } else {
                     color = frag.createTextRange()['queryCommandValue']("ForeColor");
                     ret = [ color & 0x0000ff, (color & 0x00ff00) >>> 8, (color & 0xff0000) >>> 16 ];
@@ -138,11 +138,11 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                 step = 20;
             }
             if (len == 1) {
-                ret = GetStep(colors[0], colors[0], step);
+                ret = getStep(colors[0], colors[0], step);
             } else if (len > 1) {
                 for (var i = 0, n = len - 1; i < n; i++) {
                     var t = step[i] || step;
-                    var steps = GetStep(colors[i], colors[i + 1], t);
+                    var steps = getStep(colors[i], colors[i + 1], t);
                     i < n - 1 && steps.pop();
                     ret = ret.concat(steps);
                 }
@@ -157,8 +157,8 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
         return x.slice(l - 2, l);
     }
 
-    function Hex(c) {
-        c = GetData(c);
+    function hex(c) {
+        c = getData(c);
         return "#" + padding2(c[0].toString(16))
             + padding2(c[1].toString(16))
             + padding2(c[2].toString(16));
@@ -166,12 +166,12 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
 
     var pickerHtml = "<ul>" +
         map(ColorGrads([ "red", "orange", "yellow", "green", "cyan", "blue", "purple" ], 5),
-           function(x) {
-               return map(ColorGrads([ "white", "rgb(" + x.join(",") + ")" ,"black" ], 5),
-                         function(x) {
-                             return "<li><a style='background-color" + ":" + Hex(x) + "' href='#'></a></li>";
-                         }).join("");
-           }).join("</ul><ul>") + "</ul>";
+            function(x) {
+                return map(ColorGrads([ "white", "rgb(" + x.join(",") + ")" ,"black" ], 5),
+                    function(x) {
+                        return "<li><a style='background-color" + ":" + hex(x) + "' href='#'></a></li>";
+                    }).join("");
+            }).join("</ul><ul>") + "</ul>";
 
 
     var panelHtml = "<div class='ke-color-advanced-picker'>" +
@@ -202,99 +202,99 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
 
     var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(ColorPicker, {
-        _init:function() {
-            var self = this;
-            self.__res = [];
-            self.win = new KE.Dialog({
-                mask:true,
-                headerContent:"颜色拾取器",
-                bodyContent:panelHtml,
-                footerContent:footHtml,
-                autoRender:true,
-                width:"550px"
-            });
-            var win = self.win,
-                body = win.get("body"),
-                foot = win.get("footer"),
-                indicator = body.one(".ke-color-advanced-indicator"),
-                indicatorValue = body.one(".ke-color-advanced-value"),
-                left = body.one(".ke-color-advanced-picker-left"),
-                right = body.one(".ke-color-advanced-picker-right"),
-                ok = foot.one(".ke-color-advanced-ok"),
-                cancel = foot.one(".ke-color-advanced-cancel");
+            _init:function() {
+                var self = this;
+                self.__res = [];
+                self.win = new KE.Dialog({
+                        mask:true,
+                        headerContent:"颜色拾取器",
+                        bodyContent:panelHtml,
+                        footerContent:footHtml,
+                        autoRender:true,
+                        width:"550px"
+                    });
+                var win = self.win,
+                    body = win.get("body"),
+                    foot = win.get("footer"),
+                    indicator = body.one(".ke-color-advanced-indicator"),
+                    indicatorValue = body.one(".ke-color-advanced-value"),
+                    left = body.one(".ke-color-advanced-picker-left"),
+                    right = body.one(".ke-color-advanced-picker-right"),
+                    ok = foot.one(".ke-color-advanced-ok"),
+                    cancel = foot.one(".ke-color-advanced-cancel");
 
-            ok.on("click", function(ev) {
-                var v = S.trim(indicatorValue.val()),
-                    cmd = self.cmd;
-                if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
-                    alert("请输入正确的颜色代码");
-                    return;
-                }
-                //先隐藏窗口，使得编辑器恢复焦点，恢复原先range
-                self.hide();
-                setTimeout(function() {
-                    cmd.cfg._applyColor.call(cmd, indicatorValue.val());
-                }, 0);
-                ev&&ev.halt();
-            });
-
-
-            indicatorValue.on("change", function() {
-                var v = S.trim(indicatorValue.val());
-                if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
-                    alert("请输入正确的颜色代码");
-                    return;
-                }
-                indicator.css("background-color", v);
-            });
+                ok.on("click", function(ev) {
+                    var v = S.trim(indicatorValue.val()),
+                        cmd = self.cmd;
+                    if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
+                        alert("请输入正确的颜色代码");
+                        return;
+                    }
+                    //先隐藏窗口，使得编辑器恢复焦点，恢复原先range
+                    self.hide();
+                    setTimeout(function() {
+                        cmd.cfg._applyColor.call(cmd, indicatorValue.val());
+                    }, 0);
+                    ev && ev.halt();
+                });
 
 
-            cancel.on("click", function(ev) {
-                self.hide();
-                ev&&ev.halt();
-            });
-            body.on("click", function(ev) {
-                ev.halt();
-                var t = new S.Node(ev.target);
-                if (t._4e_name() == "a") {
-                    var c = Hex(t.css("background-color"));
-                    if (left.contains(t))self._detailColor(c);
-                    indicatorValue.val(c);
-                    indicator.css("background-color", c);
-                }
-            });
-            addRes.call(self, ok, indicatorValue, cancel, body, self.win);
+                indicatorValue.on("change", function() {
+                    var v = S.trim(indicatorValue.val());
+                    if (!/^#([a-f0-9]{1,2}){3,3}$/i.test(v)) {
+                        alert("请输入正确的颜色代码");
+                        return;
+                    }
+                    indicator.css("background-color", v);
+                });
 
-            var defaultColor = "#FF9900";
-            self._detailColor(defaultColor);
-            indicatorValue.val(defaultColor);
-            indicator.css("background-color", defaultColor);
-        },
 
-        _detailColor:function(color) {
-            var self = this,
-                win = self.win,
-                body = win.get("body"),
-                detailPanel = body.one(".ke-color-advanced-picker-right");
+                cancel.on("click", function(ev) {
+                    self.hide();
+                    ev && ev.halt();
+                });
+                body.on("click", function(ev) {
+                    ev.halt();
+                    var t = new S.Node(ev.target);
+                    if (t._4e_name() == "a") {
+                        var c = hex(t.css("background-color"));
+                        if (left.contains(t))self._detailColor(c);
+                        indicatorValue.val(c);
+                        indicator.css("background-color", c);
+                    }
+                });
+                addRes.call(self, ok, indicatorValue, cancel, body, self.win);
 
-            detailPanel.html(map(ColorGrads(["#ffffff",color,"#000000"], 40),
-                                function(x) {
-                                    return "<a style='background-color:" + Hex(x) + "'></a>";
-                                }).join(""));
-        },
-        show:function(cmd) {
-            this.cmd = cmd;
-            this.win.show();
-        },
-        hide:function() {
-            this.win.hide();
-        },
-        destroy:function() {
-            destroyRes.call(this);
-        }
-    });
+                var defaultColor = "#FF9900";
+                self._detailColor(defaultColor);
+                indicatorValue.val(defaultColor);
+                indicator.css("background-color", defaultColor);
+            },
+
+            _detailColor:function(color) {
+                var self = this,
+                    win = self.win,
+                    body = win.get("body"),
+                    detailPanel = body.one(".ke-color-advanced-picker-right");
+
+                detailPanel.html(map(ColorGrads(["#ffffff",color,"#000000"], 40),
+                    function(x) {
+                        return "<a style='background-color:" + hex(x) + "'></a>";
+                    }).join(""));
+            },
+            show:function(cmd) {
+                this.cmd = cmd;
+                this.win.show();
+            },
+            hide:function() {
+                this.win.hide();
+            },
+            destroy:function() {
+                destroyRes.call(this);
+            }
+        });
 
     KE.ColorSupport.ColorPicker = ColorPicker;
-},{
-    attach:false
-});
+}, {
+        attach:false
+    });

@@ -20,7 +20,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
                 for (var i in INSTANCES) {
                     var e = INSTANCES[i];
                     e.document.designMode = "off";
-                    e.document.designMode = "on";
+                    e.document['designMode'] = "on";
                 }
             },
             /**
@@ -103,9 +103,10 @@ KISSY.Editor.add("focusmanager", function(KE) {
         //S.log(editor._UUID + " blur");
     }
 
+    focusManager['refreshAll'] = focusManager.refreshAll;
     KE.focusManager = focusManager;
     KE["focusManager"] = focusManager;
-    KE.getInstances = function() {
+    KE['getInstances'] = function() {
         return INSTANCES;
     };
     KE["getInstances"] = KE.getInstances;

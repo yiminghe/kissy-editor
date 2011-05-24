@@ -127,7 +127,7 @@ KISSY.Editor.add("selection", function(KE) {
 
                     if (startContainer == range.endContainer
                         && startContainer.nodeType == KEN.NODE_ELEMENT
-                        && ( range.endOffset - range.startOffset ) === 1
+                        && Number( range.endOffset - range.startOffset ) == 1
                         && styleObjectElements[ startContainer.childNodes[ range.startOffset ].nodeName.toLowerCase() ]) {
                         type = KES.SELECTION_ELEMENT;
                     }
@@ -736,7 +736,7 @@ KISSY.Editor.add("selection", function(KE) {
                         // instead to have any char, which will be later deleted using the
                         // selection.
                         // \ufeff = Zero Width No-Break Space (U+FEFF). (#1359)
-                        DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode);
+                        DOM.insertBefore(self.document.createTextNode('\ufeff'), startNode[0]||startNode);
                     }
                 }
 

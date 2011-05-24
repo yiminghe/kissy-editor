@@ -356,7 +356,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // been resolved from a pseudo list item's margin value, even get
                     // no indentation at all.
                     listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent) )
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent,undefined) )
                         || 1;
 
                     // Ignore the 'list-style-type' attribute if it's matched with

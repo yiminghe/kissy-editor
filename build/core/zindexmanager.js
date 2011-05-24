@@ -30,7 +30,7 @@ KISSY.Editor.add("zindex", function() {
      * 获得全局最大值
      */
     KE.baseZIndex = function(z) {
-        return (KE.Config.baseZIndex || 10000) + z;
+        return (KE['Config'].baseZIndex || 10000) + z;
     };
 
     KE["baseZIndex"] = KE.baseZIndex;

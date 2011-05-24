@@ -96,7 +96,7 @@ KISSY.Editor.add("localstorage", function() {
     S.mix(store, {
         _ke:1,
         getItem:function(k) {
-            return this.getValueOf(k);
+            return this['getValueOf'](k);
         },
         retrySave:function() {
             this.setItem(this.lastSave.k, this.lastSave.v);

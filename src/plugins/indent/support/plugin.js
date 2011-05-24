@@ -128,7 +128,8 @@ KISSY.Editor.add("indent/support", function() {
         }
 
         if (newList) {
-            DOM.insertBefore(newList.listNode, listNode);
+            DOM.insertBefore(newList.listNode[0]||newList.listNode,
+                listNode[0]||listNode);
             listNode._4e_remove();
         }
         // Move the nested <li> to be appeared after the parent.
@@ -179,7 +180,7 @@ KISSY.Editor.add("indent/support", function() {
             return false;
 
         currentOffset = Math.max(currentOffset, 0);
-        currentOffset = Math.ceil(currentOffset / this.indentOffset) * this.indentOffset;
+        currentOffset = Math.ceil(currentOffset / this.indentOffset,undefined) * this.indentOffset;
         element.css(this.indentCssProperty, currentOffset ? currentOffset + this.indentUnit : '');
         if (element[0].style.cssText === '')
             element.removeAttr('style');

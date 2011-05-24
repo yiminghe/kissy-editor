@@ -96,7 +96,6 @@ KISSY.add("editor", function(S) {
         //配置内部组件载入文件名
         self["Config"]['componentJsName'] = getJSName;
         self.init(textarea);
-        return self;
     }
 
     var getJSName;

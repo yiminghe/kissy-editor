@@ -18,7 +18,7 @@ KISSY.Editor.add("styles", function(KE) {
          * enum for style type
          * @enum {number}
          */
-        KEST = {
+            KEST = {
             STYLE_BLOCK:1,
             STYLE_INLINE:2,
             STYLE_OBJECT:3
@@ -66,7 +66,7 @@ KISSY.Editor.add("styles", function(KE) {
         semicolonFixRegex = /\s*(?:;\s*|$)/g,
         varRegex = /#\((.+?)\)/g;
 
-    KE.STYLE = KEST;
+    KE['STYLE'] = KEST;
 
     function notBookmark(node) {
         //only get attributes on element nodes by kissy
@@ -397,11 +397,11 @@ KISSY.Editor.add("styles", function(KE) {
             tailBookmark = '';
 
         str = str.replace(/(^<span[^>]+_ke_bookmark.*?\/span>)|(<span[^>]+_ke_bookmark.*?\/span>$)/gi,
-                         function(str, m1, m2) {
-                             m1 && ( headBookmark = m1 );
-                             m2 && ( tailBookmark = m2 );
-                             return '';
-                         });
+            function(str, m1, m2) {
+                m1 && ( headBookmark = m1 );
+                m2 && ( tailBookmark = m2 );
+                return '';
+            });
         return headBookmark + str.replace(regexp, replacement) + tailBookmark;
     }
 
@@ -450,15 +450,15 @@ KISSY.Editor.add("styles", function(KE) {
             //blockName = preBlock._4e_name(),
             splittedHtml = replace(preBlock._4e_outerHtml(),
                 duoBrRegex,
-                                  function(match, charBefore, bookmark) {
-                                      return charBefore + '</pre>' + bookmark + '<pre>';
-                                  });
+                function(match, charBefore, bookmark) {
+                    return charBefore + '</pre>' + bookmark + '<pre>';
+                });
 
         var pres = [];
         splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
-                            function(match, preContent) {
-                                pres.push(preContent);
-                            });
+            function(match, preContent) {
+                pres.push(preContent);
+            });
         return pres;
     }
 
@@ -541,9 +541,9 @@ KISSY.Editor.add("styles", function(KE) {
             // 4. Convert contiguous (i.e. non-singular) spaces or tabs to &nbsp;
             blockHtml = blockHtml.replace(/\n/g, '<br>');
             blockHtml = blockHtml.replace(/[ \t]{2,}/g,
-                                         function (match) {
-                                             return new Array(match.length).join('&nbsp;') + ' ';
-                                         });
+                function (match) {
+                    return new Array(match.length).join('&nbsp;') + ' ';
+                });
 
             var newBlockClone = newBlock._4e_clone();
             newBlockClone.html(blockHtml);
@@ -897,7 +897,10 @@ KISSY.Editor.add("styles", function(KE) {
                 //<strong>xx|</strong>  ->
                 //<strong>xx<strong>|
                 DOM[ boundaryElement.match == 'start' ?
-                    'insertBefore' : 'insertAfter' ](clonedElement, boundaryElement);
+                    'insertBefore' : 'insertAfter' ](
+                    DOM._4e_unwrap(clonedElement),
+                    DOM._4e_unwrap(boundaryElement)
+                );
             }
         } else {
             /*
@@ -994,9 +997,9 @@ KISSY.Editor.add("styles", function(KE) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
             .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-                    function(match, name, value) {
-                        retval[ name ] = value;
-                    });
+            function(match, name, value) {
+                retval[ name ] = value;
+            });
         return retval;
     }
 
@@ -1328,12 +1331,12 @@ KISSY.Editor.add("styles", function(KE) {
 
     var StyleP = KEStyle.prototype;
     KE.Utils.extern(StyleP, {
-        "apply":StyleP.apply,
-        "remove":StyleP.remove,
-        "applyToRange":StyleP.applyToRange,
-        "removeFromRange":StyleP.removeFromRange,
-        "applyToObject":StyleP.applyToObject,
-        "checkElementRemovable":StyleP.checkElementRemovable,
-        "checkActive":StyleP.checkActive
-    });
+            "apply":StyleP.apply,
+            "remove":StyleP.remove,
+            "applyToRange":StyleP.applyToRange,
+            "removeFromRange":StyleP.removeFromRange,
+            "applyToObject":StyleP.applyToObject,
+            "checkElementRemovable":StyleP.checkElementRemovable,
+            "checkActive":StyleP.checkActive
+        });
 });

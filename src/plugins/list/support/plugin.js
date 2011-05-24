@@ -23,11 +23,7 @@ KISSY.Editor.add("list/support", function() {
          * markers to the list item nodes when database is specified.
          * 扁平化处理，深度遍历，利用 indent 和顺序来表示一棵树
          */
-        listToArray : function(listNode,
-                               database,
-                               baseArray,
-                               baseIndentLevel,
-                               grandparentNode) {
+        listToArray : function(listNode, database, baseArray, baseIndentLevel, grandparentNode) {
             if (!listNodeNames[ listNode._4e_name() ])
                 return [];
 
@@ -80,8 +76,7 @@ KISSY.Editor.add("list/support", function() {
 
         // Convert our internal representation of a list back to a DOM forest.
         //根据包含indent属性的元素数组来生成树
-        arrayToList : function(listArray, database,
-                               baseIndex, paragraphMode) {
+        arrayToList : function(listArray, database, baseIndex, paragraphMode) {
             if (!baseIndex)
                 baseIndex = 0;
             if (!listArray || listArray.length < baseIndex + 1)
@@ -210,7 +205,7 @@ KISSY.Editor.add("list/support", function() {
             // 3. Recreate the whole list by converting the array to a list.
             // 4. Replace the original list with the recreated list.
             var listArray = list.listToArray(groupObj.root, database,
-                undefined,undefined,undefined),
+                undefined, undefined, undefined),
                 selectedListItems = [];
 
             for (var i = 0; i < groupObj.contents.length; i++) {
@@ -235,7 +230,7 @@ KISSY.Editor.add("list/support", function() {
                 if (child._4e_name() == this.type)
                     listsCreated.push(child);
             }
-            DOM.insertBefore(newList.listNode, groupObj.root);
+            DOM.insertBefore(DOM._4e_unwrap(newList.listNode), DOM._4e_unwrap(groupObj.root));
             groupObj.root._4e_remove();
         },
         createList:function(editor, groupObj, listsCreated) {
@@ -303,7 +298,7 @@ KISSY.Editor.add("list/support", function() {
                     listItem._4e_appendBogus();
             }
             if (insertAnchor[0])
-                DOM.insertBefore(listNode, insertAnchor);
+                listNode.insertBefore(insertAnchor);
             else
                 commonParent.append(listNode);
         },
@@ -311,7 +306,7 @@ KISSY.Editor.add("list/support", function() {
             // This is very much like the change list type operation.
             // Except that we're changing the selected items' indent to -1 in the list array.
             var listArray = list.listToArray(groupObj.root, database,
-                undefined,undefined,undefined),
+                undefined, undefined, undefined),
                 selectedListItems = [];
 
             for (var i = 0; i < groupObj.contents.length; i++) {
@@ -364,13 +359,14 @@ KISSY.Editor.add("list/support", function() {
                     siblingNode._4e_isBlockBoundary({ br : 1 }) ))
 
                     DOM[ isStart ? 'insertBefore' : 'insertAfter' ](editor.document.createElement('br'),
-                        boundaryNode);
+                        DOM._4e_unwrap(boundaryNode));
             }
 
             compensateBrs(true);
             compensateBrs(undefined);
 
-            DOM.insertBefore(docFragment, groupObj.root);
+            DOM.insertBefore(DOM._4e_unwrap(docFragment),
+                DOM._4e_unwrap(groupObj.root));
             groupObj.root._4e_remove();
         },
 
@@ -497,8 +493,9 @@ KISSY.Editor.add("list/support", function() {
                 //note by yiminghe,why not use merge sibling directly
                 //listNode._4e_mergeSiblings();
 
-                var mergeSibling, listCommand = this;
-                ( mergeSibling = function(rtl) {
+                var listCommand = this;
+
+                function mergeSibling(rtl) {
 
                     var sibling = listNode[ rtl ?
                         '_4e_previous' : '_4e_next' ](Walker.whitespaces(true));
@@ -508,7 +505,9 @@ KISSY.Editor.add("list/support", function() {
                         // Move children order by merge direction.(#3820)
                         sibling._4e_moveChildren(listNode, rtl ? true : false);
                     }
-                } )();
+                }
+
+                mergeSibling(undefined);
                 mergeSibling(true);
 
             }
@@ -576,6 +575,6 @@ KISSY.Editor.add("list/support", function() {
     };
     KE.ListUtils = list;
     KE.ListSupport = listSupport
-},{
-    attach:false
-});
+}, {
+        attach:false
+    });

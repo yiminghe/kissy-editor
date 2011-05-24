@@ -33,8 +33,9 @@ KISSY.Editor.add("dtd", function(KE) {
          *
          * @param {...Object} r
          */
-        function X(r) {
-            var i = arguments.length - 1;
+        function X() {
+            var r=arguments[0],
+                i = arguments.length - 1;
             while (i > 0) {
                 KISSY.mix(r, arguments[i--]);
             }

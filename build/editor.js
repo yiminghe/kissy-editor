@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-05-17 11:58:27
+ * @buildtime: 2011-05-24 16:14:43
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -96,17 +96,16 @@ KISSY.add("editor", function(S) {
         //配置内部组件载入文件名
         self["Config"]['componentJsName'] = getJSName;
         self.init(textarea);
-        return self;
     }
 
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-05-17 11:58:27";
+            return "plugin-min.js?t=2011-05-24 16:14:43";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-05-17 11:58:27');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-05-24 16:14:43');
         };
     }
 

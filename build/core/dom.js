@@ -364,12 +364,12 @@ KISSY.Editor.add("dom", function(KE) {
                 UA.gecko ?
                 function(el) {
                     el = normalElDom(el);
-                    el.style.MozUserSelect = 'none';
+                    el.style['MozUserSelect'] = 'none';
                 }
                     : UA.webkit ?
                       function(el) {
                           el = normalElDom(el);
-                          el.style.KhtmlUserSelect = 'none';
+                          el.style['KhtmlUserSelect'] = 'none';
                       }
                     :
                       function(el) {

@@ -49,7 +49,7 @@ KISSY.Editor.add("removeformat", function(editor) {
                 var self = this,
                     editor = self.editor;
                 editor.focus();
-                tagsRegex.lastIndex = 0;
+                tagsRegex['lastIndex'] = 0;
                 var ranges = editor.getSelection().getRanges();
                 editor.fire("save");
                 for (var i = 0, range;
