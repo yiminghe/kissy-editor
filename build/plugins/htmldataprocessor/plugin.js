@@ -285,44 +285,44 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 String(styleText)
                     .replace(/&quot;/g, '"')
                     .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-                            function(match, name, value) {
-                                name = name.toLowerCase();
-                                name == 'font-family' && ( value = value.replace(/["']/g, '') );
+                    function(match, name, value) {
+                        name = name.toLowerCase();
+                        name == 'font-family' && ( value = value.replace(/["']/g, '') );
 
-                                var namePattern,
-                                    valuePattern,
-                                    newValue,
-                                    newName;
-                                for (var i = 0; i < styles.length; i++) {
-                                    if (styles[ i ]) {
-                                        namePattern = styles[ i ][ 0 ];
-                                        valuePattern = styles[ i ][ 1 ];
-                                        newValue = styles[ i ][ 2 ];
-                                        newName = styles[ i ][ 3 ];
+                        var namePattern,
+                            valuePattern,
+                            newValue,
+                            newName;
+                        for (var i = 0; i < styles.length; i++) {
+                            if (styles[ i ]) {
+                                namePattern = styles[ i ][ 0 ];
+                                valuePattern = styles[ i ][ 1 ];
+                                newValue = styles[ i ][ 2 ];
+                                newName = styles[ i ][ 3 ];
 
-                                        if (name.match(namePattern)
-                                            && ( !valuePattern || value.match(valuePattern) )) {
-                                            name = newName || name;
-                                            whitelist && ( newValue = newValue || value );
+                                if (name.match(namePattern)
+                                    && ( !valuePattern || value.match(valuePattern) )) {
+                                    name = newName || name;
+                                    whitelist && ( newValue = newValue || value );
 
-                                            if (typeof newValue == 'function')
-                                                newValue = newValue(value, element, name);
+                                    if (typeof newValue == 'function')
+                                        newValue = newValue(value, element, name);
 
-                                            // Return an couple indicate both name and value
-                                            // changed.
-                                            if (newValue && newValue.push)
-                                                name = newValue[ 0 ],newValue = newValue[ 1 ];
+                                    // Return an couple indicate both name and value
+                                    // changed.
+                                    if (newValue && newValue.push)
+                                        name = newValue[ 0 ],newValue = newValue[ 1 ];
 
-                                            if (typeof newValue == 'string')
-                                                rules.push([ name, newValue ]);
-                                            return;
-                                        }
-                                    }
+                                    if (typeof newValue == 'string')
+                                        rules.push([ name, newValue ]);
+                                    return;
                                 }
+                            }
+                        }
 
-                                !whitelist && rules.push([ name, value ]);
+                        !whitelist && rules.push([ name, value ]);
 
-                            });
+                    });
 
                 for (var i = 0; i < rules.length; i++)
                     rules[ i ] = rules[ i ].join(':');
@@ -356,7 +356,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // been resolved from a pseudo list item's margin value, even get
                     // no indentation at all.
                     listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent,undefined) )
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent, undefined) )
                         || 1;
 
                     // Ignore the 'list-style-type' attribute if it's matched with
@@ -441,9 +441,27 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 $:function(el) {
                     var tagName = el.name || "";
                     //ms world <o:p> 保留内容
-                    if (tagName.indexOf(':') != -1 && tagName.indexOf("ke") == -1) {
+                    if (tagName.indexOf(':') != -1 && !/^ke/.test(tagName)) {
                         //先处理子孙节点，防止delete el.name后，子孙得不到处理?
                         //el.filterChildren();
+
+                        // 和 firefox 一样处理，把 imagedata 转换成 image 标签
+                        // note : webkit 自己处理了
+                        if (tagName == 'v:imagedata') {
+                            var href = el.attributes[ 'o:href' ];
+                            if (href) {
+                                el.attributes.src = el.attributes[ 'o:href' ];
+                                delete el.attributes[ 'o:href' ];
+                            }
+                            var title = el.attributes[ 'o:title' ];
+                            if (title) {
+                                el.attributes.title = title;
+                                delete el.attributes[ 'o:title' ];
+                            }
+                            el.name = 'img';
+                            return;
+                        }
+
                         delete el.name;
                     }
 
@@ -480,51 +498,63 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  * ul,li 从 ms word 重建
                  * @param element
                  */
-                span:function(element) {
-                    // IE/Safari: remove the span if it comes from list bullet text.
-                    if (!UA.gecko &&
-                        isListBulletIndicator(element.parent)
-                        )
-                        return false;
+                span
+                    :
+                    function(element) {
+                        // IE/Safari: remove the span if it comes from list bullet text.
+                        if (!UA.gecko &&
+                            isListBulletIndicator(element.parent)
+                            )
+                            return false;
 
-                    // For IE/Safari: List item bullet type is supposed to be indicated by
-                    // the text of a span with style 'mso-list : Ignore' or an image.
-                    if (!UA.gecko &&
-                        isListBulletIndicator(element)) {
-                        var listSymbolNode = element.firstChild(function(node) {
-                            return node.value || node.name == 'img';
-                        });
-                        var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
-                            listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
-                        return createListBulletMarker(listType, listSymbol);
+                        // For IE/Safari: List item bullet type is supposed to be indicated by
+                        // the text of a span with style 'mso-list : Ignore' or an image.
+                        if (!UA.gecko &&
+                            isListBulletIndicator(element)) {
+                            var listSymbolNode = element.firstChild(function(node) {
+                                return node.value || node.name == 'img';
+                            });
+                            var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
+                                listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
+                            return createListBulletMarker(listType, listSymbol);
+                        }
                     }
-                }
             },
 
-            attributes :  {
+            attributes
+                :
+            {
                 //防止word的垃圾class，
                 //全部杀掉算了，除了以ke_开头的编辑器内置class
                 //不要全部杀掉，可能其他应用有需要
-                'class' : function(value
-                                   // , element
-                    ) {
-                    if (/(^|\s+)Mso/.test(value)) return false;
-                    return value;
-                },
-                'style':function(value) {
-                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
-                    var re = filterStyle(value);
-                    if (!re) return false;
-                    return re;
-                }
-            },
+                'class'
+                    :
+                    function(value
+                             // , element
+                        ) {
+                        if (/(^|\s+)Mso/.test(value)) return false;
+                        return value;
+                    }
+
+                ,
+                'style'
+                    :
+                    function(value) {
+                        //去除<i style="mso-bidi-font-style: normal">微软垃圾
+                        var re = filterStyle(value);
+                        if (!re) return false;
+                        return re;
+                    }
+            }
+            ,
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
                 [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
             ]
-        };
+        }
+            ;
 
 
         /**
@@ -532,35 +562,35 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
          */
         var wordRules = {
             comment : !UA.ie ?
-                      function(value, node) {
-                          var imageInfo = value.match(/<img.*?>/),
-                              listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
-                          // Seek for list bullet indicator.
-                          if (listInfo) {
-                              // Bullet symbol could be either text or an image.
-                              var listSymbol = listInfo[ 1 ] || ( imageInfo && 'l.' ),
-                                  listType = listSymbol && listSymbol.match(/>([^\s]+?)([.)]?)</);
-                              return createListBulletMarker(listType, listSymbol);
-                          }
+                function(value, node) {
+                    var imageInfo = value.match(/<img.*?>/),
+                        listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
+                    // Seek for list bullet indicator.
+                    if (listInfo) {
+                        // Bullet symbol could be either text or an image.
+                        var listSymbol = listInfo[ 1 ] || ( imageInfo && 'l.' ),
+                            listType = listSymbol && listSymbol.match(/>([^\s]+?)([.)]?)</);
+                        return createListBulletMarker(listType, listSymbol);
+                    }
 
-                          // Reveal the <img> element in conditional comments for Firefox.
-                          if (UA.gecko && imageInfo) {
-                              var img = KE.HtmlParser.Fragment.FromHtml(imageInfo[0]).children[ 0 ],
-                                  previousComment = node.previous,
-                                  // Try to dig the real image link from vml markup from previous comment text.
-                                  imgSrcInfo = previousComment && previousComment.value.match(/<v:imagedata[^>]*o:href=['"](.*?)['"]/),
-                                  imgSrc = imgSrcInfo && imgSrcInfo[ 1 ];
-                              // Is there a real 'src' url to be used?
-                              imgSrc && ( img.attributes.src = imgSrc );
-                              return img;
-                          }
-                          return false;
-                      } :
-                      function() {
-                          return false;
-                      }
+                    // Reveal the <img> element in conditional comments for Firefox.
+                    if (UA.gecko && imageInfo) {
+                        var img = KE.HtmlParser.Fragment.FromHtml(imageInfo[0]).children[ 0 ],
+                            previousComment = node.previous,
+                            // Try to dig the real image link from vml markup from previous comment text.
+                            imgSrcInfo = previousComment && previousComment.value.match(/<v:imagedata[^>]*o:href=['"](.*?)['"]/),
+                            imgSrc = imgSrcInfo && imgSrcInfo[ 1 ];
+                        // Is there a real 'src' url to be used?
+                        imgSrc && ( img.attributes.src = imgSrc );
+                        return img;
+                    }
+                    return false;
+                } :
+                function() {
+                    return false;
+                }
         };
-        //将编辑区生成html最终化
+//将编辑区生成html最终化
         var defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -681,7 +711,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         wordFilter.addRules(defaultDataFilterRules);
         wordFilter.addRules(wordRules);
-    })();
+    })
+        ();
 
 
     /**
@@ -788,26 +819,26 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     })();
 
 
-    //htmlparser fragment 中的 entities 处理
-    //el.innerHTML="&nbsp;"
-    //alert(el.innerHTML);
-    //http://yiminghe.javaeye.com/blog/788929
+//htmlparser fragment 中的 entities 处理
+//el.innerHTML="&nbsp;"
+//alert(el.innerHTML);
+//http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
-            text : function(text) {
-                return text
-                    //.replace(/&nbsp;/g, "\xa0")
-                    .replace(/\xa0/g, "&nbsp;");
-            }
-        });
+                text : function(text) {
+                    return text
+                        //.replace(/&nbsp;/g, "\xa0")
+                        .replace(/\xa0/g, "&nbsp;");
+                }
+            });
     })();
 
 
     var protectElementRegex = /<(a|area|img|input)\b([^>]*)>/gi,
         protectAttributeRegex = /\b(href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+))/gi;
-    //ie 6-7 会将 关于 url 的 content value 替换为 dom value
-    //#a -> http://xxx/#a
-    //../x.html -> http://xx/x.html
+//ie 6-7 会将 关于 url 的 content value 替换为 dom value
+//#a -> http://xxx/#a
+//../x.html -> http://xx/x.html
     function protectAttributes(html) {
         return html.replace(protectElementRegex, function(element, tag, attributes) {
             return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
@@ -924,6 +955,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-}, {
-    attach:false
-});
+},
+    {
+        attach:false
+    }
+)
+    ;

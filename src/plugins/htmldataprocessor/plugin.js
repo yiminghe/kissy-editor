@@ -448,11 +448,17 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         // 和 firefox 一样处理，把 imagedata 转换成 image 标签
                         // note : webkit 自己处理了
                         if (tagName == 'v:imagedata') {
+                            var href = el.attributes[ 'o:href' ];
+                            if (href) {
+                                el.attributes.src = el.attributes[ 'o:href' ];
+                                delete el.attributes[ 'o:href' ];
+                            }
+                            var title = el.attributes[ 'o:title' ];
+                            if (title) {
+                                el.attributes.title = title;
+                                delete el.attributes[ 'o:title' ];
+                            }
                             el.name = 'img';
-                            el.attributes.src = el.attributes[ 'o:href' ];
-                            el.attributes.title = el.attributes[ 'o:title' ];
-                            delete el.attributes[ 'o:href' ];
-                            delete el.attributes[ 'o:title' ];
                             return;
                         }
 
@@ -492,51 +498,63 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  * ul,li 从 ms word 重建
                  * @param element
                  */
-                span:function(element) {
-                    // IE/Safari: remove the span if it comes from list bullet text.
-                    if (!UA.gecko &&
-                        isListBulletIndicator(element.parent)
-                        )
-                        return false;
+                span
+                    :
+                    function(element) {
+                        // IE/Safari: remove the span if it comes from list bullet text.
+                        if (!UA.gecko &&
+                            isListBulletIndicator(element.parent)
+                            )
+                            return false;
 
-                    // For IE/Safari: List item bullet type is supposed to be indicated by
-                    // the text of a span with style 'mso-list : Ignore' or an image.
-                    if (!UA.gecko &&
-                        isListBulletIndicator(element)) {
-                        var listSymbolNode = element.firstChild(function(node) {
-                            return node.value || node.name == 'img';
-                        });
-                        var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
-                            listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
-                        return createListBulletMarker(listType, listSymbol);
+                        // For IE/Safari: List item bullet type is supposed to be indicated by
+                        // the text of a span with style 'mso-list : Ignore' or an image.
+                        if (!UA.gecko &&
+                            isListBulletIndicator(element)) {
+                            var listSymbolNode = element.firstChild(function(node) {
+                                return node.value || node.name == 'img';
+                            });
+                            var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
+                                listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
+                            return createListBulletMarker(listType, listSymbol);
+                        }
                     }
-                }
             },
 
-            attributes :  {
+            attributes
+                :
+            {
                 //防止word的垃圾class，
                 //全部杀掉算了，除了以ke_开头的编辑器内置class
                 //不要全部杀掉，可能其他应用有需要
-                'class' : function(value
-                                   // , element
-                    ) {
-                    if (/(^|\s+)Mso/.test(value)) return false;
-                    return value;
-                },
-                'style':function(value) {
-                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
-                    var re = filterStyle(value);
-                    if (!re) return false;
-                    return re;
-                }
-            },
+                'class'
+                    :
+                    function(value
+                             // , element
+                        ) {
+                        if (/(^|\s+)Mso/.test(value)) return false;
+                        return value;
+                    }
+
+                ,
+                'style'
+                    :
+                    function(value) {
+                        //去除<i style="mso-bidi-font-style: normal">微软垃圾
+                        var re = filterStyle(value);
+                        if (!re) return false;
+                        return re;
+                    }
+            }
+            ,
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
                 [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
             ]
-        };
+        }
+            ;
 
 
         /**
@@ -572,7 +590,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     return false;
                 }
         };
-        //将编辑区生成html最终化
+//将编辑区生成html最终化
         var defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -693,7 +711,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         wordFilter.addRules(defaultDataFilterRules);
         wordFilter.addRules(wordRules);
-    })();
+    })
+        ();
 
 
     /**
@@ -800,10 +819,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     })();
 
 
-    //htmlparser fragment 中的 entities 处理
-    //el.innerHTML="&nbsp;"
-    //alert(el.innerHTML);
-    //http://yiminghe.javaeye.com/blog/788929
+//htmlparser fragment 中的 entities 处理
+//el.innerHTML="&nbsp;"
+//alert(el.innerHTML);
+//http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
                 text : function(text) {
@@ -817,9 +836,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
     var protectElementRegex = /<(a|area|img|input)\b([^>]*)>/gi,
         protectAttributeRegex = /\b(href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+))/gi;
-    //ie 6-7 会将 关于 url 的 content value 替换为 dom value
-    //#a -> http://xxx/#a
-    //../x.html -> http://xx/x.html
+//ie 6-7 会将 关于 url 的 content value 替换为 dom value
+//#a -> http://xxx/#a
+//../x.html -> http://xx/x.html
     function protectAttributes(html) {
         return html.replace(protectElementRegex, function(element, tag, attributes) {
             return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
@@ -936,6 +955,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-}, {
+},
+    {
         attach:false
-    });
+    }
+)
+    ;

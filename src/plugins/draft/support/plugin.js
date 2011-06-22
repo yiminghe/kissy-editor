@@ -88,7 +88,7 @@ KISSY.Editor.add("draft/support", function() {
                     + "分钟自动保存一次。" +
                     "</span>" +
                     "</div>").appendTo(statusbar);
-            self.timeTip = new Node("<span class='ke-draft-time'>")
+            self.timeTip = new Node("<span class='ke-draft-time'/>")
                 .appendTo(holder);
 
             var save = new Node(
