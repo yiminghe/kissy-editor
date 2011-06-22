@@ -285,44 +285,44 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 String(styleText)
                     .replace(/&quot;/g, '"')
                     .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-                            function(match, name, value) {
-                                name = name.toLowerCase();
-                                name == 'font-family' && ( value = value.replace(/["']/g, '') );
+                    function(match, name, value) {
+                        name = name.toLowerCase();
+                        name == 'font-family' && ( value = value.replace(/["']/g, '') );
 
-                                var namePattern,
-                                    valuePattern,
-                                    newValue,
-                                    newName;
-                                for (var i = 0; i < styles.length; i++) {
-                                    if (styles[ i ]) {
-                                        namePattern = styles[ i ][ 0 ];
-                                        valuePattern = styles[ i ][ 1 ];
-                                        newValue = styles[ i ][ 2 ];
-                                        newName = styles[ i ][ 3 ];
+                        var namePattern,
+                            valuePattern,
+                            newValue,
+                            newName;
+                        for (var i = 0; i < styles.length; i++) {
+                            if (styles[ i ]) {
+                                namePattern = styles[ i ][ 0 ];
+                                valuePattern = styles[ i ][ 1 ];
+                                newValue = styles[ i ][ 2 ];
+                                newName = styles[ i ][ 3 ];
 
-                                        if (name.match(namePattern)
-                                            && ( !valuePattern || value.match(valuePattern) )) {
-                                            name = newName || name;
-                                            whitelist && ( newValue = newValue || value );
+                                if (name.match(namePattern)
+                                    && ( !valuePattern || value.match(valuePattern) )) {
+                                    name = newName || name;
+                                    whitelist && ( newValue = newValue || value );
 
-                                            if (typeof newValue == 'function')
-                                                newValue = newValue(value, element, name);
+                                    if (typeof newValue == 'function')
+                                        newValue = newValue(value, element, name);
 
-                                            // Return an couple indicate both name and value
-                                            // changed.
-                                            if (newValue && newValue.push)
-                                                name = newValue[ 0 ],newValue = newValue[ 1 ];
+                                    // Return an couple indicate both name and value
+                                    // changed.
+                                    if (newValue && newValue.push)
+                                        name = newValue[ 0 ],newValue = newValue[ 1 ];
 
-                                            if (typeof newValue == 'string')
-                                                rules.push([ name, newValue ]);
-                                            return;
-                                        }
-                                    }
+                                    if (typeof newValue == 'string')
+                                        rules.push([ name, newValue ]);
+                                    return;
                                 }
+                            }
+                        }
 
-                                !whitelist && rules.push([ name, value ]);
+                        !whitelist && rules.push([ name, value ]);
 
-                            });
+                    });
 
                 for (var i = 0; i < rules.length; i++)
                     rules[ i ] = rules[ i ].join(':');
@@ -356,7 +356,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // been resolved from a pseudo list item's margin value, even get
                     // no indentation at all.
                     listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent,undefined) )
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent, undefined) )
                         || 1;
 
                     // Ignore the 'list-style-type' attribute if it's matched with
@@ -441,9 +441,21 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 $:function(el) {
                     var tagName = el.name || "";
                     //ms world <o:p> 保留内容
-                    if (tagName.indexOf(':') != -1 && tagName.indexOf("ke") == -1) {
+                    if (tagName.indexOf(':') != -1 && !/^ke/.test(tagName)) {
                         //先处理子孙节点，防止delete el.name后，子孙得不到处理?
                         //el.filterChildren();
+
+                        // 和 firefox 一样处理，把 imagedata 转换成 image 标签
+                        // note : webkit 自己处理了
+                        if (tagName == 'v:imagedata') {
+                            el.name = 'img';
+                            el.attributes.src = el.attributes[ 'o:href' ];
+                            el.attributes.title = el.attributes[ 'o:title' ];
+                            delete el.attributes[ 'o:href' ];
+                            delete el.attributes[ 'o:title' ];
+                            return;
+                        }
+
                         delete el.name;
                     }
 
@@ -532,33 +544,33 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
          */
         var wordRules = {
             comment : !UA.ie ?
-                      function(value, node) {
-                          var imageInfo = value.match(/<img.*?>/),
-                              listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
-                          // Seek for list bullet indicator.
-                          if (listInfo) {
-                              // Bullet symbol could be either text or an image.
-                              var listSymbol = listInfo[ 1 ] || ( imageInfo && 'l.' ),
-                                  listType = listSymbol && listSymbol.match(/>([^\s]+?)([.)]?)</);
-                              return createListBulletMarker(listType, listSymbol);
-                          }
+                function(value, node) {
+                    var imageInfo = value.match(/<img.*?>/),
+                        listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
+                    // Seek for list bullet indicator.
+                    if (listInfo) {
+                        // Bullet symbol could be either text or an image.
+                        var listSymbol = listInfo[ 1 ] || ( imageInfo && 'l.' ),
+                            listType = listSymbol && listSymbol.match(/>([^\s]+?)([.)]?)</);
+                        return createListBulletMarker(listType, listSymbol);
+                    }
 
-                          // Reveal the <img> element in conditional comments for Firefox.
-                          if (UA.gecko && imageInfo) {
-                              var img = KE.HtmlParser.Fragment.FromHtml(imageInfo[0]).children[ 0 ],
-                                  previousComment = node.previous,
-                                  // Try to dig the real image link from vml markup from previous comment text.
-                                  imgSrcInfo = previousComment && previousComment.value.match(/<v:imagedata[^>]*o:href=['"](.*?)['"]/),
-                                  imgSrc = imgSrcInfo && imgSrcInfo[ 1 ];
-                              // Is there a real 'src' url to be used?
-                              imgSrc && ( img.attributes.src = imgSrc );
-                              return img;
-                          }
-                          return false;
-                      } :
-                      function() {
-                          return false;
-                      }
+                    // Reveal the <img> element in conditional comments for Firefox.
+                    if (UA.gecko && imageInfo) {
+                        var img = KE.HtmlParser.Fragment.FromHtml(imageInfo[0]).children[ 0 ],
+                            previousComment = node.previous,
+                            // Try to dig the real image link from vml markup from previous comment text.
+                            imgSrcInfo = previousComment && previousComment.value.match(/<v:imagedata[^>]*o:href=['"](.*?)['"]/),
+                            imgSrc = imgSrcInfo && imgSrcInfo[ 1 ];
+                        // Is there a real 'src' url to be used?
+                        imgSrc && ( img.attributes.src = imgSrc );
+                        return img;
+                    }
+                    return false;
+                } :
+                function() {
+                    return false;
+                }
         };
         //将编辑区生成html最终化
         var defaultHtmlFilterRules = {
@@ -794,12 +806,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     //http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
-            text : function(text) {
-                return text
-                    //.replace(/&nbsp;/g, "\xa0")
-                    .replace(/\xa0/g, "&nbsp;");
-            }
-        });
+                text : function(text) {
+                    return text
+                        //.replace(/&nbsp;/g, "\xa0")
+                        .replace(/\xa0/g, "&nbsp;");
+                }
+            });
     })();
 
 
@@ -925,5 +937,5 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
     };
 }, {
-    attach:false
-});
+        attach:false
+    });
