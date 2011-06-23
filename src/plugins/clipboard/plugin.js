@@ -21,13 +21,7 @@ KISSY.Editor.add("clipboard", function(editor) {
             S.augment(Paste, {
                     _init:function() {
                         var self = this,editor = self.editor;
-                        if (UA.ie) {
-                            Event.on(editor.document, "keydown", self._paste, self);
-                        }
-                        else {
-                            Event.on(editor.document, "paste", self._paste, self);
-                        }
-
+                        Event.on(editor.document, UA.webkit ? "paste" : "beforepaste", self._paste, self);
                         editor.addCommand("copy", new cutCopyCmd("copy"));
                         editor.addCommand("cut", new cutCopyCmd("cut"));
                         editor.addCommand("paste", new cutCopyCmd("paste"));
