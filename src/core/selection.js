@@ -252,9 +252,9 @@ KISSY.Editor.add("selection", function(KE) {
                             }
                         };
 
-                        return function() {
+                        return function(force) {
                             var self = this,cache = self._.cache;
-                            if (cache.ranges)
+                            if (cache.ranges && !force)
                                 return cache.ranges;
 
                             // IE doesn't have range support (in the W3C way), so we
@@ -301,9 +301,9 @@ KISSY.Editor.add("selection", function(KE) {
                         };
                     })()
                     :
-                    function() {
+                    function(force) {
                         var self = this,cache = self._.cache;
-                        if (cache.ranges)
+                        if (cache.ranges && !force)
                             return cache.ranges;
 
                         // On browsers implementing the W3C range, we simply

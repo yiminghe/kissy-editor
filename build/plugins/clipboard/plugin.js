@@ -14,26 +14,22 @@ KISSY.Editor.add("clipboard", function(editor) {
         (function() {
 
             function Paste(editor) {
-                this.editor = editor;
-                this._init();
+                var self = this;
+                self.editor = editor;
+                self._init();
             }
 
             S.augment(Paste, {
                     _init:function() {
                         var self = this,editor = self.editor;
-                        if (UA.ie) {
-                            Event.on(editor.document, "keydown", self._paste, self);
-                        }
-                        else {
-                            Event.on(editor.document, "paste", self._paste, self);
-                        }
-
+                        Event.on(editor.document.body, UA.ie ? "beforepaste" : "keydown", self._paste, self);
                         editor.addCommand("copy", new cutCopyCmd("copy"));
                         editor.addCommand("cut", new cutCopyCmd("cut"));
                         editor.addCommand("paste", new cutCopyCmd("paste"));
 
                     },
                     _paste:function(ev) {
+
                         if (ev.type === 'keydown' &&
                             !(ev.keyCode === 86 &&
                                 (ev.ctrlKey || ev.metaKey)
@@ -41,18 +37,31 @@ KISSY.Editor.add("clipboard", function(editor) {
                             return;
                         }
 
+                        // ie beforepaste 会触发两次，第一次 pastebin 为锚点内容，奇怪
+                        // chrome keydown 也会两次
+                        S.log(ev.type + " : " + " paste event happen");
 
                         var self = this,editor = self.editor,doc = editor.document;
-                        //防止 ie 过快报错
-                        if (self._running) {
-                            ev.halt();
+
+                        // Avoid recursions on 'paste' event or consequent paste too fast. (#5730)
+                        if (doc.getElementById('ke_pastebin')) {
+                            // ie beforepaste 会重复触发
+                            // chrome keydown 也会重复触发
+                            // 第一次 bms 是对的，但是 pasterbin 内容是错的
+                            // 第二次 bms 是错的，但是内容是对的
+                            // 这样返回刚好，用同一个 pastebin 得到最后的正确内容
+                            // bms 第一次时创建成功
+                            S.log(ev.type + " : trigger twice ...");
                             return;
                         }
+
+
                         var sel = editor.getSelection(),
                             range = new KERange(doc);
 
                         // Create container to paste into
                         var pastebin = new Node(UA.webkit ? '<body></body>' : '<div></div>', null, doc);
+                        pastebin.attr('id', 'ke_pastebin');
                         // Safari requires a filler node inside the div to have the content pasted into it. (#4882)
                         UA.webkit && pastebin[0].appendChild(doc.createTextNode('\xa0'));
                         doc.body.appendChild(pastebin[0]);
@@ -77,10 +86,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                         range.setStartAt(pastebin, KER.POSITION_AFTER_START);
                         range.setEndAt(pastebin, KER.POSITION_BEFORE_END);
                         range.select(true);
-                        self._running = true;
+                        //self._running = true;
                         // Wait a while and grab the pasted contents
                         setTimeout(function() {
 
+                            //self._running = false;
                             pastebin._4e_remove();
 
                             // Grab the HTML contents.
@@ -93,8 +103,24 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 && ( bogusSpan = pastebin._4e_first() )
                                 && (bogusSpan.hasClass('Apple-style-span') ) ?
                                 bogusSpan : pastebin );
+
                             sel.selectBookmarks(bms);
+
                             var html = pastebin.html();
+
+                            S.log("paster " + html);
+
+                            //莫名其妙会有这个东西！，不知道
+                            //去掉
+                            if (!( html = S.trim(html.replace(/<span[^>]+_ke_bookmark[^<]*?<\/span>(&nbsp;)*/ig, '')) )) {
+                                // ie 第2次触发 beforepaste 会报错！
+                                // 第一次 bms 是对的，但是 pasterbin 内容是错的
+                                // 第二次 bms 是错的，但是内容是对的
+                                return;
+                            }
+
+                            S.log("paster filter " + html);
+
                             var re = editor.fire("paste", {
                                     html:html,
                                     holder:pastebin
@@ -106,8 +132,8 @@ KISSY.Editor.add("clipboard", function(editor) {
                                 dataFilter = editor.htmlDataProcessor.wordFilter;
                             }
                             editor.insertHtml(html, dataFilter);
-                            self._running = false;
-                        }, 30);
+
+                        }, 0);
                     }
                 });
             KE.Paste = Paste;
@@ -270,7 +296,9 @@ KISSY.Editor.add("clipboard", function(editor) {
             });
         })();
     }
-    new KE.Paste(editor);
+    editor.ready(function() {
+        new KE.Paste(editor);
+    });
 }, {
         attach:false
     });

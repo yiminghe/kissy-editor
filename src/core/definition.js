@@ -791,7 +791,6 @@ KISSY.Editor.add("definition", function(KE) {
                     data = self["htmlDataProcessor"]["toDataFormat"](data, null, dataFilter);//, "p");
                 self.focus();
                 setTimeout(function() {
-
                     var selection = self.getSelection(),
                         ranges = selection && selection.getRanges();
 
@@ -799,6 +798,7 @@ KISSY.Editor.add("definition", function(KE) {
                     if (!ranges
                         ||
                         ranges.length == 0) {
+                        S.log(" no range for insertHtml");
                         var args = arguments,fn = args.callee;
                         setTimeout(function() {
                             fn.apply(self, args);
@@ -822,7 +822,11 @@ KISSY.Editor.add("definition", function(KE) {
                             range.deleteContents();
                             range.select();
                         }
-                        $sel.createRange().pasteHTML(data);
+                        try {
+                            $sel.createRange().pasteHTML(data);
+                        } catch(e) {
+                            S.log("insertHtml error in ie");
+                        }
                     } else {
                         // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
                         // 10.0 修复？？
@@ -1205,7 +1209,6 @@ KISSY.Editor.add("definition", function(KE) {
             }
         })();
     }
-
 
 
     var KEP = KE.prototype;
