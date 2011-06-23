@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-06-23 14:27:56
+ * @buildtime: 2011-06-23 15:06:04
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-06-23 14:27:56";
+            return "plugin-min.js?t=2011-06-23 15:06:04";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-06-23 14:27:56');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-06-23 15:06:04');
         };
     }
 
@@ -2174,6 +2174,7 @@ KISSY.Editor.add("definition", function(KE) {
         Utils = KE.Utils,
         NULL = null,
         DOC = document,
+        OLD_IE = !window.getSelection,
         S = KISSY,
         /**
          * @const
@@ -2957,51 +2958,41 @@ KISSY.Editor.add("definition", function(KE) {
                 self.focus();
                 setTimeout(function() {
                     var selection = self.getSelection(),
-                        ranges = selection && selection.getRanges();
+                        range = selection && selection.getRanges()[0];
 
-                    //give sometime to breath
-                    if (!ranges
-                        ||
-                        ranges.length == 0) {
-                        S.log(" no range for insertHtml");
-                        var args = arguments,fn = args.callee;
-                        setTimeout(function() {
-                            fn.apply(self, args);
-                        }, 30);
-                        return;
-                    }
                     self.fire("save");
+
                     //ie9 仍然需要这样！
-                    if (document.selection) {
-                        var $sel = document.selection;
-                        if ($sel.type == 'Control') {
-                            $sel.clear();
-                        }
-                        //淘吧报告，选中内容不能被正确替换
-                        else if (selection.getType() == KE.SELECTION.SELECTION_TEXT) {
-                            // Due to IE bugs on handling contenteditable=false blocks
-                            // (#6005), we need to make some checks and eventually
-                            // delete the selection first.
-                            //2.ie 当选中一段文字再 inserthtml 时，新内容会插在头部而不是替换.
-                            var range = selection.getRanges()[ 0 ];
+                    if (UA.ie) {
+                        var $sel;
+                        if (UA.ieEngine == 9) {
+                            // 重新 select 下，才能取到 selection
                             range.deleteContents();
                             range.select();
+                            $sel = document.selection;
+                        } else {
+                            $sel = selection.getNative();
+                            if ($sel.type == 'Control') {
+                                $sel.clear();
+                            }
                         }
+//
                         try {
                             $sel.createRange().pasteHTML(data);
                         } catch(e) {
                             S.log("insertHtml error in ie");
+
                         }
                     } else {
+                        // ie9 仍然没有
                         // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
                         // 10.0 修复？？
                         self.document.execCommand('inserthtml', FALSE, data);
-                    }
 
+                    }
                     setTimeout(function() {
                         self.fire("save");
                     }, 10);
-
                 }, 0);
             }
         });
