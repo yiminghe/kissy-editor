@@ -143,8 +143,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
         uploadForm,
         warning = "请点击浏览上传图片",
         selectedEl,
-        cfg = (editor.cfg["pluginConfig"]["image"] || {})["upload"] ||
-            null,
+        imageCfg = editor.cfg["pluginConfig"]["image"] || {},
+        cfg = imageCfg["upload"] || null,
         suffix = cfg && cfg["suffix"] || "png,jpg,jpeg,gif";
 
     var //不要加g：http://yiminghe.javaeye.com/blog/581347
@@ -158,13 +158,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
     function prepare() {
 
         d = new KE.Dialog({
-            autoRender:true,
-            width:500,
-            headerContent:"图片",//属性",
-            bodyContent:bodyHtml,
-            footerContent:footHtml,
-            mask:true
-        });
+                autoRender:true,
+                width:500,
+                headerContent:"图片",//属性",
+                bodyContent:bodyHtml,
+                footerContent:footHtml,
+                mask:true
+            });
         addRes.call(controls, d);
         var content = d.get("el"),
             cancel = content.one(".ke-img-cancel"),
@@ -174,9 +174,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
         uploadForm = content.one(".ke-img-upload-form");
         imgLocalUrl = content.one(".ke-img-local-url");
         tab = new KE.Tabs({
-            tabs:content.one("ul.ke-tabs"),
-            contents:content.one("div.ke-image-tabs-content-wrap")
-        });
+                tabs:content.one("ul.ke-tabs"),
+                contents:content.one("div.ke-image-tabs-content-wrap")
+            });
         addRes.call(controls, tab);
         imgLocalUrl.val(warning);
         imgUrl = content.one(".ke-img-url");
@@ -236,9 +236,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 DOM.remove(uploadIframe);
             }
             loadingCancel.css({
-                left:-9999,
-                top:-9999
-            });
+                    left:-9999,
+                    top:-9999
+                });
             uploadIframe = null;
         });
         addRes.call(controls, loadingCancel);
@@ -283,41 +283,41 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 }
                 d.loading();
                 uploadIframe = KE.Utils.doFormUpload({
-                    form:uploadForm,
-                    callback:function(r) {
-                        uploadIframe = null;
-                        loadingCancel.css({
-                            left:-9999,
-                            top:-9999
-                        });
-                        var data = S.trim(r.responseText)
-                            .replace(/\r|\n/g, "");
-                        d.unloading();
-                        try {
-                            //ie parse error,不抛异常
-                            data = JSON.parse(data);
-                        } catch(e) {
-                            S.log(data);
-                            data = null;
+                        form:uploadForm,
+                        callback:function(r) {
+                            uploadIframe = null;
+                            loadingCancel.css({
+                                    left:-9999,
+                                    top:-9999
+                                });
+                            var data = S.trim(r.responseText)
+                                .replace(/\r|\n/g, "");
+                            d.unloading();
+                            try {
+                                //ie parse error,不抛异常
+                                data = JSON.parse(data);
+                            } catch(e) {
+                                S.log(data);
+                                data = null;
+                            }
+                            if (!data) data = {error:"服务器出错，请重试"};
+                            if (data.error) {
+                                alert(data.error);
+                                return;
+                            }
+                            imgUrl.val(data['imgUrl']);
+                            insert();
                         }
-                        if (!data) data = {error:"服务器出错，请重试"};
-                        if (data.error) {
-                            alert(data.error);
-                            return;
-                        }
-                        imgUrl.val(data['imgUrl']);
-                        insert();
-                    }
-                }, cfg['serverParams'], cfg['serverUrl']);
+                    }, cfg['serverParams'], cfg['serverUrl']);
 
                 var loadingMaskEl = d.get("el"),
                     offset = loadingMaskEl.offset(),
                     width = loadingMaskEl[0].offsetWidth,
                     height = loadingMaskEl[0].offsetHeight;
                 loadingCancel.css({
-                    left:(offset.left + width / 2.5),
-                    top:(offset.top + height / 1.5)
-                });
+                        left:(offset.left + width / 2.5),
+                        top:(offset.top + height / 1.5)
+                    });
             } else {
                 if (! verifyInputs(content.all("input")))
                     return;
@@ -352,8 +352,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 warning = "单张图片容量不超过 " + (sizeLimit / 1000) + " M";
             imgLocalUrl.val(warning);
             fileInput.css({
-                opacity:0
-            });
+                    opacity:0
+                });
 
             fileInput.on("mouseenter", function() {
                 ke_image_up.addClass("ke-button-hover");
@@ -367,6 +367,10 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 imgLocalUrl.val(file.replace(/.+[\/\\]/, ""));
             });
             addRes.call(controls, fileInput);
+
+            if (imageCfg['remote'] === false) {
+                tab.remove("remote");
+            }
         }
         else {
             tab.remove("local");
@@ -404,11 +408,11 @@ KISSY.Editor.add("image/dialog", function(editor) {
         if (selectedEl) {
             editor.fire("save");
             selectedEl.attr({
-                "src":url,
-                //注意设置，取的话要从 _ke_saved_src 里取
-                "_ke_saved_src":url,
-                "style":style
-            });
+                    "src":url,
+                    //注意设置，取的话要从 _ke_saved_src 里取
+                    "_ke_saved_src":url,
+                    "style":style
+                });
             editor.fire("save");
         } else {
             var img = new Node("<img " +
@@ -437,7 +441,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             resetInput = KE.Utils.resetInput,
             valInput = KE.Utils.valInput;
         selectedEl = _selectedEl;
-        if (selectedEl) {
+        if (selectedEl && imageCfg.remote !== false) {
             valInput(imgUrl, selectedEl.attr("src"));
             var w = selectedEl.width(),
                 h = selectedEl.height();
@@ -467,19 +471,19 @@ KISSY.Editor.add("image/dialog", function(editor) {
 
     KE.use("overlay,tabs,select", function() {
         editor.addDialog("image/dialog", {
-            show:function(_selectedEl) {
-                update(_selectedEl);
-                d.show();
-            },
-            hide:function() {
-                d.hide();
-            },
-            destroy:function() {
-                destroyRes.call(controls);
-            }
-        });
+                show:function(_selectedEl) {
+                    update(_selectedEl);
+                    d.show();
+                },
+                hide:function() {
+                    d.hide();
+                },
+                destroy:function() {
+                    destroyRes.call(controls);
+                }
+            });
         prepare();
     });
 }, {
-    attach:false
-});
+        attach:false
+    });
