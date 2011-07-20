@@ -1,11 +1,15 @@
+/**
+ * save and restore focus when overlay shows or hides
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("overlay/focus", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
-    if(KE['UIBase'].Focus) {
-        S.log("ke uibase focus attach more","warn");
+    if (KE['UIBase'].Focus) {
+        S.log("ke uibase focus attach more", "warn");
         return;
     }
 

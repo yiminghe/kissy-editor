@@ -1,11 +1,15 @@
+/**
+ * save and restore focus when overlay shows or hides
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("overlay/focus", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
-    if(KE['UIBase'].Focus) {
-        S.log("ke uibase focus attach more","warn");
+    if (KE['UIBase'].Focus) {
+        S.log("ke uibase focus attach more", "warn");
         return;
     }
 
@@ -104,17 +108,21 @@ KISSY.Editor.add("overlay/focus", function() {
     attach:false
 });/**
  * custom overlay  for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("overlay", function() {
 
     var S = KISSY,
         UIBase = S['UIBase'],
         KE = S.Editor;
+
+
     if (KE.Overlay) {
         S.log("ke overlay attach more");
         return;
     }
+
+    S.use("overlay");
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
@@ -179,6 +187,6 @@ KISSY.Editor.add("overlay", function() {
     KE.Overlay.unloading = function() {
         globalMask && globalMask.hide();
     };
-},{
+}, {
     requires:['overlay/focus']
 });

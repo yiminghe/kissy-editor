@@ -1,16 +1,20 @@
 /**
  * custom overlay  for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("overlay", function() {
 
     var S = KISSY,
         UIBase = S['UIBase'],
         KE = S.Editor;
+
+
     if (KE.Overlay) {
         S.log("ke overlay attach more");
         return;
     }
+
+    S.use("overlay");
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
@@ -75,6 +79,6 @@ KISSY.Editor.add("overlay", function() {
     KE.Overlay.unloading = function() {
         globalMask && globalMask.hide();
     };
-},{
+}, {
     requires:['overlay/focus']
 });

@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author: yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-06-27 10:35:42
+ * @buildtime: 2011-07-20 20:07:18
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-06-27 10:35:42";
+            return "plugin-min.js?t=2011-07-20 20:07:18";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-06-27 10:35:42');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-07-20 20:07:18');
         };
     }
 
@@ -17415,14 +17415,18 @@ KISSY.Editor.add("music", function(editor) {
 }, {
     attach:false,
     "requires":["flash/support"]
-});KISSY.Editor.add("overlay/focus", function() {
+});/**
+ * save and restore focus when overlay shows or hides
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("overlay/focus", function() {
     var S = KISSY,
         UA = S.UA,
         KE = S.Editor,
         focusManager = KE.focusManager;
     KE.namespace("UIBase");
-    if(KE['UIBase'].Focus) {
-        S.log("ke uibase focus attach more","warn");
+    if (KE['UIBase'].Focus) {
+        S.log("ke uibase focus attach more", "warn");
         return;
     }
 
@@ -17521,17 +17525,21 @@ KISSY.Editor.add("music", function(editor) {
     attach:false
 });/**
  * custom overlay  for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("overlay", function() {
 
     var S = KISSY,
         UIBase = S['UIBase'],
         KE = S.Editor;
+
+
     if (KE.Overlay) {
         S.log("ke overlay attach more");
         return;
     }
+
+    S.use("overlay");
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
@@ -17596,7 +17604,7 @@ KISSY.Editor.add("overlay", function() {
     KE.Overlay.unloading = function() {
         globalMask && globalMask.hide();
     };
-},{
+}, {
     requires:['overlay/focus']
 });KISSY.Editor.add("pagebreak", function(editor) {
     editor.addPlugin("pagebreak", function() {
