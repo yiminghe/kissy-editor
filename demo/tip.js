@@ -29,7 +29,7 @@
         },
         response:function() {
             var self = this;
-            if (trimHTML(self.editor.getData()) == "") {
+            if (self.editor.getMode() == KISSY.Editor.WYSIWYG_MODE && trimHTML(self.editor.getData()) == "") {
                 self.shade.show();
             }
         },
@@ -47,11 +47,11 @@
                 function() {
                     editor.focus();
                 }).css({
-                           position:'absolute',
-                           zIndex:999999,
-                           left:-9999,
-                           top:-9999
-                       });
+                    position:'absolute',
+                    zIndex:999999,
+                    left:-9999,
+                    top:-9999
+                });
 
             var shade = self.shade;
 
@@ -62,12 +62,13 @@
 
             Event.on(window, 'resize', fixCall);
 
-            editor.on("maximizeWindow restoreWindow", fixCall);
+            editor.on("maximizeWindow restoreWindow wysiwygmode", fixCall);
 
 
-            editor.on('focus', function() {
-
-                if (currentDecorate) currentDecorate.response();
+            editor.on('focus sourcemode', function() {
+                if (currentDecorate) {
+                    currentDecorate.response();
+                }
                 currentDecorate = self;
                 shade.hide();
             });
@@ -79,7 +80,7 @@
 
 
             var change = function() {
-                if (trimHTML(editor.getData()) == "") {
+                if (editor.getMode() == KISSY.Editor.WYSIWYG_MODE && trimHTML(editor.getData()) == "") {
                     shade.show();
                 } else {
                     shade.hide();
