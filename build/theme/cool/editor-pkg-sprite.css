@@ -1036,7 +1036,8 @@ select style for kissy editor
 }
 
 .ke-ie7 .ke-combox .ke-select-text {
-    top: -8px;
+    position: static;
+    padding-bottom: 8px;
 }
 
 .ke-ie6 .ke-combox .ke-select-text {

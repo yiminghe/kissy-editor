@@ -17,9 +17,9 @@ KISSY.Editor.add("bubbleview", function() {
     var BubbleView = S['UIBase'].create(KE.Overlay,
         [], {
         renderUI:function() {
-
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
+
         },
         show:function() {
 
