@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-05-17 11:58:27");
+                    url += "t=" + encodeURIComponent("2011-08-16 15:46:34");
                 }
                 return KE["Config"].base + url;
             },
@@ -486,7 +486,7 @@ KISSY.Editor.add("utils", function(KE) {
                         }
 
                         if (doc && doc.body) {
-                            r.responseText = doc.body.innerHTML;
+                            r.responseText = S.trim(DOM.text(doc.body));
                         }
                         if (doc && doc['XMLDocument']) {
                             r.responseXML = doc['XMLDocument'];

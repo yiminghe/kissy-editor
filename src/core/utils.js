@@ -486,7 +486,7 @@ KISSY.Editor.add("utils", function(KE) {
                         }
 
                         if (doc && doc.body) {
-                            r.responseText = doc.body.innerHTML;
+                            r.responseText = S.trim(DOM.text(doc.body));
                         }
                         if (doc && doc['XMLDocument']) {
                             r.responseXML = doc['XMLDocument'];
