@@ -153,11 +153,18 @@ build file for kissy editor
                     <ac:then>
                         <exec executable="cmd" failonerror="true">
                             <arg line="/c git push ${git.origin} ${git.master}:${git.master}"/>
+                        </exec>
+
+                        <exec executable="cmd" failonerror="true">
                             <arg line="/c git push ${git.remote} ${git.master}:${git.master}"/>
                         </exec>
+
                         <!--push master to gh-pages also-->
                         <exec executable="cmd" failonerror="true">
                             <arg line="/c git push ${git.origin} ${git.master}:${git.gh-pages}"/>
+                        </exec>
+
+                        <exec executable="cmd" failonerror="true">
                             <arg line="/c git push ${git.remote} ${git.master}:${git.gh-pages}"/>
                         </exec>
 
