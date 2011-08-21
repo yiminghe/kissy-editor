@@ -1,6 +1,6 @@
 /**
  * element path shown in status bar,modified from ckeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("elementpaths", function(editor) {
     var KE = KISSY.Editor,S = KISSY,Node = S.Node,DOM = S.DOM;

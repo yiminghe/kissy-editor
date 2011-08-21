@@ -1,6 +1,6 @@
 /**
  * contextmenu for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("contextmenu", function() {
     var S = KISSY,

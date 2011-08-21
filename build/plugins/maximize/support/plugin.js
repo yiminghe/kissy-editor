@@ -1,3 +1,7 @@
+/**
+ * maximize functionality
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("maximize/support", function() {
     var KE = KISSY.Editor,
         S = KISSY,

@@ -1,3 +1,7 @@
+/**
+ * table base functionality
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("table/support", function() {
     var S = KISSY,
         UA = S.UA,

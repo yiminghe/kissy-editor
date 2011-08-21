@@ -1,6 +1,6 @@
 /**
  * modified from ckeditor,process malform html and ms-word copy for kissyeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.

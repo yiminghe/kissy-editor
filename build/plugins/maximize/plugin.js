@@ -1,6 +1,6 @@
 /**
  * maximize editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {

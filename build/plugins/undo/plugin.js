@@ -1,6 +1,6 @@
 /**
  * undo,redo manager for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("undo", function(editor) {
     var S = KISSY,

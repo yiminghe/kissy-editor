@@ -1,6 +1,6 @@
 /**
  * table edit plugin for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("table", function(editor) {
     editor.addPlugin("table", function() {

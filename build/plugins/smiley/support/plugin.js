@@ -1,3 +1,7 @@
+/**
+ * emotion icon from wangwang
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("smiley/support", function() {
     var S = KISSY,
         Event = S.Event,

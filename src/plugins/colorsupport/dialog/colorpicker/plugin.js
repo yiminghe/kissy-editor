@@ -1,3 +1,7 @@
+/**
+ * color picker
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
     var S = KISSY,
         KE = S.Editor,

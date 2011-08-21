@@ -1,6 +1,6 @@
 /**
  * localStorage support for ie<8
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("localstorage", function() {
     var S = KISSY,

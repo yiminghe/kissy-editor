@@ -1,6 +1,6 @@
 /**
  * biz plugin , xiami music intergration
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("xiami-music", function(editor) {
     var S = KISSY,
@@ -186,7 +186,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
     requires:["flash/support"]
 });/**
  * checkbox source editor for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("checkbox-sourcearea", function(editor) {
     var KE = KISSY.Editor,
@@ -206,7 +206,7 @@ KISSY.Editor.add("checkbox-sourcearea", function(editor) {
 });
 /**
  * checkbox source editor for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("checkbox-sourcearea/support", function() {
     var S = KISSY,
@@ -327,7 +327,7 @@ KISSY.Editor.add("multi-upload", function(editor) {
     attach:false
 });/**
  * biz plugin , video about ku6,youku,tudou
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("video", function(editor) {
     var S = KISSY,

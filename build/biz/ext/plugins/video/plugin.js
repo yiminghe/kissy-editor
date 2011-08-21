@@ -1,6 +1,6 @@
 /**
  * biz plugin , video about ku6,youku,tudou
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("video", function(editor) {
     var S = KISSY,

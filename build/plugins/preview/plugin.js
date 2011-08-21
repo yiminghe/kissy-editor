@@ -1,6 +1,6 @@
 /**
  * preview for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("preview", function(editor) {
 

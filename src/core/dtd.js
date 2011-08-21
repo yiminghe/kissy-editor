@@ -1,6 +1,6 @@
 /**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.

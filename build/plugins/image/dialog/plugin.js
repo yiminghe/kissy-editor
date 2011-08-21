@@ -1,3 +1,7 @@
+/**
+ * image dialog (support upload and remote)
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("image/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor,

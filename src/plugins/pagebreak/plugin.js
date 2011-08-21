@@ -1,3 +1,7 @@
+/**
+ * pagebreak functionality
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("pagebreak", function(editor) {
     editor.addPlugin("pagebreak", function() {
         var S = KISSY,

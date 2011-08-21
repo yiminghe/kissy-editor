@@ -1,6 +1,6 @@
 /**
  * modified from ckeditor ,elementpath represents element's tree path from body
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.

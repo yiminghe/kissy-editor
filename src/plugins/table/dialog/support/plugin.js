@@ -1,3 +1,7 @@
+/**
+ * table dialog
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("table/dialog/support", function() {
     var S = KISSY,
         KE = S.Editor,

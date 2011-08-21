@@ -1,6 +1,6 @@
 /**
  * list formatting
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("list", function(editor) {
     editor.addPlugin("list", function() {

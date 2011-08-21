@@ -1,6 +1,6 @@
 /**
  * smiley icon from wangwang for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("smiley", function(editor) {
     editor.addPlugin("smiley", function() {

@@ -1,3 +1,7 @@
+/**
+ * color dialog
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("color/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor;

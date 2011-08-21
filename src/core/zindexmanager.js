@@ -1,6 +1,6 @@
 /**
  * 集中管理各个z-index
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("zindex", function() {
     var S = KISSY,KE = S.Editor;

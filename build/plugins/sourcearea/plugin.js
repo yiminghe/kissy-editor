@@ -1,6 +1,6 @@
 /**
  * source editor for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("sourcearea", function(editor) {
     editor.addPlugin("sourcearea", function() {

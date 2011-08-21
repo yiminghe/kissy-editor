@@ -1,6 +1,6 @@
 /**
  * remove inline-style format for kissy editor,modified from ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("removeformat", function(editor) {
 

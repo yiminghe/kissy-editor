@@ -1,6 +1,6 @@
 /**
  * checkbox source editor for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("checkbox-sourcearea/support", function() {
     var S = KISSY,

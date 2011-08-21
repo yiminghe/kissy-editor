@@ -1,6 +1,6 @@
 /**
  * biz plugin , xiami music intergration
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("xiami-music", function(editor) {
     var S = KISSY,

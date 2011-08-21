@@ -1,6 +1,6 @@
 /**
  * insert music for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("music", function(editor) {
     editor.addPlugin("music", function() {

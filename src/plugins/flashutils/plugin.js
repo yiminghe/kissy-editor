@@ -1,3 +1,7 @@
+/**
+ * flash utilities
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
     if (flashUtils) {

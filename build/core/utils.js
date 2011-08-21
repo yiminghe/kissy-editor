@@ -1,6 +1,6 @@
 /**
  * common utils for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 KISSY.Editor.add("utils", function(KE) {
 
@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-08-16 15:46:34");
+                    url += "t=" + encodeURIComponent("2011-08-21 21:46:08");
                 }
                 return KE["Config"].base + url;
             },

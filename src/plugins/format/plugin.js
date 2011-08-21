@@ -1,6 +1,6 @@
 /**
  * format formatting,modified from ckeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("format", function(editor) {
     editor.addPlugin("format", function() {

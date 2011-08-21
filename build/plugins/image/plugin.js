@@ -1,6 +1,6 @@
 /**
  * insert image for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("image", function(editor) {
     editor.addPlugin("image", function() {

@@ -1,5 +1,6 @@
 /**
- * 切换源码与可视化模式的命令对象
+ * switch between code and wysiwyg mode
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("sourcearea/support", function() {
     var S = KISSY,

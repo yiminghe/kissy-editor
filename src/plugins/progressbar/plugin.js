@@ -1,3 +1,7 @@
+/**
+ * progressbar ui
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("progressbar", function() {
     var S = KISSY,
         KE = S.Editor;

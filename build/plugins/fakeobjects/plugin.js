@@ -1,6 +1,6 @@
 /**
  * fakeobjects for music ,video,flash
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("fakeobjects", function(editor) {
     var KE = KISSY.Editor,

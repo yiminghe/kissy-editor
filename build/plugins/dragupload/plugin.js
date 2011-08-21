@@ -1,6 +1,6 @@
 /**
  * drag file support for html5 file&dd
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  * @refer: http://www.html5rocks.com/tutorials/file/filesystem/
  *         http://yiminghe.iteye.com/blog/848613
  */

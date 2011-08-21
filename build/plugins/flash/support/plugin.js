@@ -1,6 +1,6 @@
 /**
  * flash base for all flash-based plugin
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("flash/support", function() {
     var S = KISSY,

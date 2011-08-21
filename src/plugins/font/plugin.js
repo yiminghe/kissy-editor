@@ -1,6 +1,6 @@
 /**
  * font formatting for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("font", function(editor) {
 

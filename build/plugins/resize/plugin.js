@@ -1,3 +1,7 @@
+/**
+ * resize functionality
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
         Node = S.Node;

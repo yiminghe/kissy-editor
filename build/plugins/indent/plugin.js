@@ -1,6 +1,6 @@
 /**
  * indent formatting
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("indent", function(editor) {
     editor.addPlugin("indent", function() {

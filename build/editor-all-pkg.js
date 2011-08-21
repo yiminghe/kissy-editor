@@ -1,9 +1,9 @@
 /**
  * @preserve Constructor for kissy editor,dependency moved to independent module
  *      thanks to CKSource's intelligent work on CKEditor
- * @author: yiminghe@gmail.com, lifesinger@gmail.com
+ * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-08-21 21:27:30
+ * @buildtime: 2011-08-21 21:46:08
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-08-21 21:27:30";
+            return "plugin-min.js?t=2011-08-21 21:46:08";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-08-21 21:27:30');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-08-21 21:46:08');
         };
     }
 
@@ -136,7 +136,7 @@ KISSY.add("editor", function(S) {
  */
 /**
  * common utils for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 KISSY.Editor.add("utils", function(KE) {
 
@@ -161,7 +161,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-08-16 15:46:34");
+                    url += "t=" + encodeURIComponent("2011-08-21 21:46:08");
                 }
                 return KE["Config"].base + url;
             },
@@ -772,7 +772,7 @@ KISSY.Editor.add("utils", function(KE) {
 });
 /**
  * dom utils for kissy editor,mainly from ckeditor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -2054,7 +2054,7 @@ KISSY.Editor.add("dom", function(KE) {
  * 多实例的管理，主要是焦点控制，主要是为了
  * 1.firefox 焦点失去 bug，记录当前状态
  * 2.窗口隐藏后能够恢复焦点
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 KISSY.Editor.add("focusmanager", function(KE) {
     var S = KISSY,
@@ -2165,7 +2165,7 @@ KISSY.Editor.add("focusmanager", function(KE) {
 });
 /**
  * definition of editor class for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 KISSY.Editor.add("definition", function(KE) {
     var
@@ -3397,7 +3397,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 });/**
  * 集中管理各个z-index
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("zindex", function() {
     var S = KISSY,KE = S.Editor;
@@ -3434,7 +3434,7 @@ KISSY.Editor.add("zindex", function() {
     KE["zIndexManager"] = KE.zIndexManager;
 });/**
  * modified from ckeditor ,xhtml1.1 transitional dtd translation
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -3717,7 +3717,7 @@ KISSY.Editor.add("dtd", function(KE) {
 });
 /**
  * modified from ckeditor ,elementpath represents element's tree path from body
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -3866,7 +3866,7 @@ KISSY.Editor.add("elementpath", function(KE) {
 /**
  * modified from ckeditor for kissy editor ,walker implementation
  * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -4252,7 +4252,7 @@ KISSY.Editor.add("walker", function(KE) {
 });
 /**
  * modified from ckeditor,range implementation across browsers for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -5992,7 +5992,7 @@ KISSY.Editor.add("range", function(KE) {
 });
 /**
  * modified from ckeditor ,dom iterator implementation using walker and nextSourceNode
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -6349,7 +6349,7 @@ KISSY.Editor.add("domiterator", function(KE) {
 });
 /**
  * modified from ckeditor core plugin - selection
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -7458,7 +7458,7 @@ KISSY.Editor.add("selection", function(KE) {
 });
 /**
  * modified from ckeditor for kissy editor,use style to gen element and wrap range's elements
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -8799,7 +8799,7 @@ KISSY.Editor.add("styles", function(KE) {
         });
 });/**
  * modified from ckeditor,htmlparser for malform html string
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -9016,7 +9016,7 @@ KISSY.Editor.add("htmlparser", function(
 });
 /**
  * modified from ckeditor,html generator for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -10636,7 +10636,7 @@ KISSY.Editor.add("htmlparser-comment", function() {
 });
 /**
  * triple state button for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("button", function() {
     var S = KISSY,
@@ -10830,7 +10830,7 @@ KISSY.Editor.add("button", function() {
 });
 /**
  * select component for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("select", function() {
     var S = KISSY,
@@ -11337,7 +11337,7 @@ KISSY.Editor.add("select", function() {
     };
 });/**
  * bubble or tip view for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("bubbleview", function() {
     var S = KISSY,
@@ -11512,7 +11512,7 @@ KISSY.Editor.add("bubbleview", function() {
     requires:["overlay"]
 });/**
  * monitor user's paste key ,clear user input,modified from ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("clipboard", function(editor) {
     var S = KISSY,
@@ -12110,7 +12110,7 @@ KISSY.Editor.add("colorsupport", function() {
 });
 /**
  * contextmenu for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("contextmenu", function() {
     var S = KISSY,
@@ -12324,7 +12324,7 @@ KISSY.Editor.add("contextmenu", function() {
 });
 /**
  * draft support for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("draft", function(editor) {
     var S = KISSY,KE = S.Editor;
@@ -12341,7 +12341,11 @@ KISSY.Editor.add("draft", function(editor) {
     });
 }, {
     attach:false
-});KISSY.Editor.add("draft/support", function() {
+});/**
+ * draft for kissy editor
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("draft/support", function() {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -12674,7 +12678,7 @@ KISSY.Editor.add("draft", function(editor) {
     "requires":["localstorage"]
 });/**
  * drag file support for html5 file&dd
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  * @refer: http://www.html5rocks.com/tutorials/file/filesystem/
  *         http://yiminghe.iteye.com/blog/848613
  */
@@ -12855,7 +12859,7 @@ KISSY.Editor.add("dragupload", function(editor) {
     attach:false
 });/**
  * element path shown in status bar,modified from ckeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("elementpaths", function(editor) {
     var KE = KISSY.Editor,S = KISSY,Node = S.Node,DOM = S.DOM;
@@ -12952,7 +12956,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
 });
 /**
  * monitor user's enter and shift enter keydown,modified from ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("enterkey", function(editor) {
     var S = KISSY,
@@ -13167,7 +13171,7 @@ KISSY.Editor.add("enterkey", function(editor) {
 });
 /**
  * fakeobjects for music ,video,flash
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("fakeobjects", function(editor) {
     var KE = KISSY.Editor,
@@ -13388,7 +13392,7 @@ KISSY.Editor.add("flash", function(editor) {
 });
 /**
  * flash base for all flash-based plugin
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("flash/support", function() {
     var S = KISSY,
@@ -13631,7 +13635,7 @@ KISSY.Editor.add("flash/support", function() {
     requires:["bubbleview","contextmenu","flashutils"]
 });/**
  * simplified flash bridge for yui swf
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("flashbridge", function() {
     var S = KISSY,KE = S.Editor;
@@ -13870,7 +13874,11 @@ KISSY.Editor.add("flashbridge", function() {
 
 }, {
     attach:false
-});KISSY.Editor.add("flashutils", function() {
+});/**
+ * flash utilities
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("flashutils", function() {
     var S = KISSY,KE = S.Editor,flashUtils = KE.Utils.flash;
     if (flashUtils) {
         S.log("flashUtils attach more");
@@ -14056,7 +14064,7 @@ KISSY.Editor.add("flashbridge", function() {
     attach:false
 });/**
  * font formatting for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("font", function(editor) {
 
@@ -14369,7 +14377,7 @@ KISSY.Editor.add("font", function(editor) {
 });
 /**
  * format formatting,modified from ckeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("format", function(editor) {
     editor.addPlugin("format", function() {
@@ -14457,7 +14465,7 @@ KISSY.Editor.add("format", function(editor) {
 });
 /**
  * modified from ckeditor,process malform html and ms-word copy for kissyeditor
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
@@ -15420,7 +15428,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     ;
 /**
  * insert image for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("image", function(editor) {
     editor.addPlugin("image", function() {
@@ -15575,7 +15583,7 @@ KISSY.Editor.add("image", function(editor) {
     attach:false
 });/**
  * indent formatting
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("indent", function(editor) {
     editor.addPlugin("indent", function() {
@@ -15914,7 +15922,7 @@ KISSY.Editor.add("indent/support", function() {
     attach:false
 });/**
  * align support for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("justify", function(editor) {
 
@@ -16025,7 +16033,7 @@ KISSY.Editor.add("justify", function(editor) {
 });
 /**
  * link editor support for kissy editor ,innovation from google doc and ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
     editor.addPlugin("link", function() {
@@ -16221,7 +16229,7 @@ KISSY.Editor.add("link", function(editor) {
     attach:false
 });/**
  * list formatting
- * @modifier: yiminghe@gmail.com
+ * @modifier yiminghe@gmail.com
  */
 KISSY.Editor.add("list", function(editor) {
     editor.addPlugin("list", function() {
@@ -16836,7 +16844,7 @@ KISSY.Editor.add("list/support", function() {
         attach:false
     });/**
  * localStorage support for ie<8
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("localstorage", function() {
     var S = KISSY,
@@ -16964,7 +16972,7 @@ KISSY.Editor.add("localstorage", function() {
     "requires":["flashutils","flashbridge"]
 });/**
  * maximize editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
 KISSY.Editor.add("maximize", function(editor) {
@@ -16993,7 +17001,11 @@ KISSY.Editor.add("maximize", function(editor) {
     });
 }, {
     attach:false
-});KISSY.Editor.add("maximize/support", function() {
+});/**
+ * maximize functionality
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("maximize/support", function() {
     var KE = KISSY.Editor,
         S = KISSY,
         UA = S.UA,
@@ -17266,7 +17278,7 @@ KISSY.Editor.add("maximize", function(editor) {
     attach:false
 });/**
  * insert music for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("music", function(editor) {
     editor.addPlugin("music", function() {
@@ -17355,7 +17367,11 @@ KISSY.Editor.add("music", function(editor) {
 }, {
     attach:false,
     "requires":["fakeobjects"]
-});KISSY.Editor.add("music/support", function() {
+});/**
+ * music button
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("music/support", function() {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
@@ -17610,7 +17626,11 @@ KISSY.Editor.add("overlay", function() {
     };
 }, {
     requires:['overlay/focus']
-});KISSY.Editor.add("pagebreak", function(editor) {
+});/**
+ * pagebreak functionality
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("pagebreak", function(editor) {
     editor.addPlugin("pagebreak", function() {
         var S = KISSY,
             KE = S.Editor,
@@ -17686,7 +17706,7 @@ KISSY.Editor.add("overlay", function() {
     "requires":["fakeobjects"]
 });/**
  * preview for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("preview", function(editor) {
 
@@ -17745,6 +17765,10 @@ KISSY.Editor.add("preview", function(editor) {
 }, {
     attach:false
 });
+/**
+ * progressbar ui
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("progressbar", function() {
     var S = KISSY,
         KE = S.Editor;
@@ -17851,7 +17875,7 @@ KISSY.Editor.add("progressbar", function() {
     attach:false
 });/**
  * remove inline-style format for kissy editor,modified from ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("removeformat", function(editor) {
 
@@ -17989,7 +18013,11 @@ KISSY.Editor.add("removeformat", function(editor) {
 
 }, {
     attach:false
-});KISSY.Editor.add("resize", function(editor) {
+});/**
+ * resize functionality
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("resize", function(editor) {
     var S = KISSY,
         Node = S.Node;
 
@@ -18046,7 +18074,11 @@ KISSY.Editor.add("removeformat", function(editor) {
     });
 }, {
     attach:false
-});KISSY.Editor.add("separator", function(editor) {
+});/**
+ * separator for button
+ * @author yiminghe@gmail.com
+ */
+KISSY.Editor.add("separator", function(editor) {
     editor.addPlugin("separator", function() {
         var s = new KISSY.Node('<span ' +
             'class="ke-toolbar-separator">&nbsp;' +
@@ -18062,7 +18094,7 @@ KISSY.Editor.add("removeformat", function(editor) {
     attach:false
 });/**
  * smiley icon from wangwang for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("smiley", function(editor) {
     editor.addPlugin("smiley", function() {
@@ -18083,6 +18115,10 @@ KISSY.Editor.add("smiley", function(editor) {
 },{
     attach:false
 });
+/**
+ * emotion icon from wangwang
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("smiley/support", function() {
     var S = KISSY,
         Event = S.Event,
@@ -18210,7 +18246,7 @@ KISSY.Editor.add("smiley/support", function() {
     attach:false
 });/**
  * source editor for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("sourcearea", function(editor) {
     editor.addPlugin("sourcearea", function() {
@@ -18291,7 +18327,8 @@ KISSY.Editor.add("sourcearea", function(editor) {
     attach:false
 });
 /**
- * 切换源码与可视化模式的命令对象
+ * switch between code and wysiwyg mode
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("sourcearea/support", function() {
     var S = KISSY,
@@ -18364,7 +18401,7 @@ KISSY.Editor.add("sourcearea/support", function() {
     attach:false
 });/**
  * table edit plugin for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("table", function(editor) {
     editor.addPlugin("table", function() {
@@ -18464,6 +18501,10 @@ KISSY.Editor.add("table", function(editor) {
 }, {
     attach:false
 });
+/**
+ * table base functionality
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("table/support", function() {
     var S = KISSY,
         UA = S.UA,
@@ -18895,7 +18936,8 @@ KISSY.Editor.add("table/support", function() {
     attach:false,
     "requires": ["contextmenu"]
 });/**
- * simple tabs ui component for kissy editor
+ * tabs ui
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("tabs", function() {
     var S = KISSY,
@@ -19003,7 +19045,7 @@ KISSY.Editor.add("tabs", function() {
         attach:false
     });/**
  * templates support for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("templates", function(editor) {
 
@@ -19101,7 +19143,7 @@ KISSY.Editor.add("templates", function(editor) {
 });
 /**
  * undo,redo manager for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("undo", function(editor) {
     var S = KISSY,
@@ -19202,7 +19244,7 @@ KISSY.Editor.add("undo", function(editor) {
 });
 /**
  * undo,redo manager for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("undo/support", function() {
     var S = KISSY,

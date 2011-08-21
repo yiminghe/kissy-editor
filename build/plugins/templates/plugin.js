@@ -1,6 +1,6 @@
 /**
  * templates support for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("templates", function(editor) {
 

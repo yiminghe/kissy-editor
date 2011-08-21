@@ -1,6 +1,6 @@
 /**
  * monitor user's enter and shift enter keydown,modified from ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("enterkey", function(editor) {
     var S = KISSY,

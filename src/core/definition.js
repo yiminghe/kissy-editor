@@ -1,6 +1,6 @@
 /**
  * definition of editor class for kissy editor
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 KISSY.Editor.add("definition", function(KE) {
     var

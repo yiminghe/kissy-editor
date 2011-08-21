@@ -286,7 +286,7 @@ switch to default
     width: 24px;
 }/**
 google tip or bubble style for kissy editor
-@author:yiminghe@gmail.com
+@author yiminghe@gmail.com
 **/
 .ke-bubbleview-bubble {
     background-color: #E0ECFF;
@@ -306,7 +306,7 @@ google tip or bubble style for kissy editor
 /**
 triple state button style for kissy editor
 LoVe F HAte
-@author:yiminghe@gmail.com
+@author yiminghe@gmail.com
 **/
 
 /**
@@ -792,7 +792,7 @@ textarea,iframe包装
     color: #969696;
 }/**
 menu style for kissy editor ,include contextmenu and select menu
-@author:yiminghe@gmail.com
+@author yiminghe@gmail.com
 **/
 .ke-menu {
     background: none repeat scroll 0 0 #fcfcfc;
@@ -922,7 +922,7 @@ menu style for kissy editor ,include contextmenu and select menu
     background-attachment: fixed;
 }/**
     resize handler style for kissy editor
-    @author:yiminghe@gmail.com
+    @author yiminghe@gmail.com
 **/
 .ke-resizer {
     background: no-repeat right bottom;
@@ -939,7 +939,7 @@ menu style for kissy editor ,include contextmenu and select menu
 }
 /**
 select style for kissy editor
-@author:yiminghe@gmail.com        
+@author yiminghe@gmail.com
 **/
 .ke-select-text,
 .ke-select-drop-wrap,

@@ -1,6 +1,6 @@
 /**
  * simplified flash bridge for yui swf
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("flashbridge", function() {
     var S = KISSY,KE = S.Editor;

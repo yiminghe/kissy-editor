@@ -1,3 +1,7 @@
+/**
+ * music button
+ * @author yiminghe@gmail.com
+ */
 KISSY.Editor.add("music/support", function() {
     var S = KISSY,
         KE = S.Editor,

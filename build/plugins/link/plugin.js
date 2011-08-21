@@ -1,6 +1,6 @@
 /**
  * link editor support for kissy editor ,innovation from google doc and ckeditor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("link", function(editor) {
     editor.addPlugin("link", function() {

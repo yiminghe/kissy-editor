@@ -1,6 +1,6 @@
 /*
  字数统计插件
- @author:龙啸,承玉<yiminghe@gmail.com>
+ @author 龙啸,承玉<yiminghe@gmail.com>
  */
 (function() {
     var S = KISSY;

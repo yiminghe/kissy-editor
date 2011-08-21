@@ -1,5 +1,6 @@
 /**
- * simple tabs ui component for kissy editor
+ * tabs ui
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("tabs", function() {
     var S = KISSY,

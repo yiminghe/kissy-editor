@@ -1,6 +1,6 @@
 /**
  * align support for kissy editor
- * @author: yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("justify", function(editor) {
 

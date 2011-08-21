@@ -1,6 +1,6 @@
 /**
  * bubble or tip view for kissy editor
- * @author:yiminghe@gmail.com
+ * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("bubbleview", function() {
     var S = KISSY,

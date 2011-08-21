@@ -1,7 +1,7 @@
 /**
  * modified from ckeditor for kissy editor ,walker implementation
  * refer: http://www.w3.org/TR/DOM-Level-2-Traversal-Range/traversal#TreeWalker
- * @author: <yiminghe@gmail.com>
+ * @author <yiminghe@gmail.com>
  */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
