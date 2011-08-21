@@ -15,7 +15,6 @@ build file for kissy editor
 
     <property name="src.dir" location="${project.dir}/src/"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
-    <property name="ke-stable.dir" location="${root.dir}/build/editor/"/>
     <property name="build.dir" location="${project.dir}/build/"/>
     <property name="smartsprites.basedir" location="${ks-tools.dir}/smartsprites/"/>
 
@@ -184,15 +183,6 @@ build file for kissy editor
 
     </target>
 
-    <target name="stable" depends="run">
-        <copy todir="${ke-stable.dir}"
-              encoding="${charset}"
-              outputencoding="${charset}">
-            <fileset dir="${project.dir}/build" includes="**/*">
-            </fileset>
-        </copy>
-    </target>
-
     <target name="csssprites">
         <!--
               产生 css-sprites 文件 for all
@@ -315,7 +305,7 @@ build file for kissy editor
                 >
             <fileset refid="cssembed_files"/>
             <arg line="-jar"/>
-            <arg path="cssembed-0.3.3.jar"/>
+            <arg path="${ks-tools.dir}/cssembed/cssembed-0.3.3.jar"/>
             <arg line="--charset ${charset}"/>
             <srcfile/>
             <arg line="-o"/>
