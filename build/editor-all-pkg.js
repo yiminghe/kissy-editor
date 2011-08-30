@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-08-21 21:46:08
+ * @buildtime: 2011-08-30 16:27:14
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-08-21 21:46:08";
+            return "plugin-min.js?t=2011-08-30 16:27:14";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-08-21 21:46:08');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-08-30 16:27:14');
         };
     }
 
@@ -18958,92 +18958,92 @@ KISSY.Editor.add("tabs", function() {
     }
 
     S.augment(Tabs, S.EventTarget, {
-            _init:function() {
-                var self = this,
-                    cfg = self.cfg,
-                    tabs = cfg.tabs,
-                    contents = cfg.contents,
-                    divs = contents.children(DIV),
-                    lis = tabs.children(LI);
+        _init:function() {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs,
+                contents = cfg.contents,
+                divs = contents.children(DIV),
+                lis = tabs.children(LI);
 
-                tabs.on("click", function(ev) {
-                    ev && ev.halt();
-                    var li = new Node(ev.target);
-                    if (li = li._4e_ascendant(function(n) {
-                        return n._4e_name() === LI && tabs.contains(n);
-                    }, true)) {
-                        lis.removeClass(SELECTED);
-                        var rel = li.attr(REL);
-                        li.addClass(SELECTED);
-                        divs.hide();
+            tabs.on("click", function(ev) {
+                ev && ev.preventDefault();
+                var li = new Node(ev.target);
+                if (li = li._4e_ascendant(function(n) {
+                    return n._4e_name() === LI && tabs.contains(n);
+                }, true)) {
+                    lis.removeClass(SELECTED);
+                    var rel = li.attr(REL);
+                    li.addClass(SELECTED);
+                    divs.hide();
 
-                        divs.item(S.indexOf(li[0], lis)).show();
-                        self.fire(rel);
-                    }
-                });
-            },
-            getTab:function(n) {
-                var self = this,
-                    cfg = self.cfg,
-                    tabs = cfg.tabs,
-                    contents = cfg.contents,
-                    divs = contents.children(DIV),
-                    lis = tabs.children(LI);
-                for (var i = 0; i < lis.length; i++) {
-                    var li = new Node(lis[i]),
-                        div = new Node(divs[i]);
-                    if (S.isNumber(n) && n == i
-                        ||
-                        S.isString(n) && n == li.attr(REL)
-                        ) {
-                        return {
-                            tab:li,
-                            content:div
-                        };
-                    }
+                    divs.item(S.indexOf(li[0], lis)).show();
+                    self.fire(rel);
                 }
-            },
-            remove:function(n) {
-                var info = this.getTab(n);
-                info.tab.remove();
-                info.content.remove();
-            },
-            _getActivate:function() {
-                var self = this,
-                    cfg = self.cfg,
-                    tabs = cfg.tabs,
-                    lis = tabs.children(LI);
-                for (var i = 0; i < lis.length; i++) {
-                    var li = new Node(lis[i]);
-                    if (li.hasClass(SELECTED)) return li.attr(REL);
+            });
+        },
+        getTab:function(n) {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs,
+                contents = cfg.contents,
+                divs = contents.children(DIV),
+                lis = tabs.children(LI);
+            for (var i = 0; i < lis.length; i++) {
+                var li = new Node(lis[i]),
+                    div = new Node(divs[i]);
+                if (S.isNumber(n) && n == i
+                    ||
+                    S.isString(n) && n == li.attr(REL)
+                    ) {
+                    return {
+                        tab:li,
+                        content:div
+                    };
                 }
-            },
-            activate:function(n) {
-                if (arguments.length == 0) return this._getActivate();
-                var self = this,
-                    cfg = self.cfg,
-                    tabs = cfg.tabs,
-                    contents = cfg.contents,
-                    divs = contents.children(DIV),
-                    lis = tabs.children(LI);
-                lis.removeClass(SELECTED);
-                divs.hide();
-                var info = this.getTab(n);
-                info.tab.addClass(SELECTED);
-                info.content.show();
-            },
-            destroy:function() {
-                var self = this,
-                    cfg = self.cfg,
-                    tabs = cfg.tabs;
-                tabs.detach();
-                tabs.remove();
             }
-        });
+        },
+        remove:function(n) {
+            var info = this.getTab(n);
+            info.tab.remove();
+            info.content.remove();
+        },
+        _getActivate:function() {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs,
+                lis = tabs.children(LI);
+            for (var i = 0; i < lis.length; i++) {
+                var li = new Node(lis[i]);
+                if (li.hasClass(SELECTED)) return li.attr(REL);
+            }
+        },
+        activate:function(n) {
+            if (arguments.length == 0) return this._getActivate();
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs,
+                contents = cfg.contents,
+                divs = contents.children(DIV),
+                lis = tabs.children(LI);
+            lis.removeClass(SELECTED);
+            divs.hide();
+            var info = this.getTab(n);
+            info.tab.addClass(SELECTED);
+            info.content.show();
+        },
+        destroy:function() {
+            var self = this,
+                cfg = self.cfg,
+                tabs = cfg.tabs;
+            tabs.detach();
+            tabs.remove();
+        }
+    });
     KE.Tabs = Tabs;
 }, {
-        attach:false
-    });/**
+    attach:false
+});/**
  * templates support for kissy editor
  * @author yiminghe@gmail.com
  */
