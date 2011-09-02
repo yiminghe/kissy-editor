@@ -109,8 +109,8 @@ KISSY.Editor.add("localstorage", function() {
 
     //非原生，等待flash通知
     store.on("contentReady", function() {
-        complete();
         KE.localStorage = store;
+        complete();
     });
 
     /*

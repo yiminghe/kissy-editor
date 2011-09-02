@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-08-30 16:27:14
+ * @buildtime: 2011-09-02 15:37:11
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-08-30 16:27:14";
+            return "plugin-min.js?t=2011-09-02 15:37:11";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-08-30 16:27:14');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-02 15:37:11');
         };
     }
 
@@ -16953,8 +16953,8 @@ KISSY.Editor.add("localstorage", function() {
 
     //非原生，等待flash通知
     store.on("contentReady", function() {
-        complete();
         KE.localStorage = store;
+        complete();
     });
 
     /*
