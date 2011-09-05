@@ -44,7 +44,7 @@ select style for kissy editor
 
 .ke-select-drop {
     background: no-repeat scroll center center transparent;
-    background-image: url("arrow.png");/** sprite-ref: mysprite; */
+    background-image: url("arrow.png"); /** sprite-ref: mysprite; */
     width: 7px;
     height: 3px;
     vertical-align: middle;
@@ -66,7 +66,7 @@ select style for kissy editor
 }
 
 .ke-ie9 .ke-select-disabled .ke-select {
-    filter:none;
+    filter: none;
 }
 
 .ke-menu .ke-select-menu-item {
@@ -90,8 +90,9 @@ select style for kissy editor
     height: 24px;
     line-height: 24px;
 }
+
 .ke-combox .ke-select-drop {
-    height:3px;
+    height: 3px;
 }
 
 .ke-ie7 .ke-combox .ke-select-text {
@@ -100,7 +101,7 @@ select style for kissy editor
 }
 
 .ke-ie6 .ke-combox .ke-select-text {
-/*odd ie ,字错位*/
+    /*odd ie ,字错位*/
     position: static;
     /*
     top: -2px;
@@ -110,38 +111,44 @@ select style for kissy editor
 
 .ke-select-drop-wrap {
     padding-right: 4px;
+    vertical-align: middle;
+}
+
+.ke-ie6 .ke-select-drop-wrap,
+.ke-ie7 .ke-select-drop-wrap {
+    vertical-align: bottom;
 }
 
 .ke-ie6 .ke-combox .ke-select-drop-wrap {
     vertical-align: middle;
-    margin-top:-5px;
-    height:23px;
-    zoom:1;
+    margin-top: -5px;
+    height: 23px;
+    zoom: 1;
 }
 
 .ke-ie6 .ke-combox .ke-select-drop,
-.ke-ie7 .ke-combox .ke-select-drop{
-    margin-top:5px;
-    zoom:1;
+.ke-ie7 .ke-combox .ke-select-drop {
+    margin-top: 5px;
+    zoom: 1;
 }
 
 .ke-combox .ke-select-drop-wrap {
     padding-left: 6px;
     padding-right: 6px;
     background: #e8ebee repeat-x left top;
-    background-image: url("ke-button-bg.png");/** sprite-ref: mysprite; sprite-alignment: repeat;*/
-    -background-image:none;
+    background-image: url("ke-button-bg.png"); /** sprite-ref: mysprite; sprite-alignment: repeat;*/
+    -background-image: none;
     height: 24px;
     padding-top: 1px;
 }
 
 .ke-ie8 .ke-combox .ke-select-drop-wrap,
-.ke-ie9 .ke-combox .ke-select-drop-wrap{
+.ke-ie9 .ke-combox .ke-select-drop-wrap {
     top: 0;
 }
 
 .ke-combox .ke-select-text {
-    border-right:1px solid #C1C8D1;
+    border-right: 1px solid #C1C8D1;
     background: #FFFFFF repeat-x scroll 0 0;
     background-image: url("text-bg.png");
 }
