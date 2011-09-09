@@ -52,6 +52,14 @@ KISSY.Editor.add("draft/support", function() {
 
     var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
+
+        _getSaveKey:function() {
+            var self = this,
+                editor = self.editor,
+                cfg = editor.cfg.pluginConfig;
+            return cfg.draft && cfg.draft['saveKey'] || DRAFT_SAVE;
+        },
+
         /**
          * parse 历史记录延后，点击 select 时才开始 parse
          */
@@ -59,7 +67,7 @@ KISSY.Editor.add("draft/support", function() {
             var localStorage = KE.localStorage;
             var self = this;
             if (!self.drafts) {
-                var str = localStorage.getItem(DRAFT_SAVE),
+                var str = localStorage.getItem(self._getSaveKey()),
                     drafts = [];
 
                 if (str) {
@@ -284,7 +292,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             versions.set("items", items.reverse());
             timeTip.html(tip);
-            localStorage.setItem(DRAFT_SAVE,
+            localStorage.setItem(self._getSaveKey(),
                 (localStorage == window.localStorage) ?
                     encodeURIComponent(JSON.stringify(drafts))
                     : drafts);

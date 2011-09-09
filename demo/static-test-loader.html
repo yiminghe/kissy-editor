@@ -536,6 +536,8 @@ KISSY.ready(function(S) {
                     musicPlayer:KE.Config.base + "music/niftyplayer.swf"
                 },
                 "draft":{
+                    // 当前编辑器的历史是否要单独保存到一个键值而不是公用
+                    // saveKey:"xxx",
                     interval:5,
                     limit:10,
                     helpHtml:  "<div " +
@@ -598,7 +600,7 @@ KISSY.ready(function(S) {
 
         });
 
-        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo");
+        //window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo");
     });
 });
 
