@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-05 15:19:23
+ * @buildtime: 2011-09-09 10:33:12
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-05 15:19:23";
+            return "plugin-min.js?t=2011-09-09 10:33:12";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-05 15:19:23');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-09 10:33:12');
         };
     }
 
@@ -12430,7 +12430,7 @@ KISSY.Editor.add("draft/support", function() {
                 = cfg.draft.limit || LIMIT;
             var holder = new Node(
                 "<div class='ke-draft'>" +
-                    "<spa class='ke-draft-title'>" +
+                    "<span class='ke-draft-title'>" +
                     "内容正文每" +
                     cfg.draft.interval
                     + "分钟自动保存一次。" +
@@ -12529,7 +12529,6 @@ KISSY.Editor.add("draft/support", function() {
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
                 self.helpBtn = help.get("el");
             }
-            self._holder = holder;
             addRes.call(self, holder);
         },
         _prepareHelp:function() {

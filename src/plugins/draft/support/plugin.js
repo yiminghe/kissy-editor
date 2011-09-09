@@ -87,7 +87,7 @@ KISSY.Editor.add("draft/support", function() {
                 = cfg.draft.limit || LIMIT;
             var holder = new Node(
                 "<div class='ke-draft'>" +
-                    "<spa class='ke-draft-title'>" +
+                    "<span class='ke-draft-title'>" +
                     "内容正文每" +
                     cfg.draft.interval
                     + "分钟自动保存一次。" +
@@ -186,7 +186,6 @@ KISSY.Editor.add("draft/support", function() {
                 KE.Utils.lazyRun(self, "_prepareHelp", "_realHelp");
                 self.helpBtn = help.get("el");
             }
-            self._holder = holder;
             addRes.call(self, holder);
         },
         _prepareHelp:function() {
