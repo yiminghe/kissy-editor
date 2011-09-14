@@ -570,7 +570,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 }
                 self.statusText.html("队列中剩余" + wait + "张图片"
                     + "，点击确定上传，开始上传。 "
-                    );
+                );
             }
             //当前已上传的文件同步到本地
             self._save();

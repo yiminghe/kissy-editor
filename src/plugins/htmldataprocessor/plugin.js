@@ -30,7 +30,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         var fragmentPrototype = KE.HtmlParser.Fragment.prototype,
             elementPrototype = KE.HtmlParser.Element.prototype;
 
-        fragmentPrototype.onlyChild =
+        fragmentPrototype['onlyChild'] =
             elementPrototype.onlyChild = function() {
                 var children = this.children,
                     count = children.length,
@@ -57,7 +57,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return childs;
         };
 
-        elementPrototype.getAncestor = function(tagNameRegex) {
+        elementPrototype['getAncestor'] = function(tagNameRegex) {
             var parent = this.parent;
             while (parent && !( parent.name && parent.name.match(tagNameRegex) ))
                 parent = parent.parent;
@@ -173,8 +173,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  } ,'font-family'],
                  */
 
-                //qc 3701，去除行高，防止乱掉
-                [/line-height/i],
+                // qc 3701，去除行高，防止乱掉
+                // beily_cn 报告需要去掉
+                // [/line-height/i],
                 [/display/i,/none/i]
             ], undefined);
 
@@ -356,7 +357,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // been resolved from a pseudo list item's margin value, even get
                     // no indentation at all.
                     listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent, undefined) )
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent) )
                         || 1;
 
                     // Ignore the 'list-style-type' attribute if it's matched with
@@ -521,9 +522,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
             },
 
-            attributes
-                :
-            {
+            attributes:{
                 //防止word的垃圾class，
                 //全部杀掉算了，除了以ke_开头的编辑器内置class
                 //不要全部杀掉，可能其他应用有需要
@@ -534,9 +533,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         ) {
                         if (/(^|\s+)Mso/.test(value)) return false;
                         return value;
-                    }
-
-                ,
+                    },
                 'style'
                     :
                     function(value) {
@@ -545,16 +542,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         if (!re) return false;
                         return re;
                     }
-            }
-            ,
+            },
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
                 [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
-            ]
-        }
-            ;
+            ]};
 
 
         /**
@@ -590,7 +584,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     return false;
                 }
         };
-//将编辑区生成html最终化
+        // 将编辑区生成 html 最终化
         var defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -643,17 +637,19 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 td:function(element) {
                     var c = element.children;
 
-                    //firefox 添加的 br 去掉
-                    for (var i = 0; i < c.length; i++) {
-                        if (c[i].name == "br") {
-                            c.splice(i, 1);
-                            --i;
-                        }
-                    }
+                    // firefox 添加的 br 去掉
+                    // 无缘无故去掉？为什么？？
+                    // for (var i = 0; i < c.length; i++) {
+                    //     if (c[i].name == "br") {
+                    //         c.splice(i, 1);
+                    //         --i;
+                    //     }
+                    // }
+
                     //ie预览完美需要 &nbsp;
-                    if (!element.children.length) {
+                    if (!c.length) {
                         var t = new KE.HtmlParser.Text("&nbsp;");
-                        element.children.push(t);
+                        c.push(t);
                     }
                 },
                 span:function(element) {
@@ -708,11 +704,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         htmlFilter.addRules(defaultHtmlFilterRules);
         dataFilter.addRules(defaultDataFilterRules);
-
         wordFilter.addRules(defaultDataFilterRules);
         wordFilter.addRules(wordRules);
-    })
-        ();
+    })();
 
 
     /**
@@ -819,26 +813,25 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     })();
 
 
-//htmlparser fragment 中的 entities 处理
-//el.innerHTML="&nbsp;"
-//alert(el.innerHTML);
-//http://yiminghe.javaeye.com/blog/788929
+    // htmlparser fragment 中的 entities 处理
+    // el.innerHTML="&nbsp;"
+    // http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
-                text : function(text) {
-                    return text
-                        //.replace(/&nbsp;/g, "\xa0")
-                        .replace(/\xa0/g, "&nbsp;");
-                }
-            });
+            text : function(text) {
+                return text
+                    //.replace(/&nbsp;/g, "\xa0")
+                    .replace(/\xa0/g, "&nbsp;");
+            }
+        });
     })();
 
 
     var protectElementRegex = /<(a|area|img|input)\b([^>]*)>/gi,
         protectAttributeRegex = /\b(href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+))/gi;
-//ie 6-7 会将 关于 url 的 content value 替换为 dom value
-//#a -> http://xxx/#a
-//../x.html -> http://xx/x.html
+    // ie 6-7 会将 关于 url 的 content value 替换为 dom value
+    // #a -> http://xxx/#a
+    // ../x.html -> http://xx/x.html
     function protectAttributes(html) {
         return html.replace(protectElementRegex, function(element, tag, attributes) {
             return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
@@ -955,9 +948,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-},
-    {
-        attach:false
-    }
-)
-    ;
+}, {
+    attach:false
+});
