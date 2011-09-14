@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-09 14:04:12
+ * @buildtime: 2011-09-14 20:59:10
  */
 KISSY.add("editor", function(S) {
     var DOM = S.DOM,
@@ -101,11 +101,11 @@ KISSY.add("editor", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-09 14:04:12";
+            return "plugin-min.js?t=2011-09-14 20:59:10";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-09 14:04:12');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-14 20:59:10');
         };
     }
 
@@ -869,13 +869,13 @@ KISSY.Editor.add("dom", function(KE) {
         /**
          * @param el {(Node)}
          */
-        normalElDom = function(el) {
+            normalElDom = function(el) {
             return   el[0] || el;
         },
         /**
          * @param el {(Node)}
          */
-        normalEl = function(el) {
+            normalEl = function(el) {
             if (el && !el[0]) return new Node(el);
             return el;
         },
@@ -1134,42 +1134,42 @@ KISSY.Editor.add("dom", function(KE) {
              */
             _4e_unselectable :
                 UA.gecko ?
-                function(el) {
-                    el = normalElDom(el);
-                    el.style['MozUserSelect'] = 'none';
-                }
+                    function(el) {
+                        el = normalElDom(el);
+                        el.style['MozUserSelect'] = 'none';
+                    }
                     : UA.webkit ?
-                      function(el) {
-                          el = normalElDom(el);
-                          el.style['KhtmlUserSelect'] = 'none';
-                      }
+                    function(el) {
+                        el = normalElDom(el);
+                        el.style['KhtmlUserSelect'] = 'none';
+                    }
                     :
-                      function(el) {
-                          el = normalElDom(el);
-                          if (UA.ie || UA.opera) {
-                              var
-                                  e,
-                                  i = 0;
+                    function(el) {
+                        el = normalElDom(el);
+                        if (UA.ie || UA.opera) {
+                            var
+                                e,
+                                i = 0;
 
-                              //el.unselectable='on';
-                              el.setAttribute("unselectable", 'on');
-                              var els = el.getElementsByTagName("*");
-                              while (( e = els[ i++ ] )) {
-                                  switch (e.tagName.toLowerCase()) {
-                                      case 'iframe' :
-                                      case 'textarea' :
-                                      case 'input' :
-                                      case 'select' :
-                                          /* Ignore the above tags */
-                                          break;
-                                      default :
-                                          //e.unselectable='on';
-                                          //ie9 使用 setAttribute才可以
-                                          e.setAttribute("unselectable", 'on');
-                                  }
-                              }
-                          }
-                      },
+                            //el.unselectable='on';
+                            el.setAttribute("unselectable", 'on');
+                            var els = el.getElementsByTagName("*");
+                            while (( e = els[ i++ ] )) {
+                                switch (e.tagName.toLowerCase()) {
+                                    case 'iframe' :
+                                    case 'textarea' :
+                                    case 'input' :
+                                    case 'select' :
+                                        /* Ignore the above tags */
+                                        break;
+                                    default :
+                                        //e.unselectable='on';
+                                        //ie9 使用 setAttribute才可以
+                                        e.setAttribute("unselectable", 'on');
+                                }
+                            }
+                        }
+                    },
 
             /**
              *
@@ -1477,61 +1477,61 @@ KISSY.Editor.add("dom", function(KE) {
              * @param name {string}
              */
             _4e_hasAttribute : Utils.ieEngine < 9 ?
-                               function(el, name) {
-                                   el = normalElDom(el);
-                                   // from ppk :http://www.quirksmode.org/dom/w3c_core.html
-                                   // IE5-7 doesn't return the value of a style attribute.
-                                   // var $attr = el.attributes[name];
-                                   // http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
-                                   // try name=tabindex
-                                   var $attr = el.getAttributeNode(name);
-                                   return !!( $attr && $attr.specified );
-                               }
+                function(el, name) {
+                    el = normalElDom(el);
+                    // from ppk :http://www.quirksmode.org/dom/w3c_core.html
+                    // IE5-7 doesn't return the value of a style attribute.
+                    // var $attr = el.attributes[name];
+                    // http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+                    // try name=tabindex
+                    var $attr = el.getAttributeNode(name);
+                    return !!( $attr && $attr.specified );
+                }
                 :
-                               function(el, name) {
-                                   el = normalElDom(el);
-                                   //使用原生实现
-                                   return el.hasAttribute(name);
-                               },
+                function(el, name) {
+                    el = normalElDom(el);
+                    //使用原生实现
+                    return el.hasAttribute(name);
+                },
             /**
              * 统一的属性处理方式
              * @param el {(Node)}
              * @param otherNode {(Node)}
              */
             _4e_hasAttributes: Utils.ieEngine < 9 ?
-                               function(el) {
-                                   el = normalElDom(el);
-                                   var attributes = el.attributes;
-                                   for (var i = 0; i < attributes.length; i++) {
-                                       var attribute = attributes[i];
-                                       switch (attribute.name) {
-                                           case 'class' :
-                                               // IE has a strange bug. If calling removeAttribute('className'),
-                                               // the attributes collection will still contain the "class"
-                                               // attribute, which will be marked as "specified", even if the
-                                               // outerHTML of the element is not displaying the class attribute.
-                                               // Note : I was not able to reproduce it outside the editor,
-                                               // but I've faced it while working on the TC of #1391.
-                                               if (el.getAttribute('class'))
-                                                   return TRUE;
-                                               break;
-                                           /*jsl:fallthru*/
-                                           default :
-                                               if (attribute.specified)
-                                                   return TRUE;
-                                       }
-                                   }
-                                   return FALSE;
-                               }
+                function(el) {
+                    el = normalElDom(el);
+                    var attributes = el.attributes;
+                    for (var i = 0; i < attributes.length; i++) {
+                        var attribute = attributes[i];
+                        switch (attribute.name) {
+                            case 'class' :
+                                // IE has a strange bug. If calling removeAttribute('className'),
+                                // the attributes collection will still contain the "class"
+                                // attribute, which will be marked as "specified", even if the
+                                // outerHTML of the element is not displaying the class attribute.
+                                // Note : I was not able to reproduce it outside the editor,
+                                // but I've faced it while working on the TC of #1391.
+                                if (el.getAttribute('class'))
+                                    return TRUE;
+                                break;
+                            /*jsl:fallthru*/
+                            default :
+                                if (attribute.specified)
+                                    return TRUE;
+                        }
+                    }
+                    return FALSE;
+                }
                 :
-                               function(el) {
-                                   el = normalElDom(el);
-                                   //删除firefox自己添加的标志
-                                   UA.gecko && el.removeAttribute("_moz_dirty");
-                                   //使用原生
-                                   //ie8 莫名其妙多个shape？？specified为false
-                                   return el.hasAttributes();
-                               },
+                function(el) {
+                    el = normalElDom(el);
+                    //删除firefox自己添加的标志
+                    UA.gecko && el.removeAttribute("_moz_dirty");
+                    //使用原生
+                    //ie8 莫名其妙多个shape？？specified为false
+                    return el.hasAttributes();
+                },
 
             /**
              *
@@ -1662,12 +1662,16 @@ KISSY.Editor.add("dom", function(KE) {
              * @param val {string=}
              */
             _4e_style:function(el, styleName, val) {
-                el = normalEl(el);
                 if (val !== undefined) {
-                    return el.css(styleName, val);
+                    el = normalEl(el);
+                    el.css(styleName, val);
+                    if (!el.attr("style")) {
+                        el.removeAttr("style");
+                    }
+                } else {
+                    el = normalElDom(el);
+                    return el.style[normalizeStyle(styleName)];
                 }
-                el = normalElDom(el);
-                return el.style[normalizeStyle(styleName)];
             },
 
             /**
@@ -1985,7 +1989,7 @@ KISSY.Editor.add("dom", function(KE) {
      *
      * @param editorDom {Object}
      */
-    S.DOM._4e_inject = function(editorDom) {
+    var _4e_inject = function(editorDom) {
         S.mix(DOM, editorDom);
         for (var dm in editorDom) {
             if (editorDom.hasOwnProperty(dm))
@@ -2048,7 +2052,7 @@ KISSY.Editor.add("dom", function(KE) {
         "_4e_getElementsByTagName":editorDom._4e_getElementsByTagName
     });
 
-    DOM._4e_inject(editorDom);
+    _4e_inject(editorDom);
 });
 /**
  * 多实例的管理，主要是焦点控制，主要是为了
@@ -14508,7 +14512,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         var fragmentPrototype = KE.HtmlParser.Fragment.prototype,
             elementPrototype = KE.HtmlParser.Element.prototype;
 
-        fragmentPrototype.onlyChild =
+        fragmentPrototype['onlyChild'] =
             elementPrototype.onlyChild = function() {
                 var children = this.children,
                     count = children.length,
@@ -14535,7 +14539,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return childs;
         };
 
-        elementPrototype.getAncestor = function(tagNameRegex) {
+        elementPrototype['getAncestor'] = function(tagNameRegex) {
             var parent = this.parent;
             while (parent && !( parent.name && parent.name.match(tagNameRegex) ))
                 parent = parent.parent;
@@ -14651,8 +14655,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  } ,'font-family'],
                  */
 
-                //qc 3701，去除行高，防止乱掉
-                [/line-height/i],
+                // qc 3701，去除行高，防止乱掉
+                // beily_cn 报告需要去掉
+                // [/line-height/i],
                 [/display/i,/none/i]
             ], undefined);
 
@@ -14834,7 +14839,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // been resolved from a pseudo list item's margin value, even get
                     // no indentation at all.
                     listItemIndent = parseInt(listItemAttrs[ 'ke:indent' ], 10)
-                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent, undefined) )
+                        || listBaseIndent && ( Math.ceil(listItemAttrs[ 'ke:margin' ] / listBaseIndent) )
                         || 1;
 
                     // Ignore the 'list-style-type' attribute if it's matched with
@@ -14999,9 +15004,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
             },
 
-            attributes
-                :
-            {
+            attributes:{
                 //防止word的垃圾class，
                 //全部杀掉算了，除了以ke_开头的编辑器内置class
                 //不要全部杀掉，可能其他应用有需要
@@ -15012,9 +15015,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         ) {
                         if (/(^|\s+)Mso/.test(value)) return false;
                         return value;
-                    }
-
-                ,
+                    },
                 'style'
                     :
                     function(value) {
@@ -15023,16 +15024,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         if (!re) return false;
                         return re;
                     }
-            }
-            ,
+            },
             attributeNames :  [
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
                 [ ( /^on/ ), 'ke_on' ],
                 [/^lang$/,'']
-            ]
-        }
-            ;
+            ]};
 
 
         /**
@@ -15068,7 +15066,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     return false;
                 }
         };
-//将编辑区生成html最终化
+        // 将编辑区生成 html 最终化
         var defaultHtmlFilterRules = {
             elementNames : [
                 // Remove the "ke:" namespace prefix.
@@ -15121,17 +15119,19 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 td:function(element) {
                     var c = element.children;
 
-                    //firefox 添加的 br 去掉
-                    for (var i = 0; i < c.length; i++) {
-                        if (c[i].name == "br") {
-                            c.splice(i, 1);
-                            --i;
-                        }
-                    }
+                    // firefox 添加的 br 去掉
+                    // 无缘无故去掉？为什么？？
+                    // for (var i = 0; i < c.length; i++) {
+                    //     if (c[i].name == "br") {
+                    //         c.splice(i, 1);
+                    //         --i;
+                    //     }
+                    // }
+
                     //ie预览完美需要 &nbsp;
-                    if (!element.children.length) {
+                    if (!c.length) {
                         var t = new KE.HtmlParser.Text("&nbsp;");
-                        element.children.push(t);
+                        c.push(t);
                     }
                 },
                 span:function(element) {
@@ -15186,11 +15186,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         htmlFilter.addRules(defaultHtmlFilterRules);
         dataFilter.addRules(defaultDataFilterRules);
-
         wordFilter.addRules(defaultDataFilterRules);
         wordFilter.addRules(wordRules);
-    })
-        ();
+    })();
 
 
     /**
@@ -15297,26 +15295,25 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     })();
 
 
-//htmlparser fragment 中的 entities 处理
-//el.innerHTML="&nbsp;"
-//alert(el.innerHTML);
-//http://yiminghe.javaeye.com/blog/788929
+    // htmlparser fragment 中的 entities 处理
+    // el.innerHTML="&nbsp;"
+    // http://yiminghe.javaeye.com/blog/788929
     (function() {
         htmlFilter.addRules({
-                text : function(text) {
-                    return text
-                        //.replace(/&nbsp;/g, "\xa0")
-                        .replace(/\xa0/g, "&nbsp;");
-                }
-            });
+            text : function(text) {
+                return text
+                    //.replace(/&nbsp;/g, "\xa0")
+                    .replace(/\xa0/g, "&nbsp;");
+            }
+        });
     })();
 
 
     var protectElementRegex = /<(a|area|img|input)\b([^>]*)>/gi,
         protectAttributeRegex = /\b(href|src|name)\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|(?:[^ "'>]+))/gi;
-//ie 6-7 会将 关于 url 的 content value 替换为 dom value
-//#a -> http://xxx/#a
-//../x.html -> http://xx/x.html
+    // ie 6-7 会将 关于 url 的 content value 替换为 dom value
+    // #a -> http://xxx/#a
+    // ../x.html -> http://xx/x.html
     function protectAttributes(html) {
         return html.replace(protectElementRegex, function(element, tag, attributes) {
             return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
@@ -15433,12 +15430,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         }
     };
-},
-    {
-        attach:false
-    }
-)
-    ;
+}, {
+    attach:false
+});
 /**
  * insert image for kissy editor
  * @author yiminghe@gmail.com
