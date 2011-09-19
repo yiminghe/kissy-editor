@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-19 20:28:24
+ * @buildtime: 2011-09-19 21:19:35
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-19 20:28:24";
+            return "plugin-min.js?t=2011-09-19 21:19:35";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-19 20:28:24');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-19 21:19:35');
         };
     }
 
@@ -11557,7 +11557,13 @@ KISSY.Editor.add("clipboard", function(editor) {
                 _init:function() {
                     var self = this,editor = self.editor;
                     // Event.on(editor.document.body, UA.ie ? "beforepaste" : "keydown", self._paste, self);
-                    Event.on(editor.document.body, UA.webkit ? 'paste' : (UA.gecko ? 'keydown' : 'beforepaste'), self._paste, self);
+                    // beforepaste not fire on webkit and firefox
+                    // paste fire too later in ie ,cause error
+                    // 奇怪哦
+                    // refer : http://stackoverflow.com/questions/2176861/javascript-get-clipboard-data-on-paste-event-cross-browser
+                    Event.on(editor.document.body,
+                        UA.webkit ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
+                        self._paste, self);
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
                     Event.on(editor.document.body, 'contextmenu', function() {
                         depressBeforeEvent = 1;
@@ -11573,13 +11579,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                 _paste:function(ev) {
 
                     if (depressBeforeEvent) {
-                        return;
-                    }
-
-                    if (ev.type === 'keydown' &&
-                        !(ev.keyCode === 86 &&
-                            (ev.ctrlKey || ev.metaKey)
-                            )) {
                         return;
                     }
 
