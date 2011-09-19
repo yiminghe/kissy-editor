@@ -16,6 +16,7 @@ build file for kissy editor
     <property name="src.dir" location="${project.dir}/src/"/>
     <property name="ks-tools.dir" location="${root.dir}/kissy-tools/"/>
     <property name="build.dir" location="${project.dir}/build/"/>
+    <property name="build.parts.dir" location="${project.dir}/build/editor/"/>
     <property name="smartsprites.basedir" location="${ks-tools.dir}/smartsprites/"/>
 
     <property name="theme.dir" value="theme"/>
@@ -29,12 +30,12 @@ build file for kissy editor
     <property name="git.wait" value="10"/>
     <property name="git.url" value="http://www.github.com"/>
 
-    <fileset dir="${build.dir}/${theme.dir}"
+    <fileset dir="${build.parts.dir}/${theme.dir}"
              includes="cool/editor-pkg-min.css"
              id="cssembed_files">
     </fileset>
 
-    <fileset dir="${build.dir}/${theme.dir}"
+    <fileset dir="${build.parts.dir}/${theme.dir}"
              includes="cool/editor-pkg.css"
              id="sprites_files">
     </fileset>
@@ -42,7 +43,7 @@ build file for kissy editor
     <!--
     注意：核心文件有顺序依赖
     -->
-    <filelist id="core_js" dir="${build.dir}/core" files="
+    <filelist id="core_js" dir="${build.parts.dir}/core" files="
     ../editor.js,
     utils.js,
     dom.js,
@@ -69,7 +70,7 @@ build file for kissy editor
     ui/select/plugin.js
     "/>
 
-    <fileset dir="${build.dir}"
+    <fileset dir="${build.parts.dir}"
              includes="plugins/**/plugin.js"
              excludes="**/dialog/**/plugin.js"
              id="core_plugin_js">
@@ -84,7 +85,7 @@ build file for kissy editor
     create dir necessarily
     -->
     <target name="prepare">
-        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.parts.dir}"/>
 
         <!--
         引入kissy overlay 到 editor
@@ -99,9 +100,9 @@ build file for kissy editor
                     ></filelist>
         </concat>
 
-        <delete file='${build.dir}/editor.js'/>
+        <delete file='${build.parts.dir}/editor.js'/>
 
-        <copy todir="${build.dir}"
+        <copy todir="${build.parts.dir}"
               encoding="${charset}"
               outputencoding="${charset}">
             <fileset dir="${src.dir}"
@@ -117,7 +118,7 @@ build file for kissy editor
     -->
     <target
             name="git"
-            depends="cssembed,timestamp">
+            depends="cssembed,export">
 
         <input addproperty="git.commit.message">
             git commit message :
@@ -211,11 +212,11 @@ build file for kissy editor
 
         <apply executable="java"
                verbose="true"
-               dest="${build.dir}"
+               dest="${build.parts.dir}"
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${build.dir}"
+            <fileset dir="${build.parts.dir}"
                      includes="**/*.js"
                      excludes="**/*-min*.js"
                     />
@@ -236,11 +237,11 @@ build file for kissy editor
        
         <apply executable="java"
                verbose="true"
-               dest="${build.dir}"
+               dest="${build.parts.dir}"
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${build.dir}"
+            <fileset dir="${build.parts.dir}"
                      includes="**/editor-core-pkg.js"
                     />
             <arg line="-jar"/>
@@ -270,11 +271,11 @@ build file for kissy editor
 
         <apply executable="java"
                verbose="true"
-               dest="${build.dir}"
+               dest="${build.parts.dir}"
                failonerror="true"
                parallel="false"
                 >
-            <fileset dir="${build.dir}"
+            <fileset dir="${build.parts.dir}"
                      includes="**/*.css"
                      excludes="**/*-min*.css"/>
             <arg line="-jar"/>
@@ -299,7 +300,7 @@ build file for kissy editor
         -->
         <apply executable="java"
                verbose="true"
-               dest="${build.dir}/${theme.dir}"
+               dest="${build.parts.dir}/${theme.dir}"
                failonerror="true"
                parallel="false"
                 >
@@ -319,7 +320,7 @@ build file for kissy editor
         -->
         <apply executable="java"
                verbose="true"
-               dest="${build.dir}/${theme.dir}"
+               dest="${build.parts.dir}/${theme.dir}"
                failonerror="true"
                parallel="false"
                 >
@@ -375,14 +376,14 @@ build file for kissy editor
                                flags="g"
                                byline="false"
                                encoding="${charset}">
-                    <fileset dir="${build.dir}/${theme.dir}/${var.embed.basename}"
+                    <fileset dir="${build.parts.dir}/${theme.dir}/${var.embed.basename}"
                              includes="**/*-mhtml.css"/>
                 </replaceregexp>
             </sequential>
         </ac:for>
 
         <fixcrlf includes="**/*-mhtml.css"
-                 srcdir="${build.dir}/${theme.dir}"
+                 srcdir="${build.parts.dir}/${theme.dir}"
                  encoding="${charset}"
                  eol="crlf">
         </fixcrlf>
@@ -396,7 +397,7 @@ build file for kissy editor
         <!--
         kissy editor core ,load plugins dynamically
         -->
-        <concat destfile="${build.dir}/editor-core-pkg.js"
+        <concat destfile="${build.parts.dir}/editor-core-pkg.js"
                 encoding="${charset}"
                 outputencoding="${charset}">
             <filelist refid="core_js"/>
@@ -405,10 +406,10 @@ build file for kissy editor
         <!--
         full kissy editor ,all plugins static included
         -->
-        <concat destfile="${build.dir}/editor-all-pkg.js"
+        <concat destfile="${build.parts.dir}/editor-all-pkg.js"
                 encoding="${charset}"
                 outputencoding="${charset}">
-            <path location="${build.dir}/editor-core-pkg.js"/>
+            <path location="${build.parts.dir}/editor-core-pkg.js"/>
             <fileset refid="core_plugin_js"/>
         </concat>
 
@@ -417,7 +418,7 @@ build file for kissy editor
         -->
         <ac:for param="biz">
             <path>
-                <dirset dir="${build.dir}/${biz.dir}" includes="*"/>
+                <dirset dir="${build.parts.dir}/${biz.dir}" includes="*"/>
             </path>
             <sequential>
                 <!--
@@ -452,7 +453,7 @@ build file for kissy editor
         -->
         <ac:for param="theme">
             <path>
-                <dirset dir="${build.dir}/${theme.dir}" includes="*"/>
+                <dirset dir="${build.parts.dir}/${theme.dir}" includes="*"/>
             </path>
             <sequential>
                 <ac:var name="var.theme.dirname" unset="true"/>
@@ -480,8 +481,8 @@ build file for kissy editor
             depends="minify">
         <native2ascii
                 encoding="${charset}"
-                src="${build.dir}"
-                dest="${build.dir}"
+                src="${build.parts.dir}"
+                dest="${build.parts.dir}"
                 includes="**/*-min.js"
                 >
             <mapper type="regexp" from="^(.*)\.js$" to="\1-ascii.js"/>
@@ -491,15 +492,15 @@ build file for kissy editor
         先要删除
         -->
         <delete>
-            <fileset dir="${build.dir}">
+            <fileset dir="${build.parts.dir}">
                 <include name="**/*-min.js"/>
             </fileset>
         </delete>
         <!--
         才能移动
         -->
-        <move todir="${build.dir}">
-            <fileset dir="${build.dir}">
+        <move todir="${build.parts.dir}">
+            <fileset dir="${build.parts.dir}">
                 <include name="**/*-ascii.js"/>
             </fileset>
             <mapper type="regexp" from="^(.*)-ascii\.js$" to="\1.js"/>
@@ -514,9 +515,21 @@ build file for kissy editor
                        flags="g"
                        byline="true"
                        encoding="${charset}">
-            <fileset dir="${build.dir}"
+            <fileset dir="${build.parts.dir}"
                      includes="**/*.js"/>
         </replaceregexp>
+    </target>
+
+    <target name="export" depends="timestamp">
+        <!-- export editor for kissy 1.2-->
+        <copy encoding="${charset}"
+              file="${build.parts.dir}/editor-all-pkg.js"
+              tofile="${build.dir}/editor.js">
+        </copy>
+        <copy encoding="${charset}"
+              file="${build.parts.dir}/editor-all-pkg-min.js"
+              tofile="${build.dir}/editor-min.js">
+        </copy>
     </target>
 
     <target name="clean">

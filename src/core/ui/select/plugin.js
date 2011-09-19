@@ -505,4 +505,6 @@ KISSY.Editor.add("select", function() {
         }
         return context;
     };
+},{
+    attach:false
 });

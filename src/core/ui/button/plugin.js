@@ -20,7 +20,7 @@ KISSY.Editor.add("button", function() {
     }
 
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
-    ||S['UIBase']['Box']
+        || S['UIBase']['Box']
     ], {
         bindUI:function() {
             var self = this,el = self.get("el");
@@ -80,7 +80,7 @@ KISSY.Editor.add("button", function() {
             self.fire("click", {
                 TripleClickType:self.get("state") + "Click"
             });
-            ev&&ev.preventDefault();
+            ev && ev.preventDefault();
         },
         bon:function() {
             this.set("state", ON);
@@ -170,7 +170,7 @@ KISSY.Editor.add("button", function() {
                     b.on("click", function(ev) {
                         var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
-                        ev&&ev.halt();
+                        ev && ev.halt();
                     });
                     if (btnCfg.mode == KE.WYSIWYG_MODE) {
                         editor.on("wysiwygmode", b.enable, b);
@@ -191,4 +191,6 @@ KISSY.Editor.add("button", function() {
         }
         return context;
     };
+}, {
+    attach:false
 });
