@@ -903,9 +903,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // <span style=\"\">l<span style=\"font: 7pt &quot;Times New Roman&quot;;\">&nbsp;
             // </span></span></span>
             // [endif]-->
-            if (UA.gecko)
+            if (UA.gecko) {
                 html = html.replace(/(<!--\[if[^<]*?\])-->([\S\s]*?)<!--(\[endif\]-->)/gi,
                     '$1$2$3');
+            }
 
             html = protectAttributes(html);
 

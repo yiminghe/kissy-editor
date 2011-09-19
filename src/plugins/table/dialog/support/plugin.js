@@ -78,17 +78,16 @@ KISSY.Editor.add("table/dialog/support", function() {
             "</tr>" +
             "<tr>" +
             "<td>" +
-            "<label>对齐： " +
+            "<label>对齐： </label>" +
             "<select class='ke-table-align'>" +
             "<option value=''>无</option>" +
             "<option value='left'>左对齐</option>" +
             "<option value='right'>右对齐</option>" +
             "<option value='center'>中间对齐</option>" +
             "</select>" +
-            "</label>" +
             "</td>" +
             "<td>" +
-            "<label>标题格： " +
+            "<label>标题格：</label> " +
             "<select class='ke-table-head ke-table-create-only'>" +
             "<option value=''>无</option>" +
             "<option value='1'>有</option>" +
