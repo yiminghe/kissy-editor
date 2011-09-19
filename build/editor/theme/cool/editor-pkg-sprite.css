@@ -1039,6 +1039,7 @@ select style for kissy editor
 
 .ke-combox .ke-select-drop {
     height: 3px;
+    margin-top: 8px;
 }
 
 .ke-ie7 .ke-combox .ke-select-text {
@@ -1065,17 +1066,16 @@ select style for kissy editor
     vertical-align: bottom;
 }
 
-.ke-ie6 .ke-combox .ke-select-drop-wrap {
+.ke-ie6 .ke-combox .ke-select-drop-wrap,
+.ke-ie7 .ke-combox .ke-select-drop-wrap {
     vertical-align: middle;
-    margin-top: -5px;
+    margin-top: -10px;
     height: 23px;
     zoom: 1;
 }
 
-.ke-ie6 .ke-combox .ke-select-drop,
-.ke-ie7 .ke-combox .ke-select-drop {
-    margin-top: 5px;
-    zoom: 1;
+.ke-ie6 .ke-combox .ke-select-drop-wrap {
+    margin-top: -5px;
 }
 
 .ke-combox .ke-select-drop-wrap {
