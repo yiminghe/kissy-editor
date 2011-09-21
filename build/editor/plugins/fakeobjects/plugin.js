@@ -65,9 +65,8 @@ KISSY.Editor.add("fakeobjects", function(editor) {
              * @param isResizable
              */
             createFakeParserElement:function(realElement, className, realElementType, isResizable, attrs) {
-                var html;
-
-                var writer = new HtmlParser.BasicWriter();
+                var html,
+                    writer = new HtmlParser.BasicWriter();
                 realElement.writeHtml(writer);
                 html = writer.getHtml();
                 var style = realElement.attributes.style || '';
@@ -77,25 +76,27 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 if (realElement.attributes.height) {
                     style = "height:" + realElement.attributes.height + "px;" + style;
                 }
-                var attributes = {
-                    'class' : className,
-                    src : SPACER_GIF,
-                    _ke_realelement : encodeURIComponent(html),
-                    _ke_real_node_type : realElement.type,
-                    style:style,
-                    align : realElement.attributes.align || ''
-                };
+                // add current class to fake element
+                var existClass = S.trim(realElement.attributes['class']),
+                    attributes = {
+                        'class' : className + " " + existClass,
+                        src : SPACER_GIF,
+                        _ke_realelement : encodeURIComponent(html),
+                        _ke_real_node_type : realElement.type,
+                        style:style,
+                        align : realElement.attributes.align || ''
+                    };
                 attrs && delete attrs.width;
                 attrs && delete attrs.height;
 
                 attrs && S.mix(attributes, attrs, false);
 
-                if (realElementType)
+                if (realElementType) {
                     attributes._ke_real_element_type = realElementType;
-
-                if (isResizable)
+                }
+                if (isResizable) {
                     attributes._ke_resizable = isResizable;
-
+                }
                 return new HtmlParser.Element('img', attributes);
             }
         });
@@ -111,14 +112,17 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 if (realElement.attr("height")) {
                     style = "height:" + realElement.attr("height") + "px;" + style;
                 }
-                var self = this,attributes = {
-                    'class' : className,
-                    src : SPACER_GIF,
-                    _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
-                    _ke_real_node_type : realElement[0].nodeType,
-                    //align : realElement.attr("align") || '',
-                    style:style
-                };
+                var self = this,
+                    // add current class to fake element
+                    existClass = S.trim(realElement.attr('class')),
+                    attributes = {
+                        'class' : className + " " + existClass,
+                        src : SPACER_GIF,
+                        _ke_realelement : encodeURIComponent(outerHTML || realElement._4e_outerHtml()),
+                        _ke_real_node_type : realElement[0].nodeType,
+                        //align : realElement.attr("align") || '',
+                        style:style
+                    };
                 attrs && delete attrs.width;
                 attrs && delete attrs.height;
 
@@ -140,9 +144,9 @@ KISSY.Editor.add("fakeobjects", function(editor) {
                 temp.html(html);
                 // When returning the node, remove it from its parent to detach it.
                 return temp._4e_first(
-                                     function(n) {
-                                         return n[0].nodeType == KEN.NODE_ELEMENT;
-                                     })._4e_remove();
+                    function(n) {
+                        return n[0].nodeType == KEN.NODE_ELEMENT;
+                    })._4e_remove();
             }
         });
     }
