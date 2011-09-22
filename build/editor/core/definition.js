@@ -14,7 +14,7 @@ KISSY.Editor.add("definition", function(KE) {
          * @const
          */
             UA = S.UA,
-        IE_VERSION = UA.ie,
+        IS_IE = UA.ie,
         /**
          * @const
          */
@@ -139,7 +139,7 @@ KISSY.Editor.add("definition", function(KE) {
             // With IE, the custom domain has to be taken care at first,
             // for other browsers, the 'src' attribute should be left empty to
             // trigger iframe's 'load' event.
-            ' src="' + ( IE_VERSION ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '' ) + '" ' +
+            ' src="' + ( IS_IE ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '' ) + '" ' +
             //' tabIndex="' + ( UA.webkit ? -1 : "$(tabIndex)" ) + '" ' +
             ' allowTransparency="true" ' +
             '></iframe></div>' +
@@ -169,7 +169,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.__dialogs = {};
             self.__plugins = {};
 
-            if (IE_VERSION)DOM.addClass(DOC.body, "ke-ie" + IE_VERSION);
+            if (IS_IE)DOM.addClass(DOC.body, "ke-ie" + IS_IE);
             if (UA.trident)DOM.addClass(DOC.body, "ke-trident" + UA.trident);
             else if (UA.gecko) DOM.addClass(DOC.body, "ke-gecko");
             else if (UA.webkit) DOM.addClass(DOC.body, "ke-webkit");
@@ -199,7 +199,7 @@ KISSY.Editor.add("definition", function(KE) {
             Utils.preventFocus(self.toolBarDiv);
 
             /*
-             if (IE_VERSION) {
+             if (IS_IE) {
              //ie 点击按钮不丢失焦点
              self.toolBarDiv._4e_unselectable();
              } else {
@@ -591,7 +591,7 @@ KISSY.Editor.add("definition", function(KE) {
                 iframe[0].src = iframe[0].src;
                 // In IE6 though, the above is not enough, so we must pause the
                 // execution for a while, giving it time to think.
-                if (IE_VERSION < 7) {
+                if (IS_IE < 7) {
                     setTimeout(run, 10);
                     return;
                 }
@@ -805,7 +805,7 @@ KISSY.Editor.add("definition", function(KE) {
             var editorDoc = self.document,saveInterval = 0;
             // ie9 仍然需要这样！
             // ie9 标准 selection 有问题，连续插入不能定位光标到插入内容后面
-            if (IE_VERSION) {
+            if (IS_IE) {
                 var $sel = editorDoc.selection;
                 if ($sel.type == 'Control') {
                     $sel.clear();
@@ -829,6 +829,9 @@ KISSY.Editor.add("definition", function(KE) {
                     saveInterval = 100;
                 }
             }
+            // bug by zjw2004112@163.com :
+            // 有的浏览器 ： chrome , ie67 貌似不会自动滚动到粘贴后的位置
+            self.getSelection().scrollIntoView();
             self._saveLater(saveInterval);
         },
 
@@ -883,10 +886,9 @@ KISSY.Editor.add("definition", function(KE) {
         //因为这时右键作用在document而不是body
         //1.0 document.designMode='on' 是编辑模式
         //2.0 body.contentEditable=true body外不是编辑模式
-        if (IE_VERSION) {
+        if (IS_IE) {
             // Don't display the focus border.
             body.hideFocus = TRUE;
-
             // Disable and re-enable the body to avoid IE from
             // taking the editing focus at startup. (#141 / #523)
             body.disabled = TRUE;
@@ -960,7 +962,7 @@ KISSY.Editor.add("definition", function(KE) {
         }
 
         // Create an invisible element to grab focus.
-        if (UA.gecko || IE_VERSION || UA.opera) {
+        if (UA.gecko || IS_IE || UA.opera) {
             var focusGrabber;
             focusGrabber = new Node(
                 // Use 'span' instead of anything else to fly under the screen-reader radar. (#5049)
@@ -987,7 +989,7 @@ KISSY.Editor.add("definition", function(KE) {
 
         if (
         //ie6,7 点击滚动条失效
-        //IE_VERSION
+        //IS_IE
         //&& doc.compatMode == 'CSS1Compat'
         //wierd ,sometimes ie9 break
         //||
@@ -1051,7 +1053,7 @@ KISSY.Editor.add("definition", function(KE) {
             });
         }
 
-        if (IE_VERSION) {
+        if (IS_IE) {
             //DOM.addClass(doc.documentElement, doc.compatMode);
             // Override keystrokes which should have deletion behavior
             //  on control types in IE . (#4047)
@@ -1106,7 +1108,7 @@ KISSY.Editor.add("definition", function(KE) {
              * Also, for some unknown reasons, short timeouts (e.g. 100ms) do not
              * fix the problem. :(
              */
-            if (IE_VERSION) {
+            if (IS_IE) {
                 setTimeout(function() {
                     if (doc) {
                         body.runtimeStyle['marginBottom'] = '0px';
@@ -1134,7 +1136,7 @@ KISSY.Editor.add("definition", function(KE) {
                     //只能ie能用？，目前只有firefox,ie支持图片缩放
                     // For browsers which don't support the above methods,
                     // we can use the the resize event or resizestart for IE (#4208)
-                    Event.on(body, IE_VERSION ? 'resizestart' : 'resize', function(evt) {
+                    Event.on(body, IS_IE ? 'resizestart' : 'resize', function(evt) {
                         var t = new Node(evt.target);
                         if (
                             disableObjectResizing ||
@@ -1151,7 +1153,7 @@ KISSY.Editor.add("definition", function(KE) {
 
 
         // Gecko/Webkit need some help when selecting control type elements. (#3448)
-        //if (!( IE_VERSION || UA.opera)) {
+        //if (!( IS_IE || UA.opera)) {
         if (UA.webkit) {
             Event.on(doc, "mousedown", function(ev) {
                 var control = new Node(ev.target);

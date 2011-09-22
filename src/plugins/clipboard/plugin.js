@@ -30,6 +30,10 @@ KISSY.Editor.add("clipboard", function(editor) {
                     Event.on(editor.document.body,
                         UA.webkit ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
                         self._paste, self);
+
+                    // 防止黏的太快，会异常
+                    self._isPasting = false;
+
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
                     Event.on(editor.document.body, 'contextmenu', function() {
                         depressBeforeEvent = 1;
@@ -52,7 +56,15 @@ KISSY.Editor.add("clipboard", function(editor) {
                     // chrome keydown 也会两次
                     S.log(ev.type + " : " + " paste event happen");
 
-                    var self = this,editor = self.editor,doc = editor.document;
+                    var self = this,
+                        editor = self.editor,
+                        doc = editor.document;
+
+
+                    if (self._isPasting) {
+                        S.log("paste tool fast , slow down please");
+                        return;
+                    }
 
                     // Avoid recursions on 'paste' event or consequent paste too fast. (#5730)
                     if (doc.getElementById('ke_pastebin')) {
@@ -65,7 +77,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                         S.log(ev.type + " : trigger twice ...");
                         return;
                     }
-
+                    self._isPasting = true;
 
                     var sel = editor.getSelection(),
                         range = new KERange(doc);
@@ -149,6 +161,11 @@ KISSY.Editor.add("clipboard", function(editor) {
                         }
 
                         editor.insertHtml(html, dataFilter);
+
+                        // 过会才可以开始下次
+                        setTimeout(function() {
+                            self._isPasting = false;
+                        }, 150);
 
                     }, 0);
                 }
