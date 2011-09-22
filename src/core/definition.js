@@ -802,7 +802,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.focus();
             self.fire("save");
 
-            var editorDoc = self.document;
+            var editorDoc = self.document,saveInterval = 0;
             // ie9 仍然需要这样！
             // ie9 标准 selection 有问题，连续插入不能定位光标到插入内容后面
             if (IE_VERSION) {
@@ -819,12 +819,20 @@ KISSY.Editor.add("definition", function(KE) {
                 // ie9 仍然没有
                 // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
                 // 10.0 修复？？
-                editorDoc.execCommand('inserthtml', FALSE, data);
+                try {
+                    // firefox 初始编辑器无焦点报异常，等会再来就可以了
+                    editorDoc.execCommand('inserthtml', FALSE, data);
+                } catch(e) {
+                    setTimeout(function() {
+                        editorDoc.execCommand('inserthtml', FALSE, data);
+                    }, 100);
+                    saveInterval = 100;
+                }
             }
-            self._saveLater();
+            self._saveLater(saveInterval);
         },
 
-        _saveLater:function() {
+        _saveLater:function(saveInterval) {
             var self = this;
             if (self.__saveTimer) {
                 clearTimeout(self.__saveTimer);
@@ -832,7 +840,7 @@ KISSY.Editor.add("definition", function(KE) {
             }
             self.__saveTimer = setTimeout(function() {
                 self.fire("save");
-            }, 0);
+            }, saveInterval || 0);
         }
     });
     /**

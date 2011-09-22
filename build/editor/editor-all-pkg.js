@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-21 15:21:39
+ * @buildtime: 2011-09-22 15:05:03
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-21 15:21:39";
+            return "plugin-min.js?t=2011-09-22 15:05:03";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-21 15:21:39');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-22 15:05:03');
         };
     }
 
@@ -2985,7 +2985,7 @@ KISSY.Editor.add("definition", function(KE) {
             self.focus();
             self.fire("save");
 
-            var editorDoc = self.document;
+            var editorDoc = self.document,saveInterval = 0;
             // ie9 仍然需要这样！
             // ie9 标准 selection 有问题，连续插入不能定位光标到插入内容后面
             if (IE_VERSION) {
@@ -3002,12 +3002,20 @@ KISSY.Editor.add("definition", function(KE) {
                 // ie9 仍然没有
                 // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
                 // 10.0 修复？？
-                editorDoc.execCommand('inserthtml', FALSE, data);
+                try {
+                    // firefox 初始编辑器无焦点报异常，等会再来就可以了
+                    editorDoc.execCommand('inserthtml', FALSE, data);
+                } catch(e) {
+                    setTimeout(function() {
+                        editorDoc.execCommand('inserthtml', FALSE, data);
+                    }, 100);
+                    saveInterval = 100;
+                }
             }
-            self._saveLater();
+            self._saveLater(saveInterval);
         },
 
-        _saveLater:function() {
+        _saveLater:function(saveInterval) {
             var self = this;
             if (self.__saveTimer) {
                 clearTimeout(self.__saveTimer);
@@ -3015,7 +3023,7 @@ KISSY.Editor.add("definition", function(KE) {
             }
             self.__saveTimer = setTimeout(function() {
                 self.fire("save");
-            }, 0);
+            }, saveInterval || 0);
         }
     });
     /**
