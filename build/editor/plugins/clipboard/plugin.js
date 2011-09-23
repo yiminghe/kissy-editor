@@ -31,9 +31,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         UA.webkit ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
                         self._paste, self);
 
-                    // 防止黏的太快，会异常
-                    self._isPasting = false;
-
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
                     Event.on(editor.document.body, 'contextmenu', function() {
                         depressBeforeEvent = 1;
@@ -60,12 +57,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         editor = self.editor,
                         doc = editor.document;
 
-
-                    if (self._isPasting) {
-                        S.log("paste tool fast , slow down please");
-                        return;
-                    }
-
                     // Avoid recursions on 'paste' event or consequent paste too fast. (#5730)
                     if (doc.getElementById('ke_pastebin')) {
                         // ie beforepaste 会重复触发
@@ -74,10 +65,9 @@ KISSY.Editor.add("clipboard", function(editor) {
                         // 第二次 bms 是错的，但是内容是对的
                         // 这样返回刚好，用同一个 pastebin 得到最后的正确内容
                         // bms 第一次时创建成功
-                        S.log(ev.type + " : trigger twice ...");
+                        S.log(ev.type + " : trigger more than once ...");
                         return;
                     }
-                    self._isPasting = true;
 
                     var sel = editor.getSelection(),
                         range = new KERange(doc);
@@ -161,11 +151,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         }
 
                         editor.insertHtml(html, dataFilter);
-
-                        // 过会才可以开始下次
-                        setTimeout(function() {
-                            self._isPasting = false;
-                        }, 150);
 
                     }, 0);
                 }
