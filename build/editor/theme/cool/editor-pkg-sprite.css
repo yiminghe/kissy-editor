@@ -328,7 +328,7 @@ link
     _filter: chroma(color = tomato);
     vertical-align: middle;
     white-space: nowrap;
-    outline: none;
+    /*outline: none;*/
     cursor: pointer;
     *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }
@@ -411,7 +411,7 @@ active
     *padding-bottom: 2px;
     cursor: pointer;
     text-decoration: none;
-    outline: none;
+    /*outline: none;*/
     color: black;
     *zoom:expression(function(self){self.style.zoom=1;self.href='javascript:void(0)';}(this));
 }

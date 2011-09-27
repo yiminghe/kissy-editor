@@ -13,7 +13,7 @@ KISSY.Editor.add("select", function() {
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
-            "<a onclick='return false;' class='ke-select'>" +
+            "<a onclick='return false;' class='ke-select' href='#'>" +
             "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +

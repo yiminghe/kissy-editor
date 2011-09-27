@@ -105,9 +105,9 @@ KISSY.Editor.add("draft/support", function() {
                 .appendTo(holder);
 
             var save = new Node(
-                "<a " +
+                "<a href='#' " +
+                    "onclick='return false;' " +
                     "class='ke-button ke-draft-save-btn' " +
-                    "tabindex='0' " +
                     "style='" +
                     "vertical-align:middle;" +
                     "padding:1px 9px;" +
@@ -188,7 +188,11 @@ KISSY.Editor.add("draft/support", function() {
                 help.render();
 
                 help.on("click", function(ev) {
-                    self._prepareHelp();
+                    if (self._help && self._help.get("visible")) {
+                        self._help.hide();
+                    } else {
+                        self._prepareHelp();
+                    }
                     ev && ev.halt();
                 });
                 addRes.call(self, help);

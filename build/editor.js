@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-27 11:04:20
+ * @buildtime: 2011-09-27 11:26:30
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-27 11:04:20";
+            return "plugin-min.js?t=2011-09-27 11:26:30";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-27 11:04:20');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-27 11:26:30');
         };
     }
 
@@ -10763,10 +10763,11 @@ KISSY.Editor.add("button", function() {
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
             elAttrs:{
                 value:{
-                    //href:"#",
-                    hideFocus:true,
+                    // can trigger keyboard click
+                    href:"#",
+                    onclick:"return false;"
                     //可以被 tab 定位
-                    tabIndex:0
+                    // tabIndex:0
                 }
             },
             elTagName:{value:"a"},
@@ -10863,7 +10864,7 @@ KISSY.Editor.add("select", function() {
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
-            "<a onclick='return false;' class='ke-select'>" +
+            "<a onclick='return false;' class='ke-select' href='#'>" +
             "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +
@@ -12500,9 +12501,9 @@ KISSY.Editor.add("draft/support", function() {
                 .appendTo(holder);
 
             var save = new Node(
-                "<a " +
+                "<a href='#' " +
+                    "onclick='return false;' " +
                     "class='ke-button ke-draft-save-btn' " +
-                    "tabindex='0' " +
                     "style='" +
                     "vertical-align:middle;" +
                     "padding:1px 9px;" +
@@ -12583,7 +12584,11 @@ KISSY.Editor.add("draft/support", function() {
                 help.render();
 
                 help.on("click", function(ev) {
-                    self._prepareHelp();
+                    if (self._help && self._help.get("visible")) {
+                        self._help.hide();
+                    } else {
+                        self._prepareHelp();
+                    }
                     ev && ev.halt();
                 });
                 addRes.call(self, help);
