@@ -107,6 +107,7 @@ KISSY.Editor.add("draft/support", function() {
             var save = new Node(
                 "<a " +
                     "class='ke-button ke-draft-save-btn' " +
+                    "tabindex='0' " +
                     "style='" +
                     "vertical-align:middle;" +
                     "padding:1px 9px;" +
