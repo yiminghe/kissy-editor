@@ -109,10 +109,11 @@ KISSY.Editor.add("button", function() {
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
             elAttrs:{
                 value:{
-                    //href:"#",
-                    hideFocus:true,
+                    // can trigger keyboard click
+                    href:"#",
+                    onclick:"return false;"
                     //可以被 tab 定位
-                    tabIndex:0
+                    // tabIndex:0
                 }
             },
             elTagName:{value:"a"},

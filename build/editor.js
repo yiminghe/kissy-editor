@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-22 19:36:42
+ * @buildtime: 2011-09-27 11:26:30
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-22 19:36:42";
+            return "plugin-min.js?t=2011-09-27 11:26:30";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-22 19:36:42');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-27 11:26:30');
         };
     }
 
@@ -10763,10 +10763,11 @@ KISSY.Editor.add("button", function() {
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
             elAttrs:{
                 value:{
-                    //href:"#",
-                    hideFocus:true,
+                    // can trigger keyboard click
+                    href:"#",
+                    onclick:"return false;"
                     //可以被 tab 定位
-                    tabIndex:0
+                    // tabIndex:0
                 }
             },
             elTagName:{value:"a"},
@@ -10863,7 +10864,7 @@ KISSY.Editor.add("select", function() {
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
-            "<a onclick='return false;' class='ke-select'>" +
+            "<a onclick='return false;' class='ke-select' href='#'>" +
             "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +
@@ -11565,9 +11566,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         UA.webkit ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
                         self._paste, self);
 
-                    // 防止黏的太快，会异常
-                    self._isPasting = false;
-
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
                     Event.on(editor.document.body, 'contextmenu', function() {
                         depressBeforeEvent = 1;
@@ -11594,12 +11592,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         editor = self.editor,
                         doc = editor.document;
 
-
-                    if (self._isPasting) {
-                        S.log("paste tool fast , slow down please");
-                        return;
-                    }
-
                     // Avoid recursions on 'paste' event or consequent paste too fast. (#5730)
                     if (doc.getElementById('ke_pastebin')) {
                         // ie beforepaste 会重复触发
@@ -11608,10 +11600,9 @@ KISSY.Editor.add("clipboard", function(editor) {
                         // 第二次 bms 是错的，但是内容是对的
                         // 这样返回刚好，用同一个 pastebin 得到最后的正确内容
                         // bms 第一次时创建成功
-                        S.log(ev.type + " : trigger twice ...");
+                        S.log(ev.type + " : trigger more than once ...");
                         return;
                     }
-                    self._isPasting = true;
 
                     var sel = editor.getSelection(),
                         range = new KERange(doc);
@@ -11695,11 +11686,6 @@ KISSY.Editor.add("clipboard", function(editor) {
                         }
 
                         editor.insertHtml(html, dataFilter);
-
-                        // 过会才可以开始下次
-                        setTimeout(function() {
-                            self._isPasting = false;
-                        }, 150);
 
                     }, 0);
                 }
@@ -12515,7 +12501,8 @@ KISSY.Editor.add("draft/support", function() {
                 .appendTo(holder);
 
             var save = new Node(
-                "<a " +
+                "<a href='#' " +
+                    "onclick='return false;' " +
                     "class='ke-button ke-draft-save-btn' " +
                     "style='" +
                     "vertical-align:middle;" +
@@ -12597,7 +12584,11 @@ KISSY.Editor.add("draft/support", function() {
                 help.render();
 
                 help.on("click", function(ev) {
-                    self._prepareHelp();
+                    if (self._help && self._help.get("visible")) {
+                        self._help.hide();
+                    } else {
+                        self._prepareHelp();
+                    }
                     ev && ev.halt();
                 });
                 addRes.call(self, help);
