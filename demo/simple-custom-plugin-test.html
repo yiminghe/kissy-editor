@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <title>KISSY Editor Test</title>
-<link href="../build/theme/base-min.css" rel="stylesheet"/>
+<link href="../build/editor/theme/base-min.css" rel="stylesheet"/>
 
 <!--[if lt IE 8]>
 <!--独立部署可用
 <link href="../build/theme/cool/editor-pkg-min-mhtml.css" rel="stylesheet"/>
 -->
-<link href="../build/theme/cool/editor-pkg-min.css" rel="stylesheet"/>
+<link href="../build/editor/theme/cool/editor-pkg-min.css" rel="stylesheet"/>
 <![endif]-->
 <!--[if gte IE 8]><!-->
-<link href="../build/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
+<link href="../build/editor/theme/cool/editor-pkg-min-datauri.css" rel="stylesheet"/>
 <!--<![endif]-->
 
 </head>
@@ -178,9 +178,10 @@
 
 
 <script src="http://kissyteam.github.com/kissy/build/kissy-min.js?t=20101223a"></script>
-<script src="http://kissyteam.github.com/kissy/build/uibase/uibase-pkg-min.js?t=20101223a"></script>
-<script src="http://kissyteam.github.com/kissy/build/dd/dd-pkg-min.js?t=20101223a"></script>
-<script src="http://kissyteam.github.com/kissy/build/overlay/overlay-pkg-min.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/uibase.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/component.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/dd.js?t=20101223a"></script>
+<script src="http://kissyteam.github.com/kissy/build/overlay.js?t=20101223a"></script>
 
 <!--
 <script src="../../kissy/build/kissy.js"></script>
@@ -188,8 +189,8 @@
 <script src="../../kissy/build/dd/dd-pkg.js"></script>
 <script src="../../kissy/build/overlay/overlay-pkg.js"></script>
 -->
-<script src="../build/editor-all-pkg-min.js?t=20101223a"></script>
-<script src="../build/biz/ext/editor-plugin-pkg-min.js?t=20101223a"></script>
+<script src="../build/editor/editor-all-pkg-min.js?t=20101223a"></script>
+<script src="../build/editor/biz/ext/editor-plugin-pkg-min.js?t=20101223a"></script>
 <script>
 
 
@@ -201,7 +202,7 @@ KISSY.ready(function(S) {
     S.use('editor', function() {
 
         var KE = S.Editor;
-        KE.Config.base = base + "build/plugins/";
+        KE.Config.base = base + "build/editor/plugins/";
         //编辑器内弹窗 z-index 底限，防止互相覆盖
         KE.Config.baseZIndex = 10000;
         var cfg = {
@@ -445,7 +446,7 @@ KISSY.ready(function(S) {
             }
 
         });
-        //if(false)
+
         KE("#editor2", {
             disableObjectResizing:true,
             disableInlineTableEditing:true

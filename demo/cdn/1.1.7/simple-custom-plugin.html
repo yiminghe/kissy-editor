@@ -165,9 +165,9 @@
 
 </div>
 
-<script src="http://a.tbcdn.cn/s/kissy/1.1.7/??kissy-min.js,uibase/uibase-pkg-min.js,dd/dd-pkg-min.js,overlay/overlay-pkg-min.js,editor/editor-all-pkg-min.js"></script>
+<script src="http://assets.daily.taobao.net/s/kissy/1.1.7/??kissy.js,uibase/uibase-pkg.js,dd/dd-pkg.js,overlay/overlay-pkg.js,editor/editor-all-pkg.js"></script>
 <!--if you do not use ,do not include-->
-<script src="http://a.tbcdn.cn/s/kissy/1.1.7/editor/biz/ext/editor-plugin-pkg-min.js"></script>
+<script src="http://assets.daily.taobao.net/s/kissy/1.1.7/editor/biz/ext/editor-plugin-pkg-min.js"></script>
 
 <script>
     KISSY.use('editor', function(S) {
@@ -256,73 +256,49 @@
             }
         }).use("elementpaths,sourcearea,preview," +
                 "templates,separator," +
-                "undo,separator,removeformat,font,format,forecolor,bgcolor,separator," +
+                "undo,separator,removeformat,font,format,color,separator," +
                 "list,indent,justify,separator,link,image,flash,music,smiley," +
                 "separator,table,resize,draft,pagebreak,separator,maximize"
                 , function() {
-                    var b1 = new TripleButton({
-                        render:k.toolBarDiv,
+                    this.addButton("formatData",{
                         title:"get format data",
-                        text:"get format data"
+                        text:"get format data",
+                        mode:KE.WYSIWYG_MODE,
+                        "offClick":function() {
+                            alert(k.getData(true));
+                        }
                     });
-                    b1.on("offClick", function() {
-                        alert(k.getData(true));
-                    });
-                    b1.render();
                 });
-
-
-        var TripleButton = KE.TripleButton;
         //最简单的自己写插件
         k.ready(function() {
-
-            var b1 = new TripleButton({
-                render:k.toolBarDiv,
+            k.addButton("getData",{
                 title:"get data",
-                text:"get data"
-            });
-            b1.on("offClick", function() {
-                alert(k.getData());
-                S.one("#preview").html(k.getData());
+                mode:KE.WYSIWYG_MODE,
+                text:"get data",
+                offClick:function() {
+                    alert(k.getData());
+                    S.one("#preview").html(k.getData());
+                }
             });
 
-
-            var b2 = new TripleButton({
-                render:k.toolBarDiv,
+            k.addButton("setData",{
                 title:"set data",
-                text:"set data"
-            });
-            b2.on("offClick", function() {
-                k.setData("aeolus");
+                mode:KE.WYSIWYG_MODE,
+                text:"set data",
+                offClick:function() {
+                    k.setData("aeolus");
+                }
             });
 
-
-            var b3 = new TripleButton({
-                render:k.toolBarDiv,
+            k.addButton("insertData",{
+                mode:KE.WYSIWYG_MODE,
                 title:"insert data",
                 //设置图标，css自己写
-                contentCls:"ke-toolbar-table"
-                //text:"insert data"
+                contentCls:"ke-toolbar-table",
+                offClick:function() {
+                    k.insertHtml("aeolus");
+                }
             });
-            b3.on("offClick", function() {
-                k.insertHtml("aeolus");
-            });
-
-
-            k.on("sourcemode", function() {
-                alert("切换到了sourcemode ： " + (k.getMode() == KE.SOURCE_MODE));
-                b1.set("state", TripleButton.DISABLED);
-            });
-
-            k.on("wysiwygmode", function() {
-                alert("切换到了可视编辑器模式 ： " + (k.getMode() == KE.WYSIWYG_MODE));
-                b1.set("state", TripleButton.OFF);
-            });
-
-            b1.render();
-            b2.render();
-            b3.render();
-
         });
     });
 
