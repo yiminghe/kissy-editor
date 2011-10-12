@@ -13,7 +13,7 @@ KISSY.Editor.add("select", function() {
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
-            "<a onclick='return false;' class='ke-select' href='#'>" +
+            "<a class='ke-select'>" +
             "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +
@@ -86,6 +86,7 @@ KISSY.Editor.add("select", function() {
         }
         return new Select({
             width:width + "px",
+            title:el.attr("title"),
             el:el,
             items:items,
             cls:"ke-combox",
@@ -100,6 +101,7 @@ KISSY.Editor.add("select", function() {
                 container = self.get("container"),
                 fakeEl = self.get("el"),
                 el = new Node(markup),
+                titleA = el.one("a"),
                 title = self.get(TITLE) || "",
                 cls = self.get("cls"),
                 text = el.one(".ke-select-text"),
@@ -115,7 +117,10 @@ KISSY.Editor.add("select", function() {
             text.css("width", self.get("width"));
             //ie6,7 不失去焦点
             el._4e_unselectable();
-            if (title)el.attr(TITLE, title);
+            if (title) {
+                el.attr(TITLE, title);
+            }
+            titleA.attr("href", "javascript:void('" + ( title || 0) + "')");
             if (cls) {
                 el.addClass(cls);
             }
@@ -171,7 +176,7 @@ KISSY.Editor.add("select", function() {
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i],a = new Node("<a " +
                         "class='ke-select-menu-item' " +
-                        "href='#' data-value='" + item.value + "'>"
+                        "href='javascript:void(\"" + item.name + "\")' data-value='" + item.value + "'>"
                         + item.name + "</a>", item.attrs)
                         .appendTo(_selectList)
                         ._4e_unselectable();
@@ -179,7 +184,7 @@ KISSY.Editor.add("select", function() {
             } else if (empty = self.get("emptyText")) {
                 new Node("<a " +
                     "class='ke-select-menu-item' " +
-                    "href='#'>"
+                    "href='javascript:void(\"" + empty + "\")'>"
                     + empty + "</a>")
                     .appendTo(_selectList)
                     ._4e_unselectable();
@@ -505,6 +510,6 @@ KISSY.Editor.add("select", function() {
         }
         return context;
     };
-},{
+}, {
     attach:false
 });

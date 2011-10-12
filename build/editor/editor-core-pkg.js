@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-09-27 11:26:30
+ * @buildtime: 2011-10-12 16:36:19
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-09-27 11:26:30";
+            return "plugin-min.js?t=2011-10-12 16:36:19";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-09-27 11:26:30');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-12 16:36:19');
         };
     }
 
@@ -10676,9 +10676,14 @@ KISSY.Editor.add("button", function() {
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
         || S['UIBase']['Box']
     ], {
+        _updateHref:function() {
+            var self = this;
+            self.get("el").attr("href", "javascript:void('" +
+                (self.get("text") || self.get("title") ) + "')");
+        },
         bindUI:function() {
             var self = this,el = self.get("el");
-            el.on("click", self._action, self);
+            el.on("click", self['_action'], self);
             //添加鼠标点击视觉效果
             el.on("mousedown", function() {
                 if (self.get("state") == OFF) {
@@ -10696,7 +10701,9 @@ KISSY.Editor.add("button", function() {
             });
         },
         _uiSetTitle:function() {
-            this.get("el").attr("title", this.get("title"));
+            var self = this;
+            self.get("el").attr("title", self.get("title"));
+            self._updateHref();
         },
         _uiSetContentCls:function(contentCls) {
             var self = this,
@@ -10710,8 +10717,8 @@ KISSY.Editor.add("button", function() {
         _uiSetText:function(text) {
             var self = this,
                 el = self.get("el");
-            if (text !== undefined)
-                el.html(text)
+            el.html(text);
+            self._updateHref();
         },
         _uiSetState:function(n) {
             this["_" + n]();
@@ -10761,15 +10768,15 @@ KISSY.Editor.add("button", function() {
         ATTRS : {
             state: {value:OFF},
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
-            elAttrs:{
-                value:{
-                    // can trigger keyboard click
-                    href:"#",
-                    onclick:"return false;"
-                    //可以被 tab 定位
-                    // tabIndex:0
-                }
-            },
+//            elAttrs:{
+//                value:{
+//                    // can trigger keyboard click
+//                    // href:"#",
+//                    // onclick:"return false;"
+//                    //可以被 tab 定位
+//                    // tabIndex:0
+//                }
+//            },
             elTagName:{value:"a"},
             title:{},
             contentCls:{},
@@ -10864,7 +10871,7 @@ KISSY.Editor.add("select", function() {
         ke_select_active = "ke-select-active",
         ke_menu_selected = "ke-menu-selected",
         markup = "<span class='ke-select-wrap'>" +
-            "<a onclick='return false;' class='ke-select' href='#'>" +
+            "<a class='ke-select'>" +
             "<span class='ke-select-text'><span class='ke-select-text-inner'></span></span>" +
             "<span class='ke-select-drop-wrap'>" +
             "<span class='ke-select-drop'></span>" +
@@ -10937,6 +10944,7 @@ KISSY.Editor.add("select", function() {
         }
         return new Select({
             width:width + "px",
+            title:el.attr("title"),
             el:el,
             items:items,
             cls:"ke-combox",
@@ -10951,6 +10959,7 @@ KISSY.Editor.add("select", function() {
                 container = self.get("container"),
                 fakeEl = self.get("el"),
                 el = new Node(markup),
+                titleA = el.one("a"),
                 title = self.get(TITLE) || "",
                 cls = self.get("cls"),
                 text = el.one(".ke-select-text"),
@@ -10966,7 +10975,10 @@ KISSY.Editor.add("select", function() {
             text.css("width", self.get("width"));
             //ie6,7 不失去焦点
             el._4e_unselectable();
-            if (title)el.attr(TITLE, title);
+            if (title) {
+                el.attr(TITLE, title);
+            }
+            titleA.attr("href", "javascript:void('" + ( title || 0) + "')");
             if (cls) {
                 el.addClass(cls);
             }
@@ -11022,7 +11034,7 @@ KISSY.Editor.add("select", function() {
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i],a = new Node("<a " +
                         "class='ke-select-menu-item' " +
-                        "href='#' data-value='" + item.value + "'>"
+                        "href='javascript:void(\"" + item.name + "\")' data-value='" + item.value + "'>"
                         + item.name + "</a>", item.attrs)
                         .appendTo(_selectList)
                         ._4e_unselectable();
@@ -11030,7 +11042,7 @@ KISSY.Editor.add("select", function() {
             } else if (empty = self.get("emptyText")) {
                 new Node("<a " +
                     "class='ke-select-menu-item' " +
-                    "href='#'>"
+                    "href='javascript:void(\"" + empty + "\")'>"
                     + empty + "</a>")
                     .appendTo(_selectList)
                     ._4e_unselectable();
@@ -11356,6 +11368,6 @@ KISSY.Editor.add("select", function() {
         }
         return context;
     };
-},{
+}, {
     attach:false
 });

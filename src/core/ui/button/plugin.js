@@ -22,9 +22,14 @@ KISSY.Editor.add("button", function() {
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
         || S['UIBase']['Box']
     ], {
+        _updateHref:function() {
+            var self = this;
+            self.get("el").attr("href", "javascript:void('" +
+                (self.get("text") || self.get("title") ) + "')");
+        },
         bindUI:function() {
             var self = this,el = self.get("el");
-            el.on("click", self._action, self);
+            el.on("click", self['_action'], self);
             //添加鼠标点击视觉效果
             el.on("mousedown", function() {
                 if (self.get("state") == OFF) {
@@ -42,7 +47,9 @@ KISSY.Editor.add("button", function() {
             });
         },
         _uiSetTitle:function() {
-            this.get("el").attr("title", this.get("title"));
+            var self = this;
+            self.get("el").attr("title", self.get("title"));
+            self._updateHref();
         },
         _uiSetContentCls:function(contentCls) {
             var self = this,
@@ -56,8 +63,8 @@ KISSY.Editor.add("button", function() {
         _uiSetText:function(text) {
             var self = this,
                 el = self.get("el");
-            if (text !== undefined)
-                el.html(text)
+            el.html(text);
+            self._updateHref();
         },
         _uiSetState:function(n) {
             this["_" + n]();
@@ -107,15 +114,15 @@ KISSY.Editor.add("button", function() {
         ATTRS : {
             state: {value:OFF},
             elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
-            elAttrs:{
-                value:{
-                    // can trigger keyboard click
-                    href:"#",
-                    onclick:"return false;"
-                    //可以被 tab 定位
-                    // tabIndex:0
-                }
-            },
+//            elAttrs:{
+//                value:{
+//                    // can trigger keyboard click
+//                    // href:"#",
+//                    // onclick:"return false;"
+//                    //可以被 tab 定位
+//                    // tabIndex:0
+//                }
+//            },
             elTagName:{value:"a"},
             title:{},
             contentCls:{},

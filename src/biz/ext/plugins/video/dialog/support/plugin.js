@@ -47,7 +47,7 @@ KISSY.Editor.add("video/dialog/support", function() {
         "<tr>" +
         "<td>" +
         "<label>对齐： " +
-        "<select class='ke-video-align'>" +
+        "<select class='ke-video-align' title='对齐'>" +
         "<option value='none'>无</option>" +
         "<option value='left'>左对齐</option>" +
         "<option value='right'>右对齐</option>" +

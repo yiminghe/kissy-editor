@@ -98,7 +98,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
             "style='margin:10px 0'>" +
             "<label>对 齐： " +
             "<select " +
-            "class='ke-xiami-align'>" +
+            "class='ke-xiami-align' title='对齐'>" +
             "<option value='none'>无</option>" +
             "<option value='left'>左对齐</option>" +
             "<option value='right'>右对齐</option>" +

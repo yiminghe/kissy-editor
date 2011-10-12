@@ -44,7 +44,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             "class='ke-table-width ke-input' " +
             "size='" + IN_SIZE + "'/>" +
             "</label> " +
-            "<select class='ke-table-width-unit'>" +
+            "<select class='ke-table-width-unit' title='宽度单位'>" +
             "<option value='px'>像素</option>" +
             "<option value='%'>百分比</option>" +
             "</select>" +
@@ -79,7 +79,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             "<tr>" +
             "<td>" +
             "<label>对齐： </label>" +
-            "<select class='ke-table-align'>" +
+            "<select class='ke-table-align' title='对齐'>" +
             "<option value=''>无</option>" +
             "<option value='left'>左对齐</option>" +
             "<option value='right'>右对齐</option>" +
@@ -88,7 +88,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             "</td>" +
             "<td>" +
             "<label>标题格：</label> " +
-            "<select class='ke-table-head ke-table-create-only'>" +
+            "<select class='ke-table-head ke-table-create-only' title='标题格'>" +
             "<option value=''>无</option>" +
             "<option value='1'>有</option>" +
             "</select>" +
