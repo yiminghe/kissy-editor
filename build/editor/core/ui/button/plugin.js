@@ -19,13 +19,20 @@ KISSY.Editor.add("button", function() {
         return;
     }
 
+    function getTipText(str) {
+        if (str && str.indexOf("<") == -1) {
+            return str;
+        }
+        return 0;
+    }
+
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
         || S['UIBase']['Box']
     ], {
         _updateHref:function() {
             var self = this;
             self.get("el").attr("href", "javascript:void('" +
-                (self.get("text") || self.get("title") ) + "')");
+                (getTipText(self.get("text")) || getTipText(self.get("title")) ) + "')");
         },
         bindUI:function() {
             var self = this,el = self.get("el");

@@ -95,6 +95,14 @@ KISSY.Editor.add("select", function() {
 
     };
     var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
+
+    function getTipText(str) {
+        if (str && str.indexOf("<") == -1) {
+            return str;
+        }
+        return 0;
+    }
+
     S.extend(Select, S.Base, {
         _init:function() {
             var self = this,
@@ -120,7 +128,7 @@ KISSY.Editor.add("select", function() {
             if (title) {
                 el.attr(TITLE, title);
             }
-            titleA.attr("href", "javascript:void('" + ( title || 0) + "')");
+            titleA.attr("href", "javascript:void('" + getTipText(title) + "')");
             if (cls) {
                 el.addClass(cls);
             }
@@ -176,7 +184,7 @@ KISSY.Editor.add("select", function() {
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i],a = new Node("<a " +
                         "class='ke-select-menu-item' " +
-                        "href='javascript:void(\"" + item.name + "\")' data-value='" + item.value + "'>"
+                        "href='javascript:void(\"" + getTipText(item.name) + "\")' data-value='" + item.value + "'>"
                         + item.name + "</a>", item.attrs)
                         .appendTo(_selectList)
                         ._4e_unselectable();
@@ -184,7 +192,7 @@ KISSY.Editor.add("select", function() {
             } else if (empty = self.get("emptyText")) {
                 new Node("<a " +
                     "class='ke-select-menu-item' " +
-                    "href='javascript:void(\"" + empty + "\")'>"
+                    "href='javascript:void(\"" + getTipText(empty) + "\")'>"
                     + empty + "</a>")
                     .appendTo(_selectList)
                     ._4e_unselectable();
