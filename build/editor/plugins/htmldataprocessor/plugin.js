@@ -21,7 +21,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     //每个编辑器的规则独立
     if (editor.htmlDataProcessor) return;
 
-
     /**
      * 给 fragment,Element,Dtd 加一些常用功能
      */
@@ -627,9 +626,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 },
                 // Remove empty link but not empty anchor.(#3829)
                 a : function(element) {
-                    if (!( element.children.length ||
-                        element.attributes.name ||
-                        element.attributes['_ke_saved_name'])) {
+                    if (!element.children.length
+                        && S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 },
@@ -653,9 +651,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 span:function(element) {
-
-                    if (! element.children.length
-                        && S.isEmptyObject(element.attributes))return false;
+                    if (!element.children.length
+                        && S.isEmptyObject(element.attributes)) {
+                        return false;
+                    }
                 }
             },
             attributes :  {

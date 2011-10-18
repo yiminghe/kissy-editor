@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-18 13:14:31
+ * @buildtime: 2011-10-18 14:46:00
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-18 13:14:31";
+            return "plugin-min.js?t=2011-10-18 14:46:00";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-18 13:14:31');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-18 14:46:00');
         };
     }
 
@@ -14592,7 +14592,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     //每个编辑器的规则独立
     if (editor.htmlDataProcessor) return;
 
-
     /**
      * 给 fragment,Element,Dtd 加一些常用功能
      */
@@ -15198,9 +15197,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 },
                 // Remove empty link but not empty anchor.(#3829)
                 a : function(element) {
-                    if (!( element.children.length ||
-                        element.attributes.name ||
-                        element.attributes['_ke_saved_name'])) {
+                    if (!element.children.length
+                        && S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 },
@@ -15224,9 +15222,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 span:function(element) {
-
-                    if (! element.children.length
-                        && S.isEmptyObject(element.attributes))return false;
+                    if (!element.children.length
+                        && S.isEmptyObject(element.attributes)) {
+                        return false;
+                    }
                 }
             },
             attributes :  {
