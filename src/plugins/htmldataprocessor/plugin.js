@@ -695,10 +695,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         if (UA.ie) {
             // IE outputs style attribute in capital letters. We should convert
             // them back to lower case.
-            defaultHtmlFilterRules.attributes.style = function(value
-                                                               // , element
+            // bug: style='background:url(www.G.cn)' =>  style='background:url(www.g.cn)'
+            // 只对 propertyName 小写
+            defaultHtmlFilterRules.attributes.style = function(value // , element
                 ) {
-                return value.toLowerCase();
+                return value.replace(/(^|;)([^:]+)/g, function(match) {
+                    return match.toLowerCase();
+                });
             };
         }
 

@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-13 13:30:35
+ * @buildtime: 2011-10-18 13:14:31
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-13 13:30:35";
+            return "plugin-min.js?t=2011-10-18 13:14:31";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-13 13:30:35');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-18 13:14:31');
         };
     }
 
@@ -7381,9 +7381,6 @@ KISSY.Editor.add("selection", function(KE) {
             Event.on(doc, 'keyup', editor._monitor, editor);
         }
 
-        // List of elements in which has no way to move editing focus outside.
-        var nonExitableElementNames = { "table":1,"pre":1 };
-
         // Matching an empty paragraph at the end of document.
         //注释也要排除掉
         var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
@@ -7399,6 +7396,14 @@ KISSY.Editor.add("selection", function(KE) {
         var nextValidEl = function(node) {
             return isNotWhitespace(node) && node && node[0].nodeType != 8
         };
+
+        // 光标可以不能放在里面
+        function cannotCursorPlaced(element) {
+            var dtd = KE.XHTML_DTD;
+            return element._4e_isBlockBoundary() && dtd.$empty[ element._4e_name() ];
+        }
+
+
         /**
          * 如果选择了body下面的直接inline元素，则新建p
          */
@@ -7415,7 +7420,6 @@ KISSY.Editor.add("selection", function(KE) {
                 ) return;
 
             if (blockLimit._4e_name() == "body") {
-
                 var fixedBlock = range.fixBlock(TRUE, "p");
                 if (fixedBlock) {
                     //firefox选择区域变化时自动添加空行，不要出现裸的text
@@ -7423,14 +7427,14 @@ KISSY.Editor.add("selection", function(KE) {
                         var element = fixedBlock._4e_next(nextValidEl);
                         if (element &&
                             element[0].nodeType == KEN.NODE_ELEMENT &&
-                            !nonExitableElementNames[ element._4e_name() ]) {
+                            !cannotCursorPlaced[ element ]) {
                             range.moveToElementEditablePosition(element);
                             fixedBlock._4e_remove();
                         } else {
                             element = fixedBlock._4e_previous(nextValidEl);
                             if (element &&
                                 element[0].nodeType == KEN.NODE_ELEMENT &&
-                                !nonExitableElementNames[element._4e_name()]) {
+                                !cannotCursorPlaced[element]) {
                                 range.moveToElementEditablePosition(element,
                                     //空行的话还是要移到开头的
                                     isBlankParagraph(element) ? FALSE : TRUE);
@@ -10716,7 +10720,7 @@ KISSY.Editor.add("button", function() {
             var self = this,
                 el = self.get("el");
             if (contentCls !== undefined) {
-                el.html("<span class='ke-toolbar-item " + contentCls + "'>");
+                el.html("<span class='ke-toolbar-item " + contentCls + "' />");
                 //ie 失去焦点
                 el._4e_unselectable();
             }
@@ -15262,10 +15266,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         if (UA.ie) {
             // IE outputs style attribute in capital letters. We should convert
             // them back to lower case.
-            defaultHtmlFilterRules.attributes.style = function(value
-                                                               // , element
+            // bug: style='background:url(www.G.cn)' =>  style='background:url(www.g.cn)'
+            // 只对 propertyName 小写
+            defaultHtmlFilterRules.attributes.style = function(value // , element
                 ) {
-                return value.toLowerCase();
+                return value.replace(/(^|;)([^:]+)/g, function(match) {
+                    return match.toLowerCase();
+                });
             };
         }
 

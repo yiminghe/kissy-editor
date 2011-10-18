@@ -1015,9 +1015,6 @@ KISSY.Editor.add("selection", function(KE) {
             Event.on(doc, 'keyup', editor._monitor, editor);
         }
 
-        // List of elements in which has no way to move editing focus outside.
-        var nonExitableElementNames = { "table":1,"pre":1 };
-
         // Matching an empty paragraph at the end of document.
         //注释也要排除掉
         var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
@@ -1033,6 +1030,14 @@ KISSY.Editor.add("selection", function(KE) {
         var nextValidEl = function(node) {
             return isNotWhitespace(node) && node && node[0].nodeType != 8
         };
+
+        // 光标可以不能放在里面
+        function cannotCursorPlaced(element) {
+            var dtd = KE.XHTML_DTD;
+            return element._4e_isBlockBoundary() && dtd.$empty[ element._4e_name() ];
+        }
+
+
         /**
          * 如果选择了body下面的直接inline元素，则新建p
          */
@@ -1049,7 +1054,6 @@ KISSY.Editor.add("selection", function(KE) {
                 ) return;
 
             if (blockLimit._4e_name() == "body") {
-
                 var fixedBlock = range.fixBlock(TRUE, "p");
                 if (fixedBlock) {
                     //firefox选择区域变化时自动添加空行，不要出现裸的text
@@ -1057,14 +1061,14 @@ KISSY.Editor.add("selection", function(KE) {
                         var element = fixedBlock._4e_next(nextValidEl);
                         if (element &&
                             element[0].nodeType == KEN.NODE_ELEMENT &&
-                            !nonExitableElementNames[ element._4e_name() ]) {
+                            !cannotCursorPlaced[ element ]) {
                             range.moveToElementEditablePosition(element);
                             fixedBlock._4e_remove();
                         } else {
                             element = fixedBlock._4e_previous(nextValidEl);
                             if (element &&
                                 element[0].nodeType == KEN.NODE_ELEMENT &&
-                                !nonExitableElementNames[element._4e_name()]) {
+                                !cannotCursorPlaced[element]) {
                                 range.moveToElementEditablePosition(element,
                                     //空行的话还是要移到开头的
                                     isBlankParagraph(element) ? FALSE : TRUE);
