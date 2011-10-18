@@ -62,7 +62,7 @@ KISSY.Editor.add("button", function() {
             var self = this,
                 el = self.get("el");
             if (contentCls !== undefined) {
-                el.html("<span class='ke-toolbar-item " + contentCls + "'>");
+                el.html("<span class='ke-toolbar-item " + contentCls + "' />");
                 //ie 失去焦点
                 el._4e_unselectable();
             }
