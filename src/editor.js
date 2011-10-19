@@ -39,7 +39,7 @@ KISSY.add("editor/export", function(S) {
         self.cfg = cfg;
         //export for closure compiler
         cfg["pluginConfig"] = cfg.pluginConfig;
-        self["cfg"] = cfg;
+        //self["cfg"] = cfg;
         S.app(self, S.EventTarget);
 
         var BASIC = ["htmldataprocessor", "enterkey", "clipboard"],
