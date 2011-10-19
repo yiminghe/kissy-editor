@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-19 14:22:57
+ * @buildtime: 2011-10-19 15:16:38
  */
 
 /**
@@ -39,7 +39,7 @@ KISSY.add("editor/export", function(S) {
         self.cfg = cfg;
         //export for closure compiler
         cfg["pluginConfig"] = cfg.pluginConfig;
-        //self["cfg"] = cfg;
+        self["cfg"] = cfg;
         S.app(self, S.EventTarget);
 
         var BASIC = ["htmldataprocessor", "enterkey", "clipboard"],
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-19 14:22:57";
+            return "plugin-min.js?t=2011-10-19 15:16:38";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-19 14:22:57');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-19 15:16:38');
         };
     }
 
