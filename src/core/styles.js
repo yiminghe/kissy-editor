@@ -629,7 +629,9 @@ KISSY.Editor.add("styles", function(KE) {
                     // <a href="http://www.taobao.com">2</a>
                     // <a href="http://www.ckeditor.com">3</a>
                     // http://dev.ckeditor.com/ticket/8470
-                    if (elementName == "a" && currentParent._4e_name() == elementName) {
+                    if (currentParent &&
+                        elementName == "a" &&
+                        currentParent._4e_name() == elementName) {
                         var tmpANode = getElement(self, document, undefined);
                         currentParent._4e_moveChildren(tmpANode);
                         currentParent[0].parentNode.replaceChild(tmpANode[0], currentParent[0]);
