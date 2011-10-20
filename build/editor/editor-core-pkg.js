@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-20 15:52:23
+ * @buildtime: 2011-10-20 16:57:03
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-20 15:52:23";
+            return "plugin-min.js?t=2011-10-20 16:57:03";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-20 15:52:23');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-20 16:57:03');
         };
     }
 
@@ -8100,9 +8100,25 @@ KISSY.Editor.add("styles", function(KE) {
                     && ( !def["childRule"] || def["childRule"](currentNode) ) )) {
                     var currentParent = currentNode.parent();
 
+
+                    // hack for
+                    // 1<a href='http://www.taobao.com'>2</a>3
+                    // select all ,set link to http://www.ckeditor.com
+                    // expect => <a href='http://www.ckeditor.com'>123</a> (same with tinymce)
+                    // but now => <a href="http://www.ckeditor.com">1</a>
+                    // <a href="http://www.taobao.com">2</a>
+                    // <a href="http://www.ckeditor.com">3</a>
+                    // http://dev.ckeditor.com/ticket/8470
+                    if (elementName == "a" && currentParent._4e_name() == elementName) {
+                        var tmpANode = getElement(self, document, undefined);
+                        currentParent._4e_moveChildren(tmpANode);
+                        currentParent[0].parentNode.replaceChild(tmpANode[0], currentParent[0]);
+                        tmpANode._4e_mergeSiblings();
+                    }
+
                     // Check if the style element can be a child of the current
                     // node parent or if the element is not defined in the DTD.
-                    if (currentParent && currentParent[0]
+                    else if (currentParent && currentParent[0]
                         && ( ( KE.XHTML_DTD[currentParent._4e_name()] ||
                         KE.XHTML_DTD["span"] )[ elementName ] ||
                         isUnknownElement )
