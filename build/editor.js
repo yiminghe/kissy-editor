@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-19 15:16:38
+ * @buildtime: 2011-10-20 15:52:23
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-19 15:16:38";
+            return "plugin-min.js?t=2011-10-20 15:52:23";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-19 15:16:38');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-20 15:52:23');
         };
     }
 
@@ -8037,7 +8037,8 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
-        var self = this,document = range.document;
+        var self = this,
+            document = range.document;
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
@@ -8811,14 +8812,14 @@ KISSY.Editor.add("styles", function(KE) {
 
     var StyleP = KEStyle.prototype;
     KE.Utils.extern(StyleP, {
-            "apply":StyleP.apply,
-            "remove":StyleP.remove,
-            "applyToRange":StyleP.applyToRange,
-            "removeFromRange":StyleP.removeFromRange,
-            "applyToObject":StyleP.applyToObject,
-            "checkElementRemovable":StyleP.checkElementRemovable,
-            "checkActive":StyleP.checkActive
-        });
+        "apply":StyleP.apply,
+        "remove":StyleP.remove,
+        "applyToRange":StyleP.applyToRange,
+        "removeFromRange":StyleP.removeFromRange,
+        "applyToObject":StyleP.applyToObject,
+        "checkElementRemovable":StyleP.checkElementRemovable,
+        "checkActive":StyleP.checkActive
+    });
 });/**
  * modified from ckeditor,htmlparser for malform html string
  * @author yiminghe@gmail.com
@@ -14714,7 +14715,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 //firefox 自有属性名
                 [/^-moz/i],
                 //webkit 自有属性名
-                [/^-webkit/i],
+                [/^-webkit/i]//,
                 //qc 3711，只能出现我们规定的字体
                 /*
                  [ /font-size/i,'',function(v) {
@@ -14746,7 +14747,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 // qc 3701，去除行高，防止乱掉
                 // beily_cn 报告需要去掉
                 // [/line-height/i],
-                [/display/i,/none/i]
+
+                // 旺铺编辑 html ，幻灯片切换 html
+                // [/display/i,/none/i]
             ], undefined);
 
         function isListBulletIndicator(element) {
@@ -15055,41 +15058,29 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         assembleList(el);
                     }
                 },
-                /*
-                 td:function(
-                 el
-                 ) {
-                 if (el.attributes.style) {
-                 //去掉td的style，word copy非常讨厌
-                 //现在要加padding了
-                 delete el.attributes.style;
-                 }
-                 },*/
                 /**
                  * ul,li 从 ms word 重建
                  * @param element
                  */
-                span
-                    :
-                    function(element) {
-                        // IE/Safari: remove the span if it comes from list bullet text.
-                        if (!UA.gecko &&
-                            isListBulletIndicator(element.parent)
-                            )
-                            return false;
+                span:function(element) {
+                    // IE/Safari: remove the span if it comes from list bullet text.
+                    if (!UA.gecko &&
+                        isListBulletIndicator(element.parent)
+                        )
+                        return false;
 
-                        // For IE/Safari: List item bullet type is supposed to be indicated by
-                        // the text of a span with style 'mso-list : Ignore' or an image.
-                        if (!UA.gecko &&
-                            isListBulletIndicator(element)) {
-                            var listSymbolNode = element.firstChild(function(node) {
-                                return node.value || node.name == 'img';
-                            });
-                            var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
-                                listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
-                            return createListBulletMarker(listType, listSymbol);
-                        }
+                    // For IE/Safari: List item bullet type is supposed to be indicated by
+                    // the text of a span with style 'mso-list : Ignore' or an image.
+                    if (!UA.gecko &&
+                        isListBulletIndicator(element)) {
+                        var listSymbolNode = element.firstChild(function(node) {
+                            return node.value || node.name == 'img';
+                        });
+                        var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
+                            listType = listSymbol.match(/^([^\s]+?)([.)]?)$/);
+                        return createListBulletMarker(listType, listSymbol);
                     }
+                }
             },
 
             attributes:{
@@ -15101,7 +15092,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     function(value
                              // , element
                         ) {
-                        if (/(^|\s+)Mso/.test(value)) return false;
+                        if (
+                            !value ||
+                                /(^|\s+)Mso/.test(value)
+                            ) {
+                            return false;
+                        }
                         return value;
                     },
                 'style'
@@ -15109,7 +15105,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     function(value) {
                         //去除<i style="mso-bidi-font-style: normal">微软垃圾
                         var re = filterStyle(value);
-                        if (!re) return false;
+                        if (!re) {
+                            return false;
+                        }
                         return re;
                     }
             },
@@ -15202,25 +15200,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                         return false;
                     }
                 },
-                //对应 table plugin , _genTable method
-                td:function(element) {
-                    var c = element.children;
-
-                    // firefox 添加的 br 去掉
-                    // 无缘无故去掉？为什么？？
-                    // for (var i = 0; i < c.length; i++) {
-                    //     if (c[i].name == "br") {
-                    //         c.splice(i, 1);
-                    //         --i;
-                    //     }
-                    // }
-
-                    //ie预览完美需要 &nbsp;
-                    if (!c.length) {
-                        var t = new KE.HtmlParser.Text("&nbsp;");
-                        c.push(t);
-                    }
-                },
                 span:function(element) {
                     if (!element.children.length
                         && S.isEmptyObject(element.attributes)) {
@@ -15231,8 +15210,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             attributes :  {
                 //清除空style
                 style:function(v) {
-                    if (!S.trim(v))
+                    if (!S.trim(v)) {
                         return false;
+                    }
                 }
             },
             attributeNames :  [
@@ -15322,7 +15302,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         function trimFillers(block, fromSource) {
             // If the current node is a block, and if we're converting from source or
             // we're not in IE then search for and remove any tailing BR node.
-            //
             // Also, any &nbsp; at the end of blocks are fillers, remove them as well.
             // (#2886)
             var children = block.children,
@@ -15330,11 +15309,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             if (lastChild) {
                 if (( fromSource || !UA.ie ) &&
                     lastChild.type == KEN.NODE_ELEMENT &&
-                    lastChild.name == 'br')
+                    lastChild.name == 'br') {
                     children.pop();
+                }
                 if (lastChild.type == KEN.NODE_TEXT &&
-                    tailNbspRegex.test(lastChild.value))
+                    tailNbspRegex.test(lastChild.value)) {
                     children.pop();
+                }
             }
         }
 
@@ -15343,7 +15324,6 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
             if (blockNeedsExtension(block)) {
                 //任何浏览器都要加空格！，否则空表格可能间隙太小，不能容下光标
-
                 if (UA.ie) {
                     block.add(new KE.HtmlParser.Text('\xa0'));
                 } else {
@@ -15357,8 +15337,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         function extendBlockForOutput(block) {
             trimFillers(block, false);
-            if (blockNeedsExtension(block))
+            if (blockNeedsExtension(block)) {
                 block.add(new KE.HtmlParser.Text('\xa0'));
+            }
         }
 
         // Find out the list of block-like tags that can contain <br>.
@@ -15368,9 +15349,14 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             dtd.$listItem,
             dtd.$tableContent),i;
         for (i in blockLikeTags) {
-            if (! ( 'br' in dtd[i] ))
+            if (! ( 'br' in dtd[i] )) {
                 delete blockLikeTags[i];
+            }
         }
+
+        // table 布局需要，不要自动往 td 中加东西
+        delete blockLikeTags.td;
+
         // We just avoid filler in <pre> right now.
         // TODO: Support filler for <pre>, line break is also occupy line height.
         delete blockLikeTags.pre;

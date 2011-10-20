@@ -557,7 +557,8 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
-        var self = this,document = range.document;
+        var self = this,
+            document = range.document;
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
@@ -1331,12 +1332,12 @@ KISSY.Editor.add("styles", function(KE) {
 
     var StyleP = KEStyle.prototype;
     KE.Utils.extern(StyleP, {
-            "apply":StyleP.apply,
-            "remove":StyleP.remove,
-            "applyToRange":StyleP.applyToRange,
-            "removeFromRange":StyleP.removeFromRange,
-            "applyToObject":StyleP.applyToObject,
-            "checkElementRemovable":StyleP.checkElementRemovable,
-            "checkActive":StyleP.checkActive
-        });
+        "apply":StyleP.apply,
+        "remove":StyleP.remove,
+        "applyToRange":StyleP.applyToRange,
+        "removeFromRange":StyleP.removeFromRange,
+        "applyToObject":StyleP.applyToObject,
+        "checkElementRemovable":StyleP.checkElementRemovable,
+        "checkActive":StyleP.checkActive
+    });
 });

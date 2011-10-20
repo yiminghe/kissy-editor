@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-19 15:16:38
+ * @buildtime: 2011-10-20 15:52:23
  */
 
 /**
@@ -110,11 +110,11 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=2011-10-19 15:16:38";
+            return "plugin-min.js?t=2011-10-20 15:52:23";
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-19 15:16:38');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=2011-10-20 15:52:23');
         };
     }
 
@@ -8037,7 +8037,8 @@ KISSY.Editor.add("styles", function(KE) {
      * @param range {KISSY.Editor.Range}
      */
     function applyInlineStyle(range) {
-        var self = this,document = range.document;
+        var self = this,
+            document = range.document;
 
         if (range.collapsed) {
             // Create the element to be inserted in the DOM.
@@ -8811,14 +8812,14 @@ KISSY.Editor.add("styles", function(KE) {
 
     var StyleP = KEStyle.prototype;
     KE.Utils.extern(StyleP, {
-            "apply":StyleP.apply,
-            "remove":StyleP.remove,
-            "applyToRange":StyleP.applyToRange,
-            "removeFromRange":StyleP.removeFromRange,
-            "applyToObject":StyleP.applyToObject,
-            "checkElementRemovable":StyleP.checkElementRemovable,
-            "checkActive":StyleP.checkActive
-        });
+        "apply":StyleP.apply,
+        "remove":StyleP.remove,
+        "applyToRange":StyleP.applyToRange,
+        "removeFromRange":StyleP.removeFromRange,
+        "applyToObject":StyleP.applyToObject,
+        "checkElementRemovable":StyleP.checkElementRemovable,
+        "checkActive":StyleP.checkActive
+    });
 });/**
  * modified from ckeditor,htmlparser for malform html string
  * @author yiminghe@gmail.com
