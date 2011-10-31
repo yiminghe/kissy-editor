@@ -110,11 +110,13 @@ KISSY.add("editor/export", function(S) {
     var getJSName;
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
-            return "plugin-min.js?t=@TIMESTAMP@";
+            return "plugin-min.js?t=" +
+                encodeURIComponent("@TIMESTAMP@");
         };
     } else {
         getJSName = function (m, tag) {
-            return m + '/plugin-min.js' + (tag ? tag : '?t=@TIMESTAMP@');
+            return m + '/plugin-min.js' + (tag ? tag : '?t=' +
+                encodeURIComponent('@TIMESTAMP@'));
         };
     }
 
