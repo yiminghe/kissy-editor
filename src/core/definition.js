@@ -499,9 +499,11 @@ KISSY.Editor.add("definition", function(KE) {
             var self = this,
                 doc = self.document,
                 win = DOM._4e_getWin(doc);
-            UA.webkit && win && win.parent && win.parent.focus();
-            //yiminghe note:webkit need win.focus
-            UA.webkit && win && win.focus();
+            // firefox7 need this
+            win && win.parent && win.parent.focus();
+            // yiminghe note:webkit need win.focus
+            // firefox 7 needs also?
+            win && win.focus();
             //ie and firefox need body focus
             doc && doc.body.focus();
             self.notifySelectionChange();
@@ -804,7 +806,8 @@ KISSY.Editor.add("definition", function(KE) {
             self.focus();
             self.fire("save");
 
-            var editorDoc = self.document,saveInterval = 0;
+            var editorDoc = self.document,
+                saveInterval = 0;
             // ie9 仍然需要这样！
             // ie9 标准 selection 有问题，连续插入不能定位光标到插入内容后面
             if (IS_IE) {
@@ -821,19 +824,20 @@ KISSY.Editor.add("definition", function(KE) {
                 // ie9 仍然没有
                 // 1.webkit insert html 有问题！会把标签去掉，算了直接用 insertElement.
                 // 10.0 修复？？
+                // firefox 初始编辑器无焦点报异常
                 try {
-                    // firefox 初始编辑器无焦点报异常，等会再来就可以了
                     editorDoc.execCommand('inserthtml', FALSE, data);
                 } catch(e) {
                     setTimeout(function() {
                         editorDoc.execCommand('inserthtml', FALSE, data);
-                    }, 100);
-                    saveInterval = 100;
+                    }, saveInterval = 100);
                 }
             }
             // bug by zjw2004112@163.com :
             // 有的浏览器 ： chrome , ie67 貌似不会自动滚动到粘贴后的位置
-            self.getSelection().scrollIntoView();
+            setTimeout(function() {
+                self.getSelection().scrollIntoView();
+            }, saveInterval);
             self._saveLater(saveInterval);
         },
 
@@ -890,7 +894,7 @@ KISSY.Editor.add("definition", function(KE) {
         //2.0 body.contentEditable=true body外不是编辑模式
         if (IS_IE) {
             // Don't display the focus border.
-            body.hideFocus = TRUE;
+            body['hideFocus'] = TRUE;
             // Disable and re-enable the body to avoid IE from
             // taking the editing focus at startup. (#141 / #523)
             body.disabled = TRUE;
