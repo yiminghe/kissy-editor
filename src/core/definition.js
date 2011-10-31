@@ -283,9 +283,11 @@ KISSY.Editor.add("definition", function(KE) {
             //其他可能处理
             self.fire("destroy");
             textarea.insertBefore(editorWrap);
+
             editorWrap.remove();
+
             textarea.css({
-                width:editorWrap.css("width"),
+                width:editorWrap[0].style.width,
                 height:self.wrap.css("height")
             });
             textarea.show();
