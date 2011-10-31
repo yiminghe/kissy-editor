@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2.1.5
- * @buildtime: 2011-10-31 14:35:53
+ * @buildtime: 2011-10-31 16:39:39
  */
 
 /**
@@ -111,12 +111,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-10-31 14:35:53");
+                encodeURIComponent("2011-10-31 16:39:39");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-10-31 14:35:53'));
+                encodeURIComponent('2011-10-31 16:39:39'));
         };
     }
 
@@ -3003,6 +3003,20 @@ KISSY.Editor.add("definition", function(KE) {
                     editorDoc.execCommand('inserthtml', FALSE, data);
                 } catch(e) {
                     setTimeout(function() {
+                        // still not ok in ff!
+                        // 手动选择 body 的第一个节点
+                        if (self.getSelection().getRanges().length == 0) {
+                            var r = new KE.Range(editorDoc);
+                            var node = DOM._4e_first(editorDoc.body, function(el) {
+                                return el[0].nodeType == 1 && el._4e_name() != "br";
+                            });
+                            if (!node) {
+                                node = new Node(editorDoc.createElement("p"));
+                                editorDoc.body.appendChild(node[0]);
+                            }
+                            r.setStartAt(node, KE.RANGE.POSITION_AFTER_START);
+                            r.select();
+                        }
                         editorDoc.execCommand('inserthtml', FALSE, data);
                     }, saveInterval = 100);
                 }

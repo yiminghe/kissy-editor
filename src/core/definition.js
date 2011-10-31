@@ -829,6 +829,20 @@ KISSY.Editor.add("definition", function(KE) {
                     editorDoc.execCommand('inserthtml', FALSE, data);
                 } catch(e) {
                     setTimeout(function() {
+                        // still not ok in ff!
+                        // 手动选择 body 的第一个节点
+                        if (self.getSelection().getRanges().length == 0) {
+                            var r = new KE.Range(editorDoc);
+                            var node = DOM._4e_first(editorDoc.body, function(el) {
+                                return el[0].nodeType == 1 && el._4e_name() != "br";
+                            });
+                            if (!node) {
+                                node = new Node(editorDoc.createElement("p"));
+                                editorDoc.body.appendChild(node[0]);
+                            }
+                            r.setStartAt(node, KE.RANGE.POSITION_AFTER_START);
+                            r.select();
+                        }
                         editorDoc.execCommand('inserthtml', FALSE, data);
                     }, saveInterval = 100);
                 }

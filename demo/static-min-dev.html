@@ -16,7 +16,11 @@
 <body>
 
 <h1>KISSY Editor Demo</h1>
-
+<label>
+    插入html：
+    <textarea id='code2' style="width: 60%; height:200px;margin: 0 auto"></textarea>
+</label>
+<button onclick="editor2.insertHtml(KISSY.trim(KISSY.one('#code2').val()))">执行</button>
 <div style="width: 90%; margin: 0 auto">
     <label for="editor">Editor Instance 1:</label>
     <p>
@@ -174,18 +178,12 @@
 </div>
 
 
-<script src="http://yiminghe.github.com/kissy/build/kissy-min.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/uibase-min.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/component-min.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/dd-min.js"></script>
-<script src="http://yiminghe.github.com/kissy/build/overlay-min.js"></script>
 
-<!--
 <script src="../../kissy/build/kissy.js"></script>
-<script src="../../kissy/build/uibase/uibase-pkg.js"></script>
-<script src="../../kissy/build/dd/dd-pkg.js"></script>
-<script src="../../kissy/build/overlay/overlay-pkg.js"></script>
--->
+<script src="../../kissy/build/uibase.js"></script>
+<script src="../../kissy/build/component.js"></script>
+<script src="../../kissy/build/dd.js"></script>
+<script src="../../kissy/build/overlay.js"></script>
 <script src="../build/editor-min.js?t=20101223a"></script>
 <script src="../build/editor/biz/ext/editor-plugin-pkg-min.js?t=20101223a"></script>
 <script>
