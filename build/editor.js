@@ -2,8 +2,8 @@
  * @preserve Constructor for kissy editor,dependency moved to independent module
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
- * @version: 2.1.5
- * @buildtime: 2011-11-02 15:59:13
+ * @version: 2
+ * @buildtime: 2011-11-02 16:40:58
  */
 
 /**
@@ -111,12 +111,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-02 15:59:13");
+                encodeURIComponent("2011-11-02 16:40:58");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-02 15:59:13'));
+                encodeURIComponent('2011-11-02 16:40:58'));
         };
     }
 
@@ -2313,7 +2313,7 @@ KISSY.Editor.add("definition", function(KE) {
             // With IE, the custom domain has to be taken care at first,
             // for other browsers, the 'src' attribute should be left empty to
             // trigger iframe's 'load' event.
-            ' src="' + ( IS_IE ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '' ) + '" ' +
+            (IS_IE ? (' src="' + 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())"') : '') +
             //' tabIndex="' + ( UA.webkit ? -1 : "$(tabIndex)" ) + '" ' +
             ' allowTransparency="true" ' +
             '></iframe></div>' +
