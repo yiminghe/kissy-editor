@@ -86,7 +86,7 @@ KISSY.Editor.add("progressbar", function() {
                         "</div>" +
                         "</div>"
                     ).appendTo(el),
-                title = new Node("<span class='ke-progressbar-title'>").appendTo(el);
+                title = new Node("<span class='ke-progressbar-title'></span>").appendTo(el);
             if (container)
                 el.appendTo(container);
             self.el = el;
