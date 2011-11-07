@@ -310,6 +310,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
                             return;
                         }
                         imgUrl.val(data['imgUrl']);
+                        // chrome 中空 iframe 的 img 请求 header 中没有 refer
+                        // 在主页面先请求一次，带入 header
+                        new Image().src = data['imgUrl'];
                         insert();
                     }
                 }, cfg['serverParams'], cfg['serverUrl']);
