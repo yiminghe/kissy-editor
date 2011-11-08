@@ -108,9 +108,7 @@ KISSY.Editor.add("flash/support", function() {
         show:function(ev, selected) {
             var self = this,
                 editor = self.editor;
-            editor.useDialog(self._type + "/dialog", function(dialog) {
-                dialog.show(selected);
-            });
+            editor.showDialog(self._type + "/dialog", [selected]);
         },
 
         destroy:function() {

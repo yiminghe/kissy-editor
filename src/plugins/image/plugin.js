@@ -42,9 +42,7 @@ KISSY.Editor.add("image", function(editor) {
             },
             show:function(ev, _selectedEl) {
                 var editor = this.editor;
-                editor.useDialog("image/dialog", function(dialog) {
-                    dialog.show(_selectedEl);
-                });
+                editor.showDialog("image/dialog", [_selectedEl]);
             }
         });
 

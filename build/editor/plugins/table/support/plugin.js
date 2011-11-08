@@ -38,9 +38,7 @@ KISSY.Editor.add("table/support", function() {
     S.augment(TableUI, {
         _tableShow:function(ev, selectedTable, td) {
             var editor = this.editor;
-            editor.useDialog("table/dialog", function(dialog) {
-                dialog.show(selectedTable, td);
-            });
+            editor.showDialog("table/dialog", [selectedTable, td]);
         },
         destroy:function() {
             destroyRes.call(this);

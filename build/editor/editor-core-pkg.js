@@ -3,14 +3,12 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-07 16:35:24
+ * @buildtime: 2011-11-08 18:14:53
  */
 
 /**
  * ugly declartion
  */
-
-
 KISSY.add("editor/export", function(S) {
     var DOM = S.DOM,
         TRUE = true,
@@ -69,7 +67,6 @@ KISSY.add("editor/export", function(S) {
                 //通过 add 里面的又一层 addPlugin 保证
                 //use : 下载，非图形为乱序并行
                 //plugin 的attach（按钮）为串行
-
                 S.Editor.use("button,select", function() {
                     S.use.call(self, mods.join(","), function() {
                         //载入了插件的attach功能，现在按照顺序一个个attach
@@ -111,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-07 16:35:24");
+                encodeURIComponent("2011-11-08 18:14:53");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-07 16:35:24'));
+                encodeURIComponent('2011-11-08 18:14:53'));
         };
     }
 
@@ -2486,12 +2483,10 @@ KISSY.Editor.add("definition", function(KE) {
          * @this {KISSY.Editor}
          * @param name {string}
          * @param callback {function(Object)}
-         * @param cfg {Object}
          */
-        useDialog:function(name, callback, cfg) {
+        useDialog:function(name, callback) {
             var self = this,
                 Overlay = KE.Overlay;
-            cfg = cfg || {};
             Overlay && Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
@@ -2505,8 +2500,19 @@ KISSY.Editor.add("definition", function(KE) {
                 callback(dialog);
                 Overlay && Overlay.unloading();
             });
-        }
-        ,
+        },
+
+        showDialog:function(name, args, fn) {
+            var self = this;
+            self.useDialog(name, function(dialog) {
+                dialog.show.apply(dialog, args);
+                fn && fn(dialog);
+                self.fire("dialogShow", {
+                    dialog:dialog,
+                    dialogName:name
+                });
+            });
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}

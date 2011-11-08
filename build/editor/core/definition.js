@@ -312,12 +312,10 @@ KISSY.Editor.add("definition", function(KE) {
          * @this {KISSY.Editor}
          * @param name {string}
          * @param callback {function(Object)}
-         * @param cfg {Object}
          */
-        useDialog:function(name, callback, cfg) {
+        useDialog:function(name, callback) {
             var self = this,
                 Overlay = KE.Overlay;
-            cfg = cfg || {};
             Overlay && Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
@@ -331,8 +329,19 @@ KISSY.Editor.add("definition", function(KE) {
                 callback(dialog);
                 Overlay && Overlay.unloading();
             });
-        }
-        ,
+        },
+
+        showDialog:function(name, args, fn) {
+            var self = this;
+            self.useDialog(name, function(dialog) {
+                dialog.show.apply(dialog, args);
+                fn && fn(dialog);
+                self.fire("dialogShow", {
+                    dialog:dialog,
+                    dialogName:name
+                });
+            });
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}

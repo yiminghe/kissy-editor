@@ -22,7 +22,7 @@ KISSY.Editor.add("link", function(editor) {
             /**
              * bubbleview/tip 初始化，所有共享一个 tip
              */
-            tipHtml = '前往链接： '
+                tipHtml = '前往链接： '
                 + ' <a ' +
                 'href="" '
                 + ' target="_blank" ' +
@@ -132,9 +132,7 @@ KISSY.Editor.add("link", function(editor) {
             },
             offClick:function() {
                 var self = this;
-                self.editor.useDialog("link/dialog", function(dialog) {
-                    dialog.show(self);
-                });
+                self.editor.showDialog("link/dialog", [self]);
             },
             destroy:function() {
                 this.editor.destroyDialog("link/dialog");

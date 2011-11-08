@@ -212,7 +212,8 @@
 
 
 <!-- kissy 1.20 start -->
-<script src="../../kissy/build/kissy.js"></script>
+<script src="../../kissy/build/seed.js"></script>
+<script src="../../kissy/build/core.js"></script>
 <script src="../../kissy/build/uibase.js"></script>
 <script src="../../kissy/build/component.js"></script>
 <script src="../../kissy/build/dd.js"></script>
@@ -625,6 +626,13 @@ KISSY.ready(function(S) {
                     "multi-upload," +
                     "pagebreak,separator,maximize,dragupload");
 
+
+            editor2.on("dialogShow", function(e) {
+                S.log("dialog show start");
+                S.log(e.dialog);
+                S.log(e.dialogName);
+                S.log("dialog show end");
+            });
         }
 
         test();
@@ -641,7 +649,11 @@ KISSY.ready(function(S) {
 
         });
 
-        //window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo");
+
+        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo", function() {
+
+        });
+
     });
 });
 

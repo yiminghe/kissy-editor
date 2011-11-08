@@ -35,9 +35,7 @@ KISSY.Editor.add("multi-upload", function(editor) {
             mode:KE.WYSIWYG_MODE,
             offClick:function() {
                 var editor = this.editor;
-                editor.useDialog("multi-upload/dialog", function(dialog) {
-                    dialog.show();
-                });
+                editor.showDialog("multi-upload/dialog");
             },
             destroy:function() {
                 this.editor.destroyDialog("multi-upload/dialog");

@@ -3,14 +3,12 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-07 16:35:24
+ * @buildtime: 2011-11-08 18:14:53
  */
 
 /**
  * ugly declartion
  */
-
-
 KISSY.add("editor/export", function(S) {
     var DOM = S.DOM,
         TRUE = true,
@@ -69,7 +67,6 @@ KISSY.add("editor/export", function(S) {
                 //通过 add 里面的又一层 addPlugin 保证
                 //use : 下载，非图形为乱序并行
                 //plugin 的attach（按钮）为串行
-
                 S.Editor.use("button,select", function() {
                     S.use.call(self, mods.join(","), function() {
                         //载入了插件的attach功能，现在按照顺序一个个attach
@@ -111,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-07 16:35:24");
+                encodeURIComponent("2011-11-08 18:14:53");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-07 16:35:24'));
+                encodeURIComponent('2011-11-08 18:14:53'));
         };
     }
 
@@ -2486,12 +2483,10 @@ KISSY.Editor.add("definition", function(KE) {
          * @this {KISSY.Editor}
          * @param name {string}
          * @param callback {function(Object)}
-         * @param cfg {Object}
          */
-        useDialog:function(name, callback, cfg) {
+        useDialog:function(name, callback) {
             var self = this,
                 Overlay = KE.Overlay;
-            cfg = cfg || {};
             Overlay && Overlay.loading();
             self.use(name, function() {
                 var dialog = self.getDialog(name);
@@ -2505,8 +2500,19 @@ KISSY.Editor.add("definition", function(KE) {
                 callback(dialog);
                 Overlay && Overlay.unloading();
             });
-        }
-        ,
+        },
+
+        showDialog:function(name, args, fn) {
+            var self = this;
+            self.useDialog(name, function(dialog) {
+                dialog.show.apply(dialog, args);
+                fn && fn(dialog);
+                self.fire("dialogShow", {
+                    dialog:dialog,
+                    dialogName:name
+                });
+            });
+        },
         /**
          *@this {KISSY.Editor}
          * @param name {string}
@@ -12146,9 +12152,7 @@ KISSY.Editor.add("colorsupport", function() {
             others.on("click", function(ev) {
                 ev.halt();
                 colorWin.hide();
-                editor.useDialog("color/dialog", function(dialog) {
-                    dialog.show(self);
-                });
+                editor.showDialog("color/dialog", [self]);
             });
             cfg._prepare = cfg._show;
             cfg._show.call(self);
@@ -13647,9 +13651,7 @@ KISSY.Editor.add("flash/support", function() {
         show:function(ev, selected) {
             var self = this,
                 editor = self.editor;
-            editor.useDialog(self._type + "/dialog", function(dialog) {
-                dialog.show(selected);
-            });
+            editor.showDialog(self._type + "/dialog", [selected]);
         },
 
         destroy:function() {
@@ -15595,9 +15597,7 @@ KISSY.Editor.add("image", function(editor) {
             },
             show:function(ev, _selectedEl) {
                 var editor = this.editor;
-                editor.useDialog("image/dialog", function(dialog) {
-                    dialog.show(_selectedEl);
-                });
+                editor.showDialog("image/dialog", [_selectedEl]);
             }
         });
 
@@ -16180,7 +16180,7 @@ KISSY.Editor.add("link", function(editor) {
             /**
              * bubbleview/tip 初始化，所有共享一个 tip
              */
-            tipHtml = '前往链接： '
+                tipHtml = '前往链接： '
                 + ' <a ' +
                 'href="" '
                 + ' target="_blank" ' +
@@ -16290,9 +16290,7 @@ KISSY.Editor.add("link", function(editor) {
             },
             offClick:function() {
                 var self = this;
-                self.editor.useDialog("link/dialog", function(dialog) {
-                    dialog.show(self);
-                });
+                self.editor.showDialog("link/dialog", [self]);
             },
             destroy:function() {
                 this.editor.destroyDialog("link/dialog");
@@ -18666,9 +18664,7 @@ KISSY.Editor.add("table/support", function() {
     S.augment(TableUI, {
         _tableShow:function(ev, selectedTable, td) {
             var editor = this.editor;
-            editor.useDialog("table/dialog", function(dialog) {
-                dialog.show(selectedTable, td);
-            });
+            editor.showDialog("table/dialog", [selectedTable, td]);
         },
         destroy:function() {
             destroyRes.call(this);

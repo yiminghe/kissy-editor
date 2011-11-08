@@ -144,9 +144,7 @@ KISSY.Editor.add("colorsupport", function() {
             others.on("click", function(ev) {
                 ev.halt();
                 colorWin.hide();
-                editor.useDialog("color/dialog", function(dialog) {
-                    dialog.show(self);
-                });
+                editor.showDialog("color/dialog", [self]);
             });
             cfg._prepare = cfg._show;
             cfg._show.call(self);
