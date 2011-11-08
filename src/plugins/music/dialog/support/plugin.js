@@ -71,7 +71,7 @@ KISSY.Editor.add("music/dialog/support", function() {
         },
         _initD:function() {
             var self = this,
-                d = self.d,
+                d = self.dialog,
                 el = d.get("el");
             self.dUrl = el.one(".ke-music-url");
             self.dAlign = KE.Select.decorate(el.one(".ke-music-align"));

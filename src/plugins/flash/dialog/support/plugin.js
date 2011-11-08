@@ -94,7 +94,7 @@ KISSY.Editor.add("flash/dialog/support", function() {
         //建立弹出窗口
         _prepareShow:function() {
             var self = this;
-            self.d = new Dialog({
+            self.dialog = new Dialog({
                 autoRender:true,
                 headerContent:self._title,
                 bodyContent:self._bodyHtml,
@@ -102,13 +102,13 @@ KISSY.Editor.add("flash/dialog/support", function() {
                 width:self._config_dwidth || "500px",
                 mask:true
             });
-            self.addRes(self.d);
+            self.addRes(self.dialog);
             self._initD();
         },
         _realShow:function() {
             //显示前就要内容搞好
             this._updateD();
-            this.d.show();
+            this.dialog.show();
         },
         /**
          * 子类覆盖，如何从flash url得到合适的应用表示地址
@@ -160,7 +160,7 @@ KISSY.Editor.add("flash/dialog/support", function() {
          */
         _initD:function() {
             var self = this,
-                d = self.d,
+                d = self.dialog,
                 el = d.get("el");
             self.dHeight = el.one(".ke-flash-height");
             self.dWidth = el.one(".ke-flash-width");
@@ -172,11 +172,11 @@ KISSY.Editor.add("flash/dialog/support", function() {
             action.on("click", self._gen, self);
             cancel.on("click", function(ev) {
                 d.hide();
-                ev&&ev.halt();
+                ev && ev.halt();
             });
 
             KE.Utils.placeholder(self.dUrl, self._urlTip);
-            self.addRes(action, cancel,self.dUrl);
+            self.addRes(action, cancel, self.dUrl);
         },
 
         /**
@@ -202,7 +202,7 @@ KISSY.Editor.add("flash/dialog/support", function() {
          * 真正产生 flash 元素
          */
         _gen: function(ev) {
-            ev&&ev.halt();
+            ev && ev.halt();
             //debugger
             var self = this,
                 editor = self.editor,
@@ -210,24 +210,24 @@ KISSY.Editor.add("flash/dialog/support", function() {
                 url = dinfo && S.trim(dinfo.url),
                 attrs = dinfo && dinfo.attrs;
             if (!dinfo) return;
-            var re = KE.Utils.verifyInputs(self.d.get("el").all("input"));
+            var re = KE.Utils.verifyInputs(self.dialog.get("el").all("input"));
             if (!re) return;
-            self.d.hide();
+            self.dialog.hide();
             KE.Flash.Insert(editor, url, attrs, self._cls,
                 self._type, function(substitute) {
-                //如果是修改，就再选中
-                if (self.selectedFlash) {
-                    editor.getSelection()
-                        .selectElement(substitute);
-                }
-                editor.notifySelectionChange();
-            });
+                    //如果是修改，就再选中
+                    if (self.selectedFlash) {
+                        editor.getSelection()
+                            .selectElement(substitute);
+                    }
+                    editor.notifySelectionChange();
+                });
         },
 
         destroy:function() {
             this.destroyRes();
         }
     });
-},{
+}, {
     attach:false
 });

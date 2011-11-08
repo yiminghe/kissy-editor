@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-08 18:14:53
+ * @buildtime: 2011-11-08 18:29:09
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-08 18:14:53");
+                encodeURIComponent("2011-11-08 18:29:09");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-08 18:14:53'));
+                encodeURIComponent('2011-11-08 18:29:09'));
         };
     }
 
@@ -2508,7 +2508,8 @@ KISSY.Editor.add("definition", function(KE) {
                 dialog.show.apply(dialog, args);
                 fn && fn(dialog);
                 self.fire("dialogShow", {
-                    dialog:dialog,
+                    dialog:dialog.dialog,
+                    pluginDialog:dialog,
                     dialogName:name
                 });
             });

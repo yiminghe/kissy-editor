@@ -196,7 +196,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             var tok = foot.one(".ke-table-ok"),
                 tclose = foot.one(".ke-table-cancel");
             d.twidthunit = KE.Select.decorate(dbody.one(".ke-table-width-unit"));
-            self.tableDialog = d;
+            self.dialog = d;
             tok.on("click", self._tableOk, self);
 
             tclose.on("click", function(ev) {
@@ -208,7 +208,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         _tableOk:function(ev) {
             ev && ev.halt();
             var self = this,
-                tableDialog = self.tableDialog,
+                tableDialog = self.dialog,
                 inputs = tableDialog.get("el").all("input");
 
             if (tableDialog.twidthunit.val() == "%") {
@@ -225,7 +225,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             }
             var re = KE.Utils.verifyInputs(inputs);
             if (!re) return;
-            self.tableDialog.hide();
+            self.dialog.hide();
             setTimeout(function() {
                 if (!self.selectedTable) {
                     self._genTable();
@@ -236,7 +236,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         },
         _modifyTable:function() {
             var self = this,
-                d = self.tableDialog,
+                d = self.dialog,
                 selectedTable = self.selectedTable,
                 caption = selectedTable.one("caption"),
                 talignVal = d.talign.val(),
@@ -298,7 +298,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         },
         _genTable:function() {
             var self = this,
-                d = self.tableDialog,
+                d = self.dialog,
                 html = "<table ",
                 i,
                 cols = parseInt(d.tcols.val()) || 1,
@@ -377,7 +377,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         },
         _fillTableDialog:function() {
             var self = this,
-                d = self.tableDialog,
+                d = self.dialog,
                 selectedTable = self.selectedTable,
                 caption = selectedTable.one("caption");
             if (self.selectedTd) {
@@ -422,7 +422,7 @@ KISSY.Editor.add("table/dialog/support", function() {
         },
         _realTableShow:function() {
             var self = this,
-                d = self.tableDialog;
+                d = self.dialog;
 
             if (self.selectedTable) {
                 self._fillTableDialog();
@@ -440,7 +440,7 @@ KISSY.Editor.add("table/dialog/support", function() {
             } else {
                 d.cellpaddingHolder.hide();
             }
-            self.tableDialog.show();
+            self.dialog.show();
         },
         _prepareTableShow:function() {
             var self = this;

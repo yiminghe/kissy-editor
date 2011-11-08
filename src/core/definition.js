@@ -337,7 +337,8 @@ KISSY.Editor.add("definition", function(KE) {
                 dialog.show.apply(dialog, args);
                 fn && fn(dialog);
                 self.fire("dialogShow", {
-                    dialog:dialog,
+                    dialog:dialog.dialog,
+                    pluginDialog:dialog,
                     dialogName:name
                 });
             });

@@ -93,7 +93,7 @@ KISSY.Editor.add("video/dialog/support", function() {
         },
         _initD:function() {
             var self = this,
-                d = self.d,
+                d = self.dialog,
                 el = d.get("el");
             self.dUrl = el.one(".ke-video-url");
             self.dAlign = KE.Select.decorate(el.one(".ke-video-align"));
@@ -150,7 +150,7 @@ KISSY.Editor.add("video/dialog/support", function() {
                 for (var i = 0; i < urlCfg.length; i++) {
                     var c = urlCfg[i];
                     if (c['reg'].test(url)) {
-                        self.d.loading();
+                        self.dialog.loading();
                         //return;
                         Video.dynamicUrl.origin = url;
                         Video.dynamicUrl.instance = self;
@@ -161,12 +161,12 @@ KISSY.Editor.add("video/dialog/support", function() {
                                     .replace(/@url@/,
                                     //"X"
                                     encodeURIComponent(url)
-                                    )
+                                )
                                     .replace(/@callback@/,
                                     encodeURIComponent("KISSY.Editor.Video.dynamicUrl"))
                                 //.replace(/@rand@/,
                                 //(new Date().valueOf()))
-                                );
+                            );
                             //ie 必须延迟处理？？
                         }, 30);
                         return;
@@ -174,13 +174,13 @@ KISSY.Editor.add("video/dialog/support", function() {
                 }
             }
             VideoDialog['superclass']._gen.call(self);
-            ev&&ev.halt();
+            ev && ev.halt();
         },
 
         _dynamicUrlPrepare:function(re) {
             var self = this;
             self.dUrl.val(re);
-            self.d.unloading();
+            self.dialog.unloading();
             VideoDialog['superclass']._gen.call(self);
         },
 
@@ -209,6 +209,6 @@ KISSY.Editor.add("video/dialog/support", function() {
         Video.dynamicUrl.instance._dynamicUrlPrepare(re);
     };
     Video.Dialog = VideoDialog;
-},{
+}, {
     attach:false
 });

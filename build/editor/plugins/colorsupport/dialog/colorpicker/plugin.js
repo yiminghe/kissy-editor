@@ -209,7 +209,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
             _init:function() {
                 var self = this;
                 self.__res = [];
-                self.win = new KE.Dialog({
+                self.dialog = new KE.Dialog({
                         mask:true,
                         headerContent:"颜色拾取器",
                         bodyContent:panelHtml,
@@ -217,7 +217,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                         autoRender:true,
                         width:"550px"
                     });
-                var win = self.win,
+                var win = self.dialog,
                     body = win.get("body"),
                     foot = win.get("footer"),
                     indicator = body.one(".ke-color-advanced-indicator"),
@@ -267,7 +267,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
                         indicator.css("background-color", c);
                     }
                 });
-                addRes.call(self, ok, indicatorValue, cancel, body, self.win);
+                addRes.call(self, ok, indicatorValue, cancel, body, self.dialog);
 
                 var defaultColor = "#FF9900";
                 self._detailColor(defaultColor);
@@ -277,7 +277,7 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
 
             _detailColor:function(color) {
                 var self = this,
-                    win = self.win,
+                    win = self.dialog,
                     body = win.get("body"),
                     detailPanel = body.one(".ke-color-advanced-picker-right");
 
@@ -288,10 +288,10 @@ KISSY.Editor.add("colorsupport/dialog/colorpicker", function() {
             },
             show:function(cmd) {
                 this.cmd = cmd;
-                this.win.show();
+                this.dialog.show();
             },
             hide:function() {
-                this.win.hide();
+                this.dialog.hide();
             },
             destroy:function() {
                 destroyRes.call(this);

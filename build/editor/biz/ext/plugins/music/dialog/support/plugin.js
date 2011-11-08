@@ -143,7 +143,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
         _initD:function() {
             var self = this,
                 editor = self.editor,
-                d = self.d,
+                d = self.dialog,
                 del = d.get("el"),
                 dfoot = d.get("footer"),
                 input = del.one(".ke-xiami-url");
@@ -363,14 +363,14 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
                 self.dAlign.val(f.css("float"));
                 self.dMargin.val(parseInt(f._4e_style("margin")) || 0);
                 self._xiami_url_wrap.hide();
-                self.d.get("footer").show();
+                self.dialog.get("footer").show();
                 self._xiamia_title.show();
             } else {
                 KE.Utils.resetInput(self._xiami_input);
                 self.dAlign.val("none");
                 self.dMargin.val(MARGIN_DEFAULT);
                 self._xiami_url_wrap.show();
-                self.d.get("footer").hide();
+                self.dialog.get("footer").hide();
                 self._xiamia_title.hide();
                 self._xiami_submit.removeClass("ke-triplebutton-disabled");
                 //self._xiami_submit.enable();

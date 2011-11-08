@@ -12,128 +12,125 @@ KISSY.Editor.add("image/dialog", function(editor) {
         Event = S.Event,
         TIP = "http://",
         DTIP = "自动",
-        MARGIN_DEFAULT = 0;
+        MARGIN_DEFAULT = 0,
+        bodyHtml = "<div class='ke-image-wrap'>" +
+            "<ul class='ke-tabs ks-clear'>" +
+            "<li " +
+            "rel='remote'>" +
+            "网络图片" +
+            "</li>" +
+            "<li " +
+            "rel='local'>" +
+            "本地上传" +
+            "</li>" +
+            "</ul>" +
+            "<div style='" +
+            "padding:12px 20px 5px 20px;'>" +
+            "<div class='ke-image-tabs-content-wrap' " +
+            ">" +
+            "<div>" +
+            "<label>" +
+            "<span " +
+            "class='ke-image-title'" +
+            ">" +
+            "图片地址： " +
+            "</span>" +
+            "<input " +
+            " data-verify='^(https?:/)?/[^\\s]+$' " +
+            " data-warning='网址格式为：http:// 或 /' " +
+            "class='ke-img-url ke-input' " +
+            "style='width:390px;' " +
+            "/>" +
+            "</label>" +
+            "</div>" +
+            "<div style='position:relative;'>" +
+            "<form class='ke-img-upload-form'>" +
+            "<p style='zoom:1;'>" +
+            "<input class='ke-input ke-img-local-url' " +
+            "readonly='readonly' " +
+            "style='margin-right: 15px; " +
+            "vertical-align: middle; " +
+            "width: 368px;" +
+            "color:#969696;'/>" +
+            "<a " +
+            "style='padding:3px 11px;" +
+            "position:absolute;" +
+            "left:390px;" +
+            "top:0px;" +
+            "z-index:1;' " +
+            "class='ke-image-up ke-button'>浏览...</a>" +
+            "</p>" +
+            "<div class='ke-img-up-extraHtml'>" +
+            "</div>" +
+            "</form>" +
+            "</div>" +
+            "</div>" +
+            "<table " +
+            "style='width:100%;margin-top:8px;' " +
+            "class='ke-img-setting'>" +
+            "<tr>" +
+            "<td>" +
+            "<label>" +
+            "宽度： " +
+            "<input " +
+            " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
+            " data-warning='宽度请输入正整数' " +
+            "class='ke-img-width ke-input' " +
+            "style='vertical-align:middle;width:60px' " +
+            "/> 像素 </label>" +
+            "</td>" +
+            "<td>" +
+            "<label>" +
+            "高度： " +
+            "<input " +
+            " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
+            " data-warning='高度请输入正整数' " +
+            "class='ke-img-height ke-input' " +
+            "style='vertical-align:middle;width:60px' " +
+            "/> 像素 </label>" +
+            "<label>" +
+            "<input " +
+            "type='checkbox' " +
+            "class='ke-img-ratio' " +
+            "style='vertical-align:middle;" +
+            "margin-left:5px;" +
+            "' " +
+            "checked='checked'/>" +
+            " 锁定高宽比" +
+            "</label>" +
+            "</td>" +
 
-    var bodyHtml = "<div class='ke-image-wrap'>" +
-        "<ul class='ke-tabs ks-clear'>" +
-        "<li " +
-        "rel='remote'>" +
-        "网络图片" +
-        "</li>" +
-        "<li " +
-        "rel='local'>" +
-        "本地上传" +
-        "</li>" +
-        "</ul>" +
-        "<div style='" +
-        "padding:12px 20px 5px 20px;'>" +
-        "<div class='ke-image-tabs-content-wrap' " +
-        ">" +
-        "<div>" +
-        "<label>" +
-        "<span " +
-        "class='ke-image-title'" +
-        ">" +
-        "图片地址： " +
-        "</span>" +
-        "<input " +
-        " data-verify='^(https?:/)?/[^\\s]+$' " +
-        " data-warning='网址格式为：http:// 或 /' " +
-        "class='ke-img-url ke-input' " +
-        "style='width:390px;' " +
-        "/>" +
-        "</label>" +
-        "</div>" +
-        "<div style='position:relative;'>" +
-        "<form class='ke-img-upload-form'>" +
-        "<p style='zoom:1;'>" +
-        "<input class='ke-input ke-img-local-url' " +
-        "readonly='readonly' " +
-        "style='margin-right: 15px; " +
-        "vertical-align: middle; " +
-        "width: 368px;" +
-        "color:#969696;'/>" +
-        "<a " +
-        "style='padding:3px 11px;" +
-        "position:absolute;" +
-        "left:390px;" +
-        "top:0px;" +
-        "z-index:1;' " +
-        "class='ke-image-up ke-button'>浏览...</a>" +
-        "</p>" +
-        "<div class='ke-img-up-extraHtml'>" +
-        "</div>" +
-        "</form>" +
-        "</div>" +
-        "</div>" +
-        "<table " +
-        "style='width:100%;margin-top:8px;' " +
-        "class='ke-img-setting'>" +
-        "<tr>" +
-        "<td>" +
-        "<label>" +
-        "宽度： " +
-        "<input " +
-        " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
-        " data-warning='宽度请输入正整数' " +
-        "class='ke-img-width ke-input' " +
-        "style='vertical-align:middle;width:60px' " +
-        "/> 像素 </label>" +
-        "</td>" +
-        "<td>" +
-        "<label>" +
-        "高度： " +
-        "<input " +
-        " data-verify='^(" + DTIP + "|((?!0$)\\d+))?$' " +
-        " data-warning='高度请输入正整数' " +
-        "class='ke-img-height ke-input' " +
-        "style='vertical-align:middle;width:60px' " +
-        "/> 像素 </label>" +
-        "<label>" +
-        "<input " +
-        "type='checkbox' " +
-        "class='ke-img-ratio' " +
-        "style='vertical-align:middle;" +
-        "margin-left:5px;" +
-        "' " +
-        "checked='checked'/>" +
-        " 锁定高宽比" +
-        "</label>" +
-        "</td>" +
+            "</tr>" +
 
-        "</tr>" +
-
-        "<tr>" +
-        "<td>" +
-        "<label>" +
-        "对齐：" +
-        "<select class='ke-img-align' title='对齐'>" +
-        "<option value='none'>无</option>" +
-        "<option value='left'>左对齐</option>" +
-        "<option value='right'>右对齐</option>" +
-        "</select>" +
-        "</label>" +
-        "</td>" +
-        "<td><label>" +
-        "间距： " +
-        "<input " +
-        "" +
-        " data-verify='^\\d+$' " +
-        " data-warning='间距请输入非负整数' " +
-        "class='ke-img-margin ke-input' style='width:60px' value='"
-        + MARGIN_DEFAULT + "'/> 像素" +
-        "</label>" +
-        "</td>" +
-        "</tr>" +
-        "</table>" +
-        "</div>" +
-        "</div>",
+            "<tr>" +
+            "<td>" +
+            "<label>" +
+            "对齐：" +
+            "<select class='ke-img-align' title='对齐'>" +
+            "<option value='none'>无</option>" +
+            "<option value='left'>左对齐</option>" +
+            "<option value='right'>右对齐</option>" +
+            "</select>" +
+            "</label>" +
+            "</td>" +
+            "<td><label>" +
+            "间距： " +
+            "<input " +
+            "" +
+            " data-verify='^\\d+$' " +
+            " data-warning='间距请输入非负整数' " +
+            "class='ke-img-margin ke-input' style='width:60px' value='"
+            + MARGIN_DEFAULT + "'/> 像素" +
+            "</label>" +
+            "</td>" +
+            "</tr>" +
+            "</table>" +
+            "</div>" +
+            "</div>",
         footHtml = "<div style='padding:5px 20px 20px;'><a class='ke-img-insert ke-button' " +
             "style='margin-right:30px;'>确定</a> " +
-            "<a  class='ke-img-cancel ke-button'>取消</a></div>";
-
-
-    var d,
+            "<a  class='ke-img-cancel ke-button'>取消</a></div>",
+        d,
         tab,
         imgUrl,
         imgHeight,
@@ -149,13 +146,11 @@ KISSY.Editor.add("image/dialog", function(editor) {
         selectedEl,
         imageCfg = editor.cfg["pluginConfig"]["image"] || {},
         cfg = imageCfg["upload"] || null,
-        suffix = cfg && cfg["suffix"] || "png,jpg,jpeg,gif";
-
-    var //不要加g：http://yiminghe.javaeye.com/blog/581347
+        suffix = cfg && cfg["suffix"] || "png,jpg,jpeg,gif",
+        //不要加g：http://yiminghe.javaeye.com/blog/581347
         suffix_reg = new RegExp(suffix.split(/,/).join("|") + "$", "i"),
-        suffix_warning = "只允许后缀名为" + suffix + "的图片";
-
-    var controls = {},
+        suffix_warning = "只允许后缀名为" + suffix + "的图片",
+        controls = {},
         addRes = KE.Utils.addRes,
         destroyRes = KE.Utils.destroyRes;
 
@@ -474,6 +469,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
     }
 
     KE.use("overlay,tabs,select", function() {
+        prepare();
         editor.addDialog("image/dialog", {
             show:function(_selectedEl) {
                 update(_selectedEl);
@@ -484,9 +480,9 @@ KISSY.Editor.add("image/dialog", function(editor) {
             },
             destroy:function() {
                 destroyRes.call(controls);
-            }
+            },
+            dialog:d
         });
-        prepare();
     });
 }, {
     attach:false
