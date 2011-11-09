@@ -333,6 +333,7 @@ KISSY.Editor.add("definition", function(KE) {
 
         showDialog:function(name, args, fn) {
             var self = this;
+            args = args || [];
             self.useDialog(name, function(dialog) {
                 dialog.show.apply(dialog, args);
                 fn && fn(dialog);
