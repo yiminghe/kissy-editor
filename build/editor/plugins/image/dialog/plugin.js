@@ -44,7 +44,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             "</label>" +
             "</div>" +
             "<div style='position:relative;'>" +
-            "<form class='ke-img-upload-form'>" +
+            "<form class='ke-img-upload-form' method='post'>" +
             "<p style='zoom:1;'>" +
             "<input class='ke-input ke-img-local-url' " +
             "readonly='readonly' " +

@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-09 16:13:55
+ * @buildtime: 2011-11-17 19:05:16
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-09 16:13:55");
+                encodeURIComponent("2011-11-17 19:05:16");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-09 16:13:55'));
+                encodeURIComponent('2011-11-17 19:05:16'));
         };
     }
 
@@ -174,7 +174,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-10-31 11:10:42");
+                    url += "t=" + encodeURIComponent("2011-11-17 19:02:42");
                 }
                 return KE["Config"].base + url;
             },
@@ -590,13 +590,20 @@ KISSY.Editor.add("utils", function(KE) {
                 var form = DOM._4e_unwrap(o.form),
                     buf = {
                         target: form.target,
-                        method: form.method,
+                        method:form.method,
                         encoding: form.encoding,
                         enctype: form.enctype,
                         action: form.action
                     };
                 form.target = id;
-                form.method = 'POST';
+                try {
+                    if (form.method.toLowerCase() != 'post') {
+                        form.method = 'POST';
+                    }
+                } catch(e) {
+                    S.log("error in doFormUpload when set form.method to post");
+                    S.log(e, "error");
+                }
                 form.enctype = form.encoding = 'multipart/form-data';
                 if (url) {
                     form.action = url;
@@ -646,8 +653,9 @@ KISSY.Editor.add("utils", function(KE) {
                     }
                     catch(e) {
                         // ignore
-                        //2010-11-15 由于外边设置了document.domain导致读不到数据抛异常
-                        S.log(e);
+                        // 2010-11-15 由于外边设置了document.domain导致读不到数据抛异常
+                        S.log("after data returns error ,maybe domain problem:");
+                        S.log(e, "error");
                     }
 
                     Event.remove(frame, 'load', cb);
@@ -664,7 +672,13 @@ KISSY.Editor.add("utils", function(KE) {
                 form.submit();
 
                 form.target = buf.target;
-                form.method = buf.method;
+                // sometimes ie 对象不支持此属性或方法
+                try {
+                    form.method = buf.method;
+                } catch(e) {
+                    S.log("error in doFormUpload when restore form.method");
+                    S.log(e, "error");
+                }
                 form.enctype = buf.enctype;
                 form.encoding = buf.encoding;
                 form.action = buf.action;
