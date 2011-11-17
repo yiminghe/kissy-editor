@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-17 19:05:16
+ * @buildtime: 2011-11-17 19:11:07
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-17 19:05:16");
+                encodeURIComponent("2011-11-17 19:11:07");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-17 19:05:16'));
+                encodeURIComponent('2011-11-17 19:11:07'));
         };
     }
 
@@ -174,7 +174,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-17 19:02:42");
+                    url += "t=" + encodeURIComponent("2011-11-17 19:11:07");
                 }
                 return KE["Config"].base + url;
             },
@@ -674,7 +674,9 @@ KISSY.Editor.add("utils", function(KE) {
                 form.target = buf.target;
                 // sometimes ie 对象不支持此属性或方法
                 try {
-                    form.method = buf.method;
+                    if (form.method.toLowerCase() != buf.method.toLowerCase()) {
+                        form.method = buf.method;
+                    }
                 } catch(e) {
                     S.log("error in doFormUpload when restore form.method");
                     S.log(e, "error");

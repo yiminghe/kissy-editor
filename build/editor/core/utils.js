@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-17 19:02:42");
+                    url += "t=" + encodeURIComponent("2011-11-17 19:11:07");
                 }
                 return KE["Config"].base + url;
             },
@@ -525,7 +525,9 @@ KISSY.Editor.add("utils", function(KE) {
                 form.target = buf.target;
                 // sometimes ie 对象不支持此属性或方法
                 try {
-                    form.method = buf.method;
+                    if (form.method.toLowerCase() != buf.method.toLowerCase()) {
+                        form.method = buf.method;
+                    }
                 } catch(e) {
                     S.log("error in doFormUpload when restore form.method");
                     S.log(e, "error");
