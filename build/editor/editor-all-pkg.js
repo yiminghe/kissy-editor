@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-17 19:11:07
+ * @buildtime: 2011-11-17 19:34:39
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-17 19:11:07");
+                encodeURIComponent("2011-11-17 19:34:39");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-17 19:11:07'));
+                encodeURIComponent('2011-11-17 19:34:39'));
         };
     }
 
@@ -174,7 +174,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-17 19:11:07");
+                    url += "t=" + encodeURIComponent("2011-11-17 19:34:39");
                 }
                 return KE["Config"].base + url;
             },
@@ -589,26 +589,21 @@ KISSY.Editor.add("utils", function(KE) {
 
                 var form = DOM._4e_unwrap(o.form),
                     buf = {
-                        target: form.target,
-                        method:form.method,
-                        encoding: form.encoding,
-                        enctype: form.enctype,
-                        action: form.action
+                        target: DOM.attr(form, "target"),
+                        method:DOM.attr(form, "method"),
+                        encoding: DOM.attr(form, "encoding"),
+                        enctype: DOM.attr(form, "enctype"),
+                        action: DOM.attr(form, "action")
                     };
-                form.target = id;
-                try {
-                    if (form.method.toLowerCase() != 'post') {
-                        form.method = 'POST';
-                    }
-                } catch(e) {
-                    S.log("error in doFormUpload when set form.method to post");
-                    S.log(e, "error");
-                }
-                form.enctype = form.encoding = 'multipart/form-data';
+                DOM.attr(form, {
+                    target:id,
+                    "method":"post",
+                    enctype:'multipart/form-data',
+                    encoding:   'multipart/form-data'
+                });
                 if (url) {
-                    form.action = url;
+                    DOM.attr(form, "action", url);
                 }
-
                 var hiddens, hd;
                 if (ps) { // add dynamic params
                     hiddens = [];
@@ -671,19 +666,7 @@ KISSY.Editor.add("utils", function(KE) {
 
                 form.submit();
 
-                form.target = buf.target;
-                // sometimes ie 对象不支持此属性或方法
-                try {
-                    if (form.method.toLowerCase() != buf.method.toLowerCase()) {
-                        form.method = buf.method;
-                    }
-                } catch(e) {
-                    S.log("error in doFormUpload when restore form.method");
-                    S.log(e, "error");
-                }
-                form.enctype = buf.enctype;
-                form.encoding = buf.encoding;
-                form.action = buf.action;
+                DOM.attr(form, buf);
 
                 if (hiddens) { // remove dynamic params
                     for (var i = 0, len = hiddens.length; i < len; i++) {
