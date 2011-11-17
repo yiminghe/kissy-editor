@@ -511,7 +511,11 @@ KISSY.Editor.add("definition", function(KE) {
                 doc = self.document,
                 win = DOM._4e_getWin(doc);
             // firefox7 need this
-            win && win.parent && win.parent.focus();
+            if (!UA.ie) {
+                // note : 2011-11-17 report by 石霸
+                // ie 的 parent 不能 focus ，否则会使得 iframe 内的编辑器光标回到开头
+                win && win.parent && win.parent.focus();
+            }
             // yiminghe note:webkit need win.focus
             // firefox 7 needs also?
             win && win.focus();

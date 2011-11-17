@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-17 19:34:39
+ * @buildtime: 2011-11-17 20:54:46
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-17 19:34:39");
+                encodeURIComponent("2011-11-17 20:54:46");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-17 19:34:39'));
+                encodeURIComponent('2011-11-17 20:54:46'));
         };
     }
 
@@ -2681,7 +2681,11 @@ KISSY.Editor.add("definition", function(KE) {
                 doc = self.document,
                 win = DOM._4e_getWin(doc);
             // firefox7 need this
-            win && win.parent && win.parent.focus();
+            if (!UA.ie) {
+                // note : 2011-11-17 report by 石霸
+                // ie 的 parent 不能 focus ，否则会使得 iframe 内的编辑器光标回到开头
+                win && win.parent && win.parent.focus();
+            }
             // yiminghe note:webkit need win.focus
             // firefox 7 needs also?
             win && win.focus();
