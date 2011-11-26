@@ -5,6 +5,7 @@
 KISSY.Editor.add("image/dialog", function(editor) {
     var S = KISSY,
         KE = S.Editor,
+        dtd = KE.XHTML_DTD,
         DOM = S.DOM,
         UA = S.UA,
         JSON = S['JSON'],
@@ -39,7 +40,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
             " data-verify='^(https?:/)?/[^\\s]+$' " +
             " data-warning='网址格式为：http:// 或 /' " +
             "class='ke-img-url ke-input' " +
-            "style='width:390px;' " +
+            "style='width:390px;vertical-align:middle;' " +
             "/>" +
             "</label>" +
             "</div>" +
@@ -124,10 +125,33 @@ KISSY.Editor.add("image/dialog", function(editor) {
             "</label>" +
             "</td>" +
             "</tr>" +
+            "<tr>" +
+            "<td colspan='2' style='padding-top: 6px'>" +
+            "<label>" +
+            "链接网址： " +
+            "<input " +
+            "class='ke-img-link ke-input' " +
+            "style='width:235px;vertical-align:middle;' " +
+            " data-verify='^(?:(?:\\s*)|(?:https?://[^\\s]+)|(?:#.+))$' " +
+            " data-warning='请输入合适的网址格式' " +
+            "/>" +
+            "</label>" +
+            "<label>" +
+            "<input " +
+            "class='ke-img-link-blank' " +
+            "style='vertical-align:middle;" +
+            "margin-left:5px;" +
+            "' " +
+            "type='checkbox'/>" +
+            " &nbsp; 在新窗口打开链接" +
+            "</label>" +
+            "</td>" +
+            "</tr>" +
             "</table>" +
             "</div>" +
             "</div>",
-        footHtml = "<div style='padding:5px 20px 20px;'><a class='ke-img-insert ke-button' " +
+        footHtml = "<div style='padding:5px 20px 20px;'>" +
+            "<a class='ke-img-insert ke-button' " +
             "style='margin-right:30px;'>确定</a> " +
             "<a  class='ke-img-cancel ke-button'>取消</a></div>",
         d,
@@ -140,6 +164,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
         imgMargin,
         imgRatioValue,
         imgLocalUrl,
+        imgLink,
+        imgLinkBlank,
         fileInput,
         uploadForm,
         warning = "请点击浏览上传图片",
@@ -153,6 +179,21 @@ KISSY.Editor.add("image/dialog", function(editor) {
         controls = {},
         addRes = KE.Utils.addRes,
         destroyRes = KE.Utils.destroyRes;
+
+    function findAWithImg(img) {
+        var ret = img.parent();
+        while (ret) {
+            var name = ret._4e_name();
+            if (name == "a") {
+                return ret;
+            }
+            if (dtd.$block[name] || dtd.$blockLimit[name]) {
+                return null;
+            }
+            ret = img.parent();
+        }
+        return null;
+    }
 
     function prepare() {
 
@@ -184,31 +225,34 @@ KISSY.Editor.add("image/dialog", function(editor) {
         imgRatio = content.one(".ke-img-ratio");
         imgAlign = KE.Select.decorate(content.one(".ke-img-align"));
         imgMargin = content.one(".ke-img-margin");
+        imgLink = content.one(".ke-img-link");
+        imgLinkBlank = content.one(".ke-img-link-blank");
         var placeholder = KE.Utils.placeholder;
         placeholder(imgUrl, TIP);
         placeholder(imgHeight, DTIP);
         placeholder(imgWidth, DTIP);
+        placeholder(imgLink, "http://");
         imgHeight.on("keyup", function() {
-            var v = parseInt(imgHeight.val());
+            var v = parseInt(valInput(imgHeight));
             if (!v ||
                 !imgRatio[0].checked ||
                 imgRatio[0].disabled ||
                 !imgRatioValue) {
                 return;
             }
-            imgWidth.val(Math.floor(v * imgRatioValue));
+            valInput(imgWidth, Math.floor(v * imgRatioValue));
         });
         addRes.call(controls, imgHeight, imgUrl, imgWidth);
 
         imgWidth.on("keyup", function() {
-            var v = parseInt(imgWidth.val());
+            var v = parseInt(valInput(imgWidth));
             if (!v ||
                 !imgRatio[0].checked ||
                 imgRatio[0].disabled ||
                 !imgRatioValue) {
                 return;
             }
-            imgHeight.val(Math.floor(v / imgRatioValue));
+            valInput(imgHeight, Math.floor(v / imgRatioValue));
         });
         addRes.call(controls, imgWidth);
         cancel.on("click", function(ev) {
@@ -258,11 +302,13 @@ KISSY.Editor.add("image/dialog", function(editor) {
         }
 
         ok.on("click", function(ev) {
-            ev && ev.halt();
+            ev.halt();
             if (tab.activate() == "local" && cfg) {
 
-                if (!verifyInputs(commonSettingTable.all("input")))
+                if (!verifyInputs(commonSettingTable.all("input"))) {
                     return;
+                }
+
                 if (imgLocalUrl.val() == warning) {
                     alert("请先选择文件!");
                     return;
@@ -275,12 +321,16 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     imgLocalUrl.val(warning);
                     return;
                 }
+
                 var size = (getFileSize(fileInput[0]));
+
                 if (sizeLimit && sizeLimit < (size / 1000)) {
                     alert("上传图片最大：" + sizeLimit / 1000 + "M");
                     return;
                 }
+
                 d.loading();
+
                 uploadIframe = KE.Utils.doFormUpload({
                     form:uploadForm,
                     callback:function(r) {
@@ -304,7 +354,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
                             alert(data.error);
                             return;
                         }
-                        imgUrl.val(data['imgUrl']);
+                        valInput(imgUrl, data['imgUrl']);
                         // chrome 中空 iframe 的 img 请求 header 中没有 refer
                         // 在主页面先请求一次，带入 header
                         new Image().src = data['imgUrl'];
@@ -316,10 +366,12 @@ KISSY.Editor.add("image/dialog", function(editor) {
                     offset = loadingMaskEl.offset(),
                     width = loadingMaskEl[0].offsetWidth,
                     height = loadingMaskEl[0].offsetHeight;
+
                 loadingCancel.css({
                     left:(offset.left + width / 2.5),
                     top:(offset.top + height / 1.5)
                 });
+
             } else {
                 if (! verifyInputs(content.all("input")))
                     return;
@@ -378,12 +430,14 @@ KISSY.Editor.add("image/dialog", function(editor) {
 
 
     function insert() {
-        var url = imgUrl.val(),
-            height = parseInt(imgHeight.val()),
-            width = parseInt(imgWidth.val()),
+        var url = valInput(imgUrl),
+            img,
+            height = parseInt(valInput(imgHeight)),
+            width = parseInt(valInput(imgWidth)),
             align = imgAlign.val(),
             margin = parseInt(imgMargin.val()),
             style = '';
+
         if (height) {
             style += "height:" + height + "px;";
         }
@@ -405,6 +459,7 @@ KISSY.Editor.add("image/dialog", function(editor) {
          * 否则img select 不到？!!: editor.getSelection().selectElement(img) 选择不到
          */
         if (selectedEl) {
+            img = selectedEl;
             editor.fire("save");
             selectedEl.attr({
                 "src":url,
@@ -412,9 +467,8 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 "_ke_saved_src":url,
                 "style":style
             });
-            editor.fire("save");
         } else {
-            var img = new Node("<img " +
+            img = new Node("<img " +
                 (style ? ("style='" +
                     style +
                     "'") : "") +
@@ -424,21 +478,54 @@ KISSY.Editor.add("image/dialog", function(editor) {
                 "_ke_saved_src='" +
                 url +
                 "' alt='' />", null, editor.document);
-            editor.insertElement(img, function(el) {
-                el.on("abort error", function() {
-                    el.detach();
-                    //ie6 手动设置，才会出现红叉
-                    el[0].src = url;
-                });
-            });
+//            img.on("abort error load", function() {
+//                img.detach();
+//                // ie6 手动设置，才会出现红叉
+//                img[0].src = url;
+//            });
+            editor.insertElement(img);
+        }
+
+        var link = findAWithImg(img),
+            linkVal = S.trim(valInput(imgLink)),
+            sel = editor.getSelection(),
+            bs;
+        if (link) {
+            if (linkVal) {
+                link.attr("_ke_saved_href", linkVal)
+                    .attr("href", linkVal)
+                    .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
+            } else {
+                // 删除
+                bs = sel.createBookmarks();
+                link._4e_remove(true);
+            }
+        } else if (linkVal) {
+            // 新增需要 bookmark，标记
+            bs = sel.createBookmarks();
+            link = new Node("<a></a>");
+            link.attr("_ke_saved_href", linkVal)
+                .attr("href", linkVal)
+                .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
+            var t = img[0];
+            t.parentNode.replaceChild(link[0], t);
+            link.append(t);
+        }
+        if (bs) {
+            sel.selectBookmarks(bs);
+        }
+
+        if (selectedEl) {
+            editor.fire("save");
         }
 
     }
 
+    var valInput = KE.Utils.valInput;
+
     function update(_selectedEl) {
         var active = "remote",
-            resetInput = KE.Utils.resetInput,
-            valInput = KE.Utils.valInput;
+            resetInput = KE.Utils.resetInput;
         selectedEl = _selectedEl;
         if (selectedEl && imageCfg.remote !== false) {
             valInput(imgUrl, selectedEl.attr("src"));
@@ -452,10 +539,21 @@ KISSY.Editor.add("image/dialog", function(editor) {
             imgMargin.val(margin);
             imgRatio[0].disabled = false;
             imgRatioValue = w / h;
+            var link = findAWithImg(selectedEl);
+            if (link) {
+                valInput(imgLink, link.attr("_ke_saved_href") || link.attr("href"));
+                imgLinkBlank.attr("checked", link.attr("target") == "_blank");
+            } else {
+                resetInput(imgLink);
+                imgLinkBlank.attr("checked", true);
+            }
         } else {
-            if (tab.getTab("local"))
+            if (tab.getTab("local")) {
                 active = "local";
+            }
+            imgLinkBlank.attr("checked", true);
             resetInput(imgUrl);
+            resetInput(imgLink);
             resetInput(imgHeight);
             resetInput(imgWidth);
             imgAlign.val("none");

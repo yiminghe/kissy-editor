@@ -8,43 +8,39 @@ KISSY.Editor.add("image", function(editor) {
             KE = S.Editor,
             UA = S.UA,
             Node = S.Node,
-            Event = S.Event;
-
-        var checkImg = function (node) {
-            return node._4e_name() === 'img' &&
-                (!/(^|\s+)ke_/.test(node[0].className)) &&
-                node;
-        };
-
-        var controls = {},
+            Event = S.Event,
+            checkImg = function (node) {
+                return node._4e_name() === 'img' &&
+                    (!/(^|\s+)ke_/.test(node[0].className)) &&
+                    node;
+            },
+            controls = {},
             addRes = KE.Utils.addRes,
-            destroyRes = KE.Utils.destroyRes;
+            destroyRes = KE.Utils.destroyRes,
+            tipHtml = ' '
+                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+                + '',
+            //重新采用form提交，不采用flash，国产浏览器很多问题
 
-
-        var tipHtml = ' '
-            + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-            + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-            + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
-            + '';
-        //重新采用form提交，不采用flash，国产浏览器很多问题
-
-        var context = editor.addButton("image", {
-            contentCls:"ke-toolbar-image",
-            title:"插入图片",
-            mode:KE.WYSIWYG_MODE,
-            offClick:function() {
-                this.call("show");
-            },
-            _updateTip:function(tipurl, img) {
-                var src = img.attr("_ke_saved_src") || img.attr("src");
-                tipurl.html(src);
-                tipurl.attr("href", src);
-            },
-            show:function(ev, _selectedEl) {
-                var editor = this.editor;
-                editor.showDialog("image/dialog", [_selectedEl]);
-            }
-        });
+            context = editor.addButton("image", {
+                contentCls:"ke-toolbar-image",
+                title:"插入图片",
+                mode:KE.WYSIWYG_MODE,
+                offClick:function() {
+                    this.call("show");
+                },
+                _updateTip:function(tipurl, img) {
+                    var src = img.attr("_ke_saved_src") || img.attr("src");
+                    tipurl.html(src);
+                    tipurl.attr("href", src);
+                },
+                show:function(ev, _selectedEl) {
+                    var editor = this.editor;
+                    editor.showDialog("image/dialog", [_selectedEl]);
+                }
+            });
 
         addRes.call(controls, context, function() {
             editor.destroyDialog("image/dialog");

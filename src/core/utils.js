@@ -255,7 +255,7 @@ KISSY.Editor.add("utils", function(KE) {
             verifyInputs:function(inputs, warn) {
                 for (var i = 0; i < inputs.length; i++) {
                     var input = DOM._4e_wrap(inputs[i]),
-                        v = S.trim(input.val()),
+                        v = S.trim(Utils.valInput(input)),
                         verify = input.attr("data-verify"),
                         warning = input.attr("data-warning");
                     if (verify &&
@@ -282,17 +282,25 @@ KISSY.Editor.add("utils", function(KE) {
              */
             resetInput:function(inp) {
                 var placeholder = inp.attr("placeholder");
-                if (placeholder && !UA.webkit) {
+                if (placeholder && UA.ie) {
                     inp.addClass("ke-input-tip");
                     inp.val(placeholder);
-                } else if (UA.webkit) {
+                } else if (!UA.ie) {
                     inp.val("");
                 }
             },
 
             valInput:function(inp, val) {
-                inp.removeClass("ke-input-tip");
-                inp.val(val);
+                if (val === undefined) {
+                    if (inp.hasClass("ke-input-tip")) {
+                        return "";
+                    } else {
+                        return inp.val();
+                    }
+                } else {
+                    inp.removeClass("ke-input-tip");
+                    inp.val(val);
+                }
             },
 
             /**
@@ -302,7 +310,7 @@ KISSY.Editor.add("utils", function(KE) {
              */
             placeholder:function(inp, tip) {
                 inp.attr("placeholder", tip);
-                if (UA.webkit) {
+                if (!UA.ie) {
                     return;
                 }
                 inp.on("blur", function() {

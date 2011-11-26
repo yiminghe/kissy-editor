@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-26 20:02:35
+ * @buildtime: 2011-11-26 21:32:52
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-26 20:02:35");
+                encodeURIComponent("2011-11-26 21:32:52");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-26 20:02:35'));
+                encodeURIComponent('2011-11-26 21:32:52'));
         };
     }
 
@@ -174,7 +174,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-26 20:00:55");
+                    url += "t=" + encodeURIComponent("2011-11-26 21:29:45");
                 }
                 return KE["Config"].base + url;
             },
@@ -404,7 +404,7 @@ KISSY.Editor.add("utils", function(KE) {
             verifyInputs:function(inputs, warn) {
                 for (var i = 0; i < inputs.length; i++) {
                     var input = DOM._4e_wrap(inputs[i]),
-                        v = S.trim(input.val()),
+                        v = S.trim(Utils.valInput(input)),
                         verify = input.attr("data-verify"),
                         warning = input.attr("data-warning");
                     if (verify &&
@@ -431,17 +431,25 @@ KISSY.Editor.add("utils", function(KE) {
              */
             resetInput:function(inp) {
                 var placeholder = inp.attr("placeholder");
-                if (placeholder && !UA.webkit) {
+                if (placeholder && UA.ie) {
                     inp.addClass("ke-input-tip");
                     inp.val(placeholder);
-                } else if (UA.webkit) {
+                } else if (!UA.ie) {
                     inp.val("");
                 }
             },
 
             valInput:function(inp, val) {
-                inp.removeClass("ke-input-tip");
-                inp.val(val);
+                if (val === undefined) {
+                    if (inp.hasClass("ke-input-tip")) {
+                        return "";
+                    } else {
+                        return inp.val();
+                    }
+                } else {
+                    inp.removeClass("ke-input-tip");
+                    inp.val(val);
+                }
             },
 
             /**
@@ -451,7 +459,7 @@ KISSY.Editor.add("utils", function(KE) {
              */
             placeholder:function(inp, tip) {
                 inp.attr("placeholder", tip);
-                if (UA.webkit) {
+                if (!UA.ie) {
                     return;
                 }
                 inp.on("blur", function() {
@@ -15234,43 +15242,39 @@ KISSY.Editor.add("image", function(editor) {
             KE = S.Editor,
             UA = S.UA,
             Node = S.Node,
-            Event = S.Event;
-
-        var checkImg = function (node) {
-            return node._4e_name() === 'img' &&
-                (!/(^|\s+)ke_/.test(node[0].className)) &&
-                node;
-        };
-
-        var controls = {},
+            Event = S.Event,
+            checkImg = function (node) {
+                return node._4e_name() === 'img' &&
+                    (!/(^|\s+)ke_/.test(node[0].className)) &&
+                    node;
+            },
+            controls = {},
             addRes = KE.Utils.addRes,
-            destroyRes = KE.Utils.destroyRes;
+            destroyRes = KE.Utils.destroyRes,
+            tipHtml = ' '
+                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+                + '',
+            //重新采用form提交，不采用flash，国产浏览器很多问题
 
-
-        var tipHtml = ' '
-            + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-            + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-            + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
-            + '';
-        //重新采用form提交，不采用flash，国产浏览器很多问题
-
-        var context = editor.addButton("image", {
-            contentCls:"ke-toolbar-image",
-            title:"插入图片",
-            mode:KE.WYSIWYG_MODE,
-            offClick:function() {
-                this.call("show");
-            },
-            _updateTip:function(tipurl, img) {
-                var src = img.attr("_ke_saved_src") || img.attr("src");
-                tipurl.html(src);
-                tipurl.attr("href", src);
-            },
-            show:function(ev, _selectedEl) {
-                var editor = this.editor;
-                editor.showDialog("image/dialog", [_selectedEl]);
-            }
-        });
+            context = editor.addButton("image", {
+                contentCls:"ke-toolbar-image",
+                title:"插入图片",
+                mode:KE.WYSIWYG_MODE,
+                offClick:function() {
+                    this.call("show");
+                },
+                _updateTip:function(tipurl, img) {
+                    var src = img.attr("_ke_saved_src") || img.attr("src");
+                    tipurl.html(src);
+                    tipurl.attr("href", src);
+                },
+                show:function(ev, _selectedEl) {
+                    var editor = this.editor;
+                    editor.showDialog("image/dialog", [_selectedEl]);
+                }
+            });
 
         addRes.call(controls, context, function() {
             editor.destroyDialog("image/dialog");
