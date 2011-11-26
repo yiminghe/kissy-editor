@@ -290,17 +290,4 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
     });
 
     KE.HtmlParser.HtmlWriter = HtmlWriter;
-    KE.HtmlParser["HtmlWriter"] = HtmlWriter;
-    var HtmlWriterP = HtmlWriter.prototype;
-    KE.Utils.extern(HtmlWriterP, {
-        "openTag":HtmlWriterP.openTag,
-        "openTagClose":HtmlWriterP.openTagClose,
-        "attribute":HtmlWriterP.attribute,
-        "closeTag":HtmlWriterP.closeTag,
-        "text":HtmlWriterP.text,
-        "comment":HtmlWriterP.comment,
-        "lineBreak":HtmlWriterP.lineBreak,
-        "indentation":HtmlWriterP.indentation,
-        "setRules":HtmlWriterP.setRules
-    });
 });

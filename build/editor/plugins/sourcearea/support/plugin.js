@@ -37,7 +37,7 @@ KISSY.Editor.add("sourcearea/support", function() {
             textarea.css("display", "");
             iframe.css("display", "none");
             //ie textarea height:100%不起作用
-            if (UA.ieEngine < 8) {
+            if (KE.Utils.ieEngine < 8) {
                 textarea.css("height", editor.wrap.css("height"));
             }
             //ie6 光标透出
@@ -69,6 +69,6 @@ KISSY.Editor.add("sourcearea/support", function() {
         }
     });
     KE.SourceAreaSupport = new SourceAreaSupport();
-},{
+}, {
     attach:false
 });

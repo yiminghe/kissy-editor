@@ -18,7 +18,7 @@ KISSY.Editor.add("walker", function(KE) {
         Node = S.Node;
 
     /**
-     * @this {Walker}
+     *
      * @param  {boolean=} rtl
      * @param  {boolean=} breakOnFalse
      *
@@ -112,8 +112,9 @@ KISSY.Editor.add("walker", function(KE) {
                 return userGuard(node, movingOut);
             };
         }
-        else
+        else {
             guard = stopGuard;
+        }
 
         if (self.current)
             node = this.current[ getSourceNodeFn ](FALSE, type, guard);
@@ -164,7 +165,7 @@ KISSY.Editor.add("walker", function(KE) {
     }
 
     /**
-     * @this {Walker}
+     *
      * @param  {boolean=} rtl
      * @return {(boolean)}
      */
@@ -179,6 +180,7 @@ KISSY.Editor.add("walker", function(KE) {
 
     /**
      * @constructor
+     * @name Walker
      */
     function Walker(range) {
         this.range = range;
@@ -293,9 +295,9 @@ KISSY.Editor.add("walker", function(KE) {
         };
     };
 
-    Walker.listItemBoundary = function() {
-        return this.blockBoundary({ br : 1 });
-    };
+    if (0) {
+        Walker.blockBoundary = 0;
+    }
     /**
      * Whether the node is a bookmark node's inner text node.
      */
@@ -363,25 +365,4 @@ KISSY.Editor.add("walker", function(KE) {
 
 
     KE.Walker = Walker;
-    KE["Walker"] = Walker;
-    var WalkP = Walker.prototype;
-    KE.Utils.extern(WalkP, {
-        "end":WalkP.end,
-        "next":WalkP.next,
-        "previous":WalkP.previous,
-        "checkForward":WalkP.checkForward,
-        "checkBackward":WalkP.checkBackward,
-        "lastForward":WalkP.lastForward,
-        "lastBackward":WalkP.lastBackward,
-        "reset":WalkP.reset
-    });
-
-
-    KE.Utils.extern(Walker, {
-        "blockBoundary":Walker.blockBoundary,
-        "listItemBoundary":Walker.listItemBoundary,
-        "bookmark":Walker.bookmark,
-        "whitespaces":Walker.whitespaces,
-        "invisible":Walker.invisible
-    });
 });

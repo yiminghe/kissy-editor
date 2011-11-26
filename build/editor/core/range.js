@@ -22,7 +22,7 @@ KISSY.Editor.add("range", function(KE) {
         ENLARGE_LIST_ITEM_CONTENTS:3,
         START:1,
         END:2,
-        STARTEND:3,
+        //STARTEND:3,
         SHRINK_ELEMENT:1,
         SHRINK_TEXT:2
     };
@@ -260,7 +260,7 @@ KISSY.Editor.add("range", function(KE) {
                         // Let's create a temporary node and mark it for removal.
                         endNode = new Node(
                             endNode[0].appendChild(doc.createTextNode(""))
-                            );
+                        );
                         removeEndNode = TRUE;
                     }
                     else
@@ -301,7 +301,7 @@ KISSY.Editor.add("range", function(KE) {
                 } else
                     startNode = new Node(
                         startNode[0].childNodes[startOffset].previousSibling
-                        );
+                    );
             }
 
             // Get the parent nodes tree for the start and end boundaries.
@@ -628,14 +628,14 @@ KISSY.Editor.add("range", function(KE) {
                 return !!( moveStart || moveEnd );
             }
         },
-        getTouchedStartNode : function() {
-            var self = this,container = self.startContainer;
-
-            if (self.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
-                return container;
-
-            return container.childNodes[self.startOffset] || container;
-        },
+//        getTouchedStartNode : function() {
+//            var self = this,container = self.startContainer;
+//
+//            if (self.collapsed || container[0].nodeType != KEN.NODE_ELEMENT)
+//                return container;
+//
+//            return container.childNodes[self.startOffset] || container;
+//        },
         createBookmark2 : function(normalized) {
             //debugger;
             var self = this,startContainer = self.startContainer,
@@ -659,12 +659,12 @@ KISSY.Editor.add("range", function(KE) {
                     // In this case, move the start information to that text
                     // node.
 
-                        //ie 有时 invalid argument？？
-                        if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
-                            && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
-                            startContainer = child;
-                            startOffset = 0;
-                        }
+                    //ie 有时 invalid argument？？
+                    if (child && child[0] && child[0].nodeType == KEN.NODE_TEXT
+                        && startOffset > 0 && child[0].previousSibling.nodeType == KEN.NODE_TEXT) {
+                        startContainer = child;
+                        startOffset = 0;
+                    }
 
                 }
 
@@ -1463,8 +1463,9 @@ KISSY.Editor.add("range", function(KE) {
             self.enlarge(KER.ENLARGE_BLOCK_CONTENTS);
             fixedBlock[0].appendChild(self.extractContents());
             fixedBlock._4e_trim();
-            if (!UA.ie)
+            if (!UA.ie) {
                 fixedBlock._4e_appendBogus();
+            }
             var childNodes = fixedBlock[0].childNodes;
 
             for (var i = 0; i < childNodes.length; i++) {
@@ -1569,10 +1570,12 @@ KISSY.Editor.add("range", function(KE) {
                 isEditable = el._4e_isEditable();
 
                 // If an editable element is found, move inside it.
-                if (isEditable)
+                if (isEditable) {
                     self.moveToPosition(el, isMoveToEnd ?
                         KER.POSITION_BEFORE_END :
                         KER.POSITION_AFTER_START);
+                    // 不要返回，继续找可能的文字位置
+                }
                 // Stop immediately if we've found a non editable inline element (e.g <img>).
                 else if (xhtml_dtd.$inline[ el._4e_name() ]) {
                     self.moveToPosition(el, isMoveToEnd ?
@@ -1584,9 +1587,13 @@ KISSY.Editor.add("range", function(KE) {
                 // Non-editable non-inline elements are to be bypassed, getting the next one.
                 if (xhtml_dtd.$empty[ el._4e_name() ])
                     el = el[ isMoveToEnd ? '_4e_previous' : '_4e_next' ](nonWhitespaceOrBookmarkEval);
-                else
-                    el = el[ isMoveToEnd ? '_4e_last' : '_4e_first' ](nonWhitespaceOrBookmarkEval);
-
+                else {
+                    if (isMoveToEnd) {
+                        el = el._4e_last(nonWhitespaceOrBookmarkEval);
+                    } else {
+                        el = el._4e_first(nonWhitespaceOrBookmarkEval);
+                    }
+                }
                 // Stop immediately if we've found a text node.
                 if (el && el[0].nodeType == KEN.NODE_TEXT) {
                     self.moveToPosition(el, isMoveToEnd ?
@@ -1691,50 +1698,4 @@ KISSY.Editor.add("range", function(KE) {
 
 
     KE.Range = KERange;
-    KE["Range"] = KERange;
-    var RangeP = KERange.prototype;
-    KE.Utils.extern(RangeP, {
-        "updateCollapsed":RangeP.updateCollapsed,
-        "optimize":RangeP.optimize,
-        "setStartAfter":RangeP.setStartAfter,
-        "setEndAfter":RangeP.setEndAfter,
-        "setStartBefore":RangeP.setStartBefore,
-        "setEndBefore":RangeP.setEndBefore,
-        "optimizeBookmark":RangeP.optimizeBookmark,
-
-        "setStart":RangeP.setStart,
-        "setEnd":RangeP.setEnd,
-        "setStartAt":RangeP.setStartAt,
-        "setEndAt":RangeP.setEndAt,
-        "execContentsAction":RangeP.execContentsAction,
-        "collapse":RangeP.collapse,
-        "clone":RangeP.clone,
-        "getEnclosedNode":RangeP.getEnclosedNode,
-        "shrink":RangeP.shrink,
-        "getTouchedStartNode":RangeP.getTouchedStartNode,
-        "createBookmark2":RangeP.createBookmark2,
-        "createBookmark":RangeP.createBookmark,
-
-
-
-        "moveToPosition":RangeP.moveToPosition,
-        "trim":RangeP.trim,
-        "insertNode":RangeP.insertNode,
-        "moveToBookmark":RangeP.moveToBookmark,
-        "getCommonAncestor":RangeP.getCommonAncestor,
-        "enlarge":RangeP.enlarge,
-        "checkStartOfBlock":RangeP.checkStartOfBlock,
-        "checkEndOfBlock":RangeP.checkEndOfBlock,
-        "deleteContents":RangeP.deleteContents,
-        "extractContents":RangeP.extractContents,
-
-
-        "checkBoundaryOfElement":RangeP.checkBoundaryOfElement,
-        "getBoundaryNodes":RangeP.getBoundaryNodes,
-        "fixBlock":RangeP.fixBlock,
-        "splitBlock":RangeP.splitBlock,
-        "splitElement":RangeP.splitElement,
-        "moveToElementEditablePosition":RangeP.moveToElementEditablePosition,
-        "selectNodeContents":RangeP.selectNodeContents
-    });
 });

@@ -502,12 +502,4 @@ KISSY.Editor.add("htmlparser-fragment", function(
     });
 
     KE.HtmlParser.Fragment = Fragment;
-    KE.HtmlParser["Fragment"] = Fragment;
-    Fragment["FromHtml"] = Fragment.FromHtml;
-    var FragmentP = Fragment.prototype;
-    KE.Utils.extern(FragmentP, {
-        "add":FragmentP.add,
-        "writeHtml":FragmentP.writeHtml,
-        "writeChildrenHtml":FragmentP.writeChildrenHtml
-    });
 });

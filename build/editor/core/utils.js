@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-17 19:34:39");
+                    url += "t=" + encodeURIComponent("2011-11-26 20:00:55");
                 }
                 return KE["Config"].base + url;
             },
@@ -225,41 +225,6 @@ KISSY.Editor.add("utils", function(KE) {
             },
             /**
              *
-             * @param delim {string} 分隔符
-             * @param loop {number}
-             * @return {string}
-             */
-            duplicateStr:function(delim, loop) {
-                return new Array(loop + 1).join(delim);
-            },
-            /**
-             * Throttles a call to a method based on the time between calls.
-             * Based on work by Simon Willison: http://gist.github.com/292562
-             * @param fn {function()} The function call to throttle.
-             * @param ms {number} The number of milliseconds to throttle the method call. Defaults to 150
-             * @return {function()} Returns a wrapped function that calls fn throttled.
-             */
-            throttle : function(fn, scope, ms) {
-                ms = ms || 150;
-
-                if (ms === -1) {
-                    return (function() {
-                        fn.apply(scope, arguments);
-                    });
-                }
-
-                var last = (new Date()).getTime();
-
-                return function() {
-                    var now = (new Date()).getTime();
-                    if (now - last > ms) {
-                        last = now;
-                        fn.apply(scope, arguments);
-                    }
-                };
-            },
-            /**
-             *
              * @param fn {function()}
              * @param scope {Object}
              * @param ms {number}
@@ -353,21 +318,6 @@ KISSY.Editor.add("utils", function(KE) {
                     }
                 });
             },
-
-            /**
-             *
-             * @param node {(Node)}
-             */
-            clean:function(node) {
-                node = node[0] || node;
-                var cs = S.makeArray(node.childNodes);
-                for (var i = 0; i < cs.length; i++) {
-                    var c = cs[i];
-                    if (c.nodeType == KE.NODE.NODE_TEXT && !S.trim(c.nodeValue)) {
-                        node.removeChild(c);
-                    }
-                }
-            },
             /**
              * Convert certain characters (&, <, >, and ') to their HTML character equivalents
              *  for literal display in web pages.
@@ -377,21 +327,6 @@ KISSY.Editor.add("utils", function(KE) {
             htmlEncode : function(value) {
                 return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
             },
-
-            /**
-             * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
-             * @param {string} value The string to decode
-             * @return {string} The decoded text
-             */
-            htmlDecode : function(value) {
-                return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
-            },
-
-
-            equalsIgnoreCase:function(str1, str2) {
-                return str1.toLowerCase() == str2.toLowerCase();
-            },
-
             /**
              *
              * @param params {Object}
@@ -444,7 +379,7 @@ KISSY.Editor.add("utils", function(KE) {
                         method:DOM.attr(form, "method"),
                         encoding: DOM.attr(form, "encoding"),
                         enctype: DOM.attr(form, "enctype"),
-                        action: DOM.attr(form, "action")
+                        "action": DOM.attr(form, "action")
                     };
                 DOM.attr(form, {
                     target:id,
@@ -526,14 +461,14 @@ KISSY.Editor.add("utils", function(KE) {
                 }
                 return frame;
             },
-            /**
-             * extern for closure compiler
-             */
-            extern:function(obj, cfg) {
-                for (var i in cfg) {
-                    obj[i] = cfg[i];
-                }
-            },
+//            /**
+//             * extern for closure compiler
+//             */
+//            extern:function(obj, cfg) {
+//                for (var i in cfg) {
+//                    obj[i] = cfg[i];
+//                }
+//            },
             map:function(arr, callback) {
                 for (var i = 0; i < arr.length; i++) {
                     arr[i] = callback(arr[i]);
@@ -597,39 +532,5 @@ KISSY.Editor.add("utils", function(KE) {
 
     KE.Utils = Utils;
 
-    /**
-     * export for closure compiler
-     */
-    KE["Utils"] = Utils;
-    UA.ieEngine = Utils.ieEngine;
-    Utils.extern(Utils, {
-        "debugUrl": Utils.debugUrl,
-        "lazyRun": Utils.lazyRun,
-        "getXY": Utils.getXY,
-        "tryThese": Utils.tryThese,
-        "arrayCompare": Utils.arrayCompare,
-        "getByAddress": Utils.getByAddress,
-        "clearAllMarkers": Utils.clearAllMarkers,
-        "htmlEncodeAttr": Utils.htmlEncodeAttr,
-        "ltrim": Utils.ltrim,
-        "rtrim": Utils.rtrim,
-        "trim": Utils.trim,
-        "mix": Utils.mix,
-        "isCustomDomain": Utils.isCustomDomain,
-        "duplicateStr": Utils.duplicateStr,
-        "buffer": Utils.buffer,
-        "isNumber": Utils.isNumber,
-        "verifyInputs": Utils.verifyInputs,
-        "sourceDisable": Utils.sourceDisable,
-        "resetInput": Utils.resetInput,
-        "placeholder": Utils.placeholder,
-        "clean": Utils.clean,
-        "htmlEncode": Utils.htmlEncode,
-        "htmlDecode": Utils.htmlDecode,
-        "equalsIgnoreCase": Utils.equalsIgnoreCase,
-        "normParams": Utils.normParams,
-        "throttle": Utils.throttle,
-        "doFormUpload": Utils.doFormUpload,
-        "map": Utils.map
-    });
+    return Utils;
 });

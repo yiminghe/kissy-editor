@@ -1237,7 +1237,7 @@ KISSY.Editor.add("definition", function(KE) {
     /**
      * patch for browser mode = ie7 ,document mode=ie8/9 : 条件注释导致mhtml 引入但是不能处理
      */
-    if (document['documentMode'] > 7) {
+    if (DOC['documentMode'] > 7) {
         (function() {
             var links = S.all("link");
             for (var i = 0; i < links.length; i++) {
@@ -1251,28 +1251,7 @@ KISSY.Editor.add("definition", function(KE) {
     }
 
 
-    var KEP = KE.prototype;
-    Utils.extern(KEP, {
-        "removeCustomLink":KEP.removeCustomLink,
-        "addCustomLink":KEP.addCustomLink,
-        "setData":KEP.setData,
-        "getData":KEP.getData,
-        "insertElement":KEP.insertElement,
-        "insertHtml":KEP.insertHtml,
-        "ready":KEP.ready,
-        "addCustomStyle":KEP.addCustomStyle,
-        "addCommand":KEP.addCommand,
-        "hasCommand":KEP.hasCommand,
-        "execCommand":KEP.execCommand,
-        "useDialog":KEP.useDialog,
-        "addDialog":KEP.addDialog,
-        "getDialog":KEP.getDialog,
-        "getMode":KEP.getMode,
-        "sync":KEP.sync,
-        "getSelection":KEP.getSelection,
-        "focus":KEP.focus,
-        "blur":KEP.blur,
-        "notifySelectionChange":KEP.notifySelectionChange
-    });
-
+    if (0) {
+        DOC.removeCustomLink().addCustomLink();
+    }
 });

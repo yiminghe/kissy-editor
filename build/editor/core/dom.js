@@ -437,43 +437,6 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param el {(Node)}
-             */
-            _4e_getFrameDocument : function(el) {
-                var $ = normalElDom(el),t;
-
-                try {
-                    // In IE, with custom document.domain, it may happen that
-                    // the iframe is not yet available, resulting in "Access
-                    // Denied" for the following property access.
-                    t = $.contentWindow.document;
-                }
-                catch (e) {
-                    // Trick to solve this issue, forcing the iframe to get ready
-                    // by simply setting its "src" property.
-                    t = $.src;
-                    $.src = t;
-
-                    // In IE6 though, the above is not enough, so we must pause the
-                    // execution for a while, giving it time to think.
-                    if (UA.ie && UA.ie < 7) {
-                        window.showModalDialog(
-                            'javascript:document.write("' +
-                                '<script>' +
-                                'window.setTimeout(' +
-                                'function(){window.close();}' +
-                                ',50);' +
-                                '</scrip' +
-                                't' +
-                                '>' +
-                                '")');
-                    }
-                }
-                return $ && $.contentWindow.document;
-            },
-
-            /**
-             *
-             * @param el {(Node)}
              * @param offset {number}
              */
             _4e_splitText : function(el, offset) {
@@ -998,7 +961,9 @@ KISSY.Editor.add("dom", function(KE) {
                 var lastChild = el.lastChild;
 
                 // Ignore empty/spaces text.
-                while (lastChild && lastChild.nodeType == KEN.NODE_TEXT && !S.trim(lastChild.nodeValue))
+                while (lastChild &&
+                    lastChild.nodeType == KEN.NODE_TEXT &&
+                    !S.trim(lastChild.nodeValue))
                     lastChild = lastChild.previousSibling;
                 if (!lastChild ||
                     lastChild.nodeType == KEN.NODE_TEXT ||
@@ -1220,54 +1185,6 @@ KISSY.Editor.add("dom", function(KE) {
         }
     };
 
-
-    Utils.extern(editorDom, {
-        "_4e_wrap":editorDom._4e_wrap,
-        "_4e_unwrap":editorDom._4e_unwrap,
-        "_4e_equals":editorDom._4e_equals,
-        "_4e_isBlockBoundary":editorDom._4e_isBlockBoundary,
-        "_4e_getWin":editorDom._4e_getWin,
-        "_4e_index":editorDom._4e_index,
-        "_4e_first":editorDom._4e_first,
-        "_4e_move":editorDom._4e_move,
-        "_4e_name":editorDom._4e_name,
-        "_4e_isIdentical":editorDom._4e_isIdentical,
-        "_4e_isEmptyInlineRemoveable":editorDom._4e_isEmptyInlineRemoveable,
-        "_4e_moveChildren":editorDom._4e_moveChildren,
-        "_4e_mergeSiblings":editorDom._4e_mergeSiblings,
-        "_4e_unselectable":editorDom._4e_unselectable,
-        "_4e_getOffset":editorDom._4e_getOffset,
-        "_4e_getFrameDocument":editorDom._4e_getFrameDocument,
-        "_4e_splitText":editorDom._4e_splitText,
-        "_4e_parents":editorDom._4e_parents,
-        "_4e_clone":editorDom._4e_clone,
-        "_4e_nextSourceNode":editorDom._4e_nextSourceNode,
-        "_4e_previousSourceNode":editorDom._4e_previousSourceNode,
-        "_4e_commonAncestor":editorDom._4e_commonAncestor,
-        "_4e_ascendant":editorDom._4e_ascendant,
-        "_4e_hasAttribute":editorDom._4e_hasAttribute,
-        "_4e_hasAttributes":editorDom._4e_hasAttributes,
-        "_4e_position":editorDom._4e_position,
-        "_4e_address":editorDom._4e_address,
-        "_4e_breakParent":editorDom._4e_breakParent,
-        "_4e_style":editorDom._4e_style,
-        "_4e_remove":editorDom._4e_remove,
-        "_4e_trim":editorDom._4e_trim,
-        "_4e_ltrim":editorDom._4e_ltrim,
-        "_4e_rtrim":editorDom._4e_rtrim,
-        "_4e_appendBogus":editorDom._4e_appendBogus,
-        "_4e_last":editorDom._4e_last,
-        "_4e_previous":editorDom._4e_previous,
-        "_4e_next":editorDom._4e_next,
-        "_4e_outerHtml":editorDom._4e_outerHtml,
-        "_4e_setMarker":editorDom._4e_setMarker,
-        "_4e_clearMarkers":editorDom._4e_clearMarkers,
-        "_4e_getUniqueId":editorDom._4e_getUniqueId,
-        "_4e_copyAttributes":editorDom._4e_copyAttributes,
-        "_4e_isEditable":editorDom._4e_isEditable,
-        "_4e_scrollIntoView":editorDom._4e_scrollIntoView,
-        "_4e_getElementsByTagName":editorDom._4e_getElementsByTagName
-    });
 
     _4e_inject(editorDom);
 });

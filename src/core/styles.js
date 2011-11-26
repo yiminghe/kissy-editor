@@ -164,9 +164,9 @@ KISSY.Editor.add("styles", function(KE) {
                     : NULL ).call(self, range);
         },
 
-        applyToObject : function(element) {
-            setupElement(element, this);
-        },
+//        applyToObject : function(element) {
+//            setupElement(element, this);
+//        },
         // Checks if an element, or any of its attributes, is removable by the
         // current style definition.
         checkElementRemovable : function(element, fullMatch) {
@@ -1346,16 +1346,4 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     KE.Style = KEStyle;
-    KE["Style"] = KEStyle;
-
-    var StyleP = KEStyle.prototype;
-    KE.Utils.extern(StyleP, {
-        "apply":StyleP.apply,
-        "remove":StyleP.remove,
-        "applyToRange":StyleP.applyToRange,
-        "removeFromRange":StyleP.removeFromRange,
-        "applyToObject":StyleP.applyToObject,
-        "checkElementRemovable":StyleP.checkElementRemovable,
-        "checkActive":StyleP.checkActive
-    });
 });

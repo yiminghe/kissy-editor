@@ -140,17 +140,4 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
     });
 
     KE.HtmlParser.BasicWriter = BasicWriter;
-    KE.HtmlParser["BasicWriter"] = BasicWriter;
-    var BasicWriterP = BasicWriter.prototype;
-    KE.Utils.extern(BasicWriterP, {
-        "openTag":BasicWriterP.openTag,
-        "openTagClose":BasicWriterP.openTagClose,
-        "attribute":BasicWriterP.attribute,
-        "closeTag":BasicWriterP.closeTag,
-        "text":BasicWriterP.text,
-        "comment":BasicWriterP.comment,
-        "write":BasicWriterP.write,
-        "reset":BasicWriterP.reset,
-        "getHtml":BasicWriterP.getHtml
-    });
 });

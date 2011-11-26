@@ -220,14 +220,4 @@ KISSY.Editor.add("htmlparser-element", function() {
      * @constructor
      */
     KE.HtmlParser.Element = MElement;
-
-    KE.HtmlParser["Element"] = MElement;
-    var MElementP = MElement.prototype;
-    KE.Utils.extern(MElementP, {
-        "type":MElementP.type,
-        "add":MElementP.add,
-        "clone":MElementP.clone,
-        "writeHtml":MElementP.writeHtml,
-        "writeChildrenHtml":MElementP.writeChildrenHtml
-    });
 });

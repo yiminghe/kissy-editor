@@ -790,9 +790,9 @@ KISSY.Editor.add("selection", function(KE) {
 
             // In IE6/7 the blinking cursor appears, but contents are
             // not editable. (#5634)
-            //终于和ck同步了，我也发现了这个bug，哈哈,ck3.3.2解决
+            // 终于和ck同步了，我也发现了这个bug，ck3.3.2解决
             if (//ie8 的 7 兼容模式
-                UA.ieEngine < 8) {
+                KE.Utils.ieEngine < 8) {
                 // The 'click' event is not fired when clicking the
                 // scrollbars, so we can use it to check whether
                 // the empty space following <body> has been clicked.
@@ -804,7 +804,6 @@ KISSY.Editor.add("selection", function(KE) {
                 });
             }
 
-
             // Other browsers don't loose the selection if the
             // editor document loose the focus. In IE, we don't
             // have support for it, so we reproduce it here, other
@@ -812,25 +811,25 @@ KISSY.Editor.add("selection", function(KE) {
 
             var savedRange,
                 saveEnabled,
-                //2010-10-08 import from ckeditor 3.4.1
-                //ie 点击(mousedown-focus-mouseup)空白处，不保留原有的 selection
-                restoreEnabled = 1;
+                // 2010-10-08 import from ckeditor 3.4.1
+                // 点击(mousedown-focus-mouseup)，不保留原有的 selection
+                restoreEnabled = TRUE;
 
             // Listening on document element ensures that
             // scrollbar is included. (#5280)
+            // or body.on('mousedown')
             html.on('mousedown', function () {
                 // Lock restore selection now, as we have
                 // a followed 'click' event which introduce
                 // new selection. (#5735)
                 //点击时不要恢复了，点击就意味着原来的选择区域作废
-                restoreEnabled = 0;
-
+                restoreEnabled = FALSE;
             });
 
             html.on('mouseup', function () {
-                restoreEnabled = 1;
-
+                restoreEnabled = TRUE;
             });
+
             //事件顺序
             // 1.body mousedown
             // 2.html mousedown
@@ -850,7 +849,7 @@ KISSY.Editor.add("selection", function(KE) {
             // events get executed.
             body.on('focusin', function(evt) {
                 var t = new Node(evt.target);
-                //S.log(restoreEnabled);
+                // S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
                 if (t._4e_name() != 'body')
@@ -861,7 +860,8 @@ KISSY.Editor.add("selection", function(KE) {
                 if (savedRange) {
                     // Well not break because of this.
                     try {
-                        //S.log("body focusin");
+                        // S.log("body focusin");
+                        // 如果不是 mousedown 引起的 focus
                         if (restoreEnabled) {
                             savedRange.select();
                         }
@@ -874,7 +874,7 @@ KISSY.Editor.add("selection", function(KE) {
             });
 
             body.on('focus', function() {
-                //S.log("body focus");
+                // S.log("body focus");
                 // Enable selections to be saved.
                 saveEnabled = TRUE;
                 saveSelection();
@@ -886,19 +886,19 @@ KISSY.Editor.add("selection", function(KE) {
                 if (evt.relatedTarget)
                     return;
 
-                //S.log("beforedeactivate");
+                // S.log("beforedeactivate");
                 // Disable selections from being saved.
-                disableSave();
-                restoreEnabled = 1;
+                saveEnabled = FALSE;
+                restoreEnabled = TRUE;
             });
 
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
-            //if (UA.ie < 8) {
+            // if (UA.ie < 8) {
             editor.on('blur', function() {
-                //把选择区域与光标清除
+                // 把选择区域与光标清除
                 // Try/Catch to avoid errors if the editor is hidden. (#6375)
-                //S.log("blur");
+                // S.log("blur");
                 try {
                     var el = document.documentElement || document.body;
                     var top = el.scrollTop,left = el.scrollLeft;
@@ -931,20 +931,16 @@ KISSY.Editor.add("selection", function(KE) {
             // IE fires the "selectionchange" event when clicking
             // inside a selection. We don't want to capture that.
             body.on('mousedown', function() {
-                //S.log("body mousedown");
-                disableSave();
+                // S.log("body mousedown");
+                saveEnabled = FALSE;
             });
             body.on('mouseup', function() {
-                //S.log("body mouseup");
+                // S.log("body mouseup");
                 saveEnabled = TRUE;
                 setTimeout(function() {
                     saveSelection(TRUE);
                 }, 0);
             });
-            function disableSave() {
-                saveEnabled = FALSE;
-                //S.log("disableSave");
-            }
 
             /**
              *
@@ -966,7 +962,7 @@ KISSY.Editor.add("selection", function(KE) {
                     // range at the very start of the document. In
                     // such situation we have to test the range, to
                     // be sure it's valid.
-                    //右键时，若前一个操作选中，则该次一直为None
+                    // 右键时，若前一个操作选中，则该次一直为None
                     if (testIt && nativeSel && type == KES.SELECTION_NONE) {
                         // The "InsertImage" command can be used to
                         // test whether the selection is good or not.
@@ -991,21 +987,25 @@ KISSY.Editor.add("selection", function(KE) {
                         return;
                     }
                     savedRange = nativeSel && sel.getRanges()[ 0 ];
+                    // 同时检测，不同则 editor 触发 selectionChange
                     editor._monitor();
                 }
             }
 
-            body.on('keydown', disableSave);
+            body.on('keydown', function() {
+                saveEnabled = FALSE;
+            });
             body.on('keyup', function() {
                 saveEnabled = TRUE;
-                saveSelection();
+                setTimeout(function() {
+                    saveSelection();
+                }, 0);
             });
 
             // IE is the only to provide the "selectionchange"
             // event.
             // 注意：ie右键短暂点击并不能改变选择范围
             Event.on(doc, 'selectionchange', saveSelection);
-
 
         } else {
             // In other browsers, we make the selection change
@@ -1016,8 +1016,9 @@ KISSY.Editor.add("selection", function(KE) {
         }
 
         // Matching an empty paragraph at the end of document.
-        //注释也要排除掉
-        var emptyParagraphRegexp = /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
+        // 注释也要排除掉
+        var emptyParagraphRegexp =
+            /\s*<(p|div|address|h\d|center)[^>]*>\s*(?:<br[^>]*>|&nbsp;|\u00A0|&#160;|(<!--[\s\S]*?-->))?\s*(:?<\/\1>)?(?=\s*$|<\/body>)/gi;
 
 
         function isBlankParagraph(block) {
@@ -1042,6 +1043,7 @@ KISSY.Editor.add("selection", function(KE) {
          * 如果选择了body下面的直接inline元素，则新建p
          */
         editor.on("selectionChange", function(ev) {
+
             var path = ev.path,
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
@@ -1055,7 +1057,9 @@ KISSY.Editor.add("selection", function(KE) {
 
             if (blockLimit._4e_name() == "body") {
                 var fixedBlock = range.fixBlock(TRUE, "p");
-                if (fixedBlock) {
+                if (fixedBlock
+                    && fixedBlock[0] != body[0].lastChild
+                    ) {
                     //firefox选择区域变化时自动添加空行，不要出现裸的text
                     if (isBlankParagraph(fixedBlock)) {
                         var element = fixedBlock._4e_next(nextValidEl);
@@ -1084,31 +1088,33 @@ KISSY.Editor.add("selection", function(KE) {
                 }
             }
 
+            /**
+             *  当 table pre div 是 body 最后一个元素时，鼠标没法移到后面添加内容了
+             *  解决：增加新的 p
+             */
+
+            var lastRange = new KE.Range(doc),
+                lastPath,editBlock;
+            // 最后的编辑地方
+            lastRange
+                .moveToElementEditablePosition(body,
+                TRUE);
+            lastPath = new KE.ElementPath(lastRange.startContainer);
+            // 不位于 <body><p>^</p></body>
+            if (lastPath.blockLimit._4e_name() !== 'body') {
+                editBlock = new Node(doc.createElement('p')).appendTo(body);
+                if (!UA.ie) {
+                    editBlock._4e_appendBogus();
+                }
+            }
         });
     }
 
     KE.Selection = KESelection;
-    KE["Selection"] = KESelection;
-    var SelectionP = KESelection.prototype;
-    KE.Utils.extern(SelectionP, {
-        "getNative":SelectionP.getNative,
-        "getType":SelectionP.getType,
-        "getRanges":SelectionP.getRanges,
-        "getStartElement":SelectionP.getStartElement,
-        "getSelectedElement":SelectionP.getSelectedElement,
-        "reset":SelectionP.reset,
-        "selectElement":SelectionP.selectElement,
-        "selectRanges":SelectionP.selectRanges,
-        "createBookmarks2":SelectionP.createBookmarks2,
-        "createBookmarks":SelectionP.createBookmarks,
-        "getCommonAncestor":SelectionP.getCommonAncestor,
-        "scrollIntoView":SelectionP.scrollIntoView,
-        "selectBookmarks":SelectionP.selectBookmarks,
-        "removeAllRanges":SelectionP.removeAllRanges
-    });
 
     KE.on("instanceCreated", function(ev) {
         var editor = ev.editor;
+        // 选择区域变化时各个浏览器的奇怪修复
         monitorAndFix(editor);
     });
 });
