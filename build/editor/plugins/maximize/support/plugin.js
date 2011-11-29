@@ -169,7 +169,9 @@ KISSY.Editor.add("maximize/support", function() {
 
             //原来是聚焦，现在刷新designmode
             //firefox 先失去焦点才行
-            editor.activateGecko();
+            if (UA.gecko) {
+                editor.activateGecko();
+            }
 
             if (savedRanges && sel) {
                 sel.selectRanges(savedRanges);
@@ -271,6 +273,6 @@ KISSY.Editor.add("maximize/support", function() {
     });
 
     KE.Maximize = Maximize;
-},{
+}, {
     attach:false
 });

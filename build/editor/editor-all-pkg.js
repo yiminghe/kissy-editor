@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-28 16:01:27
+ * @buildtime: 2011-11-29 15:10:44
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-28 16:01:27");
+                encodeURIComponent("2011-11-29 15:10:44");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-28 16:01:27'));
+                encodeURIComponent('2011-11-29 15:10:44'));
         };
     }
 
@@ -16964,7 +16964,9 @@ KISSY.Editor.add("maximize/support", function() {
 
             //原来是聚焦，现在刷新designmode
             //firefox 先失去焦点才行
-            editor.activateGecko();
+            if (UA.gecko) {
+                editor.activateGecko();
+            }
 
             if (savedRanges && sel) {
                 sel.selectRanges(savedRanges);
@@ -17066,7 +17068,7 @@ KISSY.Editor.add("maximize/support", function() {
     });
 
     KE.Maximize = Maximize;
-},{
+}, {
     attach:false
 });/**
  * insert music for kissy editor
