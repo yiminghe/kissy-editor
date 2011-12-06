@@ -527,6 +527,16 @@ KISSY.ready(function(S) {
                     urlTip:"请输入优酷网、土豆网、酷7网的视频播放页链接...",
                     providers:[
                         {
+                            // 允许白名单
+                            reg:/taohua\.com/i,
+                            //默认高宽
+                            width:480,
+                            height:400,
+                            detect:function(url){
+                                return url;
+                            }
+                        },
+                        {
                             reg:/youku\.com/i,
                             width:480,
                             height:400,

@@ -270,6 +270,8 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     var tr = new Node(trs[i]),
                         url = tr.attr("url");
                     if (url) {
+                        // chrome refer empty in empty src iframe
+                        new Image().src=url;
                         editor.insertElement(new Node("<p>&nbsp;<img src='" +
                             url + "'/>&nbsp;</p>", null, editor.document));
                         self._removeTrFile(tr);
