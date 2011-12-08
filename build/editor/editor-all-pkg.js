@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-11-29 15:10:44
+ * @buildtime: 2011-12-08 19:09:55
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-11-29 15:10:44");
+                encodeURIComponent("2011-12-08 19:09:55");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-11-29 15:10:44'));
+                encodeURIComponent('2011-12-08 19:09:55'));
         };
     }
 
@@ -9253,8 +9253,7 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("htmlparser-fragment", function(
-    ) {
+KISSY.Editor.add("htmlparser-fragment", function() {
     var
         TRUE = true,
         FALSE = false,
@@ -9465,7 +9464,8 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 element.isEmpty = TRUE;
 
             // This is a tag to be removed if empty, so do not add it immediately.
-            if (XHTML_DTD.$removeEmpty[ tagName ]) {
+            if (XHTML_DTD.$removeEmpty[ tagName ] &&
+                S.isEmptyObject(attributes)) {
                 pendingInline.push(element);
                 return;
             }

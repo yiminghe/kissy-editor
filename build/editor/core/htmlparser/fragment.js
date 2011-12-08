@@ -2,8 +2,7 @@
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("htmlparser-fragment", function(
-    ) {
+KISSY.Editor.add("htmlparser-fragment", function() {
     var
         TRUE = true,
         FALSE = false,
@@ -214,7 +213,8 @@ KISSY.Editor.add("htmlparser-fragment", function(
                 element.isEmpty = TRUE;
 
             // This is a tag to be removed if empty, so do not add it immediately.
-            if (XHTML_DTD.$removeEmpty[ tagName ]) {
+            if (XHTML_DTD.$removeEmpty[ tagName ] &&
+                S.isEmptyObject(attributes)) {
                 pendingInline.push(element);
                 return;
             }

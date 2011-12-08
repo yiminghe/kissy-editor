@@ -204,7 +204,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             }
 
             self._list = list;
-            self._listTable = list.parent("table");
+            self['_listTable'] = list.parent("table");
             self._listWrap = listWrap;
             self._ds = bangpaiCfg['serverUrl'];
             self._dsp = bangpaiCfg['serverParams'] || {};
@@ -270,6 +270,8 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     var tr = new Node(trs[i]),
                         url = tr.attr("url");
                     if (url) {
+                        // chrome refer empty in empty src iframe
+                        new Image().src=url;
                         editor.insertElement(new Node("<p>&nbsp;<img src='" +
                             url + "'/>&nbsp;</p>", null, editor.document));
                         self._removeTrFile(tr);
@@ -300,6 +302,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 if (target.hasClass("ke-upload-insert")) {
                     tr = target.parent("tr");
                     var url = tr.attr("url");
+                    new Image().src=url;
                     editor.insertElement(new Node("<img src='" +
                         url + "'/>", null, editor.document));
                 }
