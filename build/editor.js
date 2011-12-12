@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-09 10:55:10
+ * @buildtime: 2011-12-12 19:28:23
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-09 10:55:10");
+                encodeURIComponent("2011-12-12 19:28:23");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-09 10:55:10'));
+                encodeURIComponent('2011-12-12 19:28:23'));
         };
     }
 
@@ -16830,6 +16830,7 @@ KISSY.Editor.add("maximize/support", function() {
             //body overflow 变化也会引起 resize 变化！！！！先去除
 
             self._resize && Event.remove(window, "resize", self._resize);
+            self._resize = 0;
             self.call("_saveEditorStatus");
             self.call("_restoreState");
             self.btn.boff();
@@ -16973,12 +16974,6 @@ KISSY.Editor.add("maximize/support", function() {
                 //element[0] && element[0].scrollIntoView(true);
                 element && element[0] && element._4e_scrollIntoView();
             }
-
-            //datauri 清空里面的background-image，使得 expression 重新执行
-            if (UA.ie < 8) {
-                self.btn.get("el").one("span").css("background-image", "");
-            }
-
         },
 
         /**
@@ -17040,8 +17035,14 @@ KISSY.Editor.add("maximize/support", function() {
             self.call("_saveEditorStatus");
             self.call("_saveSate");
             self.call("_maximize");
+            if (!self._resize) {
+                var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
+                self._resize = function() {
+                    _maximize();
+                    editor.fire("maximizeWindow");
+                };
+            }
 
-            self._resize = self._resize || KE.Utils.buffer(self.cfg._maximize, self, 100);
             Event.on(window, "resize", self._resize);
 
             self.btn.bon();
@@ -17057,7 +17058,11 @@ KISSY.Editor.add("maximize/support", function() {
             self.call("_real");
         },
         destroy:function() {
-            //Event.remove(window, "resize", this._resize);
+            var self = this;
+            if (self._resize) {
+                Event.remove(window, "resize", self._resize);
+                self._resize = 0;
+            }
         }
     });
 
