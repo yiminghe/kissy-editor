@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-12 19:28:23
+ * @buildtime: 2011-12-12 19:28:55
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-12 19:28:23");
+                encodeURIComponent("2011-12-12 19:28:55");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-12 19:28:23'));
+                encodeURIComponent('2011-12-12 19:28:55'));
         };
     }
 
@@ -17037,7 +17037,7 @@ KISSY.Editor.add("maximize/support", function() {
             self.call("_maximize");
             if (!self._resize) {
                 var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
-                self._resize = function() {
+                self['_resize'] = function() {
                     _maximize();
                     editor.fire("maximizeWindow");
                 };

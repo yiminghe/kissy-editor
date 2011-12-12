@@ -248,7 +248,7 @@ KISSY.Editor.add("maximize/support", function() {
             self.call("_maximize");
             if (!self._resize) {
                 var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
-                self._resize = function() {
+                self['_resize'] = function() {
                     _maximize();
                     editor.fire("maximizeWindow");
                 };
