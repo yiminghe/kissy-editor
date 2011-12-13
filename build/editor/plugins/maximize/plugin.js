@@ -3,8 +3,8 @@
  * @author yiminghe@gmail.com
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
-KISSY.Editor.add("maximize", function(editor) {
-    editor.addPlugin("maximize", function() {
+KISSY.Editor.add("maximize", function (editor) {
+    editor.addPlugin("maximize", function () {
         var S = KISSY,
             KE = S.Editor,
             UA = S.UA,
@@ -20,10 +20,20 @@ KISSY.Editor.add("maximize", function(editor) {
             loading:true
         });
 
-        KE.use("maximize/support", function() {
+        KE.use("maximize/support", function () {
             context.reload(KE.Maximize);
+            editor.addCommand("maximizeWindow", {
+                exec:function () {
+                    context.call("offClick");
+                }
+            });
+            editor.addCommand("restoreWindow", {
+                exec:function () {
+                    context.call("onClick");
+                }
+            });
         });
-        this.destroy = function() {
+        this.destroy = function () {
             context.destroy();
         };
     });

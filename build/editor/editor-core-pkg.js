@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-13 11:35:58
+ * @buildtime: 2011-12-13 19:43:17
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-13 11:35:58");
+                encodeURIComponent("2011-12-13 19:43:17");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-13 11:35:58'));
+                encodeURIComponent('2011-12-13 19:43:17'));
         };
     }
 
@@ -1542,8 +1542,8 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param el {(Node)}
-             * @param styleName {string}
-             * @param val {string=}
+             * @param {string} [styleName]
+             * @param {string} [val]
              */
             _4e_style:function(el, styleName, val) {
                 if (val !== undefined) {
@@ -1822,7 +1822,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 修正scrollIntoView在可视区域内不需要滚动
-             * @param elem {(Node)}
+             * @param {Node} [elem]
              */
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);

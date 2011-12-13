@@ -648,6 +648,10 @@ KISSY.ready(function(S) {
             editor2.on("selectionChange", function(e) {
                 S.log("selectionChange : " + e.path.toString());
             });
+
+            editor2.on("maximizeWindow", function() {
+                S.log("fire maximizeWindow");
+            });
         }
 
         test();

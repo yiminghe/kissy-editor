@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-13 11:35:58
+ * @buildtime: 2011-12-13 19:43:17
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-13 11:35:58");
+                encodeURIComponent("2011-12-13 19:43:17");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-13 11:35:58'));
+                encodeURIComponent('2011-12-13 19:43:17'));
         };
     }
 
@@ -1542,8 +1542,8 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param el {(Node)}
-             * @param styleName {string}
-             * @param val {string=}
+             * @param {string} [styleName]
+             * @param {string} [val]
              */
             _4e_style:function(el, styleName, val) {
                 if (val !== undefined) {
@@ -1822,7 +1822,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 修正scrollIntoView在可视区域内不需要滚动
-             * @param elem {(Node)}
+             * @param {Node} [elem]
              */
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
@@ -16762,8 +16762,8 @@ KISSY.Editor.add("localstorage", function() {
  * @author yiminghe@gmail.com
  * @note:firefox 焦点完全完蛋了，这里全是针对firefox
  */
-KISSY.Editor.add("maximize", function(editor) {
-    editor.addPlugin("maximize", function() {
+KISSY.Editor.add("maximize", function (editor) {
+    editor.addPlugin("maximize", function () {
         var S = KISSY,
             KE = S.Editor,
             UA = S.UA,
@@ -16779,10 +16779,20 @@ KISSY.Editor.add("maximize", function(editor) {
             loading:true
         });
 
-        KE.use("maximize/support", function() {
+        KE.use("maximize/support", function () {
             context.reload(KE.Maximize);
+            editor.addCommand("maximizeWindow", {
+                exec:function () {
+                    context.call("offClick");
+                }
+            });
+            editor.addCommand("restoreWindow", {
+                exec:function () {
+                    context.call("onClick");
+                }
+            });
         });
-        this.destroy = function() {
+        this.destroy = function () {
             context.destroy();
         };
     });
@@ -16792,52 +16802,61 @@ KISSY.Editor.add("maximize", function(editor) {
  * maximize functionality
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("maximize/support", function() {
-    var KE = KISSY.Editor,
-        S = KISSY,
-        UA = S.UA,
-        Node = S.Node,
-        Event = S.Event,
-        DOM = S.DOM,
-        iframe;
-    DOM.addStyleSheet(
+KISSY.Editor.add("maximize/support", function () {
+    window.KISSY.DOM.addStyleSheet(
         ".ke-toolbar-padding {" +
             "padding:5px;" +
             "}",
         "ke-maximize");
-    var MAXIMIZE_CLASS = "ke-toolbar-maximize",
+
+    var S = window.KISSY,
+        KE = S.Editor,
+        UA = S.UA,
+        ie = UA['ie'],
+        Node = S.Node,
+        Event = S.Event,
+        DOM = S.DOM,
+        iframe,
+        MAXIMIZE_CLASS = "ke-toolbar-maximize",
         RESTORE_CLASS = "ke-toolbar-restore",
         MAXIMIZE_TIP = "全屏",
         MAXIMIZE_TOOLBAR_CLASS = "ke-toolbar-padding",
-        RESTORE_TIP = "取消全屏";
+        RESTORE_TIP = "取消全屏",
+        Maximize = {},
+        init = function () {
+            if (!iframe) {
+                iframe = new Node("<" + "iframe " +
+                    " class='ke-maximize-shim'" +
+                    " style='" +
+                    "position:absolute;" +
+                    "top:-9999px;" +
+                    "left:-9999px;" +
+                    "'" +
+                    " frameborder='0'>").prependTo(document.body);
+            }
+        };
 
-    var Maximize = {};
-    var init = function() {
-        if (!iframe)
-            iframe = new Node("<" + "iframe " +
-                " class='ke-maximize-shim'" +
-                " style='" +
-                "position:absolute;" +
-                "top:-9999px;" +
-                "left:-9999px;" +
-                "'" +
-                " frameborder='0'>").prependTo(document.body);
-    };
     S.mix(Maximize, {
 
-        onClick:function() {
+        onClick:function () {
             var self = this,
                 editor = self.editor;
+
+            if (self._resize) {
+                Event.remove(window, "resize", self._resize);
+                self._resize = 0;
+            } else {
+                return;
+            }
+
             //body overflow 变化也会引起 resize 变化！！！！先去除
 
-            self._resize && Event.remove(window, "resize", self._resize);
-            self._resize = 0;
             self.call("_saveEditorStatus");
             self.call("_restoreState");
             self.btn.boff();
 
             //firefox 必须timeout
-            setTimeout(function() {
+            setTimeout(function () {
                 self.call("_restoreEditorStatus");
                 editor.notifySelectionChange();
                 editor.fire("restoreWindow");
@@ -16848,7 +16867,7 @@ KISSY.Editor.add("maximize/support", function() {
          * 从内存恢复最大化前的外围状态信息到编辑器实际动作，
          * 包括编辑器位置以及周围元素，浏览器窗口
          */
-        _restoreState:function() {
+        _restoreState:function () {
             var self = this,
                 doc = document,
                 editor = self.editor,
@@ -16887,16 +16906,16 @@ KISSY.Editor.add("maximize/support", function() {
             var bel = self.btn.get("el");
             bel.one("span")
                 .removeClass(RESTORE_CLASS)
-                .addClass(MAXIMIZE_CLASS);
-            bel.attr("title", MAXIMIZE_TIP);
+                .addClass(MAXIMIZE_CLASS)
+                .attr("title", MAXIMIZE_TIP);
 
-            UA.ie < 8 && self.editor.toolBarDiv.removeClass(MAXIMIZE_TOOLBAR_CLASS);
+            ie < 8 && self.editor.toolBarDiv.removeClass(MAXIMIZE_TOOLBAR_CLASS);
         },
         /**
          * 保存最大化前的外围状态信息到内存，
          * 包括编辑器位置以及周围元素，浏览器窗口
          */
-        _saveSate:function() {
+        _saveSate:function () {
             var self = this,
                 editor = self.editor,
                 _savedParents = [],
@@ -16929,18 +16948,18 @@ KISSY.Editor.add("maximize/support", function() {
                 .addClass(RESTORE_CLASS);
             bel.attr("title", RESTORE_TIP);
             //ie6,7 图标到了窗口边界，不可点击，给个padding
-            UA.ie < 8 && self.editor.toolBarDiv.addClass(MAXIMIZE_TOOLBAR_CLASS);
+            ie < 8 && self.editor.toolBarDiv.addClass(MAXIMIZE_TOOLBAR_CLASS);
         },
 
         /**
          *  编辑器自身核心状态保存，每次最大化最小化都要save,restore，
          *  firefox修正，iframe layout变化时，range丢了
          */
-        _saveEditorStatus:function() {
+        _saveEditorStatus:function () {
             var self = this,
                 editor = self.editor;
             self.savedRanges = null;
-            if (!UA.gecko || !editor.iframeFocus) return;
+            if (!UA['gecko'] || !editor.iframeFocus) return;
             var sel = editor.getSelection();
             //firefox 光标丢失bug,位置丢失，所以这里保存下
             self.savedRanges = sel && sel.getRanges();
@@ -16950,7 +16969,7 @@ KISSY.Editor.add("maximize/support", function() {
          * 编辑器自身核心状态恢复，每次最大化最小化都要save,restore，
          * 维持编辑器核心状态不变
          */
-        _restoreEditorStatus:function() {
+        _restoreEditorStatus:function () {
             var self = this,
                 editor = self.editor,
                 sel = editor.getSelection(),
@@ -16960,7 +16979,7 @@ KISSY.Editor.add("maximize/support", function() {
 
             //原来是聚焦，现在刷新designmode
             //firefox 先失去焦点才行
-            if (UA.gecko) {
+            if (UA['gecko']) {
                 editor.activateGecko();
             }
 
@@ -16981,7 +17000,7 @@ KISSY.Editor.add("maximize/support", function() {
          * 将编辑器最大化-实际动作
          * 必须做两次，何解？？
          */
-        _maximize:function(stop) {
+        _maximize:function (stop) {
             var self = this,
                 doc = document,
                 editor = self.editor,
@@ -16992,7 +17011,7 @@ KISSY.Editor.add("maximize/support", function() {
                     editor.statusDiv[0].offsetHeight : 0,
                 toolHeight = editor.toolBarDiv[0].offsetHeight;
 
-            if (!UA.ie) {
+            if (!ie) {
                 DOM.css(doc.body, {
                     width:0,
                     height:0,
@@ -17029,16 +17048,19 @@ KISSY.Editor.add("maximize/support", function() {
                 arguments.callee.call(self, true);
             }
         },
-        _real:function() {
+        _real:function () {
             var self = this,
                 editor = self.editor;
+            if (self._resize) {
+                return;
+            }
 
             self.call("_saveEditorStatus");
             self.call("_saveSate");
             self.call("_maximize");
             if (!self._resize) {
                 var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
-                self['_resize'] = function() {
+                self['_resize'] = function () {
                     _maximize();
                     editor.fire("maximizeWindow");
                 };
@@ -17047,18 +17069,18 @@ KISSY.Editor.add("maximize/support", function() {
             Event.on(window, "resize", self._resize);
 
             self.btn.bon();
-            setTimeout(function() {
+            setTimeout(function () {
                 self.call("_restoreEditorStatus");
                 editor.notifySelectionChange();
                 editor.fire("maximizeWindow");
             }, 30);
         },
-        offClick:function() {
+        offClick:function () {
             var self = this;
             init();
             self.call("_real");
         },
-        destroy:function() {
+        destroy:function () {
             var self = this;
             if (self._resize) {
                 Event.remove(window, "resize", self._resize);

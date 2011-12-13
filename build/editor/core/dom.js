@@ -849,8 +849,8 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param el {(Node)}
-             * @param styleName {string}
-             * @param val {string=}
+             * @param {string} [styleName]
+             * @param {string} [val]
              */
             _4e_style:function(el, styleName, val) {
                 if (val !== undefined) {
@@ -1129,7 +1129,7 @@ KISSY.Editor.add("dom", function(KE) {
             },
             /**
              * 修正scrollIntoView在可视区域内不需要滚动
-             * @param elem {(Node)}
+             * @param {Node} [elem]
              */
             _4e_scrollIntoView:function(elem) {
                 elem = normalEl(elem);
