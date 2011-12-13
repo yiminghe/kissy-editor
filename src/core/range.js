@@ -1466,16 +1466,6 @@ KISSY.Editor.add("range", function(KE) {
             if (!UA.ie) {
                 fixedBlock._4e_appendBogus();
             }
-            var childNodes = fixedBlock[0].childNodes;
-
-            for (var i = 0; i < childNodes.length; i++) {
-                var c = childNodes[i];
-                //注释特别对待！不要加到 p 里
-                if (c.nodeType == 8) {
-                    self.insertNode(new Node(c));
-                }
-            }
-
             self.insertNode(fixedBlock);
             self.moveToBookmark(bookmark);
             return fixedBlock;

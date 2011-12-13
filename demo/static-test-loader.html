@@ -532,7 +532,7 @@ KISSY.ready(function(S) {
                             //默认高宽
                             width:480,
                             height:400,
-                            detect:function(url){
+                            detect:function(url) {
                                 return url;
                             }
                         },
@@ -644,6 +644,10 @@ KISSY.ready(function(S) {
                 S.log(e.dialogName);
                 S.log("dialog show end");
             });
+
+            editor2.on("selectionChange", function(e) {
+                S.log("selectionChange : " + e.path.toString());
+            });
         }
 
         test();
@@ -661,8 +665,10 @@ KISSY.ready(function(S) {
         });
 
 
-        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo", function() {
-
+        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo,elementpaths", function() {
+            this.on("selectionChange", function(e) {
+                S.log("selectionChange : " + e.path.toString());
+            });
         });
 
     });

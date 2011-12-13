@@ -132,6 +132,13 @@ KISSY.Editor.add("elementpath", function(KE) {
                     return elements[ i ];
             }
             return NULL;
+        },
+        toString:function() {
+            var elements = this.elements,i,elNames = [];
+            for (i = 0; i < elements.length; i++) {
+                elNames.push(elements[i]._4e_name());
+            }
+            return elNames.toString();
         }
     };
     KE.ElementPath = ElementPath;
