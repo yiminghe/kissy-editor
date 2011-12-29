@@ -7,8 +7,8 @@ KISSY.Editor.add("resize", function(editor) {
         Node = S.Node;
 
 
-    S.use("dd", function() {
-        var Draggable = S['Draggable'],
+    S.use("dd", function(S,DD) {
+        var Draggable = S['Draggable']||DD['Draggable'],
             statusDiv = editor.statusDiv,
             textarea = editor.textarea,
             resizer = new Node("<div class='ke-resizer'>"),
