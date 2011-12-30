@@ -251,7 +251,9 @@ KISSY.Editor.add("definition", function(KE) {
         },
 
         destroy:function() {
-            if (this.__destroyed) return;
+            if (this.__destroyed) {
+                return;
+            }
             var self = this,
                 editorWrap = self.editorWrap,
                 textarea = self.textarea,

@@ -402,7 +402,7 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param elem {(Node)}
-             * @param refDocument {Document}
+             * @param [refDocument] {Document}
              */
             _4e_getOffset:function(elem, refDocument) {
                 elem = normalElDom(elem);

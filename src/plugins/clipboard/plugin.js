@@ -2,7 +2,7 @@
  * monitor user's paste key ,clear user input,modified from ckeditor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("clipboard", function(editor) {
+KISSY.Editor.add("clipboard", function (editor) {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -11,7 +11,7 @@ KISSY.Editor.add("clipboard", function(editor) {
         KER = KE.RANGE,
         Event = S.Event;
     if (!KE.Paste) {
-        (function() {
+        (function () {
 
             function Paste(editor) {
                 var self = this;
@@ -20,8 +20,9 @@ KISSY.Editor.add("clipboard", function(editor) {
             }
 
             S.augment(Paste, {
-                _init:function() {
-                    var self = this,editor = self.editor;
+                _init:function () {
+                    var self = this,
+                        editor = self.editor;
                     // Event.on(editor.document.body, UA.ie ? "beforepaste" : "keydown", self._paste, self);
                     // beforepaste not fire on webkit and firefox
                     // paste fire too later in ie ,cause error
@@ -32,9 +33,9 @@ KISSY.Editor.add("clipboard", function(editor) {
                         self._paste, self);
 
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
-                    Event.on(editor.document.body, 'contextmenu', function() {
+                    Event.on(editor.document.body, 'contextmenu', function () {
                         depressBeforeEvent = 1;
-                        setTimeout(function() {
+                        setTimeout(function () {
                             depressBeforeEvent = 0;
                         }, 10);
                     });
@@ -43,7 +44,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     editor.addCommand("paste", new cutCopyCmd("paste"));
 
                 },
-                _paste:function(ev) {
+                _paste:function (ev) {
 
                     if (depressBeforeEvent) {
                         return;
@@ -80,13 +81,13 @@ KISSY.Editor.add("clipboard", function(editor) {
                     doc.body.appendChild(pastebin[0]);
 
                     pastebin.css({
-                        position : 'absolute',
+                        position:'absolute',
                         // Position the bin exactly at the position of the selected element
                         // to avoid any subsequent document scroll.
-                        top : sel.getStartElement().offset().top + 'px',
-                        width : '1px',
-                        height : '1px',
-                        overflow : 'hidden'
+                        top:sel.getStartElement().offset().top + 'px',
+                        width:'1px',
+                        height:'1px',
+                        overflow:'hidden'
                     });
 
                     // It's definitely a better user experience if we make the paste-bin pretty unnoticed
@@ -101,7 +102,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     range.select(true);
                     //self._running = true;
                     // Wait a while and grab the pasted contents
-                    setTimeout(function() {
+                    setTimeout(function () {
 
                         //self._running = false;
                         pastebin._4e_remove();
@@ -160,12 +161,12 @@ KISSY.Editor.add("clipboard", function(editor) {
 
             // Tries to execute any of the paste, cut or copy commands in IE. Returns a
             // boolean indicating that the operation succeeded.
-            var execIECommand = function(editor, command) {
+            var execIECommand = function (editor, command) {
                 var doc = editor.document,
                     body = new Node(doc.body);
 
                 var enabled = false;
-                var onExec = function() {
+                var onExec = function () {
                     enabled = true;
                 };
 
@@ -186,16 +187,16 @@ KISSY.Editor.add("clipboard", function(editor) {
             // Attempts to execute the Cut and Copy operations.
             var tryToCutCopy =
                 UA.ie ?
-                    function(editor, type) {
+                    function (editor, type) {
                         return execIECommand(editor, type);
                     }
                     : // !IE.
-                    function(editor, type) {
+                    function (editor, type) {
                         try {
                             // Other browsers throw an error if the command is disabled.
                             return editor.document.execCommand(type);
                         }
-                        catch(e) {
+                        catch (e) {
                             return false;
                         }
                     };
@@ -207,14 +208,14 @@ KISSY.Editor.add("clipboard", function(editor) {
             };
 
             // A class that represents one of the cut or copy commands.
-            var cutCopyCmd = function(type) {
+            var cutCopyCmd = function (type) {
                 this.type = type;
                 this.canUndo = ( this.type == 'cut' );		// We can't undo copy to clipboard.
             };
 
             cutCopyCmd.prototype =
             {
-                exec : function(editor) {
+                exec:function (editor) {
                     this.type == 'cut' && fixCut(editor);
 
                     var success = tryToCutCopy(editor, this.type);
@@ -243,7 +244,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     sel.selectRanges([ range ]);
 
                     // Clear up the fix if the paste wasn't succeeded.
-                    setTimeout(function() {
+                    setTimeout(function () {
                         // Element still online?
                         if (control.parent()) {
                             dummy.remove();
@@ -269,7 +270,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     ret = doc['queryCommandEnabled'](command) ?
                         true :
                         false;
-                } catch(e) {
+                } catch (e) {
                 }
                 depressBeforeEvent = 0;
                 return ret;
@@ -278,49 +279,47 @@ KISSY.Editor.add("clipboard", function(editor) {
             /**
              * 给所有右键都加入复制粘贴
              */
-            KE.on("contextmenu", function(ev) {
+            KE.on("contextmenu", function (ev) {
                 //debugger
                 var contextmenu = ev.contextmenu,
                     editor = contextmenu.cfg["editor"],
                     //原始内容
                     el = contextmenu.elDom,
-                    pastes = {"copy":0,"cut":0,"paste":0};
+                    pastes = {"copy":0, "cut":0, "paste":0},
+                    tips = {
+                        "copy":"Ctrl/Cmd+C",
+                        "cut":"Ctrl/Cmd+X",
+                        "paste":"Ctrl/Cmd+V"
+                    };
                 for (var i in pastes) {
+                    if (pastes.hasOwnProperty(i)) {
+                        pastes[i] = el.one(".ke-paste-" + i);
+                        (function (cmd) {
+                            var cmdObj = pastes[cmd];
+                            if (!cmdObj) {
+                                cmdObj = new Node("<a href='#'" +
+                                    "class='ke-paste-" + cmd + "'>"
+                                    + lang[cmd]
+                                    + "</a>").appendTo(el);
+                                cmdObj.on("click", function (ev) {
+                                    ev.halt();
+                                    contextmenu.hide();
+                                    //给 ie 一点 hide() 中的事件触发 handler 运行机会，
+                                    // 原编辑器获得焦点后再进行下步操作
+                                    setTimeout(function () {
+                                        editor.execCommand(cmd);
+                                    }, 30);
+                                });
+                                pastes[cmd] = cmdObj;
+                            }
 
-                    if (!pastes.hasOwnProperty(i))return;
-                    pastes[i] = el.one(".ke-paste-" + i);
-                    (function(cmd) {
-                        var cmdObj = pastes[cmd];
-                        if (!cmdObj) {
-                            cmdObj = new Node("<a href='#'" +
-                                "class='ke-paste-" + cmd + "'>"
-                                + lang[cmd]
-                                + "</a>").appendTo(el);
-                            cmdObj.on("click", function(ev) {
-                                ev.halt();
-                                if (cmdObj.hasClass("ke-menuitem-disable"))
-                                    return;
-                                contextmenu.hide();
-                                //给 ie 一点 hide() 中的事件触发 handler 运行机会，
-                                // 原编辑器获得焦点后再进行下步操作
-                                setTimeout(function() {
-                                    editor.execCommand(cmd);
-                                }, 30);
-                            });
-                        }
-                        pastes[cmd] = cmdObj;
-                    })(i);
-                    var cmdObj = pastes[i];
-                    if (stateFromNamedCommand(i, editor.document)) {
-                        cmdObj.removeClass("ke-menuitem-disable");
-                    } else {
-                        cmdObj.addClass("ke-menuitem-disable");
+                        })(i);
                     }
                 }
             });
         })();
     }
-    editor.ready(function() {
+    editor.ready(function () {
         new KE.Paste(editor);
     });
 }, {

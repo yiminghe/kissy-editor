@@ -2,8 +2,8 @@
  * insert image for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("image", function(editor) {
-    editor.addPlugin("image", function() {
+KISSY.Editor.add("image", function (editor) {
+    editor.addPlugin("image", function () {
         var S = KISSY,
             KE = S.Editor,
             UA = S.UA,
@@ -28,77 +28,81 @@ KISSY.Editor.add("image", function(editor) {
                 contentCls:"ke-toolbar-image",
                 title:"插入图片",
                 mode:KE.WYSIWYG_MODE,
-                offClick:function() {
+                offClick:function () {
                     this.call("show");
                 },
-                _updateTip:function(tipurl, img) {
+                _updateTip:function (tipurl, img) {
                     var src = img.attr("_ke_saved_src") || img.attr("src");
                     tipurl.html(src);
                     tipurl.attr("href", src);
                 },
-                show:function(ev, _selectedEl) {
+                show:function (ev, _selectedEl) {
                     var editor = this.editor;
                     editor.showDialog("image/dialog", [_selectedEl]);
                 }
             });
 
-        addRes.call(controls, context, function() {
+        addRes.call(controls, context, function () {
             editor.destroyDialog("image/dialog");
         });
 
-        KE.use("contextmenu", function() {
-            var contextMenu = {
-                "图片属性":function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        flash = checkImg(startElement);
-                    if (flash) {
-                        context.call("show", null, flash);
-                    }
-                }
-            };
+// 去除右键
+//        KE.use("contextmenu", function() {
+//            var contextMenu = {
+//                "图片属性":function(editor) {
+//                    var selection = editor.getSelection(),
+//                        startElement = selection && selection.getStartElement(),
+//                        flash = checkImg(startElement);
+//                    if (flash) {
+//                        context.call("show", null, flash);
+//                    }
+//                }
+//            };
+//
 
-            function dblshow(ev) {
-                var t = new Node(ev.target);
-                ev.halt();
-                if (checkImg(t)) {
-                    context.call("show", null, t);
-                }
+//            var myContexts = {};
+//            for (var f in contextMenu) {
+//                (function(f) {
+//                    myContexts[f] = function() {
+//                        contextMenu[f](editor);
+//                    }
+//                })(f);
+//            }
+//            var menu = KE.ContextMenu.register({
+//                editor:editor,
+//                rules:[checkImg],
+//                width:"120px",
+//                funcs:myContexts
+//            });
+//            addRes.call(controls, menu);
+//        });
+
+
+        function dblshow(ev) {
+            var t = new Node(ev.target);
+            ev.halt();
+            if (checkImg(t)) {
+                context.call("show", null, t);
             }
+        }
 
-            Event.on(editor.document,
+        Event.on(editor.document,
+            "dblclick",
+            dblshow);
+
+        addRes.call(controls, function () {
+            Event.remove(editor.document,
                 "dblclick",
                 dblshow);
-
-            addRes.call(controls, function() {
-                Event.remove(editor.document,
-                    "dblclick",
-                    dblshow);
-            });
-            var myContexts = {};
-            for (var f in contextMenu) {
-                (function(f) {
-                    myContexts[f] = function() {
-                        contextMenu[f](editor);
-                    }
-                })(f);
-            }
-            var menu = KE.ContextMenu.register({
-                editor:editor,
-                rules:[checkImg],
-                width:"120px",
-                funcs:myContexts
-            });
-            addRes.call(controls, menu);
         });
 
-        KE.use("bubbleview", function() {
+        KE.use("bubbleview", function () {
             KE.BubbleView.register({
                 pluginName:'image',
                 pluginContext:context,
                 editor:editor,
                 func:checkImg,
-                init:function() {
+                init:function () {
                     var bubble = this,
                         el = bubble.get("contentEl");
                     el.html("图片网址： " + tipHtml);
@@ -107,11 +111,11 @@ KISSY.Editor.add("image", function(editor) {
                         tipremove = el.one(".ke-bubbleview-remove");
                     //ie focus not lose
                     KE.Utils.preventFocus(el);
-                    tipchange.on("click", function(ev) {
+                    tipchange.on("click", function (ev) {
                         bubble._plugin.call("show", null, bubble._selectedEl);
                         ev.halt();
                     });
-                    tipremove.on("click", function(ev) {
+                    tipremove.on("click", function (ev) {
                         var flash = bubble._plugin;
                         if (UA.webkit) {
                             var r = flash.editor.getSelection().getRanges();
@@ -126,7 +130,7 @@ KISSY.Editor.add("image", function(editor) {
                     /*
                      位置变化
                      */
-                    bubble.on("show", function() {
+                    bubble.on("show", function () {
                         var a = bubble._selectedEl,
                             b = bubble._plugin;
                         if (!a)return;
@@ -135,13 +139,13 @@ KISSY.Editor.add("image", function(editor) {
                 }
             });
 
-            addRes.call(controls, function() {
+            addRes.call(controls, function () {
                 KE.BubbleView.destroy("image")
             });
         });
 
 
-        this.destroy = function() {
+        this.destroy = function () {
             destroyRes.call(controls);
         };
     });

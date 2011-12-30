@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-30 15:28:39
+ * @buildtime: 2011-12-30 21:14:42
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-30 15:28:39");
+                encodeURIComponent("2011-12-30 21:14:42");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-30 15:28:39'));
+                encodeURIComponent('2011-12-30 21:14:42'));
         };
     }
 
@@ -1095,7 +1095,7 @@ KISSY.Editor.add("dom", function(KE) {
             /**
              *
              * @param elem {(Node)}
-             * @param refDocument {Document}
+             * @param [refDocument] {Document}
              */
             _4e_getOffset:function(elem, refDocument) {
                 elem = normalElDom(elem);
@@ -2247,7 +2247,9 @@ KISSY.Editor.add("definition", function(KE) {
         },
 
         destroy:function() {
-            if (this.__destroyed) return;
+            if (this.__destroyed) {
+                return;
+            }
             var self = this,
                 editorWrap = self.editorWrap,
                 textarea = self.textarea,
@@ -11140,7 +11142,7 @@ KISSY.Editor.add("select", function () {
  * bubble or tip view for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("bubbleview", function() {
+KISSY.Editor.add("bubbleview", function () {
     var S = KISSY,
         KE = S.Editor,
         Event = S.Event,
@@ -11151,32 +11153,29 @@ KISSY.Editor.add("bubbleview", function() {
         return;
     }
 
-
-    var BubbleView = S['UIBase'].create(KE.Overlay,
-        [], {
-        renderUI:function() {
+    var BubbleView = S.UIBase.create(KE.Overlay, [], {
+        renderUI:function () {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
 
         },
-        show:function() {
-
+        show:function (editor) {
             var self = this,
-                a = self._selectedEl,
-                xy = a._4e_getOffset(document);
-            xy.top += a.height() + 5;
-            self.set("xy", [xy.left,xy.top]);
+                xy = getXy(self, editor);
+            if (xy) {
+                self.set("xy", [xy.left, xy.top]);
 
-            var archor = getTopPosition(self);
-            if (!archor) {
-            } else {
-                xy.top = archor.get("y") + archor.get("el")[0].offsetHeight;
+                var archor = getTopPosition(self);
+                if (!archor) {
+                } else {
+                    xy[1] = archor.get("y") + archor.get("el")[0].offsetHeight;
+                }
+
+                BubbleView['superclass'].show.call(self);
+                self.set("xy", xy);
             }
-
-            BubbleView['superclass'].show.call(self);
-            self.set("xy", [xy.left,xy.top]);
         },
-        destructor:function() {
+        destructor:function () {
             KE.Utils.destroyRes.call(this);
         }
     }, {
@@ -11190,9 +11189,7 @@ KISSY.Editor.add("bubbleview", function() {
         }
     });
 
-
     var holder = {};
-
 
     /**
      * 是否两个bubble上下重叠？
@@ -11200,12 +11197,11 @@ KISSY.Editor.add("bubbleview", function() {
      * @param b2
      */
     function overlap(b1, b2) {
-        var b1_y = b1.get("y"),b1_y2 = b1_y + b1.get("el")[0].offsetHeight;
+        var b1_y = b1.get("y"), b1_y2 = b1_y + b1.get("el")[0].offsetHeight;
 
-        var b2_y = b2.get("y"),b2_y2 = b2_y + b2.get("el")[0].offsetHeight;
+        var b2_y = b2.get("y"), b2_y2 = b2_y + b2.get("el")[0].offsetHeight;
 
         return !(b1_y2 < b2_y || b2_y2 < b1_y);
-
     }
 
     /**
@@ -11213,18 +11209,20 @@ KISSY.Editor.add("bubbleview", function() {
      * @param self
      */
     function getTopPosition(self) {
-        var archor;
+        var archor = null;
         for (var p in holder) {
-            var h = holder[p];
-            if (h.bubble) {
-                if (self != h.bubble
-                    && h.bubble.get("visible")
-                    && overlap(self, h.bubble)
-                    ) {
-                    if (!archor) {
-                        archor = h.bubble;
-                    } else if (archor.get("y") < h.bubble.get("y")) {
-                        archor = h.bubble;
+            if (holder.hasOwnProperty(p)) {
+                var h = holder[p];
+                if (h.bubble) {
+                    if (self != h.bubble
+                        && h.bubble.get("visible")
+                        && overlap(self, h.bubble)
+                        ) {
+                        if (!archor) {
+                            archor = h.bubble;
+                        } else if (archor.get("y") < h.bubble.get("y")) {
+                            archor = h.bubble;
+                        }
                     }
                 }
             }
@@ -11232,19 +11230,70 @@ KISSY.Editor.add("bubbleview", function() {
         return archor;
     }
 
+    function getXy(bubble, editor) {
+        if (!bubble) {
+            return undefined;
+        }
+
+        var el = bubble._selectedEl;
+
+        if (!el) {
+            return undefined;
+        }
+
+        var editorWin = editor.iframe[0].contentWindow;
+
+        var iframeXY = editor.iframe.offset(),
+            top = iframeXY.top,
+            left = iframeXY.left,
+            right = left + DOM.width(editorWin),
+            bottom = top + DOM.height(editorWin),
+            elXY = el._4e_getOffset(document),
+            elTop = elXY.top,
+            elLeft = elXY.left,
+            elRight = elLeft + el.width(),
+            elBottom = elTop + el.height();
+
+        var x, y;
+
+        // 对其下边
+        // el 位于编辑区域，下边界超了编辑区域下边界
+        if (elBottom > bottom && elTop < bottom) {
+            // 别挡着滚动条
+            y = bottom - 30;
+        }
+        // el bottom 在编辑区域内
+        else if (elBottom > top && elBottom < bottom) {
+            y = elBottom;
+        }
+
+        // 同上，对齐左边
+        if (elRight > left && elLeft < left) {
+            x = left;
+        } else if (elLeft > left && elLeft < right) {
+            x = elLeft;
+        }
+
+        if (x !== undefined && y !== undefined) {
+            return [x, y];
+        }
+        return undefined;
+    }
+
     function getInstance(pluginName) {
         var h = holder[pluginName];
         if (!h.bubble) {
-            h.bubble = new BubbleView({
-                autoRender:true
-            });
-            h.cfg.init && h.cfg.init.call(h.bubble);
+            h.bubble = new BubbleView();
+            h.bubble.render();
+            if (h.cfg.init) {
+                h.cfg.init.call(h.bubble);
+            }
         }
         return h.bubble;
     }
 
 
-    BubbleView.destroy = function(pluginName) {
+    BubbleView.destroy = function (pluginName) {
         var h = holder[pluginName];
         if (h && h.bubble) {
             h.bubble.destroy();
@@ -11252,36 +11301,38 @@ KISSY.Editor.add("bubbleview", function() {
         }
     };
 
-    BubbleView.attach = function(cfg) {
-        var pluginName = cfg.pluginName;
-        var cfgDef = holder[pluginName];
+    BubbleView.attach = function (cfg) {
+        var pluginName = cfg.pluginName,
+            cfgDef = holder[pluginName];
         S.mix(cfg, cfgDef.cfg, false);
         var pluginContext = cfg.pluginContext,
             func = cfg.func,
             editor = cfg.editor,
             bubble = cfg.bubble;
-        //借鉴google doc tip提示显示
-        editor.on("selectionChange", function(ev) {
+        // 借鉴google doc tip提示显示
+        editor.on("selectionChange", function (ev) {
             var elementPath = ev.path,
                 elements = elementPath.elements,
                 a,
                 lastElement;
             if (elementPath && elements) {
                 lastElement = elementPath.lastElement;
-                if (!lastElement) return;
+                if (!lastElement) {
+                    return;
+                }
                 a = func(lastElement);
                 if (a) {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
-                    bubble.hide();
-                    //等所有bubble hide 再show
-                    setTimeout(function() {
-                        bubble.show();
+                    hide();
+                    // 等所有bubble hide 再show
+                    setTimeout(function () {
+                        bubble.show(editor);
                     }, 10);
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;
-                    bubble.hide();
+                    hide();
                 }
             }
         });
@@ -11291,17 +11342,26 @@ KISSY.Editor.add("bubbleview", function() {
             bubble && bubble.hide();
         }
 
-        editor.on("sourcemode blur", hide);
-        Event.on(DOM._4e_getWin(editor.document), "scroll", hide);
+        editor.on("sourcemode", hide);
+        var editorWin = editor.iframe[0].contentWindow;
+        Event.on(editorWin, "scroll", KE.Utils.buffer(function () {
+
+            var xy = getXy(bubble, editor);
+
+            if (xy) {
+                bubble.set("xy", xy);
+                bubble.set("visible", true);
+            } else {
+                hide();
+            }
+
+        }, undefined, 30));
     };
-    BubbleView.register = function(cfg) {
+    BubbleView.register = function (cfg) {
         var pluginName = cfg.pluginName;
         holder[pluginName] = holder[pluginName] || {
             cfg:cfg
         };
-        Event.on(document, "click", function() {
-            cfg.bubble && cfg.bubble.hide();
-        });
         if (cfg.editor) {
             BubbleView.attach(cfg);
         }
@@ -11315,7 +11375,7 @@ KISSY.Editor.add("bubbleview", function() {
  * monitor user's paste key ,clear user input,modified from ckeditor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("clipboard", function(editor) {
+KISSY.Editor.add("clipboard", function (editor) {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -11324,7 +11384,7 @@ KISSY.Editor.add("clipboard", function(editor) {
         KER = KE.RANGE,
         Event = S.Event;
     if (!KE.Paste) {
-        (function() {
+        (function () {
 
             function Paste(editor) {
                 var self = this;
@@ -11333,8 +11393,9 @@ KISSY.Editor.add("clipboard", function(editor) {
             }
 
             S.augment(Paste, {
-                _init:function() {
-                    var self = this,editor = self.editor;
+                _init:function () {
+                    var self = this,
+                        editor = self.editor;
                     // Event.on(editor.document.body, UA.ie ? "beforepaste" : "keydown", self._paste, self);
                     // beforepaste not fire on webkit and firefox
                     // paste fire too later in ie ,cause error
@@ -11345,9 +11406,9 @@ KISSY.Editor.add("clipboard", function(editor) {
                         self._paste, self);
 
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
-                    Event.on(editor.document.body, 'contextmenu', function() {
+                    Event.on(editor.document.body, 'contextmenu', function () {
                         depressBeforeEvent = 1;
-                        setTimeout(function() {
+                        setTimeout(function () {
                             depressBeforeEvent = 0;
                         }, 10);
                     });
@@ -11356,7 +11417,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     editor.addCommand("paste", new cutCopyCmd("paste"));
 
                 },
-                _paste:function(ev) {
+                _paste:function (ev) {
 
                     if (depressBeforeEvent) {
                         return;
@@ -11393,13 +11454,13 @@ KISSY.Editor.add("clipboard", function(editor) {
                     doc.body.appendChild(pastebin[0]);
 
                     pastebin.css({
-                        position : 'absolute',
+                        position:'absolute',
                         // Position the bin exactly at the position of the selected element
                         // to avoid any subsequent document scroll.
-                        top : sel.getStartElement().offset().top + 'px',
-                        width : '1px',
-                        height : '1px',
-                        overflow : 'hidden'
+                        top:sel.getStartElement().offset().top + 'px',
+                        width:'1px',
+                        height:'1px',
+                        overflow:'hidden'
                     });
 
                     // It's definitely a better user experience if we make the paste-bin pretty unnoticed
@@ -11414,7 +11475,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     range.select(true);
                     //self._running = true;
                     // Wait a while and grab the pasted contents
-                    setTimeout(function() {
+                    setTimeout(function () {
 
                         //self._running = false;
                         pastebin._4e_remove();
@@ -11473,12 +11534,12 @@ KISSY.Editor.add("clipboard", function(editor) {
 
             // Tries to execute any of the paste, cut or copy commands in IE. Returns a
             // boolean indicating that the operation succeeded.
-            var execIECommand = function(editor, command) {
+            var execIECommand = function (editor, command) {
                 var doc = editor.document,
                     body = new Node(doc.body);
 
                 var enabled = false;
-                var onExec = function() {
+                var onExec = function () {
                     enabled = true;
                 };
 
@@ -11499,16 +11560,16 @@ KISSY.Editor.add("clipboard", function(editor) {
             // Attempts to execute the Cut and Copy operations.
             var tryToCutCopy =
                 UA.ie ?
-                    function(editor, type) {
+                    function (editor, type) {
                         return execIECommand(editor, type);
                     }
                     : // !IE.
-                    function(editor, type) {
+                    function (editor, type) {
                         try {
                             // Other browsers throw an error if the command is disabled.
                             return editor.document.execCommand(type);
                         }
-                        catch(e) {
+                        catch (e) {
                             return false;
                         }
                     };
@@ -11520,14 +11581,14 @@ KISSY.Editor.add("clipboard", function(editor) {
             };
 
             // A class that represents one of the cut or copy commands.
-            var cutCopyCmd = function(type) {
+            var cutCopyCmd = function (type) {
                 this.type = type;
                 this.canUndo = ( this.type == 'cut' );		// We can't undo copy to clipboard.
             };
 
             cutCopyCmd.prototype =
             {
-                exec : function(editor) {
+                exec:function (editor) {
                     this.type == 'cut' && fixCut(editor);
 
                     var success = tryToCutCopy(editor, this.type);
@@ -11556,7 +11617,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     sel.selectRanges([ range ]);
 
                     // Clear up the fix if the paste wasn't succeeded.
-                    setTimeout(function() {
+                    setTimeout(function () {
                         // Element still online?
                         if (control.parent()) {
                             dummy.remove();
@@ -11582,7 +11643,7 @@ KISSY.Editor.add("clipboard", function(editor) {
                     ret = doc['queryCommandEnabled'](command) ?
                         true :
                         false;
-                } catch(e) {
+                } catch (e) {
                 }
                 depressBeforeEvent = 0;
                 return ret;
@@ -11591,49 +11652,47 @@ KISSY.Editor.add("clipboard", function(editor) {
             /**
              * 给所有右键都加入复制粘贴
              */
-            KE.on("contextmenu", function(ev) {
+            KE.on("contextmenu", function (ev) {
                 //debugger
                 var contextmenu = ev.contextmenu,
                     editor = contextmenu.cfg["editor"],
                     //原始内容
                     el = contextmenu.elDom,
-                    pastes = {"copy":0,"cut":0,"paste":0};
+                    pastes = {"copy":0, "cut":0, "paste":0},
+                    tips = {
+                        "copy":"Ctrl/Cmd+C",
+                        "cut":"Ctrl/Cmd+X",
+                        "paste":"Ctrl/Cmd+V"
+                    };
                 for (var i in pastes) {
+                    if (pastes.hasOwnProperty(i)) {
+                        pastes[i] = el.one(".ke-paste-" + i);
+                        (function (cmd) {
+                            var cmdObj = pastes[cmd];
+                            if (!cmdObj) {
+                                cmdObj = new Node("<a href='#'" +
+                                    "class='ke-paste-" + cmd + "'>"
+                                    + lang[cmd]
+                                    + "</a>").appendTo(el);
+                                cmdObj.on("click", function (ev) {
+                                    ev.halt();
+                                    contextmenu.hide();
+                                    //给 ie 一点 hide() 中的事件触发 handler 运行机会，
+                                    // 原编辑器获得焦点后再进行下步操作
+                                    setTimeout(function () {
+                                        editor.execCommand(cmd);
+                                    }, 30);
+                                });
+                                pastes[cmd] = cmdObj;
+                            }
 
-                    if (!pastes.hasOwnProperty(i))return;
-                    pastes[i] = el.one(".ke-paste-" + i);
-                    (function(cmd) {
-                        var cmdObj = pastes[cmd];
-                        if (!cmdObj) {
-                            cmdObj = new Node("<a href='#'" +
-                                "class='ke-paste-" + cmd + "'>"
-                                + lang[cmd]
-                                + "</a>").appendTo(el);
-                            cmdObj.on("click", function(ev) {
-                                ev.halt();
-                                if (cmdObj.hasClass("ke-menuitem-disable"))
-                                    return;
-                                contextmenu.hide();
-                                //给 ie 一点 hide() 中的事件触发 handler 运行机会，
-                                // 原编辑器获得焦点后再进行下步操作
-                                setTimeout(function() {
-                                    editor.execCommand(cmd);
-                                }, 30);
-                            });
-                        }
-                        pastes[cmd] = cmdObj;
-                    })(i);
-                    var cmdObj = pastes[i];
-                    if (stateFromNamedCommand(i, editor.document)) {
-                        cmdObj.removeClass("ke-menuitem-disable");
-                    } else {
-                        cmdObj.addClass("ke-menuitem-disable");
+                        })(i);
                     }
                 }
             });
         })();
     }
-    editor.ready(function() {
+    editor.ready(function () {
         new KE.Paste(editor);
     });
 }, {
@@ -15304,8 +15363,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
  * insert image for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("image", function(editor) {
-    editor.addPlugin("image", function() {
+KISSY.Editor.add("image", function (editor) {
+    editor.addPlugin("image", function () {
         var S = KISSY,
             KE = S.Editor,
             UA = S.UA,
@@ -15330,77 +15389,81 @@ KISSY.Editor.add("image", function(editor) {
                 contentCls:"ke-toolbar-image",
                 title:"插入图片",
                 mode:KE.WYSIWYG_MODE,
-                offClick:function() {
+                offClick:function () {
                     this.call("show");
                 },
-                _updateTip:function(tipurl, img) {
+                _updateTip:function (tipurl, img) {
                     var src = img.attr("_ke_saved_src") || img.attr("src");
                     tipurl.html(src);
                     tipurl.attr("href", src);
                 },
-                show:function(ev, _selectedEl) {
+                show:function (ev, _selectedEl) {
                     var editor = this.editor;
                     editor.showDialog("image/dialog", [_selectedEl]);
                 }
             });
 
-        addRes.call(controls, context, function() {
+        addRes.call(controls, context, function () {
             editor.destroyDialog("image/dialog");
         });
 
-        KE.use("contextmenu", function() {
-            var contextMenu = {
-                "图片属性":function(editor) {
-                    var selection = editor.getSelection(),
-                        startElement = selection && selection.getStartElement(),
-                        flash = checkImg(startElement);
-                    if (flash) {
-                        context.call("show", null, flash);
-                    }
-                }
-            };
+// 去除右键
+//        KE.use("contextmenu", function() {
+//            var contextMenu = {
+//                "图片属性":function(editor) {
+//                    var selection = editor.getSelection(),
+//                        startElement = selection && selection.getStartElement(),
+//                        flash = checkImg(startElement);
+//                    if (flash) {
+//                        context.call("show", null, flash);
+//                    }
+//                }
+//            };
+//
 
-            function dblshow(ev) {
-                var t = new Node(ev.target);
-                ev.halt();
-                if (checkImg(t)) {
-                    context.call("show", null, t);
-                }
+//            var myContexts = {};
+//            for (var f in contextMenu) {
+//                (function(f) {
+//                    myContexts[f] = function() {
+//                        contextMenu[f](editor);
+//                    }
+//                })(f);
+//            }
+//            var menu = KE.ContextMenu.register({
+//                editor:editor,
+//                rules:[checkImg],
+//                width:"120px",
+//                funcs:myContexts
+//            });
+//            addRes.call(controls, menu);
+//        });
+
+
+        function dblshow(ev) {
+            var t = new Node(ev.target);
+            ev.halt();
+            if (checkImg(t)) {
+                context.call("show", null, t);
             }
+        }
 
-            Event.on(editor.document,
+        Event.on(editor.document,
+            "dblclick",
+            dblshow);
+
+        addRes.call(controls, function () {
+            Event.remove(editor.document,
                 "dblclick",
                 dblshow);
-
-            addRes.call(controls, function() {
-                Event.remove(editor.document,
-                    "dblclick",
-                    dblshow);
-            });
-            var myContexts = {};
-            for (var f in contextMenu) {
-                (function(f) {
-                    myContexts[f] = function() {
-                        contextMenu[f](editor);
-                    }
-                })(f);
-            }
-            var menu = KE.ContextMenu.register({
-                editor:editor,
-                rules:[checkImg],
-                width:"120px",
-                funcs:myContexts
-            });
-            addRes.call(controls, menu);
         });
 
-        KE.use("bubbleview", function() {
+        KE.use("bubbleview", function () {
             KE.BubbleView.register({
                 pluginName:'image',
                 pluginContext:context,
                 editor:editor,
                 func:checkImg,
-                init:function() {
+                init:function () {
                     var bubble = this,
                         el = bubble.get("contentEl");
                     el.html("图片网址： " + tipHtml);
@@ -15409,11 +15472,11 @@ KISSY.Editor.add("image", function(editor) {
                         tipremove = el.one(".ke-bubbleview-remove");
                     //ie focus not lose
                     KE.Utils.preventFocus(el);
-                    tipchange.on("click", function(ev) {
+                    tipchange.on("click", function (ev) {
                         bubble._plugin.call("show", null, bubble._selectedEl);
                         ev.halt();
                     });
-                    tipremove.on("click", function(ev) {
+                    tipremove.on("click", function (ev) {
                         var flash = bubble._plugin;
                         if (UA.webkit) {
                             var r = flash.editor.getSelection().getRanges();
@@ -15428,7 +15491,7 @@ KISSY.Editor.add("image", function(editor) {
                     /*
                      位置变化
                      */
-                    bubble.on("show", function() {
+                    bubble.on("show", function () {
                         var a = bubble._selectedEl,
                             b = bubble._plugin;
                         if (!a)return;
@@ -15437,13 +15500,13 @@ KISSY.Editor.add("image", function(editor) {
                 }
             });
 
-            addRes.call(controls, function() {
+            addRes.call(controls, function () {
                 KE.BubbleView.destroy("image")
             });
         });
 
 
-        this.destroy = function() {
+        this.destroy = function () {
             destroyRes.call(controls);
         };
     });
