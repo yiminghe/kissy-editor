@@ -2,7 +2,7 @@
  * select component for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("select", function() {
+KISSY.Editor.add("select", function () {
     var S = KISSY,
         //UA = S.UA,
         Node = S.Node,
@@ -57,9 +57,9 @@ KISSY.Editor.add("select", function() {
         emptyText:{},
         //下拉框优先和select左左对齐，上下对齐
         //可以改作右右对齐，下上对齐
-        align:{value:["l","b"]},
+        align:{value:["l", "b"]},
         menuContainer:{
-            valueFn:function() {
+            valueFn:function () {
                 //chrome 需要添加在能够真正包含div的地方
                 var c = this.el.parent();
                 while (c) {
@@ -73,7 +73,7 @@ KISSY.Editor.add("select", function() {
         },
         state:{value:ENABLED}
     };
-    Select.decorate = function(el) {
+    Select.decorate = function (el) {
         var width = el.width() ,
             items = [],
             options = el.all("option");
@@ -94,7 +94,7 @@ KISSY.Editor.add("select", function() {
         });
 
     };
-    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
+    var addRes = KE.Utils.addRes, destroyRes = KE.Utils.destroyRes;
 
     function getTipText(str) {
         if (str && str.indexOf("<") == -1) {
@@ -104,7 +104,7 @@ KISSY.Editor.add("select", function() {
     }
 
     S.extend(Select, S.Base, {
-        _init:function() {
+        _init:function () {
             var self = this,
                 container = self.get("container"),
                 fakeEl = self.get("el"),
@@ -145,7 +145,7 @@ KISSY.Editor.add("select", function() {
             self.on("afterValueChange", self._valueChange, self);
             self.on("afterStateChange", self._stateChange, self);
         },
-        _findNameByV:function(v) {
+        _findNameByV:function (v) {
             var self = this,
                 name = self.get(TITLE) || "",
                 items = self.get("items");
@@ -167,14 +167,14 @@ KISSY.Editor.add("select", function() {
          * 当逻辑值变化时，更新select的显示值
          * @param ev
          */
-        _valueChange:function(ev) {
+        _valueChange:function (ev) {
             var v = ev.newVal,
                 self = this,
                 name = self._findNameByV(v);
             self.title.html(name);
         },
 
-        _itemsChange:function(ev) {
+        _itemsChange:function (ev) {
             var self = this,
                 empty,
                 items = ev.newVal,
@@ -182,7 +182,7 @@ KISSY.Editor.add("select", function() {
             _selectList.html("");
             if (items && items.length) {
                 for (var i = 0; i < items.length; i++) {
-                    var item = items[i],a = new Node("<a " +
+                    var item = items[i], a = new Node("<a " +
                         "class='ke-select-menu-item' " +
                         "href='javascript:void(\"" + getTipText(item.name) + "\")' data-value='" + item.value + "'>"
                         + item.name + "</a>", item.attrs)
@@ -199,7 +199,7 @@ KISSY.Editor.add("select", function() {
             }
             self.as = _selectList.all("a");
         },
-        val:function(v) {
+        val:function (v) {
             var self = this;
             if (v !== undefined) {
                 self.set("value", v);
@@ -207,14 +207,14 @@ KISSY.Editor.add("select", function() {
             }
             else return self.get("value");
         },
-        _resize:function() {
+        _resize:function () {
             var self = this,
                 menu = self.menu;
             if (menu.get("visible")) {
                 self._real();
             }
         },
-        _prepare:function() {
+        _prepare:function () {
             var self = this,
                 el = self.el,
                 popUpWidth = self.get("popUpWidth"),
@@ -238,7 +238,7 @@ KISSY.Editor.add("select", function() {
             //缩放，下拉框跟随
             Event.on(window, "resize", self._resize, self);
 
-            addRes.call(self, function() {
+            addRes.call(self, function () {
                 Event.remove(window, "resize", self._resize, self);
             });
 
@@ -254,10 +254,10 @@ KISSY.Editor.add("select", function() {
             self._itemsChange({newVal:items});
 
 
-            menu.on("show", function() {
+            menu.on("show", function () {
                 focusA.addClass(ke_select_active);
             });
-            menu.on("hide", function() {
+            menu.on("hide", function () {
                 focusA.removeClass(ke_select_active);
             });
             function deactivate(ev) {
@@ -268,7 +268,7 @@ KISSY.Editor.add("select", function() {
             }
 
             Event.on(document, "click", deactivate);
-            addRes.call(self, function() {
+            addRes.call(self, function () {
                 Event.remove(document, "click", deactivate);
             });
             if (self.get("doc"))
@@ -278,34 +278,34 @@ KISSY.Editor.add("select", function() {
             self.as = self._selectList.all("a");
 
             //mouseenter kissy core bug
-            Event.on(menuNode[0], 'mouseenter', function() {
+            Event.on(menuNode[0], 'mouseenter', function () {
                 self.as.removeClass(ke_menu_selected);
             });
             addRes.call(self, menuNode);
             self.on("afterItemsChange", self._itemsChange, self);
             self.menuNode = menuNode;
         },
-        _stateChange:function(ev) {
-            var v = ev.newVal,el = this.el;
+        _stateChange:function (ev) {
+            var v = ev.newVal, el = this.el;
             if (v == ENABLED) {
                 el.removeClass(DISABLED_CLASS);
             } else {
                 el.addClass(DISABLED_CLASS);
             }
         },
-        enable:function() {
+        enable:function () {
             this.set("state", ENABLED);
         },
-        disable:function() {
+        disable:function () {
             this.set("state", DISABLED);
         },
-        _select:function(ev) {
+        _select:function (ev) {
             ev && ev.halt();
             var self = this,
                 menu = self.menu,
                 menuNode = self.menuNode,
                 t = new Node(ev.target),
-                a = t._4e_ascendant(function(n) {
+                a = t._4e_ascendant(function (n) {
                     return menuNode.contains(n) && n._4e_name() == "a";
                 }, true);
 
@@ -325,7 +325,7 @@ KISSY.Editor.add("select", function() {
 
             menu.hide();
         },
-        _real:function() {
+        _real:function () {
             var self = this,
                 el = self.el,
                 xy = el.offset(),
@@ -406,10 +406,10 @@ KISSY.Editor.add("select", function() {
                     xy.left = orixy.left;
                 }
             }
-            self.menu.set("xy", [xy.left,xy.top]);
+            self.menu.set("xy", [xy.left, xy.top]);
             self.menu.show();
         },
-        _click:function(ev) {
+        _click:function (ev) {
             if (this.loading) return;
             ev && ev.preventDefault();
 
@@ -427,7 +427,7 @@ KISSY.Editor.add("select", function() {
             }
 
             self.loading = true;
-            KE.use("overlay", function() {
+            KE.use("overlay", function () {
                 self.loading = false;
                 self.fire("select");
                 self._prepare();
@@ -435,7 +435,7 @@ KISSY.Editor.add("select", function() {
                 //可能的话当显示层时，高亮当前值对应option
                 if (v && self.menu) {
                     var as = self.as;
-                    as.each(function(a) {
+                    as.each(function (a) {
                         if (a.attr("data-value") == v) {
                             a.addClass(ke_menu_selected);
                         } else {
@@ -445,7 +445,7 @@ KISSY.Editor.add("select", function() {
                 }
             });
         },
-        destroy:function() {
+        destroy:function () {
             destroyRes.call(this);
             this.el.detach();
             this.el.remove();
@@ -461,7 +461,7 @@ KISSY.Editor.add("select", function() {
      * @param name
      * @param btnCfg
      */
-    KE.prototype.addSelect = function(name, btnCfg) {
+    KE.prototype.addSelect = function (name, btnCfg) {
         var self = this,
             editor = self;
         btnCfg = S.mix({
@@ -472,10 +472,11 @@ KISSY.Editor.add("select", function() {
 
         var b = new Select(btnCfg),
             context = {
+                name:name,
                 btn:b,
                 editor:self,
                 cfg:btnCfg,
-                call:function() {
+                call:function () {
                     var args = S.makeArray(arguments),
                         method = args.shift();
                     return btnCfg[method].apply(context, args);
@@ -484,14 +485,14 @@ KISSY.Editor.add("select", function() {
                  * 依赖于其他模块，先出来占位！
                  * @param cfg
                  */
-                reload:function(cfg) {
+                reload:function (cfg) {
                     S.mix(btnCfg, cfg);
                     b.enable();
-                    self.on("selectionChange", function() {
+                    self.on("selectionChange", function () {
                         if (self.getMode() == KE.SOURCE_MODE) return;
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
-                    b.on("click", function(ev) {
+                    b.on("click", function (ev) {
                         var t = ev.type;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
                         ev && ev.halt();
@@ -503,7 +504,7 @@ KISSY.Editor.add("select", function() {
                     btnCfg.init && btnCfg.init.call(context);
 
                 },
-                destroy:function() {
+                destroy:function () {
                     if (btnCfg.destroy) {
                         btnCfg.destroy.call(context);
                     }

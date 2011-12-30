@@ -6,7 +6,7 @@
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("styles", function(KE) {
+KISSY.Editor.add("styles", function (KE) {
 
     var TRUE = true,
         FALSE = false,
@@ -78,7 +78,7 @@ KISSY.Editor.add("styles", function(KE) {
         for (var item in list) {
             if (!list.hasOwnProperty(item)) continue;
             if (S.isString(list[ item ])) {
-                list[ item ] = list[ item ].replace(varRegex, function(match, varName) {
+                list[ item ] = list[ item ].replace(varRegex, function (match, varName) {
                     return variablesValues[ varName ];
                 });
             } else {
@@ -106,7 +106,7 @@ KISSY.Editor.add("styles", function(KE) {
             KEST.STYLE_OBJECT : KEST.STYLE_INLINE;
 
         this._ = {
-            "definition" : styleDefinition
+            "definition":styleDefinition
         };
     }
 
@@ -134,15 +134,15 @@ KISSY.Editor.add("styles", function(KE) {
     }
 
     KEStyle.prototype = {
-        apply : function(document) {
+        apply:function (document) {
             applyStyle.call(this, document, FALSE);
         },
 
-        remove : function(document) {
+        remove:function (document) {
             applyStyle.call(this, document, TRUE);
         },
 
-        applyToRange : function(range) {
+        applyToRange:function (range) {
             var self = this;
             return ( self.applyToRange =
                 this.type == KEST.STYLE_INLINE ?
@@ -156,7 +156,7 @@ KISSY.Editor.add("styles", function(KE) {
                     : NULL ).call(self, range);
         },
 
-        removeFromRange : function(range) {
+        removeFromRange:function (range) {
             var self = this;
             return ( self.removeFromRange =
                 self.type == KEST.STYLE_INLINE ?
@@ -169,12 +169,12 @@ KISSY.Editor.add("styles", function(KE) {
 //        },
         // Checks if an element, or any of its attributes, is removable by the
         // current style definition.
-        checkElementRemovable : function(element, fullMatch) {
+        checkElementRemovable:function (element, fullMatch) {
             if (!element)
                 return FALSE;
 
             var def = this._.definition,
-                attribs,styles;
+                attribs, styles;
 
             // If the element name is the same as the style name.
             if (element._4e_name() == this.element) {
@@ -186,19 +186,25 @@ KISSY.Editor.add("styles", function(KE) {
 
                 if (attribs["_length"]) {
                     for (var attName in attribs) {
+
                         if (attName == '_length')
                             continue;
 
-                        var elementAttr = element.attr(attName) || '';
-                        if (attName == 'style' ?
-                            compareCssText(attribs[ attName ],
-                                normalizeCssText(elementAttr, FALSE))
-                            : attribs[ attName ] == elementAttr) {
-                            if (!fullMatch)
-                                return TRUE;
+                        if (attribs.hasOwnProperty(attName)) {
+
+                            var elementAttr = element.attr(attName) || '';
+                            if (attName == 'style' ?
+                                compareCssText(attribs[ attName ],
+                                    normalizeCssText(elementAttr, FALSE))
+                                : attribs[ attName ] == elementAttr) {
+                                if (!fullMatch)
+                                    return TRUE;
+                            }
+                            else if (fullMatch)
+                                return FALSE;
                         }
-                        else if (fullMatch)
-                            return FALSE;
+
+
                     }
                     if (fullMatch)
                         return TRUE;
@@ -262,7 +268,7 @@ KISSY.Editor.add("styles", function(KE) {
          * Get the style state inside an element path. Returns "TRUE" if the
          * element is active in the path.
          */
-        checkActive : function(elementPath) {
+        checkActive:function (elementPath) {
             switch (this.type) {
                 case KEST.STYLE_BLOCK :
                     return this.checkElementRemovable(elementPath.block
@@ -294,7 +300,7 @@ KISSY.Editor.add("styles", function(KE) {
 
     };
 
-    KEStyle.getStyleText = function(styleDefinition) {
+    KEStyle.getStyleText = function (styleDefinition) {
         // If we have already computed it, just return it.
         var stylesDef = styleDefinition._ST;
         if (stylesDef)
@@ -311,14 +317,18 @@ KISSY.Editor.add("styles", function(KE) {
             stylesText = stylesText.replace(semicolonFixRegex, ';');
 
         for (var style in stylesDef) {
-            var styleVal = stylesDef[ style ],
-                text = ( style + ':' + styleVal ).replace(semicolonFixRegex, ';');
 
-            // Some browsers don't support 'inherit' property value, leave them intact. (#5242)
-            if (styleVal == 'inherit')
-                specialStylesText += text;
-            else
-                stylesText += text;
+            if (stylesDef.hasOwnProperty(style)) {
+
+                var styleVal = stylesDef[ style ],
+                    text = ( style + ':' + styleVal ).replace(semicolonFixRegex, ';');
+
+                // Some browsers don't support 'inherit' property value, leave them intact. (#5242)
+                if (styleVal == 'inherit')
+                    specialStylesText += text;
+                else
+                    stylesText += text;
+            }
         }
 
         // Browsers make some changes to the style when applying them. So, here
@@ -359,7 +369,9 @@ KISSY.Editor.add("styles", function(KE) {
         // Assign all defined attributes.
         if (attributes) {
             for (var att in attributes) {
-                el.attr(att, attributes[ att ]);
+                if (attributes.hasOwnProperty(att)) {
+                    el.attr(att, attributes[ att ]);
+                }
             }
         }
 
@@ -397,7 +409,7 @@ KISSY.Editor.add("styles", function(KE) {
             tailBookmark = '';
 
         str = str.replace(/(^<span[^>]+_ke_bookmark.*?\/span>)|(<span[^>]+_ke_bookmark.*?\/span>$)/gi,
-            function(str, m1, m2) {
+            function (str, m1, m2) {
                 m1 && ( headBookmark = m1 );
                 m2 && ( tailBookmark = m2 );
                 return '';
@@ -450,13 +462,13 @@ KISSY.Editor.add("styles", function(KE) {
             //blockName = preBlock._4e_name(),
             splittedHtml = replace(preBlock._4e_outerHtml(),
                 duoBrRegex,
-                function(match, charBefore, bookmark) {
+                function (match, charBefore, bookmark) {
                     return charBefore + '</pre>' + bookmark + '<pre>';
                 });
 
         var pres = [];
         splittedHtml.replace(/<pre\b.*?>([\s\S]*?)<\/pre>/gi,
-            function(match, preContent) {
+            function (match, preContent) {
                 pres.push(preContent);
             });
         return pres;
@@ -528,7 +540,7 @@ KISSY.Editor.add("styles", function(KE) {
             blockHtml = replace(blockHtml, /^[ \t]*\n/, '');
             blockHtml = replace(blockHtml, /\n$/, '');
             // 2. Convert spaces or tabs at the beginning or at the end to &nbsp;
-            blockHtml = replace(blockHtml, /^[ \t]+|[ \t]+$/g, function(match, offset) {
+            blockHtml = replace(blockHtml, /^[ \t]+|[ \t]+$/g, function (match, offset) {
                 if (match.length == 1)    // one space, preserve it
                     return '&nbsp;';
                 else if (!offset)        // beginning of block
@@ -554,7 +566,7 @@ KISSY.Editor.add("styles", function(KE) {
 
     /**
      *
-     * @param range {KISSY.Editor.Range}
+     * @param range
      */
     function applyInlineStyle(range) {
         var self = this,
@@ -573,8 +585,11 @@ KISSY.Editor.add("styles", function(KE) {
             def = this._["definition"],
             isUnknownElement,
             // Get the DTD definition for the element. Defaults to "span".
-            dtd = KE.XHTML_DTD[ elementName ]
-                || ( isUnknownElement = TRUE,KE.XHTML_DTD["span"] );
+            dtd = KE.XHTML_DTD[ elementName ];
+        if (!dtd) {
+            isUnknownElement = TRUE;
+            dtd = KE.XHTML_DTD["span"];
+        }
 
         // Bookmark the range so we can re-select it after processing.
         var bookmark = range.createBookmark();
@@ -671,7 +686,7 @@ KISSY.Editor.add("styles", function(KE) {
                             ( nodeType == KEN.NODE_ELEMENT &&
                                 !currentNode[0].childNodes.length )) {
                             var includedNode = currentNode,
-                                parentNode;
+                                parentNode = null;
 
                             // This node is about to be included completelly, but,
                             // if this is the last node in its parent, we must also
@@ -685,7 +700,7 @@ KISSY.Editor.add("styles", function(KE) {
                             // in this style DTD, so apply the style immediately.
                             while (
                                 (applyStyle = !includedNode._4e_next(notBookmark))
-                                    && ( parentNode = includedNode.parent(),
+                                    && ( (parentNode = includedNode.parent()) &&
                                     dtd[ parentNode._4e_name() ] )
                                     && ( parentNode._4e_position(firstNode) |
                                     KEP.POSITION_FOLLOWING |
@@ -694,8 +709,7 @@ KISSY.Editor.add("styles", function(KE) {
                                     ( KEP.POSITION_FOLLOWING +
                                         KEP.POSITION_IDENTICAL +
                                         KEP.POSITION_IS_CONTAINED )
-                                    && ( !def["childRule"] ||
-                                    def["childRule"](parentNode) )) {
+                                    && ( !def["childRule"] || def["childRule"](parentNode) )) {
                                 includedNode = parentNode;
                             }
 
@@ -723,48 +737,58 @@ KISSY.Editor.add("styles", function(KE) {
 
 
                 var removeList = {
-                    styles : {},
-                    attrs : {},
+                    styles:{},
+                    attrs:{},
                     // Styles cannot be removed.
-                    blockedStyles : {},
+                    blockedStyles:{},
                     // Attrs cannot be removed.
-                    blockedAttrs : {}
+                    blockedAttrs:{}
                 };
 
-                var attName, styleName, value;
+                var attName, styleName = null, value;
 
                 // Loop through the parents, removing the redundant attributes
                 // from the element to be applied.
                 while (styleNode && parent && styleNode[0] && parent[0]) {
                     if (parent._4e_name() == elementName) {
-                        for (attName in def["attributes"]) {
+                        for (attName in def.attributes) {
 
-                            if (removeList.blockedAttrs[ attName ]
-                                || !( value = parent.attr(styleName) ))
-                                continue;
+                            if (def.attributes.hasOwnProperty(attName)) {
 
-                            if (styleNode.attr(attName) == value) {
-                                //removeList.attrs[ attName ] = 1;
-                                styleNode.removeAttr(attName);
+
+                                if (removeList.blockedAttrs[ attName ]
+                                    || !( value = parent.attr(styleName) ))
+                                    continue;
+
+                                if (styleNode.attr(attName) == value) {
+                                    //removeList.attrs[ attName ] = 1;
+                                    styleNode.removeAttr(attName);
+                                }
+                                else
+                                    removeList.blockedAttrs[ attName ] = 1;
                             }
-                            else
-                                removeList.blockedAttrs[ attName ] = 1;
+
+
                         }
                         //bug notice add by yiminghe@gmail.com
                         //<span style="font-size:70px"><span style="font-size:30px">xcxx</span></span>
                         //下一次格式xxx为70px
                         //var exit = FALSE;
-                        for (styleName in def["styles"]) {
-                            if (removeList.blockedStyles[ styleName ]
-                                || !( value = parent._4e_style(styleName) ))
-                                continue;
+                        for (styleName in def.styles) {
+                            if (def.styles.hasOwnProperty(styleName)) {
 
-                            if (styleNode._4e_style(styleName) == value) {
-                                //removeList.styles[ styleName ] = 1;
-                                styleNode._4e_style(styleName, "");
+                                if (removeList.blockedStyles[ styleName ]
+                                    || !( value = parent._4e_style(styleName) ))
+                                    continue;
+
+                                if (styleNode._4e_style(styleName) == value) {
+                                    //removeList.styles[ styleName ] = 1;
+                                    styleNode._4e_style(styleName, "");
+                                }
+                                else
+                                    removeList.blockedStyles[ styleName ] = 1;
                             }
-                            else
-                                removeList.blockedStyles[ styleName ] = 1;
+
                         }
 
                         if (!styleNode._4e_hasAttributes()) {
@@ -834,7 +858,7 @@ KISSY.Editor.add("styles", function(KE) {
 
     /**
      *
-     * @param range {KISSY.Editor.Range}
+     * @param range
      */
     function removeInlineStyle(range) {
         /*
@@ -1016,7 +1040,7 @@ KISSY.Editor.add("styles", function(KE) {
         var retval = {};
         styleText.replace(/&quot;/g, '"')
             .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-            function(match, name, value) {
+            function (match, name, value) {
                 retval[ name ] = value;
             });
         return retval;
@@ -1026,13 +1050,15 @@ KISSY.Editor.add("styles", function(KE) {
         typeof source == 'string' && ( source = parseStyleText(source) );
         typeof target == 'string' && ( target = parseStyleText(target) );
         for (var name in source) {
-            // Value 'inherit'  is treated as a wildcard,
-            // which will match any value.
-            if (!( name in target &&
-                ( target[ name ] == source[ name ]
-                    || source[ name ] == 'inherit'
-                    || target[ name ] == 'inherit' ) )) {
-                return FALSE;
+            if (source.hasOwnProperty(name)) {
+                // Value 'inherit'  is treated as a wildcard,
+                // which will match any value.
+                if (!( name in target &&
+                    ( target[ name ] == source[ name ]
+                        || source[ name ] == 'inherit'
+                        || target[ name ] == 'inherit' ) )) {
+                    return FALSE;
+                }
             }
         }
         return TRUE;
@@ -1083,8 +1109,10 @@ KISSY.Editor.add("styles", function(KE) {
             styleAttribs = styleDefinition["attributes"];
         if (styleAttribs) {
             for (var styleAtt in styleAttribs) {
-                length++;
-                attribs[ styleAtt ] = styleAttribs[ styleAtt ];
+                if (styleAttribs.hasOwnProperty(styleAtt)) {
+                    length++;
+                    attribs[ styleAtt ] = styleAttribs[ styleAtt ];
+                }
             }
         }
 
@@ -1129,7 +1157,7 @@ KISSY.Editor.add("styles", function(KE) {
                 var override = definition[i];
                 var elementName;
                 var overrideEl;
-                var attrs,styles;
+                var attrs, styles;
 
                 // If can be a string with the element name.
                 if (typeof override == 'string')
@@ -1258,12 +1286,14 @@ KISSY.Editor.add("styles", function(KE) {
         // Now remove any other element with different name that is
         // defined to be overriden.
         for (var overrideElement in overrides) {
-            if (overrideElement != style["element"]) {
-                innerElements = element.all(overrideElement);
-                for (i = innerElements.length - 1; i >= 0; i--) {
-                    var innerElement = new Node(innerElements[i]);
-                    removeOverrides(innerElement,
-                        overrides[ overrideElement ]);
+            if (overrides.hasOwnProperty(overrideElement)) {
+                if (overrideElement != style["element"]) {
+                    innerElements = element.all(overrideElement);
+                    for (i = innerElements.length - 1; i >= 0; i--) {
+                        var innerElement = new Node(innerElements[i]);
+                        removeOverrides(innerElement,
+                            overrides[ overrideElement ]);
+                    }
                 }
             }
         }
@@ -1277,7 +1307,7 @@ KISSY.Editor.add("styles", function(KE) {
      * @param {Object} overrides
      */
     function removeOverrides(element, overrides) {
-        var i,attributes = overrides && overrides["attributes"];
+        var i, attributes = overrides && overrides["attributes"];
 
         if (attributes) {
             for (i = 0; i < attributes.length; i++) {

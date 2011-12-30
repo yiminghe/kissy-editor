@@ -194,7 +194,7 @@ KISSY.Editor.add("dom", function(KE) {
 
             /**
              *
-             * @param thisElement {(Node)}
+             * @param [thisElement] {Node}
              */
             _4e_name:function(thisElement) {
                 thisElement = normalElDom(thisElement);

@@ -2,7 +2,7 @@
  * triple state button for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("button", function() {
+KISSY.Editor.add("button", function () {
     var S = KISSY,
         KE = S.Editor,
         ON = "on",
@@ -29,36 +29,36 @@ KISSY.Editor.add("button", function() {
     var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
         || S['UIBase']['Box']
     ], {
-        _updateHref:function() {
+        _updateHref:function () {
             var self = this;
             self.get("el").attr("href", "javascript:void('" +
                 (getTipText(self.get("text")) || getTipText(self.get("title")) ) + "')");
         },
-        bindUI:function() {
-            var self = this,el = self.get("el");
+        bindUI:function () {
+            var self = this, el = self.get("el");
             el.on("click", self['_action'], self);
             //添加鼠标点击视觉效果
-            el.on("mousedown", function() {
+            el.on("mousedown", function () {
                 if (self.get("state") == OFF) {
                     el.addClass(ACTIVE_CLASS);
                 }
             });
-            el.on("mouseup mouseleave", function() {
+            el.on("mouseup mouseleave", function () {
                 if (self.get("state") == OFF &&
                     el.hasClass(ACTIVE_CLASS)) {
                     //click 后出发
-                    setTimeout(function() {
+                    setTimeout(function () {
                         el.removeClass(ACTIVE_CLASS);
                     }, 300);
                 }
             });
         },
-        _uiSetTitle:function() {
+        _uiSetTitle:function () {
             var self = this;
             self.get("el").attr("title", self.get("title"));
             self._updateHref();
         },
-        _uiSetContentCls:function(contentCls) {
+        _uiSetContentCls:function (contentCls) {
             var self = this,
                 el = self.get("el");
             if (contentCls !== undefined) {
@@ -67,26 +67,26 @@ KISSY.Editor.add("button", function() {
                 el._4e_unselectable();
             }
         },
-        _uiSetText:function(text) {
+        _uiSetText:function (text) {
             var self = this,
                 el = self.get("el");
             el.html(text);
             self._updateHref();
         },
-        _uiSetState:function(n) {
+        _uiSetState:function (n) {
             this["_" + n]();
         },
-        disable:function() {
+        disable:function () {
             var self = this;
             self._savedState = self.get("state");
             self.set("state", DISABLED);
         },
-        enable:function() {
+        enable:function () {
             var self = this;
             if (self.get("state") == DISABLED)
                 self.set("state", self._savedState);
         },
-        _action:function(ev) {
+        _action:function (ev) {
             var self = this;
             self.fire(self.get("state") + "Click", {
                 TripleEvent:ev
@@ -96,31 +96,31 @@ KISSY.Editor.add("button", function() {
             });
             ev && ev.preventDefault();
         },
-        bon:function() {
+        bon:function () {
             this.set("state", ON);
         },
-        boff:function() {
+        boff:function () {
             this.set("state", OFF);
         },
-        _on:function() {
+        _on:function () {
             var el = this.get("el");
             el.removeClass(OFF_CLASS + " " + DISABLED_CLASS);
             el.addClass(ON_CLASS);
         },
-        _off:function() {
+        _off:function () {
             var el = this.get("el");
             el.removeClass(ON_CLASS + " " + DISABLED_CLASS);
             el.addClass(OFF_CLASS);
         },
-        _disabled:function() {
+        _disabled:function () {
             var el = this.get("el");
             el.removeClass(OFF_CLASS + " " + ON_CLASS);
             el.addClass(DISABLED_CLASS);
         }
     }, {
-        ATTRS : {
-            state: {value:OFF},
-            elCls:{value:[BUTTON_CLASS,OFF_CLASS].join(" ")},
+        ATTRS:{
+            state:{value:OFF},
+            elCls:{value:[BUTTON_CLASS, OFF_CLASS].join(" ")},
 //            elAttrs:{
 //                value:{
 //                    // can trigger keyboard click
@@ -152,7 +152,7 @@ KISSY.Editor.add("button", function() {
      * @param name
      * @param btnCfg
      */
-    KE.prototype.addButton = function(name, btnCfg) {
+    KE.prototype.addButton = function (name, btnCfg) {
         var self = this,
             editor = self,
             b = new TripleButton({
@@ -163,10 +163,11 @@ KISSY.Editor.add("button", function() {
                 contentCls:btnCfg.contentCls
             }),
             context = {
+                name:name,
                 btn:b,
                 editor:self,
                 cfg:btnCfg,
-                call:function() {
+                call:function () {
                     var args = S.makeArray(arguments),
                         method = args.shift();
                     return btnCfg[method].apply(context, args);
@@ -175,14 +176,14 @@ KISSY.Editor.add("button", function() {
                  * 依赖于其他模块，先出来占位！
                  * @param cfg
                  */
-                reload:function(cfg) {
+                reload:function (cfg) {
                     S.mix(btnCfg, cfg);
                     b.enable();
-                    self.on("selectionChange", function() {
+                    self.on("selectionChange", function () {
                         if (self.getMode() == KE.SOURCE_MODE) return;
                         btnCfg.selectionChange && btnCfg.selectionChange.apply(context, arguments);
                     });
-                    b.on("click", function(ev) {
+                    b.on("click", function (ev) {
                         var t = ev.TripleClickType;
                         if (btnCfg[t]) btnCfg[t].apply(context, arguments);
                         ev && ev.halt();
@@ -193,7 +194,7 @@ KISSY.Editor.add("button", function() {
                     }
                     btnCfg.init && btnCfg.init.call(context);
                 },
-                destroy:function() {
+                destroy:function () {
                     if (btnCfg['destroy']) btnCfg['destroy'].call(context);
                     b.destroy();
                 }
