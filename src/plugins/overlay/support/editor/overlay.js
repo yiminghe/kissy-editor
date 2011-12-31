@@ -5,7 +5,7 @@
 KISSY.Editor.add("overlay", function () {
 
     var S = KISSY,
-        UIBase = S.require("overlay"),
+        UIBase = S.require("uibase"),
         KE = S.Editor;
 
 
