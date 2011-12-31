@@ -57,7 +57,7 @@ KISSY.Editor.add("localstorage", function() {
 
         store.swf.height = 138;
         //Dialog 不行
-        var o = new S.Overlay({
+        var o = new (S.require("overlay"))({
             headerContent:"请点允许",
             width:"0px",
             //mask:true,

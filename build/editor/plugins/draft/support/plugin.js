@@ -2,7 +2,7 @@
  * draft for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("draft/support", function() {
+KISSY.Editor.add("draft/support", function () {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -50,10 +50,10 @@ KISSY.Editor.add("draft/support", function() {
         this._init();
     }
 
-    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
+    var addRes = KE.Utils.addRes, destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
 
-        _getSaveKey:function() {
+        _getSaveKey:function () {
             var self = this,
                 editor = self.editor,
                 cfg = editor.cfg.pluginConfig;
@@ -63,7 +63,7 @@ KISSY.Editor.add("draft/support", function() {
         /**
          * parse 历史记录延后，点击 select 时才开始 parse
          */
-        _getDrafts:function() {
+        _getDrafts:function () {
             var localStorage = KE.localStorage;
             var self = this;
             if (!self.drafts) {
@@ -82,7 +82,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             return self.drafts;
         },
-        _init:function() {
+        _init:function () {
 
             var self = this,
                 editor = self.editor,
@@ -118,23 +118,23 @@ KISSY.Editor.add("draft/support", function() {
                     "</a>"
             ).appendTo(holder),
                 versions = new KE.Select({
-                    container: holder,
+                    container:holder,
                     menuContainer:document.body,
                     doc:editor.document,
                     width:"85px",
                     popUpWidth:"225px",
-                    align:["r","t"],
+                    align:["r", "t"],
                     emptyText:"&nbsp;&nbsp;&nbsp;尚无编辑器历史存在",
                     title:"恢复编辑历史"
                 });
             self.versions = versions;
             //点击才开始 parse
-            versions.on("select", function() {
+            versions.on("select", function () {
                 versions.detach("select", arguments.callee);
                 self.sync();
             });
             save._4e_unselectable();
-            save.on("click", function(ev) {
+            save.on("click", function (ev) {
                 self.save(false);
                 //如果不阻止，部分页面在ie6下会莫名奇妙把其他input的值丢掉！
                 ev.halt();
@@ -147,7 +147,7 @@ KISSY.Editor.add("draft/support", function() {
              监控form提交，每次提交前保存一次，防止出错
              */
             if (editor.textarea[0].form) {
-                (function() {
+                (function () {
                     var textarea = editor.textarea,
                         form = textarea[0].form;
 
@@ -156,18 +156,18 @@ KISSY.Editor.add("draft/support", function() {
                     }
 
                     Event.on(form, "submit", saveF);
-                    addRes.call(self, function() {
+                    addRes.call(self, function () {
                         Event.remove(form, "submit", saveF);
                     });
 
                 })();
             }
 
-            var timer = setInterval(function() {
+            var timer = setInterval(function () {
                 self.save(true);
             }, self.draftInterval * 60 * 1000);
 
-            addRes.call(self, function() {
+            addRes.call(self, function () {
                 clearInterval(timer);
             });
 
@@ -182,12 +182,12 @@ KISSY.Editor.add("draft/support", function() {
                     elCls:"ke-draft-help",
                     title:"点击查看帮助",
                     text:"点击查看帮助",
-                    render: holder
+                    render:holder
                 });
 
                 help.render();
 
-                help.on("click", function(ev) {
+                help.on("click", function (ev) {
                     if (self._help && self._help.get("visible")) {
                         self._help.hide();
                     } else {
@@ -201,7 +201,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             addRes.call(self, holder);
         },
-        _prepareHelp:function() {
+        _prepareHelp:function () {
             var self = this,
                 editor = self.editor,
                 cfg = editor.cfg.pluginConfig,
@@ -232,7 +232,7 @@ KISSY.Editor.add("draft/support", function() {
                 border:"1px solid #ACB4BE",
                 "text-align":"left"
             });
-            self._help = new S.Overlay({
+            self._help = new (S.require("overlay"))({
                 content:help,
                 autoRender:true,
                 width:help.width() + "px",
@@ -248,14 +248,14 @@ KISSY.Editor.add("draft/support", function() {
                 self._help.hide();
             }
 
-            Event.on([document,editor.document], "click", hideHelp);
+            Event.on([document, editor.document], "click", hideHelp);
 
-            addRes.call(self, self._help, function() {
-                Event.remove([document,editor.document], "click", hideHelp);
+            addRes.call(self, self._help, function () {
+                Event.remove([document, editor.document], "click", hideHelp);
             });
 
         },
-        _realHelp:function() {
+        _realHelp:function () {
             var win = this._help,
                 helpBtn = this.helpBtn,
                 arrow = win.arrow;
@@ -270,13 +270,13 @@ KISSY.Editor.add("draft/support", function() {
                 top:off.top - 8
             });
         },
-        disable:function() {
+        disable:function () {
             this.holder.css("visibility", "hidden");
         },
-        enable:function() {
+        enable:function () {
             this.holder.css("visibility", "");
         },
-        sync:function() {
+        sync:function () {
             var localStorage = KE.localStorage;
             var self = this,
                 draftLimit = self.draftLimit,
@@ -285,7 +285,7 @@ KISSY.Editor.add("draft/support", function() {
                 drafts = self._getDrafts();
             if (drafts.length > draftLimit)
                 drafts.splice(0, drafts.length - draftLimit);
-            var items = [],draft,tip;
+            var items = [], draft, tip;
             for (var i = 0; i < drafts.length; i++) {
                 draft = drafts[i];
                 tip = (draft.auto ? "自动" : "手动") + "保存于 : "
@@ -303,7 +303,7 @@ KISSY.Editor.add("draft/support", function() {
                     : drafts);
         },
 
-        save:function(auto) {
+        save:function (auto) {
             var self = this,
                 drafts = self._getDrafts(),
                 editor = self.editor,
@@ -329,7 +329,7 @@ KISSY.Editor.add("draft/support", function() {
             self.sync();
         },
 
-        recover:function(ev) {
+        recover:function (ev) {
             var self = this,
                 editor = self.editor,
                 versions = self.versions,
@@ -343,7 +343,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             ev && ev.halt();
         },
-        destroy:function() {
+        destroy:function () {
             destroyRes.call(this);
         }
     });

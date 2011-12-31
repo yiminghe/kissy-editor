@@ -110,10 +110,10 @@ KISSY.Editor.add("overlay/focus", function() {
  * custom overlay  for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("overlay", function() {
+KISSY.Editor.add("overlay", function () {
 
     var S = KISSY,
-        UIBase = S['UIBase'],
+        UIBase = S.require("overlay"),
         KE = S.Editor;
 
 
@@ -126,9 +126,9 @@ KISSY.Editor.add("overlay", function() {
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
+    var Overlay4E = UIBase.create((S.require("overlay")), [KE['UIBase'].Focus], {
 
-        syncUI:function() {
+        syncUI:function () {
             //S.log("_syncUIOverlay4E");
             var self = this;
             //编辑器 overlay 中的全部点击都不会使得失去焦点
@@ -141,8 +141,8 @@ KISSY.Editor.add("overlay", function() {
         }
     });
 
-    var Dialog4E = UIBase.create(S.Dialog, [KE['UIBase'].Focus], {
-        show:function() {
+    var Dialog4E = UIBase.create(S.require("overlay").Dialog, [KE['UIBase'].Focus], {
+        show:function () {
             //在 show 之前调用
             this.center();
             var y = this.get("y");
@@ -167,7 +167,7 @@ KISSY.Editor.add("overlay", function() {
 
     var globalMask;
 
-    KE.Overlay.loading = function() {
+    KE.Overlay.loading = function () {
         if (!globalMask) {
             globalMask = new KE.Overlay({
                 x:0,
@@ -184,7 +184,7 @@ KISSY.Editor.add("overlay", function() {
         globalMask.loading();
     };
 
-    KE.Overlay.unloading = function() {
+    KE.Overlay.unloading = function () {
         globalMask && globalMask.hide();
     };
 }, {

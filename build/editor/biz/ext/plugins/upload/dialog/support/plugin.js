@@ -1,4 +1,4 @@
-KISSY.Editor.add("multi-upload/dialog/support", function() {
+KISSY.Editor.add("multi-upload/dialog/support", function () {
 
     var S = KISSY,
         KE = S.Editor,
@@ -76,12 +76,12 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
     S.augment(MultiUploadDialog, {
         addRes:KE.Utils.addRes,
         destroy:KE.Utils.destroyRes,
-        _prepareShow:function() {
+        _prepareShow:function () {
             var self = this,
                 editor = self.editor,
                 bangpaiCfg = editor.cfg["pluginConfig"]["multi-upload"];
 
-            self.addRes(function() {
+            self.addRes(function () {
                 var progressBars = self.progressBars;
                 for (var p in progressBars) {
                     if (progressBars.hasOwnProperty(p)) {
@@ -103,9 +103,9 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             // ie 6,7,8 upload swf 的容器如果设计了 visibility hidden 又 visible ，
             // 那个 swf 似乎就出事了
             // 所以不设置 visibility ，漂移大法
-            d.on("beforeVisibleChange", function(ev) {
+            d.on("beforeVisibleChange", function (ev) {
                 if (!ev.newVal) {
-                    d.set("xy", [-9999,-9999]);
+                    d.set("xy", [-9999, -9999]);
                     return false;
                 }
             });
@@ -241,14 +241,14 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     "uploadAll"],
                 holder:flashPos,
                 attrs:{
-                    width:fwidth ,
+                    width:fwidth,
                     height:fheight
                 },
                 params:{
                     wmode:"transparent"
                 },
                 flashVars:{
-                    allowedDomain : location.hostname,
+                    allowedDomain:location.hostname,
                     btn:true,
                     hand:true
                     //menu:true
@@ -257,21 +257,21 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
 
             self.uploader = uploader;
 
-            uploader.on("mouseOver", function() {
+            uploader.on("mouseOver", function () {
                 bel.addClass("ke-button-hover");
             });
-            uploader.on("mouseOut", function() {
+            uploader.on("mouseOut", function () {
                 bel.removeClass("ke-button-hover");
             });
             self.addRes(uploader);
-            insertAll.on("click", function(ev) {
+            insertAll.on("click", function (ev) {
                 var trs = list.all("tr");
                 for (var i = 0; i < trs.length; i++) {
                     var tr = new Node(trs[i]),
                         url = tr.attr("url");
                     if (url) {
                         // chrome refer empty in empty src iframe
-                        new Image().src=url;
+                        new Image().src = url;
                         editor.insertElement(new Node("<p>&nbsp;<img src='" +
                             url + "'/>&nbsp;</p>", null, editor.document));
                         self._removeTrFile(tr);
@@ -285,7 +285,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             });
             self.addRes(insertAll);
 
-            delAll.on("click", function(ev) {
+            delAll.on("click", function (ev) {
                 var trs = list.all("tr");
                 for (var i = 0; i < trs.length; i++) {
                     var tr = new Node(trs[i]);
@@ -296,13 +296,13 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             });
             self.addRes(delAll);
 
-            list.on("click", function(ev) {
-                var target = new Node(ev.target),tr;
+            list.on("click", function (ev) {
+                var target = new Node(ev.target), tr;
                 ev.halt();
                 if (target.hasClass("ke-upload-insert")) {
                     tr = target.parent("tr");
                     var url = tr.attr("url");
-                    new Image().src=url;
+                    new Image().src = url;
                     editor.insertElement(new Node("<img src='" +
                         url + "'/>", null, editor.document));
                 }
@@ -323,7 +323,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     tr.css("backgroundColor", "#eef4f9");
                     tr['animate']({
                         backgroundColor:"#FBFBFB"
-                    }, 1, null, function() {
+                    }, 1, null, function () {
                         tr.css("backgroundColor", "");
                     });
 
@@ -338,7 +338,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     tr.css("backgroundColor", "#eef4f9");
                     tr['animate']({
                         backgroundColor:"#FBFBFB"
-                    }, 1, null, function() {
+                    }, 1, null, function () {
                         tr.css("backgroundColor", "");
                     });
                     var next = tr.next();
@@ -360,7 +360,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             uploader.on("uploadError", self._uploadError, self);
 
             //从本地恢复已上传记录
-            KE.storeReady(function() {
+            KE.storeReady(function () {
                 self._restore();
             });
 
@@ -371,7 +371,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             var previewSuffix = bangpaiCfg['previewSuffix'];
             if (previewWidth) {
 
-                var previewWin = new S.Overlay({
+                var previewWin = new (S.require("overlay"))({
                     mask:false,
                     autoRender:true,
                     width:previewWidth,
@@ -382,7 +382,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 preview.css("border", "none");
 
                 var currentFid = 0;
-                listWrap.on("mouseover", function(ev) {
+                listWrap.on("mouseover", function (ev) {
                     var t = new Node(ev.target),
                         td = t.parent(".ke-upload-filename");
                     if (td) {
@@ -404,7 +404,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                             }
                             var offset = DOM.offset(td);
                             offset.left += td[0].offsetWidth;
-                            previewWin.set("xy", [offset.left,offset.top]);
+                            previewWin.set("xy", [offset.left, offset.top]);
                             previewWin.show();
                         }
                     } else {
@@ -420,7 +420,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 d.set("handlers", [d.get("el")]);
             }
         },
-        _removeTrFile:function(tr) {
+        _removeTrFile:function (tr) {
             var self = this,
                 progressBars = self.progressBars,
                 fid = tr.attr("fid"),
@@ -428,7 +428,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             if (fid) {
                 try {
                     uploader['removeFile'](fid);
-                } catch(e) {
+                } catch (e) {
                 }
             }
             if (progressBars[fid]) {
@@ -440,14 +440,14 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             self._syncStatus();
         },
 
-        _realShow:function() {
+        _realShow:function () {
             this.dialog.center();
             this.dialog.show();
         },
-        show:function() {
+        show:function () {
             this._prepareShow();
         },
-        _uploadError:function(ev) {
+        _uploadError:function (ev) {
             var self = this,
                 progressBars = self.progressBars,
                 uploader = self.uploader,
@@ -474,7 +474,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                     "</div>");
             }
         },
-        _getFileTr:function(id) {
+        _getFileTr:function (id) {
             var self = this,
                 list = self._list,
                 trs = list.all("tr");
@@ -485,15 +485,15 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 }
             }
         },
-        _onUploadStart:function(ev) {
+        _onUploadStart:function (ev) {
             var id = ev.id || (ev['file'] && ev['file'].id);
             var tr = this._getFileTr(id);
             tr[0].className = "ke-upload-uploading";
         },
-        _onComplete:function() {
+        _onComplete:function () {
 
         },
-        _onUploadCompleteData:function(ev) {
+        _onUploadCompleteData:function (ev) {
             var self = this,
                 uploader = self.uploader,
                 data = S.trim(ev.data).replace(/\r|\n/g, ""),
@@ -504,14 +504,14 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             if (id) {
                 try {
                     uploader['removeFile'](id);
-                } catch(e) {
+                } catch (e) {
                 }
             }
 
             if (!data) return;
             try {
                 data = JSON.parse(data);
-            } catch(ex) {
+            } catch (ex) {
                 S.log("multi-upload _onUploadCompleteData error :");
                 S.log(ex);
                 throw ex;
@@ -533,7 +533,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             self._syncStatus();
 
         },
-        _onProgress:function(ev) {
+        _onProgress:function (ev) {
             var fid = ev['file'].id,
                 progressBars = this.progressBars,
                 progess = Math.floor(ev['bytesLoaded'] * 100 / ev['bytesTotal']),
@@ -541,7 +541,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             bar && bar.set("progress", progess);
 
         },
-        ddisable:function() {
+        ddisable:function () {
             var self = this;
             self.uploader['lock']();
             self.btn.addClass("ke-triplebutton-disabled");
@@ -550,13 +550,13 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 top:-9999
             });
         },
-        denable:function() {
+        denable:function () {
             var self = this;
             self.uploader['unlock']();
             self.btn.removeClass("ke-triplebutton-disabled");
             self.flashPos.offset(self.btn.offset());
         },
-        _syncStatus:function() {
+        _syncStatus:function () {
             var self = this,
                 list = self._list,
                 seq = 1,
@@ -564,7 +564,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             if (trs.length == 0) {
                 self._listWrap.hide();
             } else {
-                list.all(".ke-upload-seq").each(function(n) {
+                list.all(".ke-upload-seq").each(function (n) {
                     n.html(seq++);
                 });
                 var wait = 0;
@@ -580,7 +580,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             self._save();
         },
         //当前已上传的图片保存下来
-        _restore:function() {
+        _restore:function () {
             var self = this,
                 store = KE.localStorage,
                 data = store.getItem(KEY),
@@ -599,11 +599,11 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 self._syncStatus();
             }
         },
-        _tagComplete:function(tr, url) {
+        _tagComplete:function (tr, url) {
             tr.attr("url", url);
             tr[0].className = "ke-upload-complete";
         },
-        _save:function() {
+        _save:function () {
             var self = this,
                 store = KE.localStorage,
                 list = self._list,
@@ -626,7 +626,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 store.setItem(KEY, encodeURIComponent(JSON.stringify(data)));
             }
         },
-        _getFilesSize:function(files) {
+        _getFilesSize:function (files) {
             var n = 0;
             for (var i in files) {
                 if (files.hasOwnProperty(i))
@@ -634,7 +634,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             }
             return n;
         },
-        _createFileTr:function(tbl, f) {
+        _createFileTr:function (tbl, f) {
 
             /*
              chrome not work !
@@ -707,7 +707,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
 
             } else {
                 progressBars[id] = new KE.ProgressBar({
-                    container:rowNode.one(".ke-upload-progress") ,
+                    container:rowNode.one(".ke-upload-progress"),
                     width:"100px",
                     height:"15px"
                 });
@@ -718,20 +718,20 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
 
             return rowNode;
         },
-        _onSelect:function(ev) {
+        _onSelect:function (ev) {
             var self = this,
                 uploader = self.uploader,
                 list = self._list,
                 curNum = 0,
                 //当前队列的所有文件，连续选择的话累计！！！
                 files = ev['fileList'],
-                available = self._numberLimit,i;
+                available = self._numberLimit, i;
 
             if (files) {
                 //去除已经 ui 显示出来的
                 var trs = list.children("tr");
                 for (i = 0; i < trs.length; i++) {
-                    var tr = trs[i],fid = DOM.attr(tr, "fid");
+                    var tr = trs[i], fid = DOM.attr(tr, "fid");
                     fid && files[fid] && (delete files[fid]);
                 }
                 //限额-目前ui的
@@ -753,7 +753,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 //新选择的随即删除一些
                 for (i in files) {
                     if (!files.hasOwnProperty(i)) continue;
-                    curNum ++;
+                    curNum++;
                     var f = files[i],
                         size = Math.floor(f.size / 1000),
                         id = f.id;
@@ -773,7 +773,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
             }
         },
 
-        _ready:function() {
+        _ready:function () {
             var self = this,
                 uploader = self.uploader,
                 up = self.up,
@@ -801,7 +801,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function() {
                 }
             ]);
             up.detach();
-            up.on("click", function(ev) {
+            up.on("click", function (ev) {
                 uploader['uploadAll'](self._ds,
                     "POST",
                     normParams(self._dsp),

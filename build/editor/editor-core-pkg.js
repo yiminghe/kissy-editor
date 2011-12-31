@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-30 21:14:42
+ * @buildtime: 2011-12-31 16:48:06
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-30 21:14:42");
+                encodeURIComponent("2011-12-31 16:48:06");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-30 21:14:42'));
+                encodeURIComponent('2011-12-31 16:48:06'));
         };
     }
 
@@ -10412,6 +10412,7 @@ KISSY.Editor.add("button", function () {
         KE = S.Editor,
         ON = "on",
         OFF = "off",
+        UIBase=S.require("uibase"),
         DISABLED = "disabled",
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
@@ -10431,8 +10432,8 @@ KISSY.Editor.add("button", function () {
         return 0;
     }
 
-    var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
-        || S['UIBase']['Box']
+    var TripleButton = UIBase.create([UIBase['Box']['Render']
+        || UIBase['Box']
     ], {
         _updateHref:function () {
             var self = this;

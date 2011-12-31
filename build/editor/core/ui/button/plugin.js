@@ -7,6 +7,7 @@ KISSY.Editor.add("button", function () {
         KE = S.Editor,
         ON = "on",
         OFF = "off",
+        UIBase=S.require("uibase"),
         DISABLED = "disabled",
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
@@ -26,8 +27,8 @@ KISSY.Editor.add("button", function () {
         return 0;
     }
 
-    var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
-        || S['UIBase']['Box']
+    var TripleButton = UIBase.create([UIBase['Box']['Render']
+        || UIBase['Box']
     ], {
         _updateHref:function () {
             var self = this;

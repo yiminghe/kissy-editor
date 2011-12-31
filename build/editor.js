@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2011-12-30 21:14:42
+ * @buildtime: 2011-12-31 16:48:06
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2011-12-30 21:14:42");
+                encodeURIComponent("2011-12-31 16:48:06");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2011-12-30 21:14:42'));
+                encodeURIComponent('2011-12-31 16:48:06'));
         };
     }
 
@@ -10412,6 +10412,7 @@ KISSY.Editor.add("button", function () {
         KE = S.Editor,
         ON = "on",
         OFF = "off",
+        UIBase=S.require("uibase"),
         DISABLED = "disabled",
         BUTTON_CLASS = "ke-triplebutton",
         ON_CLASS = "ke-triplebutton-on",
@@ -10431,8 +10432,8 @@ KISSY.Editor.add("button", function () {
         return 0;
     }
 
-    var TripleButton = S['UIBase'].create([S['UIBase']['Box']['Render']
-        || S['UIBase']['Box']
+    var TripleButton = UIBase.create([UIBase['Box']['Render']
+        || UIBase['Box']
     ], {
         _updateHref:function () {
             var self = this;
@@ -11153,7 +11154,7 @@ KISSY.Editor.add("bubbleview", function () {
         return;
     }
 
-    var BubbleView = S.UIBase.create(KE.Overlay, [], {
+    var BubbleView = S.require("uibase").create(KE.Overlay, [], {
         renderUI:function () {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
@@ -12243,7 +12244,7 @@ KISSY.Editor.add("draft", function(editor) {
  * draft for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("draft/support", function() {
+KISSY.Editor.add("draft/support", function () {
     var S = KISSY,
         KE = S.Editor,
         Node = S.Node,
@@ -12291,10 +12292,10 @@ KISSY.Editor.add("draft/support", function() {
         this._init();
     }
 
-    var addRes = KE.Utils.addRes,destroyRes = KE.Utils.destroyRes;
+    var addRes = KE.Utils.addRes, destroyRes = KE.Utils.destroyRes;
     S.augment(Draft, {
 
-        _getSaveKey:function() {
+        _getSaveKey:function () {
             var self = this,
                 editor = self.editor,
                 cfg = editor.cfg.pluginConfig;
@@ -12304,7 +12305,7 @@ KISSY.Editor.add("draft/support", function() {
         /**
          * parse 历史记录延后，点击 select 时才开始 parse
          */
-        _getDrafts:function() {
+        _getDrafts:function () {
             var localStorage = KE.localStorage;
             var self = this;
             if (!self.drafts) {
@@ -12323,7 +12324,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             return self.drafts;
         },
-        _init:function() {
+        _init:function () {
 
             var self = this,
                 editor = self.editor,
@@ -12359,23 +12360,23 @@ KISSY.Editor.add("draft/support", function() {
                     "</a>"
             ).appendTo(holder),
                 versions = new KE.Select({
-                    container: holder,
+                    container:holder,
                     menuContainer:document.body,
                     doc:editor.document,
                     width:"85px",
                     popUpWidth:"225px",
-                    align:["r","t"],
+                    align:["r", "t"],
                     emptyText:"&nbsp;&nbsp;&nbsp;尚无编辑器历史存在",
                     title:"恢复编辑历史"
                 });
             self.versions = versions;
             //点击才开始 parse
-            versions.on("select", function() {
+            versions.on("select", function () {
                 versions.detach("select", arguments.callee);
                 self.sync();
             });
             save._4e_unselectable();
-            save.on("click", function(ev) {
+            save.on("click", function (ev) {
                 self.save(false);
                 //如果不阻止，部分页面在ie6下会莫名奇妙把其他input的值丢掉！
                 ev.halt();
@@ -12388,7 +12389,7 @@ KISSY.Editor.add("draft/support", function() {
              监控form提交，每次提交前保存一次，防止出错
              */
             if (editor.textarea[0].form) {
-                (function() {
+                (function () {
                     var textarea = editor.textarea,
                         form = textarea[0].form;
 
@@ -12397,18 +12398,18 @@ KISSY.Editor.add("draft/support", function() {
                     }
 
                     Event.on(form, "submit", saveF);
-                    addRes.call(self, function() {
+                    addRes.call(self, function () {
                         Event.remove(form, "submit", saveF);
                     });
 
                 })();
             }
 
-            var timer = setInterval(function() {
+            var timer = setInterval(function () {
                 self.save(true);
             }, self.draftInterval * 60 * 1000);
 
-            addRes.call(self, function() {
+            addRes.call(self, function () {
                 clearInterval(timer);
             });
 
@@ -12423,12 +12424,12 @@ KISSY.Editor.add("draft/support", function() {
                     elCls:"ke-draft-help",
                     title:"点击查看帮助",
                     text:"点击查看帮助",
-                    render: holder
+                    render:holder
                 });
 
                 help.render();
 
-                help.on("click", function(ev) {
+                help.on("click", function (ev) {
                     if (self._help && self._help.get("visible")) {
                         self._help.hide();
                     } else {
@@ -12442,7 +12443,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             addRes.call(self, holder);
         },
-        _prepareHelp:function() {
+        _prepareHelp:function () {
             var self = this,
                 editor = self.editor,
                 cfg = editor.cfg.pluginConfig,
@@ -12473,7 +12474,7 @@ KISSY.Editor.add("draft/support", function() {
                 border:"1px solid #ACB4BE",
                 "text-align":"left"
             });
-            self._help = new S.Overlay({
+            self._help = new (S.require("overlay"))({
                 content:help,
                 autoRender:true,
                 width:help.width() + "px",
@@ -12489,14 +12490,14 @@ KISSY.Editor.add("draft/support", function() {
                 self._help.hide();
             }
 
-            Event.on([document,editor.document], "click", hideHelp);
+            Event.on([document, editor.document], "click", hideHelp);
 
-            addRes.call(self, self._help, function() {
-                Event.remove([document,editor.document], "click", hideHelp);
+            addRes.call(self, self._help, function () {
+                Event.remove([document, editor.document], "click", hideHelp);
             });
 
         },
-        _realHelp:function() {
+        _realHelp:function () {
             var win = this._help,
                 helpBtn = this.helpBtn,
                 arrow = win.arrow;
@@ -12511,13 +12512,13 @@ KISSY.Editor.add("draft/support", function() {
                 top:off.top - 8
             });
         },
-        disable:function() {
+        disable:function () {
             this.holder.css("visibility", "hidden");
         },
-        enable:function() {
+        enable:function () {
             this.holder.css("visibility", "");
         },
-        sync:function() {
+        sync:function () {
             var localStorage = KE.localStorage;
             var self = this,
                 draftLimit = self.draftLimit,
@@ -12526,7 +12527,7 @@ KISSY.Editor.add("draft/support", function() {
                 drafts = self._getDrafts();
             if (drafts.length > draftLimit)
                 drafts.splice(0, drafts.length - draftLimit);
-            var items = [],draft,tip;
+            var items = [], draft, tip;
             for (var i = 0; i < drafts.length; i++) {
                 draft = drafts[i];
                 tip = (draft.auto ? "自动" : "手动") + "保存于 : "
@@ -12544,7 +12545,7 @@ KISSY.Editor.add("draft/support", function() {
                     : drafts);
         },
 
-        save:function(auto) {
+        save:function (auto) {
             var self = this,
                 drafts = self._getDrafts(),
                 editor = self.editor,
@@ -12570,7 +12571,7 @@ KISSY.Editor.add("draft/support", function() {
             self.sync();
         },
 
-        recover:function(ev) {
+        recover:function (ev) {
             var self = this,
                 editor = self.editor,
                 versions = self.versions,
@@ -12584,7 +12585,7 @@ KISSY.Editor.add("draft/support", function() {
             }
             ev && ev.halt();
         },
-        destroy:function() {
+        destroy:function () {
             destroyRes.call(this);
         }
     });
@@ -16830,7 +16831,7 @@ KISSY.Editor.add("localstorage", function() {
 
         store.swf.height = 138;
         //Dialog 不行
-        var o = new S.Overlay({
+        var o = new (S.require("overlay"))({
             headerContent:"请点允许",
             width:"0px",
             //mask:true,
@@ -17505,10 +17506,10 @@ KISSY.Editor.add("overlay/focus", function() {
  * custom overlay  for kissy editor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("overlay", function() {
+KISSY.Editor.add("overlay", function () {
 
     var S = KISSY,
-        UIBase = S['UIBase'],
+        UIBase = S.require("overlay"),
         KE = S.Editor;
 
 
@@ -17521,9 +17522,9 @@ KISSY.Editor.add("overlay", function() {
     /**
      * 2010-11-18 重构，使用 S.Ext 以及 Base 组件周期
      */
-    var Overlay4E = UIBase.create(S.Overlay, [KE['UIBase'].Focus], {
+    var Overlay4E = UIBase.create((S.require("overlay")), [KE['UIBase'].Focus], {
 
-        syncUI:function() {
+        syncUI:function () {
             //S.log("_syncUIOverlay4E");
             var self = this;
             //编辑器 overlay 中的全部点击都不会使得失去焦点
@@ -17536,8 +17537,8 @@ KISSY.Editor.add("overlay", function() {
         }
     });
 
-    var Dialog4E = UIBase.create(S.Dialog, [KE['UIBase'].Focus], {
-        show:function() {
+    var Dialog4E = UIBase.create(S.require("overlay").Dialog, [KE['UIBase'].Focus], {
+        show:function () {
             //在 show 之前调用
             this.center();
             var y = this.get("y");
@@ -17562,7 +17563,7 @@ KISSY.Editor.add("overlay", function() {
 
     var globalMask;
 
-    KE.Overlay.loading = function() {
+    KE.Overlay.loading = function () {
         if (!globalMask) {
             globalMask = new KE.Overlay({
                 x:0,
@@ -17579,7 +17580,7 @@ KISSY.Editor.add("overlay", function() {
         globalMask.loading();
     };
 
-    KE.Overlay.unloading = function() {
+    KE.Overlay.unloading = function () {
         globalMask && globalMask.hide();
     };
 }, {
