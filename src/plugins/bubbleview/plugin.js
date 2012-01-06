@@ -91,15 +91,8 @@ KISSY.Editor.add("bubbleview", function () {
     }
 
     function getXy(bubble, editor) {
-        if (!bubble) {
-            return undefined;
-        }
 
         var el = bubble._selectedEl;
-
-        if (!el) {
-            return undefined;
-        }
 
         var editorWin = editor.iframe[0].contentWindow;
 
@@ -185,38 +178,55 @@ KISSY.Editor.add("bubbleview", function () {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
-                    hide();
+                    onHide();
                     // 等所有bubble hide 再show
-                    setTimeout(function () {
-                        bubble.show(editor);
-                    }, 10);
+                    S.later(onShow, 10);
                 } else if (bubble) {
                     bubble._selectedEl = bubble._plugin = null;
-                    hide();
+                    onHide();
                 }
             }
         });
         //代码模式下就消失
         //!TODO 耦合---
-        function hide() {
-            bubble && bubble.hide();
+        function onHide() {
+            if (bubble) {
+                bubble.hide();
+                Event.remove(editorWin, "scroll", onScroll);
+            }
         }
 
-        editor.on("sourcemode", hide);
+        editor.on("sourcemode", onHide);
+
         var editorWin = editor.iframe[0].contentWindow;
-        Event.on(editorWin, "scroll", KE.Utils.buffer(function () {
 
+        var bufferScroll = KE.Utils.buffer(function () {
             var xy = getXy(bubble, editor);
-
             if (xy) {
                 bubble.set("xy", xy);
+                var el = bubble.get("el");
+                el.css("display", "none");
                 bubble.set("visible", true);
-            } else {
-                hide();
+                el.fadeIn(0.3);
             }
+        }, undefined, 350);
 
-        }, undefined, 30));
+        function onScroll() {
+            //S.log("bubble onscroll");
+            if (bubble) {
+                var el = bubble.get("el");
+                el.stop(1);
+                bubble.hide();
+            }
+            bufferScroll();
+        }
+
+        function onShow() {
+            Event.on(editorWin, "scroll", onScroll);
+            bubble.show(editor);
+        }
     };
+
     BubbleView.register = function (cfg) {
         var pluginName = cfg.pluginName;
         holder[pluginName] = holder[pluginName] || {

@@ -149,7 +149,6 @@ KISSY.Editor.add("font", function (editor) {
                     // 清除,wildcard pls
                     // !TODO inherit 小问题，在中间点 inherit
                     style.remove(editor.document);
-                    self.btn.set("value", "");
                 } else {
                     style.apply(editor.document);
                 }
@@ -158,10 +157,10 @@ KISSY.Editor.add("font", function (editor) {
 
             selectionChange:function (ev) {
                 var self = this,
-                    j,
                     elementPath = ev.path,
                     elements = elementPath.elements,
                     styles = self.cfg.styles;
+
                 // For each element into the elements path.
                 for (var i = 0, element; i < elements.length; i++) {
                     element = elements[i];
@@ -177,42 +176,13 @@ KISSY.Editor.add("font", function (editor) {
                         }
                     }
                 }
-                var name = self.name,
-                    v,
-                    item,
-                    finalIndex = 9999,
-                    finalValue = "",
-                    index,
-                    n,
-                    items = self.cfg.items;
 
-                // 默认值
-                for (i = 0, element; i < elements.length; i++) {
-                    element = elements[i];
-                    v = element.css(name).toLowerCase();
-                    for (j = 0; j < items.length; j++) {
-                        item = items[j];
-                        n = item.name.toLowerCase();
-                        // font-family : tahoma, arial, 宋体, sans-serif
-                        // 前面的优先级高！
-                        if ((index = v.indexOf(n)) > -1 && finalIndex > index) {
-                            finalIndex = index;
-                            finalValue = item.value;
-                        }
-                        // 宽松，用户可能设置中文或英文
-                        n = item.value.toLowerCase();
-                        if ((index = v.indexOf(item.value)) > -1 && finalIndex > index) {
-                            finalIndex = index;
-                            finalValue = item.value;
-                        }
-                    }
-                    if (finalValue) {
-                        self.btn.set("value", finalValue);
-                        return;
-                    }
+                var defaultValue = self.cfg.defaultValue;
+                if (defaultValue) {
+                    self.btn.set("value", defaultValue);
+                } else {
+                    self.btn.reset("value");
                 }
-
-                self.btn.reset("value");
             }
         };
 
@@ -223,6 +193,7 @@ KISSY.Editor.add("font", function (editor) {
                 width:"30px",
                 mode:KE.WYSIWYG_MODE,
                 showValue:true,
+                defaultValue:FONT_SIZES.defaultValue,
                 popUpWidth:FONT_SIZES.width,
                 items:FONT_SIZE_ITEMS,
                 styles:FONT_SIZE_STYLES
@@ -234,6 +205,7 @@ KISSY.Editor.add("font", function (editor) {
                 title:"字体",
                 width:"110px",
                 mode:KE.WYSIWYG_MODE,
+                defaultValue:FONT_FAMILIES.defaultValue,
                 popUpWidth:FONT_FAMILIES.width,
                 items:FONT_FAMILY_ITEMS,
                 styles:FONT_FAMILY_STYLES

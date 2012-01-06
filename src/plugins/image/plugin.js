@@ -46,36 +46,56 @@ KISSY.Editor.add("image", function (editor) {
             editor.destroyDialog("image/dialog");
         });
 
-// 去除右键
-//        KE.use("contextmenu", function() {
-//            var contextMenu = {
-//                "图片属性":function(editor) {
-//                    var selection = editor.getSelection(),
-//                        startElement = selection && selection.getStartElement(),
-//                        flash = checkImg(startElement);
-//                    if (flash) {
-//                        context.call("show", null, flash);
-//                    }
-//                }
-//            };
-//
 
-//            var myContexts = {};
-//            for (var f in contextMenu) {
-//                (function(f) {
-//                    myContexts[f] = function() {
-//                        contextMenu[f](editor);
-//                    }
-//                })(f);
-//            }
-//            var menu = KE.ContextMenu.register({
-//                editor:editor,
-//                rules:[checkImg],
-//                width:"120px",
-//                funcs:myContexts
-//            });
-//            addRes.call(controls, menu);
-//        });
+        KE.use("contextmenu", function () {
+            var contextMenu = {
+                "图片属性":function (editor) {
+                    var selection = editor.getSelection(),
+                        startElement = selection && selection.getStartElement(),
+                        img = checkImg(startElement);
+                    if (img) {
+                        context.call("show", null, img);
+                    }
+                },
+                "插入新行":function (editor) {
+                    var selection = editor.getSelection(),
+                        startElement = selection && selection.getStartElement();
+                    if (!startElement) {
+                        return;
+                    }
+                    var doc = editor.document,
+                        p = new Node(doc.createElement("p"));
+                    if (!UA.ie) {
+                        p._4e_appendBogus();
+                    }
+                    var r = new KE.Range(doc);
+                    r.setStartAfter(startElement);
+                    r.select();
+                    editor.insertElement(p);
+                    r.moveToElementEditablePosition(p, 1);
+                    r.select();
+                }
+            };
+
+
+            var myContexts = {};
+            for (var f in contextMenu) {
+                if (contextMenu.hasOwnProperty(f)) {
+                    (function (f) {
+                        myContexts[f] = function () {
+                            contextMenu[f](editor);
+                        }
+                    })(f);
+                }
+            }
+            var menu = KE.ContextMenu.register({
+                editor:editor,
+                rules:[checkImg],
+                width:"120px",
+                funcs:myContexts
+            });
+            addRes.call(controls, menu);
+        });
 
 
         function dblshow(ev) {
@@ -86,9 +106,7 @@ KISSY.Editor.add("image", function (editor) {
             }
         }
 
-        Event.on(editor.document,
-            "dblclick",
-            dblshow);
+        Event.on(editor.document, "dblclick", dblshow);
 
         addRes.call(controls, function () {
             Event.remove(editor.document,

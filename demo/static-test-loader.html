@@ -220,10 +220,10 @@
 <script src="../../kissy/build/overlay.js"></script>
 <!--kissy 1.20 end-->
 <script>
-    KISSY.ready(function(S) {
-        var theme = S.one("#theme"),themes = S.one("#themes");
+    KISSY.ready(function (S) {
+        var theme = S.one("#theme"), themes = S.one("#themes");
         themes.val("cool");
-        themes.on("change", function() {
+        themes.on("change", function () {
             var v = themes.val();
             theme.attr("href", "../build/theme/" + v + "/editor-pkg.css");
         });
@@ -385,9 +385,9 @@ xiami 音乐
 <script src="../src/biz/ext/plugins/sourcearea/support/plugin.js"></script>
 <script src="../src/biz/ext/plugins/sourcearea/plugin.js"></script>
 <script>
-KISSY.ready(function(S) {
+KISSY.ready(function (S) {
 
-    S.use('editor', function() {
+    S.use('editor', function () {
 
         var KE = KISSY.Editor;
 
@@ -408,7 +408,7 @@ KISSY.ready(function(S) {
             //customLink:["http://localhost/customLink.css","http://xx.com/y2.css"],
             //是否一开始自动聚焦
             //focus:true,
-            pluginConfig: {
+            pluginConfig:{
                 link:{
                     target:"_blank"
                 },
@@ -417,13 +417,13 @@ KISSY.ready(function(S) {
                     upload:{
                         serverUrl:"/upload/upload",
                         serverParams:{
-                            waterMark:function() {
+                            waterMark:function () {
                                 return S.one("#ke_img_up_watermark_1")[0].checked;
                             }
                         },
                         suffix:"png,jpg,jpeg,gif",
                         fileInput:"Filedata",
-                        sizeLimit:1000,//k
+                        sizeLimit:1000, //k
                         extraHtml:"<p style='margin-top:10px;'><input type='checkbox' id='ke_img_up_watermark_1' checked='checked'> 图片加水印，防止别人盗用</p>"
                     }
                 },
@@ -431,17 +431,18 @@ KISSY.ready(function(S) {
                     defaultWidth:"300",
                     defaultHeight:"300"
                 },
-                "templates": [
+                "templates":[
                     {
-                        demo: "模板1效果演示html"  ,
-                        html: "<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
+                        demo:"模板1效果演示html",
+                        html:"<div style='border:1px solid red'>模板1效果演示html</div><p></p>"
                     },
                     {
-                        demo: "模板2效果演示html",
-                        html: "<div style='border:1px solid red'>模板2效果演示html</div>"
+                        demo:"模板2效果演示html",
+                        html:"<div style='border:1px solid red'>模板2效果演示html</div>"
                     }
                 ],
                 "font-size":{
+                    defaultValue:"14px",
                     items:[
                         {
                             value:"14px",
@@ -483,7 +484,9 @@ KISSY.ready(function(S) {
                     width:"115px"
                 },
                 //"font-size":false,
-                //"font-family":false,
+                "font-family":{
+                    defaultValue:"SimSun"
+                },
                 //"font-bold":false,
                 // "font-italic":false,
                 //"font-underline":false,
@@ -502,14 +505,13 @@ KISSY.ready(function(S) {
                 "multi-upload":{
                     serverUrl:"/upload/upload",
                     serverParams:{
-                        waterMark:function() {
+                        waterMark:function () {
                             return S.one("#ke_img_up_watermark_2")[0].checked;
                         }
                     },
                     //previewSuffix:"_60x60",
                     previewWidth:"80px",
-                    sizeLimit:1000//k,
-                    ,numberLimit:15,
+                    sizeLimit:1000,//k,, numberLimit:15,
                     extraHtml:"<p style='margin-top:10px;'>" +
                             "<input type='checkbox' " +
                             "style='vertical-align:middle;margin:0 5px;' " +
@@ -532,7 +534,7 @@ KISSY.ready(function(S) {
                             //默认高宽
                             width:480,
                             height:400,
-                            detect:function(url) {
+                            detect:function (url) {
                                 return url;
                             }
                         },
@@ -540,7 +542,7 @@ KISSY.ready(function(S) {
                             reg:/youku\.com/i,
                             width:480,
                             height:400,
-                            detect:function(url) {
+                            detect:function (url) {
                                 var m = url.match(/id_([^.]+)\.html$/);
                                 if (m) {
                                     return "http://player.youku.com/player.php/sid/" + m[1] + "/v.swf";
@@ -557,7 +559,7 @@ KISSY.ready(function(S) {
                             reg:/tudou\.com/i,
                             width:480,
                             height:400,
-                            detect:function(url) {
+                            detect:function (url) {
                                 return url;
                             }
                         },
@@ -565,7 +567,7 @@ KISSY.ready(function(S) {
                             reg:/ku6\.com/i,
                             width:480,
                             height:400,
-                            detect:function(url) {
+                            detect:function (url) {
                                 var m = url.match(/show[^\/]*\/([^.]+)\.html$/);
                                 if (m) {
                                     return "http://player.ku6.com/refer/" + m[1] + "/v.swf";
@@ -592,7 +594,7 @@ KISSY.ready(function(S) {
                     // saveKey:"xxx",
                     interval:5,
                     limit:10,
-                    helpHtml:  "<div " +
+                    helpHtml:"<div " +
                             "style='width:200px;'>" +
                             "<div style='padding:5px;'>草稿箱能够自动保存您最新编辑的内容，" +
                             "如果发现内容丢失，" +
@@ -608,7 +610,7 @@ KISSY.ready(function(S) {
                     sizeLimit:1000,
                     serverUrl:"/upload/upload",
                     serverParams:{
-                        waterMark:function() {
+                        waterMark:function () {
                             return true;
                         }
                     }
@@ -637,7 +639,7 @@ KISSY.ready(function(S) {
                     "pagebreak,separator,maximize,dragupload");
 
 
-            editor2.on("dialogShow", function(e) {
+            editor2.on("dialogShow", function (e) {
                 S.log("dialog show start");
                 S.log(e.dialog);
                 S.log(e.pluginDialog);
@@ -645,22 +647,22 @@ KISSY.ready(function(S) {
                 S.log("dialog show end");
             });
 
-            editor2.on("selectionChange", function(e) {
+            editor2.on("selectionChange", function (e) {
                 S.log("selectionChange : " + e.path.toString());
             });
 
-            editor2.on("maximizeWindow", function() {
+            editor2.on("maximizeWindow", function () {
                 S.log("fire maximizeWindow");
             });
         }
 
         test();
-        S.one('#destroy1').on("click", function(ev) {
+        S.one('#destroy1').on("click", function (ev) {
             ev.halt();
             editor2.destroy();
             editor2 = null;
         });
-        S.one('#recover1').on("click", function(ev) {
+        S.one('#recover1').on("click", function (ev) {
             ev.halt();
             if (!editor2) {
                 test()
@@ -669,8 +671,8 @@ KISSY.ready(function(S) {
         });
 
 
-        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo,elementpaths", function() {
-            this.on("selectionChange", function(e) {
+        window.editor3 = KE("#editor2", S.clone(cfg)).use("sourcearea,separator,undo,elementpaths", function () {
+            this.on("selectionChange", function (e) {
                 S.log("selectionChange : " + e.path.toString());
             });
         });
