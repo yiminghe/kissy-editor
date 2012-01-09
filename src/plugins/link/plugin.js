@@ -27,7 +27,7 @@ KISSY.Editor.add("link", function(editor) {
                 + ' target="_blank" ' +
                 'class="ke-bubbleview-url">' +
                 '新窗口打开' +
-                '</a>   |   '
+                '</a>  –  '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-change">' +
                 '编辑' +

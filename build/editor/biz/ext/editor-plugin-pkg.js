@@ -135,7 +135,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
                 editor = self.editor,
                 r = editor.restoreRealElement(selectedFlash);
             if (!r)return;
-            //tipurl.html(selectedFlash.attr("title"));
+            tipurl.html(selectedFlash.attr("title"));
             tipurl.attr("href", self._getFlashUrl(r));
         }
     });
