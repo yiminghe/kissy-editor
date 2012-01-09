@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-09 17:49:43
+ * @buildtime: 2012-01-09 19:06:58
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-09 17:49:43");
+                encodeURIComponent("2012-01-09 19:06:58");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-09 17:49:43'));
+                encodeURIComponent('2012-01-09 19:06:58'));
         };
     }
 

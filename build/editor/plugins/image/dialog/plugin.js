@@ -495,6 +495,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
                 link.attr("_ke_saved_href", linkVal)
                     .attr("href", linkVal)
                     .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
+                //editor.notifySelectionChange();
             } else {
                 // 删除
                 bs = sel.createBookmarks();

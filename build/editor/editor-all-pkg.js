@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-09 17:49:43
+ * @buildtime: 2012-01-09 19:06:58
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-09 17:49:43");
+                encodeURIComponent("2012-01-09 19:06:58");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-09 17:49:43'));
+                encodeURIComponent('2012-01-09 19:06:58'));
         };
     }
 
@@ -11147,6 +11147,7 @@ KISSY.Editor.add("select", function () {
  */
 KISSY.Editor.add("bubbleview", function () {
     var S = KISSY,
+        UA = S.UA,
         KE = S.Editor,
         Event = S.Event,
         DOM = S.DOM;
@@ -11160,23 +11161,20 @@ KISSY.Editor.add("bubbleview", function () {
         renderUI:function () {
             var el = this.get("el");
             el.addClass("ke-bubbleview-bubble");
-
         },
-        show:function (editor) {
-            var self = this,
-                xy = getXy(self, editor);
-            if (xy) {
-                self.set("xy", [xy.left, xy.top]);
-
-                var archor = getTopPosition(self);
-                if (!archor) {
-                } else {
-                    xy[1] = archor.get("y") + archor.get("el")[0].offsetHeight;
-                }
-
-                BubbleView['superclass'].show.call(self);
-                self.set("xy", xy);
-            }
+        show:function () {
+            var el = this.get("el");
+            el.css("visibility", "hidden");
+            el.stop(1);
+            el.css("display", 'none');
+            this.set("visible", true);
+            el.fadeIn(0.3);
+        },
+        hide:function () {
+            var el = this.get("el");
+            el.css("visibility", "hidden");
+            el.stop(1);
+            this.set("visible", false);
         },
         destructor:function () {
             KE.Utils.destroyRes.call(this);
@@ -11194,17 +11192,21 @@ KISSY.Editor.add("bubbleview", function () {
 
     var holder = {};
 
+    function inRange(t, b, r) {
+        return t <= r && b >= r;
+    }
+
     /**
      * 是否两个bubble上下重叠？
      * @param b1
      * @param b2
      */
     function overlap(b1, b2) {
-        var b1_y = b1.get("y"), b1_y2 = b1_y + b1.get("el")[0].offsetHeight;
+        var b1_top = b1.get("y"), b1_bottom = b1_top + b1.get("el")[0].offsetHeight;
 
-        var b2_y = b2.get("y"), b2_y2 = b2_y + b2.get("el")[0].offsetHeight;
+        var b2_top = b2.get("y"), b2_bottom = b2_top + b2.get("el")[0].offsetHeight;
 
-        return !(b1_y2 < b2_y || b2_y2 < b1_y);
+        return inRange(b1_top, b1_bottom, b2_bottom) || inRange(b1_top, b1_bottom, b2_top);
     }
 
     /**
@@ -11321,7 +11323,8 @@ KISSY.Editor.add("bubbleview", function () {
                     bubble = getInstance(pluginName);
                     bubble._selectedEl = a;
                     bubble._plugin = pluginContext;
-                    onHide();
+                    // 重新触发 bubble show事件
+                    bubble.hide();
                     // 等所有bubble hide 再show
                     S.later(onShow, 10);
                 } else if (bubble) {
@@ -11343,22 +11346,31 @@ KISSY.Editor.add("bubbleview", function () {
 
         var editorWin = editor.iframe[0].contentWindow;
 
-        var bufferScroll = KE.Utils.buffer(function () {
+        function showImmediately() {
+
             var xy = getXy(bubble, editor);
             if (xy) {
                 bubble.set("xy", xy);
-                var el = bubble.get("el");
-                el.css("display", "none");
-                bubble.set("visible", true);
-                el.fadeIn(0.3);
+                var archor = getTopPosition(bubble);
+                if (!archor) {
+                } else {
+                    xy[1] = archor.get("y") + archor.get("el")[0].offsetHeight;
+                    bubble.set("xy", xy);
+                }
+                if (!bubble.get("visible")) {
+                    bubble.show();
+                } else {
+                    S.log("already show by selectionChange");
+                }
             }
-        }, undefined, 350);
+        }
+
+        var bufferScroll = KE.Utils.buffer(showImmediately, undefined, 350);
+
 
         function onScroll() {
-            //S.log("bubble onscroll");
             if (bubble) {
                 var el = bubble.get("el");
-                el.stop(1);
                 bubble.hide();
             }
             bufferScroll();
@@ -11366,7 +11378,7 @@ KISSY.Editor.add("bubbleview", function () {
 
         function onShow() {
             Event.on(editorWin, "scroll", onScroll);
-            bubble.show(editor);
+            showImmediately();
         }
     };
 
