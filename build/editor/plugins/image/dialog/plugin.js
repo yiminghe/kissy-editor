@@ -190,7 +190,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
             if (dtd.$block[name] || dtd.$blockLimit[name]) {
                 return null;
             }
-            ret = img.parent();
+            ret = ret.parent();
         }
         return null;
     }
