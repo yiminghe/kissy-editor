@@ -18,12 +18,12 @@ KISSY.Editor.add("image", function (editor) {
             addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes,
             tipHtml = ' '
-                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+                + '<a class="ke-bubbleview-url" target="_blank" href="#">新窗口打开</a>  |  '
+                + '<a class="ke-bubbleview-link ke-bubbleview-change" href="#">编辑</a>  |  '
+                + '<a class="ke-bubbleview-link ke-bubbleview-remove" href="#">删除</a>'
                 + '',
-            //重新采用form提交，不采用flash，国产浏览器很多问题
 
+            //重新采用form提交，不采用flash，国产浏览器很多问题
             context = editor.addButton("image", {
                 contentCls:"ke-toolbar-image",
                 title:"插入图片",
@@ -33,7 +33,7 @@ KISSY.Editor.add("image", function (editor) {
                 },
                 _updateTip:function (tipurl, img) {
                     var src = img.attr("_ke_saved_src") || img.attr("src");
-                    tipurl.html(src);
+                    //tipurl.html(src);
                     tipurl.attr("href", src);
                 },
                 show:function (ev, _selectedEl) {
@@ -123,7 +123,7 @@ KISSY.Editor.add("image", function (editor) {
                 init:function () {
                     var bubble = this,
                         el = bubble.get("contentEl");
-                    el.html("图片网址： " + tipHtml);
+                    el.html(tipHtml);
                     var tipurl = el.one(".ke-bubbleview-url"),
                         tipchange = el.one(".ke-bubbleview-change"),
                         tipremove = el.one(".ke-bubbleview-remove");

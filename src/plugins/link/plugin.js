@@ -22,16 +22,16 @@ KISSY.Editor.add("link", function(editor) {
             /**
              * bubbleview/tip 初始化，所有共享一个 tip
              */
-                tipHtml = '前往链接： '
-                + ' <a ' +
+                tipHtml = '<a ' +
                 'href="" '
                 + ' target="_blank" ' +
                 'class="ke-bubbleview-url">' +
-                '</a> - '
+                '新窗口打开' +
+                '</a>   |   '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-change">' +
                 '编辑' +
-                '</span> - '
+                '</span>   |   '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-remove">' +
                 '去除' +

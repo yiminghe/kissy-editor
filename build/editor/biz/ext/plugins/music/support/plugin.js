@@ -34,7 +34,7 @@ KISSY.Editor.add("xiami-music/support", function() {
                 editor = self.editor,
                 r = editor.restoreRealElement(selectedFlash);
             if (!r)return;
-            tipurl.html(selectedFlash.attr("title"));
+            //tipurl.html(selectedFlash.attr("title"));
             tipurl.attr("href", self._getFlashUrl(r));
         }
     });
@@ -55,7 +55,7 @@ KISSY.Editor.add("xiami-music/support", function() {
             }
         }
     };
-    KE.Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
+    KE.Flash.registerBubble(TYPE_XIAMI, "新窗口打开", checkXiami);
     KE.XiamiMusic = XiamiMusic;
 
     KE.add({

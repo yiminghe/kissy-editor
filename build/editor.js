@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-09 11:11:07
+ * @buildtime: 2012-01-09 17:41:49
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-09 11:11:07");
+                encodeURIComponent("2012-01-09 17:41:49");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-09 11:11:07'));
+                encodeURIComponent('2012-01-09 17:41:49'));
         };
     }
 
@@ -13327,7 +13327,7 @@ KISSY.Editor.add("flash", function(editor) {
  * flash base for all flash-based plugin
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("flash/support", function() {
+KISSY.Editor.add("flash/support", function () {
     var S = KISSY,
         KE = S.Editor,
         UA = S.UA,
@@ -13356,14 +13356,14 @@ KISSY.Editor.add("flash/support", function() {
          * 配置信息，用于子类覆盖
          * @override
          */
-        _config:function() {
+        _config:function () {
             var self = this;
             self._cls = CLS_FLASH;
             self._type = TYPE_FLASH;
             self._contextMenu = contextMenu;
             self._flashRules = ["img." + CLS_FLASH];
         },
-        _init:function() {
+        _init:function () {
             this._config();
             var self = this,
                 editor = self.editor,
@@ -13372,8 +13372,8 @@ KISSY.Editor.add("flash/support", function() {
             //右键功能关联到编辑器实例
             if (contextMenu) {
                 for (var f in contextMenu) {
-                    (function(f) {
-                        myContexts[f] = function() {
+                    (function (f) {
+                        myContexts[f] = function () {
                             contextMenu[f](self);
                         }
                     })(f);
@@ -13402,7 +13402,7 @@ KISSY.Editor.add("flash/support", function() {
          * @override
          * @param r flash 元素
          */
-        _getFlashUrl:function(r) {
+        _getFlashUrl:function (r) {
             return flashUtils.getUrl(r);
         },
         /**
@@ -13411,32 +13411,32 @@ KISSY.Editor.add("flash/support", function() {
          * @param tipurl
          * @param selectedFlash
          */
-        _updateTip:function(tipurl, selectedFlash) {
+        _updateTip:function (tipurl, selectedFlash) {
             var self = this,
                 editor = self.editor,
                 r = editor.restoreRealElement(selectedFlash);
             if (!r) return;
             var url = self._getFlashUrl(r);
-            tipurl.html(url);
+            //tipurl.html(url);
             tipurl.attr("href", url);
         },
 
         //根据图片标志触发本插件应用
-        _dbclick:function(ev) {
-            var self = this,t = new Node(ev.target);
+        _dbclick:function (ev) {
+            var self = this, t = new Node(ev.target);
             if (t._4e_name() === "img" && t.hasClass(self._cls)) {
                 self.show(null, t);
                 ev.halt();
             }
         },
 
-        show:function(ev, selected) {
+        show:function (ev, selected) {
             var self = this,
                 editor = self.editor;
             editor.showDialog(self._type + "/dialog", [selected]);
         },
 
-        destroy:function() {
+        destroy:function () {
             var self = this,
                 editor = self.editor;
             self._contextMenu.destroy();
@@ -13454,8 +13454,8 @@ KISSY.Editor.add("flash/support", function() {
     var tipHtml = ' <a ' +
         'class="ke-bubbleview-url" ' +
         'target="_blank" ' +
-        'href="#"></a> - '
-        + ' <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
+        'href="#">{label}</a>   |   '
+        + ' <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span>   |   '
         + ' <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>';
 
     /**
@@ -13474,28 +13474,30 @@ KISSY.Editor.add("flash/support", function() {
      * @param label
      * @param checkFlash
      */
-    Flash.registerBubble = function(pluginName, label, checkFlash) {
+    Flash.registerBubble = function (pluginName, label, checkFlash) {
 
         BubbleView.register({
             pluginName:pluginName,
             func:checkFlash,
-            init:function() {
+            init:function () {
                 var bubble = this,
                     el = bubble.get("contentEl");
-                el.html(label + tipHtml);
+                el.html(S.substitute(tipHtml, {
+                    label:label
+                }));
                 var tipurl = el.one(".ke-bubbleview-url"),
                     tipchange = el.one(".ke-bubbleview-change"),
                     tipremove = el.one(".ke-bubbleview-remove");
                 //ie focus not lose
                 KE.Utils.preventFocus(el);
 
-                tipchange.on("click", function(ev) {
+                tipchange.on("click", function (ev) {
                     //回调show，传入选中元素
                     bubble._plugin.show(null, bubble._selectedEl);
                     ev.halt();
                 });
 
-                tipremove.on("click", function(ev) {
+                tipremove.on("click", function (ev) {
                     var flash = bubble._plugin;
                     //chrome remove 后会没有焦点
                     if (UA.webkit) {
@@ -13512,7 +13514,7 @@ KISSY.Editor.add("flash/support", function() {
                 /*
                  位置变化，在显示前就设置内容，防止ie6 iframe遮罩不能正确大小
                  */
-                bubble.on("show", function() {
+                bubble.on("show", function () {
 
                     var a = bubble._selectedEl,
                         flash = bubble._plugin;
@@ -13524,12 +13526,12 @@ KISSY.Editor.add("flash/support", function() {
     };
 
 
-    Flash.registerBubble("flash", "Flash 网址： ", checkFlash);
+    Flash.registerBubble("flash", "新窗口打开", checkFlash);
     Flash.checkFlash = checkFlash;
 
     //右键功能列表
     var contextMenu = {
-        "Flash属性":function(cmd) {
+        "Flash属性":function (cmd) {
             var editor = cmd.editor,
                 selection = editor.getSelection(),
                 startElement = selection && selection.getStartElement(),
@@ -13543,7 +13545,7 @@ KISSY.Editor.add("flash/support", function() {
     Flash.CLS_FLASH = CLS_FLASH;
     Flash.TYPE_FLASH = TYPE_FLASH;
 
-    Flash.Insert = function(editor, src, attrs, _cls, _type, callback) {
+    Flash.Insert = function (editor, src, attrs, _cls, _type, callback) {
         var nodeInfo = flashUtils.createSWF(src, {
             attrs:attrs
         }, editor.document),
@@ -13563,7 +13565,7 @@ KISSY.Editor.add("flash/support", function() {
 
 }, {
     attach:false,
-    requires:["bubbleview","contextmenu","flashutils"]
+    requires:["bubbleview", "contextmenu", "flashutils"]
 });/**
  * simplified flash bridge for yui swf
  * @author yiminghe@gmail.com
@@ -15364,12 +15366,12 @@ KISSY.Editor.add("image", function (editor) {
             addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes,
             tipHtml = ' '
-                + ' <a class="ke-bubbleview-url" target="_blank" href="#"></a> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-change">编辑</span> - '
-                + '    <span class="ke-bubbleview-link ke-bubbleview-remove">删除</span>'
+                + '<a class="ke-bubbleview-url" target="_blank" href="#">新窗口打开</a>  |  '
+                + '<a class="ke-bubbleview-link ke-bubbleview-change" href="#">编辑</a>  |  '
+                + '<a class="ke-bubbleview-link ke-bubbleview-remove" href="#">删除</a>'
                 + '',
-            //重新采用form提交，不采用flash，国产浏览器很多问题
 
+            //重新采用form提交，不采用flash，国产浏览器很多问题
             context = editor.addButton("image", {
                 contentCls:"ke-toolbar-image",
                 title:"插入图片",
@@ -15379,7 +15381,7 @@ KISSY.Editor.add("image", function (editor) {
                 },
                 _updateTip:function (tipurl, img) {
                     var src = img.attr("_ke_saved_src") || img.attr("src");
-                    tipurl.html(src);
+                    //tipurl.html(src);
                     tipurl.attr("href", src);
                 },
                 show:function (ev, _selectedEl) {
@@ -15469,7 +15471,7 @@ KISSY.Editor.add("image", function (editor) {
                 init:function () {
                     var bubble = this,
                         el = bubble.get("contentEl");
-                    el.html("图片网址： " + tipHtml);
+                    el.html(tipHtml);
                     var tipurl = el.one(".ke-bubbleview-url"),
                         tipchange = el.one(".ke-bubbleview-change"),
                         tipremove = el.one(".ke-bubbleview-remove");
@@ -15989,16 +15991,16 @@ KISSY.Editor.add("link", function(editor) {
             /**
              * bubbleview/tip 初始化，所有共享一个 tip
              */
-                tipHtml = '前往链接： '
-                + ' <a ' +
+                tipHtml = '<a ' +
                 'href="" '
                 + ' target="_blank" ' +
                 'class="ke-bubbleview-url">' +
-                '</a> - '
+                '新窗口打开' +
+                '</a>   |   '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-change">' +
                 '编辑' +
-                '</span> - '
+                '</span>   |   '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-remove">' +
                 '去除' +
@@ -17380,7 +17382,7 @@ KISSY.Editor.add("music/support", function() {
     });
 
 
-    Flash.registerBubble("music", "音乐网址： ", checkMusic);
+    Flash.registerBubble("music", "新窗口打开", checkMusic);
     KE.MusicInserter = MusicInserter;
     var contextMenu = {
         "音乐属性":function(cmd) {

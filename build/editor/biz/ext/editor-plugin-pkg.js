@@ -135,7 +135,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
                 editor = self.editor,
                 r = editor.restoreRealElement(selectedFlash);
             if (!r)return;
-            tipurl.html(selectedFlash.attr("title"));
+            //tipurl.html(selectedFlash.attr("title"));
             tipurl.attr("href", self._getFlashUrl(r));
         }
     });
@@ -156,7 +156,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
             }
         }
     };
-    KE.Flash.registerBubble(TYPE_XIAMI, "虾米音乐： ", checkXiami);
+    KE.Flash.registerBubble(TYPE_XIAMI, "新窗口打开", checkXiami);
     KE.XiamiMusic = XiamiMusic;
 
     KE.add({
@@ -459,7 +459,7 @@ KISSY.Editor.add("video", function(editor) {
             && (!!node.hasClass(CLS_VIDEO)) && node;
     }
 
-    Flash.registerBubble("video", "视频链接： ", checkVideo);
+    Flash.registerBubble("video", "新窗口打开", checkVideo);
     KE.Video = Video;
     var contextMenu = {
         "视频属性":function(cmd) {

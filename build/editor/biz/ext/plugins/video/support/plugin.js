@@ -28,7 +28,7 @@ KISSY.Editor.add("video/support", function() {
             && (!!node.hasClass(CLS_VIDEO)) && node;
     }
 
-    Flash.registerBubble("video", "视频链接： ", checkVideo);
+    Flash.registerBubble("video", "新窗口打开", checkVideo);
     KE.Video = Video;
     var contextMenu = {
         "视频属性":function(cmd) {
