@@ -18,7 +18,7 @@ KISSY.Editor.add("image", function (editor) {
             addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes,
             tipHtml = ' '
-                + '<a class="ke-bubbleview-url" target="_blank" href="#">新窗口打开</a>  |  '
+                + '<a class="ke-bubbleview-url" target="_blank" href="#">在新窗口查看</a>  |  '
                 + '<a class="ke-bubbleview-link ke-bubbleview-change" href="#">编辑</a>  |  '
                 + '<a class="ke-bubbleview-link ke-bubbleview-remove" href="#">删除</a>'
                 + '',

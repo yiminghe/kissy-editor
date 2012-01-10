@@ -50,7 +50,7 @@ KISSY.Editor.add("music/support", function() {
     });
 
 
-    Flash.registerBubble("music", "新窗口打开", checkMusic);
+    Flash.registerBubble("music", "在新窗口查看", checkMusic);
     KE.MusicInserter = MusicInserter;
     var contextMenu = {
         "音乐属性":function(cmd) {

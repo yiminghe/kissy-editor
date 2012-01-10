@@ -156,7 +156,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
             }
         }
     };
-    KE.Flash.registerBubble(TYPE_XIAMI, "新窗口打开", checkXiami);
+    KE.Flash.registerBubble(TYPE_XIAMI, "在新窗口查看", checkXiami);
     KE.XiamiMusic = XiamiMusic;
 
     KE.add({
@@ -459,7 +459,7 @@ KISSY.Editor.add("video", function(editor) {
             && (!!node.hasClass(CLS_VIDEO)) && node;
     }
 
-    Flash.registerBubble("video", "新窗口打开", checkVideo);
+    Flash.registerBubble("video", "在新窗口查看", checkVideo);
     KE.Video = Video;
     var contextMenu = {
         "视频属性":function(cmd) {

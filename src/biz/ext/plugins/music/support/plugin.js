@@ -55,7 +55,7 @@ KISSY.Editor.add("xiami-music/support", function() {
             }
         }
     };
-    KE.Flash.registerBubble(TYPE_XIAMI, "新窗口打开", checkXiami);
+    KE.Flash.registerBubble(TYPE_XIAMI, "在新窗口查看", checkXiami);
     KE.XiamiMusic = XiamiMusic;
 
     KE.add({

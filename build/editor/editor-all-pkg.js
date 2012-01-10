@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-09 19:06:58
+ * @buildtime: 2012-01-10 10:10:52
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-09 19:06:58");
+                encodeURIComponent("2012-01-10 10:10:52");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-09 19:06:58'));
+                encodeURIComponent('2012-01-10 10:10:52'));
         };
     }
 
@@ -13538,7 +13538,7 @@ KISSY.Editor.add("flash/support", function () {
     };
 
 
-    Flash.registerBubble("flash", "新窗口打开", checkFlash);
+    Flash.registerBubble("flash", "在新窗口查看", checkFlash);
     Flash.checkFlash = checkFlash;
 
     //右键功能列表
@@ -15378,7 +15378,7 @@ KISSY.Editor.add("image", function (editor) {
             addRes = KE.Utils.addRes,
             destroyRes = KE.Utils.destroyRes,
             tipHtml = ' '
-                + '<a class="ke-bubbleview-url" target="_blank" href="#">新窗口打开</a>  |  '
+                + '<a class="ke-bubbleview-url" target="_blank" href="#">在新窗口查看</a>  |  '
                 + '<a class="ke-bubbleview-link ke-bubbleview-change" href="#">编辑</a>  |  '
                 + '<a class="ke-bubbleview-link ke-bubbleview-remove" href="#">删除</a>'
                 + '',
@@ -16007,7 +16007,7 @@ KISSY.Editor.add("link", function(editor) {
                 'href="" '
                 + ' target="_blank" ' +
                 'class="ke-bubbleview-url">' +
-                '新窗口打开' +
+                '在新窗口查看' +
                 '</a>  –  '
                 + ' <span ' +
                 'class="ke-bubbleview-link ke-bubbleview-change">' +
@@ -17394,7 +17394,7 @@ KISSY.Editor.add("music/support", function() {
     });
 
 
-    Flash.registerBubble("music", "新窗口打开", checkMusic);
+    Flash.registerBubble("music", "在新窗口查看", checkMusic);
     KE.MusicInserter = MusicInserter;
     var contextMenu = {
         "音乐属性":function(cmd) {

@@ -201,7 +201,7 @@ KISSY.Editor.add("flash/support", function () {
     };
 
 
-    Flash.registerBubble("flash", "新窗口打开", checkFlash);
+    Flash.registerBubble("flash", "在新窗口查看", checkFlash);
     Flash.checkFlash = checkFlash;
 
     //右键功能列表
