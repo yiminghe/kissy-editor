@@ -96,7 +96,8 @@ KISSY.Editor.add("bubbleview", function () {
 
         var el = bubble._selectedEl;
 
-        if(!el){
+        if (!el) {
+            //S.log("bubble already detached from el");
             return undefined;
         }
 

@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-10 11:17:52
+ * @buildtime: 2012-01-10 11:27:38
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-10 11:17:52");
+                encodeURIComponent("2012-01-10 11:27:38");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-10 11:17:52'));
+                encodeURIComponent('2012-01-10 11:27:38'));
         };
     }
 
@@ -174,7 +174,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2011-11-26 21:29:45");
+                    url += "t=" + encodeURIComponent("2012-01-10 11:27:38");
                 }
                 return KE["Config"].base + url;
             },
@@ -11239,7 +11239,8 @@ KISSY.Editor.add("bubbleview", function () {
 
         var el = bubble._selectedEl;
 
-        if(!el){
+        if (!el) {
+            //S.log("bubble already detached from el");
             return undefined;
         }
 
