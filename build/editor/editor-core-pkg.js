@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-10 11:27:38
+ * @buildtime: 2012-01-10 13:22:02
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-10 11:27:38");
+                encodeURIComponent("2012-01-10 13:22:02");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-10 11:27:38'));
+                encodeURIComponent('2012-01-10 13:22:02'));
         };
     }
 
@@ -8985,6 +8985,10 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
     KE.HtmlParser.BasicWriter = BasicWriter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -9278,6 +9282,10 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
     KE.HtmlParser.HtmlWriter = HtmlWriter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -9783,6 +9791,10 @@ KISSY.Editor.add("htmlparser-fragment", function() {
 
     KE.HtmlParser.Fragment = Fragment;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10006,6 +10018,10 @@ KISSY.Editor.add("htmlparser-element", function() {
      */
     KE.HtmlParser.Element = MElement;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10254,6 +10270,10 @@ KISSY.Editor.add("htmlparser-filter", function(
 
     KE.HtmlParser.Filter = Filter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10309,6 +10329,10 @@ KISSY.Editor.add("htmlparser-text", function() {
     KE.HtmlParser.Text = MText;
     KE.HtmlParser["Text"] = MText;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10345,7 +10369,11 @@ KISSY.Editor.add("htmlparser-cdata", function(KE) {
             writer.write(this.value);
         }
     };
-});/*
+});/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
+/*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */

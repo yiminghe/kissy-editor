@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-10 11:27:38
+ * @buildtime: 2012-01-10 13:22:02
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-10 11:27:38");
+                encodeURIComponent("2012-01-10 13:22:02");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-10 11:27:38'));
+                encodeURIComponent('2012-01-10 13:22:02'));
         };
     }
 
@@ -8985,6 +8985,10 @@ KISSY.Editor.add("htmlparser-basicwriter", function() {
 
     KE.HtmlParser.BasicWriter = BasicWriter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -9278,6 +9282,10 @@ KISSY.Editor.add("htmlparser-htmlwriter", function(
 
     KE.HtmlParser.HtmlWriter = HtmlWriter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -9783,6 +9791,10 @@ KISSY.Editor.add("htmlparser-fragment", function() {
 
     KE.HtmlParser.Fragment = Fragment;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10006,6 +10018,10 @@ KISSY.Editor.add("htmlparser-element", function() {
      */
     KE.HtmlParser.Element = MElement;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10254,6 +10270,10 @@ KISSY.Editor.add("htmlparser-filter", function(
 
     KE.HtmlParser.Filter = Filter;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
 Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10309,6 +10329,10 @@ KISSY.Editor.add("htmlparser-text", function() {
     KE.HtmlParser.Text = MText;
     KE.HtmlParser["Text"] = MText;
 });
+/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
 /*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
@@ -10345,7 +10369,11 @@ KISSY.Editor.add("htmlparser-cdata", function(KE) {
             writer.write(this.value);
         }
     };
-});/*
+});/**
+ * modified from ckeditor
+ * @author <yiminghe@gmail.com>
+ */
+/*
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
@@ -14433,7 +14461,7 @@ KISSY.Editor.add("format", function(editor) {
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("htmldataprocessor", function(editor) {
+KISSY.Editor.add("htmldataprocessor", function (editor) {
     var undefined = undefined,
         S = KISSY,
         KE = S.Editor,
@@ -14451,20 +14479,20 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     /**
      * 给 fragment,Element,Dtd 加一些常用功能
      */
-    (function() {
+    (function () {
 
         var fragmentPrototype = KE.HtmlParser.Fragment.prototype,
             elementPrototype = KE.HtmlParser.Element.prototype;
 
         fragmentPrototype['onlyChild'] =
-            elementPrototype.onlyChild = function() {
+            elementPrototype.onlyChild = function () {
                 var children = this.children,
                     count = children.length,
                     firstChild = ( count == 1 ) && children[ 0 ];
                 return firstChild || null;
             };
 
-        elementPrototype.removeAnyChildWithName = function(tagName) {
+        elementPrototype.removeAnyChildWithName = function (tagName) {
             var children = this.children,
                 childs = [],
                 child;
@@ -14483,14 +14511,14 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return childs;
         };
 
-        elementPrototype['getAncestor'] = function(tagNameRegex) {
+        elementPrototype['getAncestor'] = function (tagNameRegex) {
             var parent = this.parent;
             while (parent && !( parent.name && parent.name.match(tagNameRegex) ))
                 parent = parent.parent;
             return parent;
         };
 
-        fragmentPrototype.firstChild = elementPrototype.firstChild = function(evaluator) {
+        fragmentPrototype.firstChild = elementPrototype.firstChild = function (evaluator) {
             var child;
 
             for (var i = 0; i < this.children.length; i++) {
@@ -14508,7 +14536,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         };
 
         // Adding a (set) of styles to the element's 'style' attributes.
-        elementPrototype.addStyle = function(name, value, isPrepend) {
+        elementPrototype.addStyle = function (name, value, isPrepend) {
             var styleText, addingStyleText = '';
             // name/value pair.
             if (typeof value == 'string')
@@ -14544,11 +14572,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
          * Return the DTD-valid parent tag names of the specified one.
          * @param tagName
          */
-        dtd.parentOf = function(tagName) {
+        dtd.parentOf = function (tagName) {
             var result = {};
             for (var tag in this) {
-                if (tag.indexOf('$') == -1 && this[ tag ][ tagName ])
-                    result[ tag ] = 1;
+                if (this.hasOwnProperty(tag)) {
+                    if (tag.indexOf('$') == -1 && this[ tag ][ tagName ])
+                        result[ tag ] = 1;
+                }
             }
             return result;
         };
@@ -14559,17 +14589,17 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
      * 1。过滤一些常见东西
      * 2。处理 word 复制过来的列表
      */
-    (function() {
+    (function () {
         var //equalsIgnoreCase = KE.Utils.equalsIgnoreCase,
             filterStyle = stylesFilter([
-                //word 自有属性名去除
+                // word 自有属性名去除
                 [/mso/i],
                 [/w:WordDocument/i],
-                //ie 自有属性名[/mso/i],
+                // ie 自有属性名[/mso/i],
                 [/^-ms/i],
-                //firefox 自有属性名
+                // firefox 自有属性名
                 [/^-moz/i],
-                //webkit 自有属性名
+                // webkit 自有属性名
                 [/^-webkit/i]//,
                 //qc 3711，只能出现我们规定的字体
                 /*
@@ -14623,8 +14653,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             if (!bulletStyle) {
                 bulletStyle = 'decimal';
                 listType = 'ol';
-            }
-            else if (bulletStyle[ 2 ]) {
+            } else if (bulletStyle[ 2 ]) {
                 if (!isNaN(bulletStyle[ 1 ]))
                     bulletStyle = 'decimal';
                 // No way to distinguish between Roman numerals and Alphas,
@@ -14639,8 +14668,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     bulletStyle = 'decimal';
 
                 listType = 'ol';
-            }
-            else {
+            } else {
                 if (/[l\u00B7\u2002]/.test(bulletStyle[ 1 ]))
                     bulletStyle = 'disc';
                 else if (/[\u006F\u00D8]/.test(bulletStyle[ 1 ]))
@@ -14655,8 +14683,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
             // Represent list type as CSS style.
             marker.attributes = {
-                'ke:listtype' : listType,
-                'style' : 'list-style-type:' + bulletStyle + ';'
+                'ke:listtype':listType,
+                'style':'list-style-type:' + bulletStyle + ';'
             };
             marker.add(new KE.HtmlParser.Text(bulletText));
             return marker;
@@ -14679,7 +14707,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                             [ 'text-indent' ],
                             [ 'line-height' ],
                             // Resolve indent level from 'margin-left' value.
-                            [ ( /^margin(:?-left)?$/ ), null, function(margin) {
+                            [ ( /^margin(:?-left)?$/ ), null, function (margin) {
                                 // Be able to deal with component/short-hand form style.
                                 var values = margin.split(' ');
                                 margin = values[ 3 ] || values[ 1 ] || values [ 0 ];
@@ -14706,7 +14734,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         }
 
         function stylesFilter(styles, whitelist) {
-            return function(styleText, element) {
+            return function (styleText, element) {
                 var rules = [];
                 // html-encoded quote might be introduced by 'font-family'
                 // from MS-Word which confused the following regexp. e.g.
@@ -14714,7 +14742,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 String(styleText)
                     .replace(/&quot;/g, '"')
                     .replace(/\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g,
-                    function(match, name, value) {
+                    function (match, name, value) {
                         name = name.toLowerCase();
                         name == 'font-family' && ( value = value.replace(/["']/g, '') );
 
@@ -14739,8 +14767,10 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
                                     // Return an couple indicate both name and value
                                     // changed.
-                                    if (newValue && newValue.push)
-                                        name = newValue[ 0 ],newValue = newValue[ 1 ];
+                                    if (newValue && newValue.push) {
+                                        name = newValue[ 0 ];
+                                        newValue = newValue[ 1 ];
+                                    }
 
                                     if (typeof newValue == 'string')
                                         rules.push([ name, newValue ]);
@@ -14763,9 +14793,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         function assembleList(element) {
             var children = element.children, child,
-                listItem,   // The current processing ke:li element.
+                listItem, // The current processing ke:li element.
                 listItemAttrs,
-                listType,   // Determine the root type of the list.
+                listType, // Determine the root type of the list.
                 listItemIndent, // Indent level of current list item.
                 lastListItem, // The previous one just been added to the list.
                 list,
@@ -14839,35 +14869,35 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
 
         //过滤外边来的 html
         var defaultDataFilterRules = {
-            elementNames : [
+            elementNames:[
                 // Remove script,iframe style,link,meta
                 [  /^script$/i , '' ],
                 [  /^iframe$/i , '' ],
                 [  /^style$/i , '' ],
                 [  /^link$/i , '' ],
                 [  /^meta$/i , '' ],
-                [/^\?xml.*$/i,''],
-                [/^.*namespace.*$/i,'']
+                [/^\?xml.*$/i, ''],
+                [/^.*namespace.*$/i, '']
             ],
             //根节点伪列表进行处理
-            root : function(element) {
+            root:function (element) {
                 element.filterChildren();
                 assembleList(element);
             },
-            elements : {
+            elements:{
                 /*
                  宝贝发布兼容性考虑，不要去除
                  font:function(el) {
                  delete el.name;
                  },
                  */
-                p:function(element) {
+                p:function (element) {
                     element.filterChildren();
                     // Is the paragraph actually a list item?
                     if (resolveList(element))
                         return undefined;
                 },
-                $:function(el) {
+                $:function (el) {
                     var tagName = el.name || "";
                     //ms world <o:p> 保留内容
                     if (tagName.indexOf(':') != -1 && !/^ke/.test(tagName)) {
@@ -14917,7 +14947,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                  * ul,li 从 ms word 重建
                  * @param element
                  */
-                span:function(element) {
+                span:function (element) {
                     // IE/Safari: remove the span if it comes from list bullet text.
                     if (!UA.gecko &&
                         isListBulletIndicator(element.parent)
@@ -14928,7 +14958,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     // the text of a span with style 'mso-list : Ignore' or an image.
                     if (!UA.gecko &&
                         isListBulletIndicator(element)) {
-                        var listSymbolNode = element.firstChild(function(node) {
+                        var listSymbolNode = element.firstChild(function (node) {
                             return node.value || node.name == 'img';
                         });
                         var listSymbol = listSymbolNode && ( listSymbolNode.value || 'l.' ),
@@ -14942,35 +14972,31 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 //防止word的垃圾class，
                 //全部杀掉算了，除了以ke_开头的编辑器内置class
                 //不要全部杀掉，可能其他应用有需要
-                'class'
-                    :
-                    function(value
-                             // , element
+                'class':function (value
+                                  // , element
+                    ) {
+                    if (
+                        !value ||
+                            /(^|\s+)Mso/.test(value)
                         ) {
-                        if (
-                            !value ||
-                                /(^|\s+)Mso/.test(value)
-                            ) {
-                            return false;
-                        }
-                        return value;
-                    },
-                'style'
-                    :
-                    function(value) {
-                        //去除<i style="mso-bidi-font-style: normal">微软垃圾
-                        var re = filterStyle(value);
-                        if (!re) {
-                            return false;
-                        }
-                        return re;
+                        return false;
                     }
+                    return value;
+                },
+                'style':function (value) {
+                    //去除<i style="mso-bidi-font-style: normal">微软垃圾
+                    var re = filterStyle(value);
+                    if (!re) {
+                        return false;
+                    }
+                    return re;
+                }
             },
-            attributeNames :  [
+            attributeNames:[
                 // Event attributes (onXYZ) must not be directly set. They can become
                 // active in the editing area (IE|WebKit).
                 [ ( /^on/ ), 'ke_on' ],
-                [/^lang$/,'']
+                [/^lang$/, '']
             ]};
 
 
@@ -14978,8 +15004,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
          * word 的注释对非 ie 浏览器很特殊
          */
         var wordRules = {
-            comment : !UA.ie ?
-                function(value, node) {
+            comment:!UA.ie ?
+                function (value, node) {
                     var imageInfo = value.match(/<img.*?>/),
                         listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
                     // Seek for list bullet indicator.
@@ -15003,24 +15029,24 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                     return false;
                 } :
-                function() {
+                function () {
                     return false;
                 }
         };
         // 将编辑区生成 html 最终化
         var defaultHtmlFilterRules = {
-            elementNames : [
+            elementNames:[
                 // Remove the "ke:" namespace prefix.
                 [ ( /^ke:/ ), '' ],
                 // Ignore <?xml:namespace> tags.
                 [ ( /^\?xml:namespace$/ ), '' ]
             ],
-            elements : {
-                $ : function(element) {
+            elements:{
+                $:function (element) {
                     var attribs = element.attributes;
 
                     if (attribs) {
-                        //先把真正属性去掉，后面会把_ke_saved后缀去掉的！
+                        // 先把真正属性去掉，后面会把_ke_saved后缀去掉的！
                         // Remove duplicated attributes - #3789.
                         var attributeNames = [ 'name', 'href', 'src' ],
                             savedAttributeName;
@@ -15031,7 +15057,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                     return element;
                 },
-                embed : function(element) {
+                embed:function (element) {
                     var parent = element.parent;
                     // If the <embed> is child of a <object>, copy the width
                     // and height attributes from it.
@@ -15043,34 +15069,32 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                     }
                 },
                 // Restore param elements into self-closing.
-                param : function(param) {
+                param:function (param) {
                     param.children = [];
                     param.isEmpty = true;
                     return param;
                 },
                 // Remove empty link but not empty anchor.(#3829)
-                a : function(element) {
-                    if (!element.children.length
-                        && S.isEmptyObject(element.attributes)) {
+                a:function (element) {
+                    if (!element.children.length&& S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 },
-                span:function(element) {
-                    if (!element.children.length
-                        && S.isEmptyObject(element.attributes)) {
+                span:function (element) {
+                    if (!element.children.length&& S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 }
             },
-            attributes :  {
-                //清除空style
-                style:function(v) {
+            attributes:{
+                // 清除空style
+                style:function (v) {
                     if (!S.trim(v)) {
                         return false;
                     }
                 }
             },
-            attributeNames :  [
+            attributeNames:[
                 // 把保存的作为真正的属性，替换掉原来的
                 // replace(/^_ke_saved_/,"")
                 // _ke_saved_href -> href
@@ -15082,7 +15106,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
                 [ ( /^ke:.*$/ ), '' ]
             ],
 
-            comment : function(contents) {
+            comment:function (contents) {
                 // If this is a comment for protected source.
                 if (contents.substr(0, protectedSourceMarker.length) == protectedSourceMarker) {
                     // Remove the extra marker for real comments from it.
@@ -15102,9 +15126,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             // them back to lower case.
             // bug: style='background:url(www.G.cn)' =>  style='background:url(www.g.cn)'
             // 只对 propertyName 小写
-            defaultHtmlFilterRules.attributes.style = function(value // , element
+            defaultHtmlFilterRules.attributes.style = function (value // , element
                 ) {
-                return value.replace(/(^|;)([^:]+)/g, function(match) {
+                return value.replace(/(^|;)([^:]+)/g, function (match) {
                     return match.toLowerCase();
                 });
             };
@@ -15122,7 +15146,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
      * 以及ie下自动添加的 &nbsp;
      * 以及其他浏览器段落末尾添加的占位符
      */
-    (function() {
+    (function () {
         // Regex to scan for &nbsp; at the end of blocks, which are actually placeholders.
         // Safari transforms the &nbsp; to \xa0. (#4172)
         var tailNbspRegex = /^[\t\r\n ]*(?:&nbsp;|\xa0)$/;
@@ -15202,10 +15226,12 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         var blockLikeTags = KE.Utils.mix({},
             dtd.$block,
             dtd.$listItem,
-            dtd.$tableContent),i;
+            dtd.$tableContent), i;
         for (i in blockLikeTags) {
-            if (! ( 'br' in dtd[i] )) {
-                delete blockLikeTags[i];
+            if (blockLikeTags.hasOwnProperty(i)) {
+                if (!( 'br' in dtd[i] )) {
+                    delete blockLikeTags[i];
+                }
             }
         }
 
@@ -15215,11 +15241,13 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         // We just avoid filler in <pre> right now.
         // TODO: Support filler for <pre>, line break is also occupy line height.
         delete blockLikeTags.pre;
-        var defaultDataBlockFilterRules = { elements : {} };
-        var defaultHtmlBlockFilterRules = { elements : {} };
+        var defaultDataBlockFilterRules = { elements:{} };
+        var defaultHtmlBlockFilterRules = { elements:{} };
         for (i in blockLikeTags) {
-            defaultDataBlockFilterRules.elements[ i ] = extendBlockForDisplay;
-            defaultHtmlBlockFilterRules.elements[ i ] = extendBlockForOutput;
+            if (blockLikeTags.hasOwnProperty(i)) {
+                defaultDataBlockFilterRules.elements[ i ] = extendBlockForDisplay;
+                defaultHtmlBlockFilterRules.elements[ i ] = extendBlockForOutput;
+            }
         }
         dataFilter.addRules(defaultDataBlockFilterRules);
         htmlFilter.addRules(defaultHtmlBlockFilterRules);
@@ -15230,9 +15258,9 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     // htmlparser fragment 中的 entities 处理
     // el.innerHTML="&nbsp;"
     // http://yiminghe.javaeye.com/blog/788929
-    (function() {
+    (function () {
         htmlFilter.addRules({
-            text : function(text) {
+            text:function (text) {
                 return text
                     //.replace(/&nbsp;/g, "\xa0")
                     .replace(/\xa0/g, "&nbsp;");
@@ -15247,8 +15275,8 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
     // #a -> http://xxx/#a
     // ../x.html -> http://xx/x.html
     function protectAttributes(html) {
-        return html.replace(protectElementRegex, function(element, tag, attributes) {
-            return '<' + tag + attributes.replace(protectAttributeRegex, function(fullAttr, attrName) {
+        return html.replace(protectElementRegex, function (element, tag, attributes) {
+            return '<' + tag + attributes.replace(protectAttributeRegex, function (fullAttr, attrName) {
                 // We should not rewrite the existed protected attributes,
                 // e.g. clipboard content from editor. (#5218)
                 if (attributes.indexOf('_ke_saved_' + attrName) == -1)
@@ -15283,7 +15311,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         dataFilter:dataFilter,
         htmlFilter:htmlFilter,
         //编辑器 html 到外部 html
-        toHtml:function(html, fixForBody) {
+        toHtml:function (html, fixForBody) {
 
             //fixForBody = fixForBody || "p";
             // Now use our parser to make further fixes to the structure, as
@@ -15297,7 +15325,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
             return writer.getHtml(true);
         },
         //外部html进入编辑器
-        toDataFormat : function(html, fixForBody, _dataFilter) {
+        toDataFormat:function (html, fixForBody, _dataFilter) {
 
             //可以传 wordFilter 或 dataFilter
             _dataFilter = _dataFilter || dataFilter;
@@ -15356,7 +15384,7 @@ KISSY.Editor.add("htmldataprocessor", function(editor) {
         /*
          最精简html传送到server
          */
-        toServer:function(html, fixForBody) {
+        toServer:function (html, fixForBody) {
             var writer = new HtmlParser.BasicWriter(),
                 fragment = HtmlParser.Fragment.FromHtml(html, fixForBody);
             fragment.writeHtml(writer, htmlFilter);
