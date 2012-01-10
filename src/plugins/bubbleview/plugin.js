@@ -96,6 +96,10 @@ KISSY.Editor.add("bubbleview", function () {
 
         var el = bubble._selectedEl;
 
+        if(!el){
+            return undefined;
+        }
+
         var editorWin = editor.iframe[0].contentWindow;
 
         var iframeXY = editor.iframe.offset(),
@@ -226,6 +230,9 @@ KISSY.Editor.add("bubbleview", function () {
 
 
         function onScroll() {
+            if (!bubble._selectedEl) {
+                return;
+            }
             if (bubble) {
                 var el = bubble.get("el");
                 bubble.hide();
