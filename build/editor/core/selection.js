@@ -31,7 +31,7 @@ KISSY.Editor.add("selection", function (KE) {
         KER = KE.RANGE,
         KEN = KE.NODE,
         // ie9 仍然采用老的 range api，发现新的不稳定
-        OLD_IE = UA.ie, //!window.getSelection,
+        OLD_IE = UA['ie'], //!window.getSelection,
         //EventTarget = S.EventTarget,
         Walker = KE.Walker,
         //ElementPath = KE.ElementPath,
@@ -325,7 +325,7 @@ KISSY.Editor.add("selection", function (KE) {
 
         /**
          * Gets the DOM element in which the selection starts.
-         * @returns {KISSY.Node} The element at the beginning of the
+         * @returns The element at the beginning of the
          *        selection.
          * @example
          * var element = editor.getSelection().<b>getStartElement()</b>;
@@ -401,7 +401,7 @@ KISSY.Editor.add("selection", function (KE) {
 
         /**
          * Gets the current selected element.
-         * @returns {KISSY.Node} The selected element. Null if no
+         * @returns The selected element. Null if no
          *        selection is available or the selection type is not
          *       SELECTION_ELEMENT.
          * @example
@@ -527,11 +527,11 @@ KISSY.Editor.add("selection", function (KE) {
                     // will not be visible.
                     // opera move out of this element
                     if (range.collapsed &&
-                        (( UA.gecko && UA.gecko < 1.0900 ) || UA.opera || UA.webkit) &&
+                        (( UA.gecko && UA.gecko < 1.0900 ) || UA.opera || UA['webkit']) &&
                         startContainer[0].nodeType == KEN.NODE_ELEMENT &&
                         !startContainer[0].childNodes.length) {
                         // webkit 光标停留不到在空元素内，要fill char，之后范围定在 fillchar 之后
-                        startContainer[0].appendChild(self.document.createTextNode(UA.webkit ? "\u200b" : ""));
+                        startContainer[0].appendChild(self.document.createTextNode(UA['webkit'] ? "\u200b" : ""));
                         range.startOffset++;
                         range.endOffset++;
                     }
@@ -662,7 +662,7 @@ KISSY.Editor.add("selection", function (KE) {
                     //还是有差异的，特别是img选择框问题
                     if (
                     //ie8 有问题？？
-                    //UA.ieEngine!=8 &&
+                    //UA['ie']Engine!=8 &&
                         self.startContainer[0] === self.endContainer[0]
                             && self.endOffset - self.startOffset == 1) {
                         var selEl = self.startContainer[0].childNodes[self.startOffset];
@@ -784,10 +784,11 @@ KISSY.Editor.add("selection", function (KE) {
      */
     function monitorAndFix(editor) {
         var doc = editor.document,
+            win = DOM._4e_getWin(doc),
             body = new Node(doc.body),
             html = new Node(doc.documentElement);
 
-        if (UA.ie) {
+        if (UA['ie']) {
             //ie 焦点管理不行 (ie9 也不行) ,编辑器 iframe 失去焦点，选择区域/光标位置也丢失了
             //ie中事件都是同步，focus();xx(); 会立即触发事件处理函数，然后再运行xx();
 
@@ -806,6 +807,98 @@ KISSY.Editor.add("selection", function (KE) {
                     }
                 });
             }
+
+            /**
+             * 2012-01-11 借鉴 tinymce
+             * 解决：ie 没有滚动条时，点击窗口空白区域，光标不能正确定位
+             */
+            (function () {
+                var started,
+                    bodyElem = body[0],
+                    startRng;
+
+                // Make HTML element unselectable since we are going to handle selection by hand
+                doc.documentElement.unselectable = true;
+
+                // Return range from point or null if it failed
+                function rngFromPoint(x, y) {
+                    var rng = bodyElem.createTextRange();
+
+                    try {
+                        rng['moveToPoint'](x, y);
+                    } catch (ex) {
+                        // IE sometimes throws and exception, so lets just ignore it
+                        rng = null;
+                    }
+
+                    return rng;
+                }
+
+                // Removes listeners
+                function endSelection() {
+                    var rng = doc.selection.createRange();
+
+                    // If the range is collapsed then use the last start range
+                    if (startRng && !rng.item && rng.compareEndPoints('StartToEnd', rng) === 0) {
+                        startRng.select();
+                    }
+                    Event.remove(doc, 'mouseup', endSelection);
+                    Event.remove(doc, 'mousemove', selectionChange);
+                    startRng = started = 0;
+                    saveSelection(TRUE);
+                }
+
+                // Fires while the selection is changing
+                function selectionChange(e) {
+                    var pointRng;
+
+                    // Check if the button is down or not
+                    if (e.button) {
+                        // Create range from mouse position
+                        pointRng = rngFromPoint(e.pageX, e.pageY);
+
+                        if (pointRng) {
+                            // Check if pointRange is before/after selection then change the endPoint
+                            if (pointRng.compareEndPoints('StartToStart', startRng) > 0)
+                                pointRng.setEndPoint('StartToStart', startRng);
+                            else
+                                pointRng.setEndPoint('EndToEnd', startRng);
+
+                            pointRng.select();
+                        }
+                    } else {
+                        endSelection();
+                    }
+                }
+
+                // ie 点击空白处光标不能定位到末尾
+                // IE has an issue where you can't select/move the caret by clicking outside the body if the document is in standards mode
+                Event.on(doc, "mousedown contextmenu", function (e) {
+                    if (e.target === html[0]) {
+
+                        if (started) {
+                            endSelection();
+                        }
+                        // Detect vertical scrollbar, since IE will fire a mousedown on the scrollbar and have target set as HTML
+                        if (html[0].scrollHeight > html[0].clientHeight) {
+                            return;
+                        }
+                        S.log("fix ie cursor");
+                        started = 1;
+                        // Setup start position
+                        startRng = rngFromPoint(e.pageX, e.pageY);
+                        if (startRng) {
+                            // Listen for selection change events
+                            Event.on(doc, 'mouseup', endSelection);
+                            Event.on(doc, 'mousemove', selectionChange);
+
+                            win.focus();
+                            startRng.select();
+                        }
+                    }
+                });
+            })();
+
 
             // Other browsers don't loose the selection if the
             // editor document loose the focus. In IE, we don't
@@ -852,7 +945,6 @@ KISSY.Editor.add("selection", function (KE) {
             // events get executed.
             body.on('focusin', function (evt) {
                 var t = new Node(evt.target);
-                // S.log(restoreEnabled);
                 // If there are elements with layout they fire this event but
                 // it must be ignored to allow edit its contents #4682
                 if (t._4e_name() != 'body')
@@ -897,7 +989,7 @@ KISSY.Editor.add("selection", function (KE) {
 
             // IE before version 8 will leave cursor blinking inside the document after
             // editor blurred unless we clean up the selection. (#4716)
-            // if (UA.ie < 8) {
+            // if (UA['ie'] < 8) {
             editor.on('blur', function () {
                 // 把选择区域与光标清除
                 // Try/Catch to avoid errors if the editor is hidden. (#6375)
@@ -1101,7 +1193,7 @@ KISSY.Editor.add("selection", function (KE) {
             // 不位于 <body><p>^</p></body>
             if (lastPath.blockLimit._4e_name() !== 'body') {
                 editBlock = new Node(doc.createElement('p')).appendTo(body);
-                if (!UA.ie) {
+                if (!UA['ie']) {
                     editBlock._4e_appendBogus();
                 }
             }
@@ -1112,7 +1204,8 @@ KISSY.Editor.add("selection", function (KE) {
 
     KE.on("instanceCreated", function (ev) {
         var editor = ev.editor;
-        // 选择区域变化时各个浏览器的奇怪修复
+        // 1. 选择区域变化时各个浏览器的奇怪修复
+        // 2. 触发 selectionChange 事件
         monitorAndFix(editor);
     });
 });

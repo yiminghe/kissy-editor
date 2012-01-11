@@ -31,7 +31,7 @@ KISSY.Editor.add("localstorage", function() {
     //原生或者已经定义过立即返回
     //ie 使用 flash 模拟的 localStorage，序列化性能不行
     //firefox 使用原生
-    if (!S.UA.ie && window.localStorage) {
+    if (!S.UA['ie'] && window.localStorage) {
         //原生的立即可用
         KE.localStorage = window.localStorage;
         complete();

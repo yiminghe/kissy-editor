@@ -25,7 +25,7 @@ KISSY.Editor.add("utils", function(KE) {
                     } else {
                         url += "?";
                     }
-                    url += "t=" + encodeURIComponent("2012-01-10 11:27:38");
+                    url += "t=" + encodeURIComponent("2012-01-11 13:45:11");
                 }
                 return KE["Config"].base + url;
             },
@@ -214,7 +214,7 @@ KISSY.Editor.add("utils", function(KE) {
             }
             ,
             isCustomDomain : function() {
-                if (!UA.ie)
+                if (!UA['ie'])
                     return FALSE;
 
                 var domain = document.domain,
@@ -282,10 +282,10 @@ KISSY.Editor.add("utils", function(KE) {
              */
             resetInput:function(inp) {
                 var placeholder = inp.attr("placeholder");
-                if (placeholder && UA.ie) {
+                if (placeholder && UA['ie']) {
                     inp.addClass("ke-input-tip");
                     inp.val(placeholder);
-                } else if (!UA.ie) {
+                } else if (!UA['ie']) {
                     inp.val("");
                 }
             },
@@ -310,7 +310,7 @@ KISSY.Editor.add("utils", function(KE) {
              */
             placeholder:function(inp, tip) {
                 inp.attr("placeholder", tip);
-                if (!UA.ie) {
+                if (!UA['ie']) {
                     return;
                 }
                 inp.on("blur", function() {
@@ -371,13 +371,13 @@ KISSY.Editor.add("utils", function(KE) {
                     // call document.open().
                     ( Utils.isCustomDomain() ? ( 'document.domain="' + document.domain + '";' ) : '' ) +
                     'document.close();';
-                if (UA.ie) {
-                    frame.src = UA.ie ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '';
+                if (UA['ie']) {
+                    frame.src = UA['ie'] ? 'javascript:void(function(){' + encodeURIComponent(srcScript) + '}())' : '';
                 }
                 S.log("doFormUpload : " + frame.src);
                 document.body.appendChild(frame);
 
-                if (UA.ie) {
+                if (UA['ie']) {
                     document['frames'][id].name = id;
                 }
 
@@ -424,7 +424,7 @@ KISSY.Editor.add("utils", function(KE) {
 
                     try { //
                         var doc;
-                        if (UA.ie) {
+                        if (UA['ie']) {
                             doc = frame.contentWindow.document;
                         } else {
                             doc = (frame.contentDocument || window.frames[id].document);
@@ -485,8 +485,8 @@ KISSY.Editor.add("utils", function(KE) {
             },
             //直接判断引擎，防止兼容性模式影响
             ieEngine:(function() {
-                if (!UA.ie) return;
-                return document['documentMode'] || UA.ie;
+                if (!UA['ie']) return;
+                return document['documentMode'] || UA['ie'];
             })(),
 
             /**
@@ -494,7 +494,7 @@ KISSY.Editor.add("utils", function(KE) {
              * @param el
              */
             preventFocus:function(el) {
-                if (UA.ie) {
+                if (UA['ie']) {
                     //ie 点击按钮不丢失焦点
                     el._4e_unselectable();
                 } else {

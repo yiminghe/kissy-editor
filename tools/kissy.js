@@ -968,23 +968,7 @@ window.KISSY = KISSY;
             }
             return ret;
         },
-        /**
-         * Executes the supplied function in the context of the supplied
-         * object 'when' milliseconds later. Executes the function a
-         * single time unless periodic is set to true.
-         * @param fn {Function|String} the function to execute or the name of the method in
-         *        the 'o' object to execute.
-         * @param when {Number} the number of milliseconds to wait until the fn is executed.
-         * @param periodic {Boolean} if true, executes continuously at supplied interval
-         *        until canceled.
-         * @param context {Object} the context object.
-         * @param data [Array] that is provided to the function. This accepts either a single
-         *        item or an array. If an array is provided, the function is executed with
-         *        one parameter for each array item. If you need to pass a single array
-         *        parameter, it needs to be wrapped in an array [myarray].
-         * @return {Object} a timer object. Call the cancel() method on this object to stop
-         *         the timer.
-         */
+
         later:function (fn, when, periodic, context, data) {
             when = when || 0;
             var m = fn,

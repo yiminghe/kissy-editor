@@ -159,7 +159,7 @@ KISSY.Editor.add("list/support", function() {
                     }
 
                     var currentListItemName = DOM._4e_name(currentListItem);
-                    if (!UA.ie && ( currentListItemName == 'div' ||
+                    if (!UA['ie'] && ( currentListItemName == 'div' ||
                         currentListItemName == 'p' ))
                         DOM._4e_appendBogus(currentListItem);
                     retval.appendChild(currentListItem);
@@ -294,7 +294,7 @@ KISSY.Editor.add("list/support", function() {
                 listNode[0].appendChild(listItem[0]);
 
                 // Append a bogus BR to force the LI to render at full height
-                if (!UA.ie)
+                if (!UA['ie'])
                     listItem._4e_appendBogus();
             }
             if (insertAnchor[0])

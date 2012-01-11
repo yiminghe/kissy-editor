@@ -200,7 +200,7 @@ KISSY.Editor.add("dom", function (KE) {
                 thisElement = normalElDom(thisElement);
                 var nodeName = thisElement.nodeName.toLowerCase();
                 //note by yiminghe:http://msdn.microsoft.com/en-us/library/ms534388(VS.85).aspx
-                if (UA.ie) {
+                if (UA['ie']) {
                     var scopeName = thisElement['scopeName'];
                     if (scopeName && scopeName != 'HTML')
                         nodeName = scopeName.toLowerCase() + ':' + nodeName;
@@ -365,7 +365,7 @@ KISSY.Editor.add("dom", function (KE) {
                     el = normalElDom(el);
                     el.style['MozUserSelect'] = 'none';
                 }
-                : UA.webkit ?
+                : UA['webkit'] ?
                 function (el) {
                     el = normalElDom(el);
                     el.style['KhtmlUserSelect'] = 'none';
@@ -373,7 +373,7 @@ KISSY.Editor.add("dom", function (KE) {
                 :
                 function (el) {
                     el = normalElDom(el);
-                    if (UA.ie || UA.opera) {
+                    if (UA['ie'] || UA.opera) {
                         var
                             e,
                             i = 0;
@@ -445,7 +445,7 @@ KISSY.Editor.add("dom", function (KE) {
                 // If the offset is after the last char, IE creates the text node
                 // on split, but don't include it into the DOM. So, we have to do
                 // that manually here.
-                if (UA.ie && offset == el.nodeValue.length) {
+                if (UA['ie'] && offset == el.nodeValue.length) {
                     var next = doc.createTextNode("");
                     DOM.insertAfter(next, el);
                     return new Node(next);
@@ -456,11 +456,11 @@ KISSY.Editor.add("dom", function (KE) {
 
                 // IE BUG: IE8 does not update the childNodes array in DOM after splitText(),
                 // we need to make some DOM changes to make it update. (#3436)
-                //我靠！UA.ie==8 不对，
-                //判断不出来:UA.ie==7 && doc.documentMode==7
-                //浏览器模式：当ie8处于兼容视图以及ie7时，UA.ie==7
+                //我靠！UA['ie']==8 不对，
+                //判断不出来:UA['ie']==7 && doc.documentMode==7
+                //浏览器模式：当ie8处于兼容视图以及ie7时，UA['ie']==7
                 //文本模式: mode=5 ,mode=7, mode=8
-                //alert("ua:"+UA.ie);
+                //alert("ua:"+UA['ie']);
                 //alert("mode:"+doc.documentMode);
                 //ie8 浏览器有问题，而不在于是否哪个模式
                 if (!!doc['documentMode']) {
@@ -491,7 +491,7 @@ KISSY.Editor.add("dom", function (KE) {
              *
              * @param el {(Node)}
              * @param includeChildren {boolean}
-             * @param cloneId {string}
+             * @param [cloneId] {string}
              */
             _4e_clone:function (el, includeChildren, cloneId) {
                 el = normalElDom(el);
@@ -872,7 +872,7 @@ KISSY.Editor.add("dom", function (KE) {
             /**
              *
              * @param el {(Node)}
-             * @param preserveChildren {boolean}
+             * @param [preserveChildren] {boolean}
              */
             _4e_remove:function (el, preserveChildren) {
                 var $ = normalElDom(el), parent = $.parentNode;
@@ -947,7 +947,7 @@ KISSY.Editor.add("dom", function (KE) {
                     break;
                 }
 
-                if (!UA.ie && !UA.opera) {
+                if (!UA['ie'] && !UA.opera) {
                     child = el.lastChild;
                     if (child && child.nodeType == 1 && child.nodeName.toLowerCase() == 'br') {
                         // Use "eChildNode.parentNode" instead of "node" to avoid IE bug (#324).
@@ -1103,7 +1103,7 @@ KISSY.Editor.add("dom", function (KE) {
                         dest.attr(attrName, attrValue);
                     // IE BUG: value attribute is never specified even if it exists.
                     else if (attribute.specified ||
-                        ( UA.ie && attribute.value && attrName == 'value' )) {
+                        ( UA['ie'] && attribute.value && attrName == 'value' )) {
                         attrValue = DOM.attr(el, attrName);
                         if (attrValue === NULL)
                             attrValue = attribute.nodeValue;
@@ -1151,7 +1151,7 @@ KISSY.Editor.add("dom", function (KE) {
              */
             _4e_getElementsByTagName:function (elem, tag, namespace) {
                 elem = normalElDom(elem);
-                if (!UA.ie && namespace) {
+                if (!UA['ie'] && namespace) {
                     tag = namespace + ":" + tag
                 }
                 var re = [], els = elem.getElementsByTagName(tag);

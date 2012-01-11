@@ -58,7 +58,7 @@ KISSY.Editor.add("sourcearea", function(editor) {
                     ev.keyCode == 87) {
                     ev.halt();
                     var next = textarea.attr("wrap") == "off" ? "soft" : "off";
-                    if (!UA.ie) {
+                    if (!UA['ie']) {
                         textarea.detach();
                         var newTextarea = textarea._4e_clone();
                         editor.textarea = newTextarea;

@@ -96,7 +96,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                         &&
                         ( node = nextBlock._4e_first(Walker.invisible(true)) )
                         && S.inArray(node._4e_name(), ['ul', 'ol']))
-                        (UA.ie ? new Node(doc.createTextNode('\xa0')) : new Node(doc.createElement('br'))).insertBefore(node);
+                        (UA['ie'] ? new Node(doc.createTextNode('\xa0')) : new Node(doc.createElement('br'))).insertBefore(node);
 
                     // Move the selection to the end block.
                     if (nextBlock)
@@ -139,7 +139,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                         }
                     }
 
-                    if (!UA.ie)
+                    if (!UA['ie'])
                         newBlock._4e_appendBogus();
 
                     range.insertNode(newBlock);
@@ -149,7 +149,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                     // The previousBlock check has been included because it may be
                     // empty if we have fixed a block-less space (like ENTER into an
                     // empty table cell).
-                    if (UA.ie && isStartOfBlock && ( !isEndOfBlock || !previousBlock[0].childNodes.length )) {
+                    if (UA['ie'] && isStartOfBlock && ( !isEndOfBlock || !previousBlock[0].childNodes.length )) {
                         // Move the selection to the new block.
                         range.moveToElementEditablePosition(isEndOfBlock ? previousBlock : newBlock);
                         range.select();
@@ -159,7 +159,7 @@ KISSY.Editor.add("enterkey", function(editor) {
                     range.moveToElementEditablePosition(isStartOfBlock && !isEndOfBlock ? nextBlock : newBlock);
                 }
 
-                if (!UA.ie) {
+                if (!UA['ie']) {
                     if (nextBlock) {
                         // If we have split the block, adds a temporary span at the
                         // range position and scroll relatively to it.

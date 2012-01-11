@@ -113,7 +113,7 @@ KISSY.Editor.add("xiami-music", function(editor) {
         var disableObjectResizing = editor.cfg['disableObjectResizing'];
         if (!disableObjectResizing) {
             Event.on(editor.document.body,
-                UA.ie ? 'resizestart' : 'resize',
+                UA['ie'] ? 'resizestart' : 'resize',
                     function(evt) {
                         var t = new S.Node(evt.target);
                         if (t.hasClass(CLS_XIAMI))

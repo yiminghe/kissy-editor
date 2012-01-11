@@ -23,13 +23,13 @@ KISSY.Editor.add("clipboard", function (editor) {
                 _init:function () {
                     var self = this,
                         editor = self.editor;
-                    // Event.on(editor.document.body, UA.ie ? "beforepaste" : "keydown", self._paste, self);
+                    // Event.on(editor.document.body, UA['ie'] ? "beforepaste" : "keydown", self._paste, self);
                     // beforepaste not fire on webkit and firefox
                     // paste fire too later in ie ,cause error
                     // 奇怪哦
                     // refer : http://stackoverflow.com/questions/2176861/javascript-get-clipboard-data-on-paste-event-cross-browser
                     Event.on(editor.document.body,
-                        UA.webkit ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
+                        UA['webkit'] ? 'paste' : (UA.gecko ? 'paste' : 'beforepaste'),
                         self._paste, self);
 
                     // Dismiss the (wrong) 'beforepaste' event fired on context menu open. (#7953)
@@ -74,10 +74,10 @@ KISSY.Editor.add("clipboard", function (editor) {
                         range = new KERange(doc);
 
                     // Create container to paste into
-                    var pastebin = new Node(UA.webkit ? '<body></body>' : '<div></div>', null, doc);
+                    var pastebin = new Node(UA['webkit'] ? '<body></body>' : '<div></div>', null, doc);
                     pastebin.attr('id', 'ke_pastebin');
                     // Safari requires a filler node inside the div to have the content pasted into it. (#4882)
-                    UA.webkit && pastebin[0].appendChild(doc.createTextNode('\xa0'));
+                    UA['webkit'] && pastebin[0].appendChild(doc.createTextNode('\xa0'));
                     doc.body.appendChild(pastebin[0]);
 
                     pastebin.css({
@@ -113,7 +113,7 @@ KISSY.Editor.add("clipboard", function (editor) {
                         // Remove hidden div and restore selection.
                         var bogusSpan;
 
-                        pastebin = ( UA.webkit
+                        pastebin = ( UA['webkit']
                             && ( bogusSpan = pastebin._4e_first() )
                             && (bogusSpan.hasClass('Apple-style-span') ) ?
                             bogusSpan : pastebin );
@@ -177,7 +177,7 @@ KISSY.Editor.add("clipboard", function (editor) {
                 body.on(command, onExec);
 
                 // IE6/7: document.execCommand has problem to paste into positioned element.
-                ( UA.ie > 7 ? doc : doc.selection.createRange() ) [ 'execCommand' ](command);
+                ( UA['ie'] > 7 ? doc : doc.selection.createRange() ) [ 'execCommand' ](command);
 
                 body.detach(command, onExec);
 
@@ -186,7 +186,7 @@ KISSY.Editor.add("clipboard", function (editor) {
 
             // Attempts to execute the Cut and Copy operations.
             var tryToCutCopy =
-                UA.ie ?
+                UA['ie'] ?
                     function (editor, type) {
                         return execIECommand(editor, type);
                     }
@@ -229,7 +229,7 @@ KISSY.Editor.add("clipboard", function (editor) {
             var KES = KE.Selection;
             // Cutting off control type element in IE standards breaks the selection entirely. (#4881)
             function fixCut(editor) {
-                if (!UA.ie ||
+                if (!UA['ie'] ||
                     editor.document.compatMode == 'BackCompat')
                     return;
 

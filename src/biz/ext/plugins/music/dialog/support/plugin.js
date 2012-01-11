@@ -86,7 +86,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
             "</p>" +
             "<p class='ke-xiami-url-wrap'>" +
             "<input class='ke-xiami-url ke-input' " +
-            "style='width:374px;" + (UA.ie == 6 ? "":MIDDLE)
+            "style='width:374px;" + (UA['ie'] == 6 ? "":MIDDLE)
             + "'" +
             "/> &nbsp; " +
             " <a " +

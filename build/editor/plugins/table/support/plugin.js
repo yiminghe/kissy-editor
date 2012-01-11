@@ -118,7 +118,7 @@ KISSY.Editor.add("table/support", function() {
         // Empty all cells.
         for (var i = 0; i < $cells.length; i++) {
             $cells[ i ].innerHTML = '';
-            if (!UA.ie)
+            if (!UA['ie'])
                 ( new Node($cells[ i ]) )._4e_appendBogus();
         }
     }
@@ -209,7 +209,7 @@ KISSY.Editor.add("table/support", function() {
                 continue;
             cell = new Node($row.cells[ cellIndex ].cloneNode(false));
 
-            if (!UA.ie)
+            if (!UA['ie'])
                 cell._4e_appendBogus();
             // Get back the currently selected cell.
             var baseCell = new Node($row.cells[ cellIndex ]);

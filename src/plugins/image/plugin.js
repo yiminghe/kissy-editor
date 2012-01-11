@@ -65,7 +65,7 @@ KISSY.Editor.add("image", function (editor) {
                     }
                     var doc = editor.document,
                         p = new Node(doc.createElement("p"));
-                    if (!UA.ie) {
+                    if (!UA['ie']) {
                         p._4e_appendBogus();
                     }
                     var r = new KE.Range(doc);
@@ -135,7 +135,7 @@ KISSY.Editor.add("image", function (editor) {
                     });
                     tipremove.on("click", function (ev) {
                         var flash = bubble._plugin;
-                        if (UA.webkit) {
+                        if (UA['webkit']) {
                             var r = flash.editor.getSelection().getRanges();
                             r && r[0] && (r[0].collapse(true) || true) && r[0].select();
                         }

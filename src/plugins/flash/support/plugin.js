@@ -175,7 +175,7 @@ KISSY.Editor.add("flash/support", function () {
                 tipremove.on("click", function (ev) {
                     var flash = bubble._plugin;
                     //chrome remove 后会没有焦点
-                    if (UA.webkit) {
+                    if (UA['webkit']) {
                         var r = flash.editor.getSelection().getRanges();
                         r && r[0] && (r[0].collapse(true) || true) && r[0].select();
                     }

@@ -394,7 +394,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
                 "style='position:absolute;" +
                 "cursor:pointer;" +
                 "left:" +
-                (UA.ie ? "360" : "369") +
+                (UA['ie'] ? "360" : "369") +
                 "px;" +
                 "z-index:2;" +
                 "top:0px;" +

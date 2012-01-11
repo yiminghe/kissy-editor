@@ -438,7 +438,7 @@ KISSY.Editor.add("styles", function (KE) {
         preHtml = preHtml.replace(/<br\b[^>]*>/gi, '\n');
 
         // Krugle: IE normalizes innerHTML to <pre>, breaking whitespaces.
-        if (UA.ie) {
+        if (UA['ie']) {
             var temp = block[0].ownerDocument.createElement('div');
             temp.appendChild(newBlock[0]);
             newBlock[0].outerHTML = '<pre>' + preHtml + '</pre>';
@@ -518,7 +518,7 @@ KISSY.Editor.add("styles", function (KE) {
             replace(preBlock.html(), /^\n/, '');
 
         // Krugle: IE normalizes innerHTML from <pre>, breaking whitespaces.
-        if (UA.ie)
+        if (UA['ie'])
             preBlock[0].outerHTML = '<pre>' + mergedHtml + '</pre>';
         else
             preBlock.html(mergedHtml);
@@ -821,7 +821,7 @@ KISSY.Editor.add("styles", function (KE) {
                     // repeatedly. Also, for IE, we must normalize body, not documentElement.
                     // IE is also known for having a "crash effect" with normalize().
                     // We should try to normalize with IE too in some way, somewhere.
-                    if (!UA.ie)
+                    if (!UA['ie'])
                         styleNode[0].normalize();
                 }
                 // Style already inherit from parents, left just to clear up any internal overrides. (#5931)

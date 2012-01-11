@@ -1463,7 +1463,7 @@ KISSY.Editor.add("range", function(KE) {
             self.enlarge(KER.ENLARGE_BLOCK_CONTENTS);
             fixedBlock[0].appendChild(self.extractContents());
             fixedBlock._4e_trim();
-            if (!UA.ie) {
+            if (!UA['ie']) {
                 fixedBlock._4e_appendBogus();
             }
             self.insertNode(fixedBlock);
@@ -1518,7 +1518,7 @@ KISSY.Editor.add("range", function(KE) {
                     // In Gecko, the last child node must be a bogus <br>.
                     // Note: bogus <br> added under <ul> or <ol> would cause
                     // lists to be incorrectly rendered.
-                    if (!UA.ie && !S.inArray(startBlock._4e_name(), ['ul', 'ol']))
+                    if (!UA['ie'] && !S.inArray(startBlock._4e_name(), ['ul', 'ol']))
                         startBlock._4e_appendBogus();
                 }
             }
@@ -1650,7 +1650,7 @@ KISSY.Editor.add("range", function(KE) {
                 if (!inlineChildReqElements[ node._4e_name() ]) {
                     // If we're working at the end-of-block, forgive the first <br /> in non-IE
                     // browsers.
-                    if (!isStart && !UA.ie && node._4e_name() == 'br' && !hadBr)
+                    if (!isStart && !UA['ie'] && node._4e_name() == 'br' && !hadBr)
                         hadBr = TRUE;
                     else
                         return FALSE;

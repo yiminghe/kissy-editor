@@ -304,7 +304,7 @@ KISSY.Editor.add("table/dialog/support", function() {
                 cols = parseInt(d.tcols.val()) || 1,
                 rows = parseInt(d.trows.val()) || 1,
                 //firefox 需要 br 才能得以放置焦点
-                cellpad = UA.ie ? "&nbsp;" : "&nbsp;<br/>",
+                cellpad = UA['ie'] ? "&nbsp;" : "&nbsp;<br/>",
                 editor = self.editor;
 
             if (valid(d.talign.val()))

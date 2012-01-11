@@ -16,7 +16,7 @@ KISSY.Editor.add("table", function(editor) {
             cssTemplate =
                 // IE6 don't have child selector support,
                 // where nested table cells could be incorrect.
-                ( UA.ie === 6 ?
+                ( UA['ie'] === 6 ?
                     [
                         'table.%2,',
                         'table.%2 td, table.%2 th,',

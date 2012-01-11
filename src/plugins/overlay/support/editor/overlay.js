@@ -64,7 +64,7 @@ KISSY.Editor.add("overlay", function () {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:S.UA.ie == 6 ? S.DOM.docWidth() : "100%",
+                width:S.UA['ie'] == 6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

@@ -549,7 +549,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
          * word 的注释对非 ie 浏览器很特殊
          */
         var wordRules = {
-            comment:!UA.ie ?
+            comment:!UA['ie'] ?
                 function (value, node) {
                     var imageInfo = value.match(/<img.*?>/),
                         listInfo = value.match(/^\[if !supportLists\]([\s\S]*?)\[endif\]$/);
@@ -666,7 +666,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
                 return contents;
             }
         };
-        if (UA.ie) {
+        if (UA['ie']) {
             // IE outputs style attribute in capital letters. We should convert
             // them back to lower case.
             // bug: style='background:url(www.G.cn)' =>  style='background:url(www.g.cn)'
@@ -731,7 +731,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
             var children = block.children,
                 lastChild = lastNoneSpaceChild(block);
             if (lastChild) {
-                if (( fromSource || !UA.ie ) &&
+                if (( fromSource || !UA['ie'] ) &&
                     lastChild.type == KEN.NODE_ELEMENT &&
                     lastChild.name == 'br') {
                     children.pop();
@@ -748,7 +748,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
 
             if (blockNeedsExtension(block)) {
                 //任何浏览器都要加空格！，否则空表格可能间隙太小，不能容下光标
-                if (UA.ie) {
+                if (UA['ie']) {
                     block.add(new KE.HtmlParser.Text('\xa0'));
                 } else {
                     //其他浏览器需要加空格??

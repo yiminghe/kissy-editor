@@ -332,7 +332,7 @@ KISSY.Editor.add("domiterator", function(KE) {
                 var lastChild = new Node(block[0].lastChild);
                 if (lastChild[0] && lastChild[0].nodeType == KEN.NODE_ELEMENT && lastChild._4e_name() == 'br') {
                     // Take care not to remove the block expanding <br> in non-IE browsers.
-                    if (UA.ie
+                    if (UA['ie']
                         || lastChild._4e_previous(bookmarkGuard)
                         || lastChild._4e_next(bookmarkGuard))
                         lastChild._4e_remove();

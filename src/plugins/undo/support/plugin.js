@@ -194,7 +194,7 @@ KISSY.Editor.add("undo/support", function() {
                 editor._setRawData(snapshot.contents);
                 if (snapshot.bookmarks)
                     editor.getSelection().selectBookmarks(snapshot.bookmarks);
-                else if (UA.ie) {
+                else if (UA['ie']) {
                     // IE BUG: If I don't set the selection to *somewhere* after setting
                     // document contents, then IE would create an empty paragraph at the bottom
                     // the next time the document is modified.

@@ -19,7 +19,7 @@ KISSY.Editor.add("dragupload", function(editor) {
         suffix = cfg['suffix'] || "png,jpg,jpeg,gif",
         suffix_reg = new RegExp(suffix.split(/,/).join("|") + "$", "i"),
         document = editor.document;
-    if (UA.ie) return;
+    if (UA['ie']) return;
 
     var inserted = {},startMonitor = false;
 

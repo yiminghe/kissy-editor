@@ -65,7 +65,7 @@ KISSY.Editor.add("overlay/focus", function() {
              * then IE would still leave the caret inside the editing area.
              */
             //ie9 图片resize框，仍然会突出
-            if (UA.ie && editor) {
+            if (UA['ie'] && editor) {
 
                 //聚焦到当前窗口
                 //使得编辑器失去焦点，促使ie保存当前选择区域（位置）
@@ -172,7 +172,7 @@ KISSY.Editor.add("overlay", function () {
             globalMask = new KE.Overlay({
                 x:0,
                 focus4e:false,
-                width:S.UA.ie == 6 ? S.DOM.docWidth() : "100%",
+                width:S.UA['ie'] == 6 ? S.DOM.docWidth() : "100%",
                 y:0,
                 //指定全局 loading zIndex 值
                 "zIndex":KE.baseZIndex(KE.zIndexManager.LOADING),

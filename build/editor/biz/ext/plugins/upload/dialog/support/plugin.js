@@ -416,7 +416,7 @@ KISSY.Editor.add("multi-upload/dialog/support", function () {
 
             //webkit 一旦整个可被选择就会导致点击事件没有
             //因为拖放要求mousedown被阻止,ie9 也是奇怪了！
-            if (!UA.webkit && KE.Utils.ieEngine != 9) {
+            if (!UA['webkit'] && KE.Utils.ieEngine != 9) {
                 d.set("handlers", [d.get("el")]);
             }
         },

@@ -102,7 +102,7 @@ KISSY.Editor.add("flashutils", function() {
                     "overflow:hidden;" +
                     "'>", null, doc).appendTo(doc.body)
                 , el = flashUtils.createSWF.apply(this, arguments).el.appendTo(holder);
-            if (!UA.ie)
+            if (!UA['ie'])
                 el = el.one("object");
             return el[0];
 
@@ -130,7 +130,7 @@ KISSY.Editor.add("flashutils", function() {
             }
             vars_str = vars_str.substring(1);
 
-            if (UA.ie) {
+            if (UA['ie']) {
                 var outerHTML = '<object ' +
                     attrs_str +
                     ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" >' +

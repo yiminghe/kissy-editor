@@ -144,7 +144,7 @@ KISSY.Editor.add("indent/support", function() {
                     followingList._4e_name() in listNodeNames) {
                     // IE requires a filler NBSP for nested list inside empty list item,
                     // otherwise the list item will be inaccessiable. (#4476)
-                    if (UA.ie && !li._4e_first(function(node) {
+                    if (UA['ie'] && !li._4e_first(function(node) {
                         return isNotWhitespaces(node) && isNotBookmark(node);
                     }))
                         li[0].appendChild(range.document.createTextNode('\u00a0'));
