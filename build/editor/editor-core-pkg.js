@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-12 12:54:00
+ * @buildtime: 2012-01-12 16:25:38
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-12 12:54:00");
+                encodeURIComponent("2012-01-12 16:25:38");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-12 12:54:00'));
+                encodeURIComponent('2012-01-12 16:25:38'));
         };
     }
 
@@ -1674,6 +1674,10 @@ KISSY.Editor.add("dom", function (KE) {
                 }
             },
 
+            _4e_getBogus:function (el) {
+                return KE.Walker.getBogus(normalEl(el));
+            },
+
             /**
              *
              * @param el {(Node)}
@@ -2090,7 +2094,6 @@ KISSY.Editor.add("definition", function (KE) {
             // kissy-editor #12
             // IE8 doesn't support carets behind images(empty content after image's block) setting ie7 compatible mode would force IE8+ to run in IE7 compat mode.
             + (DOC.documentMode === 8 ? '<meta http-equiv="X-UA-Compatible" content="IE=7" />' : "")
-
             + "<title>${title}</title>"
             + "<link "
             + "href='"
@@ -3711,14 +3714,16 @@ KISSY.Editor.add("elementpath", function(KE) {
  Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license
  */
-KISSY.Editor.add("walker", function(KE) {
+KISSY.Editor.add("walker", function (KE) {
 
     var TRUE = true,
         FALSE = false,
         NULL = null,
         S = KISSY,
+        UA = S.UA,
         KEN = KE.NODE,
         DOM = S.DOM,
+        dtd = KE.XHTML_DTD,
         Node = S.Node;
 
     /**
@@ -3761,7 +3766,7 @@ KISSY.Editor.add("walker", function(KE) {
             var limitLTR = range.endContainer,
                 blockerLTR = new Node(limitLTR[0].childNodes[range.endOffset]);
             //从左到右保证在 range 区间内获取 nextSourceNode
-            this._.guardLTR = function(node, movingOut) {
+            this._.guardLTR = function (node, movingOut) {
                 node = DOM._4e_wrap(node);
                 //从endContainer移出去，失败返回false
                 return (
@@ -3770,7 +3775,7 @@ KISSY.Editor.add("walker", function(KE) {
                         &&
                         (!movingOut
                             ||
-                            ! DOM._4e_equals(limitLTR, node)
+                            !DOM._4e_equals(limitLTR, node)
                             )
                         //到达深度遍历的最后一个节点，结束
                         &&
@@ -3791,7 +3796,7 @@ KISSY.Editor.add("walker", function(KE) {
             var limitRTL = range.startContainer,
                 blockerRTL = ( range.startOffset > 0 ) && new Node(limitRTL[0].childNodes[range.startOffset - 1]);
 
-            self._.guardRTL = function(node, movingOut) {
+            self._.guardRTL = function (node, movingOut) {
                 node = DOM._4e_wrap(node);
                 return (
                     node
@@ -3809,7 +3814,7 @@ KISSY.Editor.add("walker", function(KE) {
         // Make the user defined guard function participate in the process,
         // otherwise simply use the boundary guard.
         if (userGuard) {
-            guard = function(node, movingOut) {
+            guard = function (node, movingOut) {
                 if (stopGuard(node, movingOut) === FALSE)
                     return FALSE;
 
@@ -3922,7 +3927,7 @@ KISSY.Editor.add("walker", function(KE) {
          * Stop walking. No more nodes are retrieved if this function gets
          * called.
          */
-        end : function() {
+        end:function () {
             this._.end = 1;
         },
 
@@ -3931,7 +3936,7 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {(boolean)} The next node or NULL if no more
          *        nodes are available.
          */
-        next : function() {
+        next:function () {
             return iterate.call(this);
         },
 
@@ -3940,7 +3945,7 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {(boolean)} The previous node or NULL if no more
          *        nodes are available.
          */
-        previous : function() {
+        previous:function () {
             return iterate.call(this, TRUE);
         },
 
@@ -3949,7 +3954,7 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {boolean} "FALSE" if the evaluator function returned
          *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
-        checkForward : function() {
+        checkForward:function () {
             return iterate.call(this, FALSE, TRUE) !== FALSE;
         },
 
@@ -3959,7 +3964,7 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {boolean} "FALSE" if the evaluator function returned
          *        "FALSE" for any of the matched nodes. Otherwise "TRUE".
          */
-        checkBackward : function() {
+        checkBackward:function () {
             return iterate.call(this, TRUE, TRUE) !== FALSE;
         },
 
@@ -3969,7 +3974,7 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {(boolean)} The last node at the right or NULL
          *        if no valid nodes are available.
          */
-        lastForward : function() {
+        lastForward:function () {
             return iterateToLast.call(this);
         },
 
@@ -3979,11 +3984,11 @@ KISSY.Editor.add("walker", function(KE) {
          * @returns {(boolean)} The last node at the left or NULL
          *        if no valid nodes are available.
          */
-        lastBackward : function() {
+        lastBackward:function () {
             return iterateToLast.call(this, TRUE);
         },
 
-        reset : function() {
+        reset:function () {
             delete this.current;
             this._ = {};
         }
@@ -3991,10 +3996,10 @@ KISSY.Editor.add("walker", function(KE) {
     });
 
 
-    Walker.blockBoundary = function(customNodeNames) {
-        return function(node) {
+    Walker.blockBoundary = function (customNodeNames) {
+        return function (node) {
             node = DOM._4e_wrap(node);
-            return ! ( node && node[0].nodeType == KEN.NODE_ELEMENT
+            return !( node && node[0].nodeType == KEN.NODE_ELEMENT
                 && node._4e_isBlockBoundary(customNodeNames) );
         };
     };
@@ -4016,14 +4021,14 @@ KISSY.Editor.add("walker", function(KE) {
      * @param {boolean} isReject Whether should return 'FALSE' for the bookmark
      * node instead of 'TRUE'(default).
      */
-    Walker.bookmark = function(contentOnly, isReject) {
+    Walker.bookmark = function (contentOnly, isReject) {
         function isBookmarkNode(node) {
             return ( node && node[0]
                 && node._4e_name() == 'span'
                 && node.attr('_ke_bookmark') );
         }
 
-        return function(node) {
+        return function (node) {
             var isBookmark, parent;
             // Is bookmark inner text node?
             isBookmark = ( node &&
@@ -4041,8 +4046,8 @@ KISSY.Editor.add("walker", function(KE) {
      * Whether the node is a text node() containing only whitespaces characters.
      * @param {boolean=} isReject
      */
-    Walker.whitespaces = function(isReject) {
-        return function(node) {
+    Walker.whitespaces = function (isReject) {
+        return function (node) {
             node = node[0] || node;
             var isWhitespace = node && ( node.nodeType == KEN.NODE_TEXT )
                 && !S.trim(node.nodeValue);
@@ -4054,9 +4059,9 @@ KISSY.Editor.add("walker", function(KE) {
      * Whether the node is invisible in wysiwyg mode.
      * @param isReject
      */
-    Walker.invisible = function(isReject) {
+    Walker.invisible = function (isReject) {
         var whitespace = Walker.whitespaces();
-        return function(node) {
+        return function (node) {
             // Nodes that take no spaces in wysiwyg:
             // 1. White-spaces but not including NBSP;
             // 2. Empty inline elements, e.g. <b></b> we're checking here
@@ -4065,6 +4070,31 @@ KISSY.Editor.add("walker", function(KE) {
             var isInvisible = whitespace(node) || node[0].nodeType == KEN.NODE_ELEMENT && !node[0].offsetHeight;
             return isReject ^ isInvisible;
         };
+    };
+
+    var tailNbspRegex = /^[\t\r\n ]*(?:&nbsp;|\xa0)$/,
+        isWhitespaces = Walker.whitespaces(),
+        isBookmark = Walker.bookmark(),
+        toSkip = function (node) {
+            return isBookmark(node)
+                || isWhitespaces(node)
+                || node.type == 1
+                && node._4e_name() in dtd.$inline
+                && !( node._4e_name() in dtd.$empty );
+        };
+
+    // Check if there's a filler node at the end of an element, and return it.
+    Walker.getBogus = function (tail) {
+        // Bogus are not always at the end, e.g. <p><a>text<br /></a></p>
+        do {
+            tail = tail._4e_previousSourceNode();
+        } while (toSkip(tail));
+
+        if (tail && ( !UA.ie ? tail._4e_name() == "br"
+            : tail[0].nodeType == 3 && tailNbspRegex.test(tail.text()) )) {
+            return tail;
+        }
+        return false;
     };
 
 
@@ -7234,8 +7264,8 @@ KISSY.Editor.add("selection", function (KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
-        //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
+        var isNotWhitespace = KE.Walker.whitespaces(TRUE),
+            isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
         //除去注释和空格的下一个有效元素
         var nextValidEl = function (node) {
             return isNotWhitespace(node) && node && node[0].nodeType != 8
@@ -7247,6 +7277,9 @@ KISSY.Editor.add("selection", function (KE) {
             return element._4e_isBlockBoundary() && dtd.$empty[ element._4e_name() ];
         }
 
+        function isNotEmpty(node) {
+            return isNotWhitespace(node) && isNotBookmark(node);
+        }
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p
@@ -7256,6 +7289,25 @@ KISSY.Editor.add("selection", function (KE) {
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
+
+            // Fix gecko link bug, when a link is placed at the end of block elements there is
+            // no way to move the caret behind the link. This fix adds a bogus br element after the link
+            // kissy-editor #12
+            if (UA['gecko']) {
+                var pathBlock = path.block || path.blockLimit,
+                    lastNode = pathBlock && pathBlock._4e_last(isNotEmpty);
+                if (pathBlock
+                    // style as block
+                    && pathBlock._4e_isBlockBoundary()
+                    // lastNode is not block
+                    && !( lastNode && lastNode[0].nodeType == 1 && lastNode._4e_isBlockBoundary() )
+                    // not pre
+                    && pathBlock._4e_name() != 'pre'
+                    // does not have bogus
+                    && !pathBlock._4e_getBogus()) {
+                    pathBlock._4e_appendBogus();
+                }
+            }
 
             if (!range ||
                 !range.collapsed ||

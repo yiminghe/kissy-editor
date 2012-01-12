@@ -1114,8 +1114,8 @@ KISSY.Editor.add("selection", function (KE) {
             return block._4e_outerHtml().match(emptyParagraphRegexp);
         }
 
-        var isNotWhitespace = KE.Walker.whitespaces(TRUE);//,
-        //isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
+        var isNotWhitespace = KE.Walker.whitespaces(TRUE),
+            isNotBookmark = KE.Walker.bookmark(FALSE, TRUE);
         //除去注释和空格的下一个有效元素
         var nextValidEl = function (node) {
             return isNotWhitespace(node) && node && node[0].nodeType != 8
@@ -1127,6 +1127,9 @@ KISSY.Editor.add("selection", function (KE) {
             return element._4e_isBlockBoundary() && dtd.$empty[ element._4e_name() ];
         }
 
+        function isNotEmpty(node) {
+            return isNotWhitespace(node) && isNotBookmark(node);
+        }
 
         /**
          * 如果选择了body下面的直接inline元素，则新建p
@@ -1136,6 +1139,25 @@ KISSY.Editor.add("selection", function (KE) {
                 selection = ev.selection,
                 range = selection && selection.getRanges()[0],
                 blockLimit = path.blockLimit;
+
+            // Fix gecko link bug, when a link is placed at the end of block elements there is
+            // no way to move the caret behind the link. This fix adds a bogus br element after the link
+            // kissy-editor #12
+            if (UA['gecko']) {
+                var pathBlock = path.block || path.blockLimit,
+                    lastNode = pathBlock && pathBlock._4e_last(isNotEmpty);
+                if (pathBlock
+                    // style as block
+                    && pathBlock._4e_isBlockBoundary()
+                    // lastNode is not block
+                    && !( lastNode && lastNode[0].nodeType == 1 && lastNode._4e_isBlockBoundary() )
+                    // not pre
+                    && pathBlock._4e_name() != 'pre'
+                    // does not have bogus
+                    && !pathBlock._4e_getBogus()) {
+                    pathBlock._4e_appendBogus();
+                }
+            }
 
             if (!range ||
                 !range.collapsed ||

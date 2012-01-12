@@ -981,6 +981,10 @@ KISSY.Editor.add("dom", function (KE) {
                 }
             },
 
+            _4e_getBogus:function (el) {
+                return KE.Walker.getBogus(normalEl(el));
+            },
+
             /**
              *
              * @param el {(Node)}

@@ -136,14 +136,6 @@ KISSY.Editor.add("link", function (editor) {
                         UA['gecko'] && (link = editor.getSelection().getStartElement());
                     }
                 }
-                // Fix gecko link bug, when a link is placed at the end of block elements there is
-                // no way to move the caret behind the link. This fix adds a bogus br element after the link
-                // kissy-editor #12
-                if (UA['gecko']) {
-                    if ((p = link[0].parentNode) && DTD.$block[p.nodeName.toLowerCase()] && p.lastChild == link[0]) {
-                        p.appendChild(editor.document.createElement("br"))
-                    }
-                }
                 editor.fire("save");
                 editor.notifySelectionChange();
             },
