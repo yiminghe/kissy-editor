@@ -87,6 +87,10 @@ KISSY.Editor.add("definition", function (KE) {
         return HTML5_DTD
             + "<html>"
             + "<head>"
+            // kissy-editor #12
+            // IE8 doesn't support carets behind images(empty content after image's block) setting ie7 compatible mode would force IE8+ to run in IE7 compat mode.
+            + (DOC.documentMode === 8 ? '<meta http-equiv="X-UA-Compatible" content="IE=7" />' : "")
+
             + "<title>${title}</title>"
             + "<link "
             + "href='"

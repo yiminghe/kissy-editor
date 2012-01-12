@@ -600,6 +600,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
                             savedAttributeName in attribs && ( delete attribs[ attributeNames[ i ] ] );
                         }
                     }
+
                     return element;
                 },
                 embed:function (element) {
@@ -621,12 +622,12 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
                 },
                 // Remove empty link but not empty anchor.(#3829)
                 a:function (element) {
-                    if (!element.children.length&& S.isEmptyObject(element.attributes)) {
+                    if (!element.children.length && S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 },
                 span:function (element) {
-                    if (!element.children.length&& S.isEmptyObject(element.attributes)) {
+                    if (!element.children.length && S.isEmptyObject(element.attributes)) {
                         return false;
                     }
                 }
@@ -715,7 +716,11 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
                 // Some of the controls in form needs extension too,
                 // to move cursor at the end of the form. (#4791)
                 || block.name == 'form' &&
-                lastChild.name == 'input';
+                lastChild.name == 'input'
+                // Fix gecko link bug, when a link is placed at the end of block elements there is
+                // no way to move the caret behind the link. This fix adds a bogus br element after the link
+                // kissy-editor #12
+                || lastChild.name == "a" && UA['gecko'];
         }
 
         /**
