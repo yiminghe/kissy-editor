@@ -2,7 +2,7 @@
  * monitor user's enter and shift enter keydown,modified from ckeditor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("enterkey", function(editor) {
+KISSY.Editor.add("enterkey", function (editor) {
     var S = KISSY,
         KE = S.Editor,
         //DOM = S.DOM,
@@ -15,7 +15,7 @@ KISSY.Editor.add("enterkey", function(editor) {
         ElementPath = KE.ElementPath;
     if (!KE.enterBlock) {
 
-        (function() {
+        (function () {
 
             function getRange(editor) {
                 // Get the selection ranges.
@@ -184,17 +184,18 @@ KISSY.Editor.add("enterkey", function(editor) {
 
             function EnterKey(editor) {
                 var doc = editor.document;
-                Event.on(doc, "keydown", function(ev) {
+                Event.on(doc, "keydown", function (ev) {
                     var keyCode = ev.keyCode;
                     if (keyCode === 13) {
-                        if (ev.shiftKey) {
+                        if (ev.shiftKey || ev.ctrlKey || ev.metaKey) {
                         } else {
                             editor.fire("save");
                             var re = editor.execCommand("enterBlock");
                             editor.fire("save");
-                            if (re !== false)ev.preventDefault();
+                            if (re !== false) {
+                                ev.preventDefault();
+                            }
                         }
-
                     }
                 });
             }
@@ -203,13 +204,13 @@ KISSY.Editor.add("enterkey", function(editor) {
             KE.EnterKey = EnterKey;
         })();
     }
-    
 
-        editor.addCommand("enterBlock", {
-            exec:KE.EnterKey.enterBlock
-        });
-        KE.EnterKey(editor);
 
-},{
+    editor.addCommand("enterBlock", {
+        exec:KE.EnterKey.enterBlock
+    });
+    KE.EnterKey(editor);
+
+}, {
     attach:false
 });

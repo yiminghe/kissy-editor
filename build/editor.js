@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-12 16:25:38
+ * @buildtime: 2012-01-30 10:20:41
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-12 16:25:38");
+                encodeURIComponent("2012-01-30 10:20:41");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-12 16:25:38'));
+                encodeURIComponent('2012-01-30 10:20:41'));
         };
     }
 
@@ -13069,7 +13069,7 @@ KISSY.Editor.add("elementpaths", function(editor) {
  * monitor user's enter and shift enter keydown,modified from ckeditor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("enterkey", function(editor) {
+KISSY.Editor.add("enterkey", function (editor) {
     var S = KISSY,
         KE = S.Editor,
         //DOM = S.DOM,
@@ -13082,7 +13082,7 @@ KISSY.Editor.add("enterkey", function(editor) {
         ElementPath = KE.ElementPath;
     if (!KE.enterBlock) {
 
-        (function() {
+        (function () {
 
             function getRange(editor) {
                 // Get the selection ranges.
@@ -13251,17 +13251,18 @@ KISSY.Editor.add("enterkey", function(editor) {
 
             function EnterKey(editor) {
                 var doc = editor.document;
-                Event.on(doc, "keydown", function(ev) {
+                Event.on(doc, "keydown", function (ev) {
                     var keyCode = ev.keyCode;
                     if (keyCode === 13) {
-                        if (ev.shiftKey) {
+                        if (ev.shiftKey || ev.ctrlKey || ev.metaKey) {
                         } else {
                             editor.fire("save");
                             var re = editor.execCommand("enterBlock");
                             editor.fire("save");
-                            if (re !== false)ev.preventDefault();
+                            if (re !== false) {
+                                ev.preventDefault();
+                            }
                         }
-
                     }
                 });
             }
@@ -13270,14 +13271,14 @@ KISSY.Editor.add("enterkey", function(editor) {
             KE.EnterKey = EnterKey;
         })();
     }
-    
 
-        editor.addCommand("enterBlock", {
-            exec:KE.EnterKey.enterBlock
-        });
-        KE.EnterKey(editor);
 
-},{
+    editor.addCommand("enterBlock", {
+        exec:KE.EnterKey.enterBlock
+    });
+    KE.EnterKey(editor);
+
+}, {
     attach:false
 });
 /**
