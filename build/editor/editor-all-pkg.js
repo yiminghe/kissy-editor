@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-01-30 10:20:41
+ * @buildtime: 2012-02-09 14:57:32
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-01-30 10:20:41");
+                encodeURIComponent("2012-02-09 14:57:32");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-01-30 10:20:41'));
+                encodeURIComponent('2012-02-09 14:57:32'));
         };
     }
 
@@ -17143,13 +17143,8 @@ KISSY.Editor.add("maximize", function (editor) {
  * @author yiminghe@gmail.com
  */
 KISSY.Editor.add("maximize/support", function () {
-    window.KISSY.DOM.addStyleSheet(
-        ".ke-toolbar-padding {" +
-            "padding:5px;" +
-            "}",
-        "ke-maximize");
 
-    var S = window.KISSY,
+    var S = KISSY,
         KE = S.Editor,
         UA = S.UA,
         ie = UA['ie'],
@@ -17176,11 +17171,20 @@ KISSY.Editor.add("maximize/support", function () {
             }
         };
 
+    DOM.addStyleSheet(".ke-toolbar-padding {" +
+        "padding:5px;" +
+        "}",
+        "ke-maximize");
+
     S.mix(Maximize, {
 
         onClick:function () {
             var self = this,
                 editor = self.editor;
+
+            if (editor.fire("beforeRestoreWindow") === false) {
+                return;
+            }
 
             if (self._resize) {
                 Event.remove(window, "resize", self._resize);
@@ -17190,7 +17194,6 @@ KISSY.Editor.add("maximize/support", function () {
             }
 
             //body overflow 变化也会引起 resize 变化！！！！先去除
-
             self.call("_saveEditorStatus");
             self.call("_restoreState");
             self.btn.boff();
@@ -17416,7 +17419,11 @@ KISSY.Editor.add("maximize/support", function () {
             }, 30);
         },
         offClick:function () {
-            var self = this;
+            var self = this,
+                editor = self.editor;
+            if (editor.fire("beforeMaximizeWindow") === false) {
+                return;
+            }
             init();
             self.call("_real");
         },
