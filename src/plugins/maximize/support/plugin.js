@@ -88,7 +88,6 @@ KISSY.Editor.add("maximize/support", function () {
             editor.wrap.css({
                 height:self.iframeHeight
             });
-
             DOM.css(doc.body, {
                 width:"",
                 height:"",
@@ -97,16 +96,25 @@ KISSY.Editor.add("maximize/support", function () {
             //documentElement 设置宽高，ie崩溃
             doc.documentElement.style.overflow = "";
 
-            editor.editorWrap.css({
-                position:"static",
-                width:self.editorWrapWidth
-            });
+            var editorWrapStyle = editor.editorWrap[0].style;
+            editorWrapStyle.position = "static";
+            editorWrapStyle.width = self.editorWrapWidth;
+
+            /*
+             iframe 中时假死！
+             editor.editorWrap.css({
+             position:"static",
+             width:self.editorWrapWidth
+             });*/
+
             iframe.css({
                 left:"-99999px",
                 top:"-99999px"
             });
+
             window.scrollTo(self.scrollLeft, self.scrollTop);
             var bel = self.btn.get("el");
+
             bel.one("span")
                 .removeClass(RESTORE_CLASS)
                 .addClass(MAXIMIZE_CLASS)

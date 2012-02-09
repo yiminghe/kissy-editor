@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-02-09 14:57:32
+ * @buildtime: 2012-02-09 16:27:50
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-02-09 14:57:32");
+                encodeURIComponent("2012-02-09 16:27:50");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-02-09 14:57:32'));
+                encodeURIComponent('2012-02-09 16:27:50'));
         };
     }
 
@@ -17228,7 +17228,6 @@ KISSY.Editor.add("maximize/support", function () {
             editor.wrap.css({
                 height:self.iframeHeight
             });
-
             DOM.css(doc.body, {
                 width:"",
                 height:"",
@@ -17237,16 +17236,25 @@ KISSY.Editor.add("maximize/support", function () {
             //documentElement 设置宽高，ie崩溃
             doc.documentElement.style.overflow = "";
 
-            editor.editorWrap.css({
-                position:"static",
-                width:self.editorWrapWidth
-            });
+            var editorWrapStyle = editor.editorWrap[0].style;
+            editorWrapStyle.position = "static";
+            editorWrapStyle.width = self.editorWrapWidth;
+
+            /*
+             iframe 中时假死！
+             editor.editorWrap.css({
+             position:"static",
+             width:self.editorWrapWidth
+             });*/
+
             iframe.css({
                 left:"-99999px",
                 top:"-99999px"
             });
+
             window.scrollTo(self.scrollLeft, self.scrollTop);
             var bel = self.btn.get("el");
+
             bel.one("span")
                 .removeClass(RESTORE_CLASS)
                 .addClass(MAXIMIZE_CLASS)
