@@ -486,40 +486,43 @@ KISSY.Editor.add("image/dialog", function (editor) {
             editor.insertElement(img);
         }
 
-        var link = findAWithImg(img),
-            linkVal = S.trim(valInput(imgLink)),
-            sel = editor.getSelection(),
-            bs;
-        if (link) {
-            if (linkVal) {
+        // need a breath for firefox
+        // else insertElement(img); img[0].parentNode==null
+        setTimeout(function () {
+            var link = findAWithImg(img),
+                linkVal = S.trim(valInput(imgLink)),
+                sel = editor.getSelection(),
+                bs;
+            if (link) {
+                if (linkVal) {
+                    link.attr("_ke_saved_href", linkVal)
+                        .attr("href", linkVal)
+                        .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
+                    //editor.notifySelectionChange();
+                } else {
+                    // 删除
+                    bs = sel.createBookmarks();
+                    link._4e_remove(true);
+                }
+            } else if (linkVal) {
+                // 新增需要 bookmark，标记
+                bs = sel.createBookmarks();
+                link = new Node("<a></a>");
                 link.attr("_ke_saved_href", linkVal)
                     .attr("href", linkVal)
                     .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
-                //editor.notifySelectionChange();
-            } else {
-                // 删除
-                bs = sel.createBookmarks();
-                link._4e_remove(true);
+                var t = img[0];
+                t.parentNode.replaceChild(link[0], t);
+                link.append(t);
             }
-        } else if (linkVal) {
-            // 新增需要 bookmark，标记
-            bs = sel.createBookmarks();
-            link = new Node("<a></a>");
-            link.attr("_ke_saved_href", linkVal)
-                .attr("href", linkVal)
-                .attr("target", imgLinkBlank.attr("checked") ? "_blank" : "_self");
-            var t = img[0];
-            t.parentNode.replaceChild(link[0], t);
-            link.append(t);
-        }
-        if (bs) {
-            sel.selectBookmarks(bs);
-        }
+            if (bs) {
+                sel.selectBookmarks(bs);
+            }
 
-        if (selectedEl) {
-            editor.fire("save");
-        }
-
+            if (selectedEl) {
+                editor.fire("save");
+            }
+        }, 100);
     }
 
     var valInput = KE.Utils.valInput;
