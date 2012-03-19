@@ -141,7 +141,7 @@ KISSY.Editor.add("dtd", function(KE) {
              * @type {Object}
              * @example
              */
-            $empty : {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1},
+            $empty : {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1,"bgsound":1},
 
             /**
              * List of list item elements, like "li" or "dd".

@@ -417,6 +417,7 @@ KISSY.Editor.add("htmldataprocessor", function (editor) {
             elementNames:[
                 // Remove script,iframe style,link,meta
                 [  /^script$/i , '' ],
+                [  /^bgsound/i , '' ],
                 [  /^iframe$/i , '' ],
                 [  /^style$/i , '' ],
                 [  /^link$/i , '' ],

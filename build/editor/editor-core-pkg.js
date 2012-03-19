@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-02-29 15:26:05
+ * @buildtime: 2012-03-19 22:55:37
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-02-29 15:26:05");
+                encodeURIComponent("2012-03-19 22:55:37");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-02-29 15:26:05'));
+                encodeURIComponent('2012-03-19 22:55:37'));
         };
     }
 
@@ -3420,7 +3420,7 @@ KISSY.Editor.add("dtd", function(KE) {
              * @type {Object}
              * @example
              */
-            $empty : {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1},
+            $empty : {"area":1,"base":1,"br":1,"col":1,"hr":1,"img":1,"input":1,"link":1,"meta":1,"param":1,"bgsound":1},
 
             /**
              * List of list item elements, like "li" or "dd".
