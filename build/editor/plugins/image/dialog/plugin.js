@@ -125,7 +125,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
             "</label>" +
             "</td>" +
             "</tr>" +
-            "<tr>" +
+            "<tr class='ke-img-link-row'>" +
             "<td colspan='2' style='padding-top: 6px'>" +
             "<label>" +
             "链接网址： " +
