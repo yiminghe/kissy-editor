@@ -371,7 +371,7 @@ KISSY.Editor.add("walker", function (KE) {
         toSkip = function (node) {
             return isBookmark(node)
                 || isWhitespaces(node)
-                || node.type == 1
+                || node[0].nodeType == 1
                 && node._4e_name() in dtd.$inline
                 && !( node._4e_name() in dtd.$empty );
         };
