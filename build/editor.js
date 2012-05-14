@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-05-08 16:25:53
+ * @buildtime: 2012-05-14 15:14:24
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-05-08 16:25:53");
+                encodeURIComponent("2012-05-14 15:14:24");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-05-08 16:25:53'));
+                encodeURIComponent('2012-05-14 15:14:24'));
         };
     }
 
@@ -17417,11 +17417,11 @@ KISSY.Editor.add("maximize/support", function () {
             self.call("_saveSate");
             self.call("_maximize");
             if (!self._resize) {
-                var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
-                self['_resize'] = function () {
-                    _maximize();
+                var cfgMaximize = self.cfg._maximize;
+                self['_resize'] = KE.Utils.buffer(function () {
+                    cfgMaximize.call(self);
                     editor.fire("maximizeWindow");
-                };
+                }, self, 100);
             }
 
             Event.on(window, "resize", self._resize);
@@ -18195,24 +18195,24 @@ KISSY.Editor.add("removeformat", function(editor) {
  * resize functionality
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("resize", function(editor) {
+KISSY.Editor.add("resize", function (editor) {
     var S = KISSY,
         Node = S.Node;
 
 
-    S.use("dd", function(S,DD) {
-        var Draggable = S['Draggable']||DD['Draggable'],
+    S.use("dd", function (S, DD) {
+        var Draggable = S['Draggable'] || DD['Draggable'],
             statusDiv = editor.statusDiv,
             textarea = editor.textarea,
             resizer = new Node("<div class='ke-resizer'>"),
             cfg = editor.cfg["pluginConfig"]["resize"] || {};
-        cfg = cfg["direction"] || ["x","y"];
+        cfg = cfg["direction"] || ["x", "y"];
         resizer.appendTo(statusDiv);
         //最大化时就不能缩放了
-        editor.on("maximizeWindow", function() {
+        editor.on("maximizeWindow", function () {
             resizer.css("display", "none");
         });
-        editor.on("restoreWindow", function() {
+        editor.on("restoreWindow", function () {
             resizer.css("display", "");
         });
         resizer._4e_unselectable();
@@ -18226,14 +18226,15 @@ KISSY.Editor.add("resize", function(editor) {
             t_width = 0,
             heightEl = editor.wrap,
             widthEl = editor.editorWrap;
-        d.on("dragstart", function() {
+        d.on("dragstart", function () {
             height = heightEl.height();
             width = widthEl.width();
             // may get wrong height : 100% => viewport height
             t_height = textarea.height();
             t_width = textarea.width();
+            editor.fire("resizeStart");
         });
-        d.on("drag", function(ev) {
+        d.on("drag", function (ev) {
             var self = this,
                 diffX = ev.left - self['startNodePos'].left,
                 diffY = ev.top - self['startNodePos'].top;
@@ -18245,9 +18246,10 @@ KISSY.Editor.add("resize", function(editor) {
                 widthEl.width(width + diffX);
                 textarea.width(t_width + diffX);
             }
+            editor.fire("resize");
         });
 
-        editor.on("destroy", function() {
+        editor.on("destroy", function () {
             d.destroy();
             resizer.remove();
         });

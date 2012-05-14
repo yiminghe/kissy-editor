@@ -270,11 +270,11 @@ KISSY.Editor.add("maximize/support", function () {
             self.call("_saveSate");
             self.call("_maximize");
             if (!self._resize) {
-                var _maximize = KE.Utils.buffer(self.cfg._maximize, self, 100);
-                self['_resize'] = function () {
-                    _maximize();
+                var cfgMaximize = self.cfg._maximize;
+                self['_resize'] = KE.Utils.buffer(function () {
+                    cfgMaximize.call(self);
                     editor.fire("maximizeWindow");
-                };
+                }, self, 100);
             }
 
             Event.on(window, "resize", self._resize);
