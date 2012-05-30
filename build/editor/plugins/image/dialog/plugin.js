@@ -120,8 +120,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
             "" +
             " data-verify='^\\d+$' " +
             " data-warning='间距请输入非负整数' " +
-            "class='ke-img-margin ke-input' style='width:60px' value='"
-            + MARGIN_DEFAULT + "'/> 像素" +
+            "class='ke-img-margin ke-input' style='width:60px'/> 像素" +
             "</label>" +
             "</td>" +
             "</tr>" +
@@ -173,7 +172,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
         imageCfg = editor.cfg["pluginConfig"]["image"] || {},
         cfg = imageCfg["upload"] || null,
         suffix = cfg && cfg["suffix"] || "png,jpg,jpeg,gif",
-        //不要加g：http://yiminghe.javaeye.com/blog/581347
+    //不要加g：http://yiminghe.javaeye.com/blog/581347
         suffix_reg = new RegExp(suffix.split(/,/).join("|") + "$", "i"),
         suffix_warning = "只允许后缀名为" + suffix + "的图片",
         controls = {},
@@ -552,6 +551,10 @@ KISSY.Editor.add("image/dialog", function (editor) {
                 imgLinkBlank.attr("checked", true);
             }
         } else {
+            var defaultMargin = imageCfg.defaultMargin;
+            if (defaultMargin == undefined) {
+                defaultMargin = MARGIN_DEFAULT;
+            }
             if (tab.getTab("local")) {
                 active = "local";
             }
@@ -561,7 +564,7 @@ KISSY.Editor.add("image/dialog", function (editor) {
             resetInput(imgHeight);
             resetInput(imgWidth);
             imgAlign.val("none");
-            imgMargin.val(MARGIN_DEFAULT);
+            imgMargin.val(defaultMargin);
             imgRatio[0].disabled = true;
             imgRatioValue = null;
         }
