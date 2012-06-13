@@ -25,16 +25,16 @@ KISSY.Editor.add("selection", function (KE) {
         UA = S.UA,
         DOM = S.DOM,
         Event = S.Event,
-        //tryThese = KE.Utils.tryThese,
+    //tryThese = KE.Utils.tryThese,
         Node = S.Node,
         KES = KE.SELECTION,
         KER = KE.RANGE,
         KEN = KE.NODE,
-        // ie9 仍然采用老的 range api，发现新的不稳定
+    // ie9 仍然采用老的 range api，发现新的不稳定
         OLD_IE = UA['ie'], //!window.getSelection,
-        //EventTarget = S.EventTarget,
+    //EventTarget = S.EventTarget,
         Walker = KE.Walker,
-        //ElementPath = KE.ElementPath,
+    //ElementPath = KE.ElementPath,
         KERange = KE.Range;
 
     /**
@@ -53,12 +53,21 @@ KISSY.Editor.add("selection", function (KE) {
          * editor document. Return NULL if that's the case.
          */
         if (OLD_IE) {
-            var range = self.getNative().createRange();
-            if (!range
-                || ( range.item && range.item(0).ownerDocument != document )
-                || ( range.parentElement && range.parentElement().ownerDocument != document )) {
+
+            try {
+                var range = self.getNative().createRange();
+                if (!range
+                    || ( range.item && range.item(0).ownerDocument != document )
+                    || ( range.parentElement && range.parentElement().ownerDocument != document )) {
+                    self.isInvalid = TRUE;
+                }
+            }
+                // 2012-06-13 焦点在跨域的 iframe 中，当前页面获取不到 range
+            catch (e) {
                 self.isInvalid = TRUE;
             }
+
+
         }
     }
 
@@ -165,7 +174,7 @@ KISSY.Editor.add("selection", function (KE) {
             },
 
         getRanges:OLD_IE ?
-            ( function () {
+            (function () {
                 // Finds the container and offset for a specific boundary
                 // of an IE range.
                 /**
@@ -681,7 +690,7 @@ KISSY.Editor.add("selection", function (KE) {
                     }
 
                     var bookmark = self.createBookmark(),
-                        // Create marker tags for the start and end boundaries.
+                    // Create marker tags for the start and end boundaries.
                         startNode = bookmark.startNode,
                         endNode;
                     if (!collapsed)
@@ -907,8 +916,8 @@ KISSY.Editor.add("selection", function (KE) {
 
             var savedRange,
                 saveEnabled,
-                // 2010-10-08 import from ckeditor 3.4.1
-                // 点击(mousedown-focus-mouseup)，不保留原有的 selection
+            // 2010-10-08 import from ckeditor 3.4.1
+            // 点击(mousedown-focus-mouseup)，不保留原有的 selection
                 restoreEnabled = TRUE;
 
             // Listening on document element ensures that
