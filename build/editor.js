@@ -3,7 +3,7 @@
  *      thanks to CKSource's intelligent work on CKEditor
  * @author yiminghe@gmail.com, lifesinger@gmail.com
  * @version: 2
- * @buildtime: 2012-06-13 17:24:03
+ * @buildtime: 2012-07-02 12:47:36
  */
 
 /**
@@ -108,12 +108,12 @@ KISSY.add("editor/export", function(S) {
     if (parseFloat(S.version) < 1.2) {
         getJSName = function () {
             return "plugin-min.js?t=" +
-                encodeURIComponent("2012-06-13 17:24:03");
+                encodeURIComponent("2012-07-02 12:47:36");
         };
     } else {
         getJSName = function (m, tag) {
             return m + '/plugin-min.js' + (tag ? tag : '?t=' +
-                encodeURIComponent('2012-06-13 17:24:03'));
+                encodeURIComponent('2012-07-02 12:47:36'));
         };
     }
 
@@ -18064,9 +18064,9 @@ KISSY.Editor.add("progressbar", function() {
  * remove inline-style format for kissy editor,modified from ckeditor
  * @author yiminghe@gmail.com
  */
-KISSY.Editor.add("removeformat", function(editor) {
+KISSY.Editor.add("removeformat", function (editor) {
 
-    editor.addPlugin("removeformat", function() {
+    editor.addPlugin("removeformat", function () {
         var S = KISSY,
             KE = S.Editor,
             KER = KE.RANGE,
@@ -18080,7 +18080,7 @@ KISSY.Editor.add("removeformat", function(editor) {
              * @default 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var'
              * @example
              */
-            removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,' +
+                removeFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,' +
                 'q,samp,small,span,strike,strong,sub,sup,tt,u,var,s',
             /**
              * A comma separated list of elements attributes to be removed
@@ -18089,7 +18089,7 @@ KISSY.Editor.add("removeformat", function(editor) {
              * @default 'class,style,lang,width,height,align,hspace,valign'
              * @example
              */
-            removeFormatAttributes = ('class,style,lang,width,height,' +
+                removeFormatAttributes = ('class,style,lang,width,height,' +
                 'align,hspace,valign').split(/,/),
             tagsRegex = new RegExp('^(?:' +
                 removeFormatTags.replace(/,/g, '|') +
@@ -18107,7 +18107,7 @@ KISSY.Editor.add("removeformat", function(editor) {
             title:"清除格式",
             mode:KE.WYSIWYG_MODE,
             contentCls:"ke-toolbar-removeformat",
-            offClick:function() {
+            offClick:function () {
                 var self = this,
                     editor = self.editor;
                 editor.focus();
@@ -18124,7 +18124,7 @@ KISSY.Editor.add("removeformat", function(editor) {
 
                     // Bookmark the range so we can re-select it after processing.
                     var bookmark = range.createBookmark(),
-                        // The style will be applied within the bookmark boundaries.
+                    // The style will be applied within the bookmark boundaries.
                         startNode = bookmark.startNode,
                         endNode = bookmark.endNode;
 
@@ -18138,7 +18138,7 @@ KISSY.Editor.add("removeformat", function(editor) {
                     // removal logic, having something that could be represented this way:
                     //		<b>This is </b>[<b>some text</b> to show <b>the</b>]<b> problem</b>
 
-                    var breakParent = function(node) {
+                    var breakParent = function (node) {
                         // Let's start checking the start boundary.
                         var path = new ElementPath(node),
                             pathElements = path.elements;
@@ -18174,7 +18174,11 @@ KISSY.Editor.add("removeformat", function(editor) {
 
                         // This node must not be a fake element.
                         if (!( currentNode._4e_name() == 'img'
-                            && currentNode.attr('_ke_realelement') )
+                            && (
+                            currentNode.attr('_ke_realelement') ||
+                                // 占位符
+                                /\bke_/.test(currentNode[0].className)
+                            ) )
                             ) {
                             // Remove elements nodes that match with this style rules.
                             if (tagsRegex.test(currentNode._4e_name()))
@@ -18192,7 +18196,7 @@ KISSY.Editor.add("removeformat", function(editor) {
             }
         });
 
-        this.destroy = function() {
+        this.destroy = function () {
             context.destroy();
         };
     });
