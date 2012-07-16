@@ -5,7 +5,6 @@
 KISSY.Editor.add("localstorage", function() {
     var S = KISSY,
         KE = S.Editor;
-    KE.localStorage = null;
 
     if (!KE['storeReady']) {
         KE.storeReady = function(run) {
