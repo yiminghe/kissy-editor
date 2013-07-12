@@ -1,12 +1,1 @@
-
-KISSY Editor - 富文本编辑器 An Editor for Internet!
-
-使用手册：
-http://docs.kissyui.com/docs/html/relatedproj/editorguide/index.html
-开发版 demo：
-http://docs.kissyui.com/kissy-editor/demo/static-min-dev.html
-cdn demo：
-http://docs.kissyui.com/kissy-editor/demo/static-min-test.html
-
-独立部署：
-https://github.com/kissyteam/kissy-editor/tree/standalone
+Moved to https://github.com/kissyteam/kissy/tree/master/src/editor
